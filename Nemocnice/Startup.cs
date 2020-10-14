@@ -11,9 +11,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nemocnice.Data;
 
+
+/*
+ * Tento soubor nebyl upravován.
+ */
+
+
 namespace Nemocnice
 {
-    public class Startup
+    public class Startup    
     {
         public Startup(IConfiguration configuration)
         {
