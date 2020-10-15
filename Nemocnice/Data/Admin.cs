@@ -5,9 +5,10 @@ namespace Nemocnice.Data
 {
     public class Admin
     {
+
         public int AdminId { get; set; }
         [Required]
-        public virtual List<string> Roles { get; set; }
+        public virtual List<Role> Roles { get; set; }
         [Required]
         public string OutsorceCompany { get; set; }
         [Required]

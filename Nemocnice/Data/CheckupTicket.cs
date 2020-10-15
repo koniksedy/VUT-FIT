@@ -11,13 +11,13 @@ namespace Nemocnice.Data
         public DateTime CreateDate { get; set; }
         [Required]
         public Doctor CreatedBy { get; set; }
-        [Required]
+       // [Required]
         public Doctor ToDoctor { get; set; }
         [Required]
         public Patient Patient { get; set; }
-        public virtual List<string> Description { get; set; }
-        public virtual List<byte[]> Img { get; set; }
-        [Required]
-        public virtual List<Diagnosis> Diagnoses { get; set; }
+        public virtual List<Text> Description { get; set; }
+        public virtual List<Picture> Img { get; set; }
+        //[Required]
+       // public virtual List<Diagnosis> Diagnoses { get; set; }
     }
 }

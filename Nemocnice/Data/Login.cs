@@ -9,6 +9,6 @@ namespace Nemocnice.Data
         [Required]
         public string HashPassword { get; set; }
         [Required]
-        public virtual List<string> Roles { get; set; }
+        public virtual List<Role> Roles { get; set; }
     }
 }

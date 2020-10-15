@@ -65,5 +65,17 @@ namespace Nemocnice.Data
         public DbSet<InsureEmp> InsureEmpT { get; set; }
         public DbSet<CureProgress> CureProgressT { get; set; }
         public DbSet<PatientTreatmentLog> PatientTreatmentLogT { get; set; }
+
+        public DbSet<Role> RoleT { get; set; }
+
+        public DbSet<Text> TextT { get; set; }
+
+        public DbSet<Picture> PictureT { get; set; }
+
+        public DbSet<DiagnosisTicket> DiagnosisTicketsT { get; set; }
+
+        public DbSet<AllergyHealth> AllegyHealthsT { get; set; }
+
+        public DbSet<DiagnosisActivityPricing> DiagnosisActivityPricingsT { get; set; }
     }
 }

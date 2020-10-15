@@ -15,8 +15,8 @@ namespace Nemocnice.Data
         public Doctor Author { get; set; }
         [Required]
         public Patient Patient { get; set; }
-        public virtual List<byte[]> Img { get; set; }
+        public virtual List<Picture> Img { get; set; }
         [Required]
-        public virtual List<string> AccessRights { get; set; }
+        public virtual List<Text> AccessRights { get; set; }
     }
 }
