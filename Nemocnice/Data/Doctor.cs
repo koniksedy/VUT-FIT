@@ -5,7 +5,11 @@ namespace Nemocnice.Data
 {
     public class Doctor
     {
-        public int DoctorId { get; set; }
+        // AdminId == UserId při generalizaci na více tabulek musí být Id shodné
+        // s hlavní tabulkou.
+        [Key]
+        [Required]
+        public int UserId { get; set; }
         [Required]
         public string ICZ { get; set; }
         [Required]
