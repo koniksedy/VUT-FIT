@@ -3,14 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nemocnice.Data
 {
-    public class CureProgress
+    public class TicketPerDiagnosis
     {
         [Required]
-        public int CureProgressId { get; set; }
-        [Required]
-        public MedicallReport MedicallReport { get; set; }
+        public int TicketPerDiagnosisId { get; set; }
         [Required]
         public Diagnosis Diagnosis { get; set; }
-        public string StateOfTreatment { get; set; }
+        [Required]
+        public CheckupTicket CheckupTicket { get; set; }
     }
 }
