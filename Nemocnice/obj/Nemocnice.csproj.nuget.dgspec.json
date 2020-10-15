@@ -1,20 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\misar\\source\\repos\\Nemocnice\\Nemocnice\\Nemocnice.csproj": {}
+    "C:\\Users\\uzivatel\\source\\repos\\Hospital-IIS\\Nemocnice\\Nemocnice.csproj": {}
   },
   "projects": {
-    "C:\\Users\\misar\\source\\repos\\Nemocnice\\Nemocnice\\Nemocnice.csproj": {
+    "C:\\Users\\uzivatel\\source\\repos\\Hospital-IIS\\Nemocnice\\Nemocnice.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\misar\\source\\repos\\Nemocnice\\Nemocnice\\Nemocnice.csproj",
+        "projectUniqueName": "C:\\Users\\uzivatel\\source\\repos\\Hospital-IIS\\Nemocnice\\Nemocnice.csproj",
         "projectName": "Nemocnice",
-        "projectPath": "C:\\Users\\misar\\source\\repos\\Nemocnice\\Nemocnice\\Nemocnice.csproj",
-        "packagesPath": "C:\\Users\\misar\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\misar\\source\\repos\\Nemocnice\\Nemocnice\\obj\\",
+        "projectPath": "C:\\Users\\uzivatel\\source\\repos\\Hospital-IIS\\Nemocnice\\Nemocnice.csproj",
+        "packagesPath": "C:\\Users\\uzivatel\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\uzivatel\\source\\repos\\Hospital-IIS\\Nemocnice\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "C:\\Users\\misar\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\uzivatel\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -71,7 +74,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.402\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
         }
       }
     }
