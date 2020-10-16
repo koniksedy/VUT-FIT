@@ -5668,19 +5668,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\misar\\.nuget\\packages\\": {}
+    "C:\\Users\\uzivatel\\.nuget\\packages\\": {},
+    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\misar\\Source\\Repos\\koniksedy\\Hospital-IIS\\Nemocnice\\Nemocnice.csproj",
+      "projectUniqueName": "C:\\Users\\uzivatel\\source\\repos\\Hospital-IIS\\Nemocnice\\Nemocnice.csproj",
       "projectName": "Nemocnice",
-      "projectPath": "C:\\Users\\misar\\Source\\Repos\\koniksedy\\Hospital-IIS\\Nemocnice\\Nemocnice.csproj",
-      "packagesPath": "C:\\Users\\misar\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\misar\\Source\\Repos\\koniksedy\\Hospital-IIS\\Nemocnice\\obj\\",
+      "projectPath": "C:\\Users\\uzivatel\\source\\repos\\Hospital-IIS\\Nemocnice\\Nemocnice.csproj",
+      "packagesPath": "C:\\Users\\uzivatel\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\uzivatel\\source\\repos\\Hospital-IIS\\Nemocnice\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+      ],
       "configFilePaths": [
-        "C:\\Users\\misar\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\uzivatel\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
