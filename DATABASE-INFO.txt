@@ -1,0 +1,494 @@
+ActivityPricingPerDiagnosis
+    // Pomocná tabulka spojující relaci N:N pro Diagnosis
+    // a NedicallActivityPrice
+
+    + ActivityPricingPerDiagnosisId
+        - generovaný PK
+        - např. <123>
+
+    + Diagnosis
+        - tabulka diagnóz
+
+    + MedicallActivityPrice
+        - tabulka s ceníkem za vykonanou práci s pacientem
+
+---------------------------------------
+
+Address
+    // Tabulka uchovávající adresy
+
+    + AddressId
+        - generovaný PK
+        - např. <134>
+
+    + HouseNumber
+
+    + StreetName
+
+    + City
+
+    + ZIP
+        - PSČ
+
+---------------------------------------
+
+Admin
+    // Tabulka upřesňující elementy Admina,
+    // vzniklého specifikací entity User.
+
+    + UserId
+        - stejný PK, jaký má User nesoucí část jeho informací
+
+        -------------
+        |  User     |
+        |. PK = 111 |
+        |.....      |
+        |.....      |
+        -------------
+              ^
+              |             -------------
+              |             | Admin     |
+              |             |-----------|
+              |-------------|. PK = 111 |
+                            |WorkPhone  |
+                            |....       |
+                            |......     |
+                            -------------
+
+    + Role
+        - např. "Síťový administrátor"
+
+    + WorkPhone
+
+    + OutsourceCompany
+        - v případě externího pracovníka název jeho domovské firmy.
+
+---------------------------------------
+
+Allergy
+    // Tabulka obsahující seznam existujících/zaregistrovaných alergií.
+
+    + AllergyId
+        - generovaný PK
+
+    + Name
+        - např. "Alergie na Zinek"
+
+    + Description
+        - např. "Projevuje se ... Pacienti často pociťují..."
+
+---------------------------------------
+
+AllergysOfPatient
+    // Pomocná tabulka spojující vazbu N:N pro tabulky
+    // Allergy a HealthCondition (HealthCondition patří pouze jeden jednomu pacientovi.)
+
+    + AllergysOfPatientId
+        - generovaný PK
+
+    + Allergy
+        - odkaz do tabulky Allergy
+
+    + HealthCondition
+        - odkaz do tabulky HealthCondition
+        - Pro propojení použijeme rodné číslo (Social Security Number)
+
+---------------------------------------
+
+CureProgress
+    // Pomocná "vazební" tabulka k propojení tabulek 
+    // MedicallReport a Diagnosis, s atributem stavu léčby 
+    // daného problému (diagnózy) v době psaní zprávy.
+
+    + CureProgressId
+        - generovaný PK
+
+    + MedicallReport
+        - Tabulka zdravotní zprávy
+
+    + Diagnosis
+        - Diagnóza pojící se z dané zprávě
+
+    + StateOfTreatment
+        - Stav léčby
+
+---------------------------------------
+
+Diagnosis
+    // Tabulka obsahující seznam existujících diagnóz
+
+    + DiagnossisId
+        - generovaný PK
+
+    + Name
+        - např. "Lupénka"
+
+---------------------------------------
+
+Doctor
+    // Tabulka rozšiřující podobně jakožto tabulka
+    // admina vlastnosti entity User.
+
+    + UserId
+        - stejný PK, jaký má User nesoucí část jeho informací
+
+        -------------
+        |  User     |
+        |. PK = 133 |
+        |.....      |
+        |.....      |
+        -------------
+              ^
+              |             -------------
+              |             | Doctor    |
+              |             |-----------|
+              |-------------|. PK = 133 |
+                            |WorkPhone  |
+                            |....       |
+                            |......     |
+                            -------------
+
+    + ICZ
+        - identifikační číslo lékaře, vhodné pro FK
+
+    + WorkPhone
+
+---------------------------------------
+
+HealthCondition
+    // Tabulka obsahující všeobecný stav daného pacienta
+
+    + SociaSecurityNum
+        - PK
+        - rodné číslo pacienta
+        - Při vkédání nutno zadávat ručně
+
+    + Height
+
+    + Weight
+
+    + BlodType
+        - např. "AB+"
+
+    + LastChectkuDate
+        - poslední datum návštěvy
+
+---------------------------------------
+
+CheckupTicket
+    // Tabulka představující žádantu pro pacienta na
+    // vyšetření u jiného lékaře.
+
+    + CheckupTicketId
+        - generovaný PK
+
+    + CreateBy
+        - odkaz na tabulkau lékaře, který žádanku vytvořil
+
+    + ToDoctor
+        - lékař, který žádosti vyhoví
+
+    + Patient
+
+    + Description
+        - Popis, co lékař chce.
+        - např. "Žádám o vyšetření.... Paciem má ....."
+
+    + IncludePicDescript
+        - informace o přiloženém obrázku v popisu
+          pokud je true, musí se prohledat tabulka
+          Picture
+
+    + Result
+        - Výsledek vyšetření
+        - např. "Zlomenina tibie bez dizlokace ...."
+
+    + IncludePicRes
+        - informace o přiloženém obrázku ve výsledku
+          pokud je true, musí se prohledat tabulka
+          Picture
+    
+    + State
+        - stav vyřízení žádosti
+        - např. "Paien odeslán va rentgen, čekám na výsledek."
+
+    + CreateDate
+        - datum vystavení žádanky
+    
+    + FinishDate
+        - datum definitivního výsledku vyšetření
+
+---------------------------------------
+
+InsureEnp
+    // Tabulka zaměstnance pojišťovny specifikující roli 
+    // User, podobně jako Admin
+
+    + UserId
+        - stejný PK, jaký má User nesoucí část jeho informací
+
+        -------------
+        |  User     |
+        |. PK = 137 |
+        |.....      |
+        |.....      |
+        -------------
+              ^
+              |             -------------
+              |             | InsureEmp |
+              |             |-----------|
+              |-------------|. PK = 137 |
+                            |WorkPhone  |
+                            |....       |
+                            |......     |
+                            -------------
+
+    + PersonalId
+        -  generovaný PK
+        - vnitřní ID zaměstnanců v pojišťovně
+
+    + Possition
+        - např. "Ředitel"
+
+    + WorkPhone
+
+---------------------------------------
+
+Login
+    // Tabulka uchovávající přihlašovací údaje
+    // pro Usera, jeden User má pouze jedny
+    // přihlašovací údaje.
+
+    + CurrentLogin
+        - PK
+        - login zvolen při vytváření účtu
+        - musí se vhodně generovat
+
+    + HashPassword
+        - hash otisk hesla
+
+    + RoleCode
+        - zakódovaná role 
+        - ve tvaru Admin|Lekař|Pac|Pojišťovna
+        - 1 - má autorizaci
+        - 0 - nemá
+        - např. "1010" - je to admin a zároveň se léčí
+                         jako pacient
+
+---------------------------------------
+
+MedicalActivityPrice
+    // Tabulka ("databáze na pojišťovně") s informací
+    // kolik a za jaké výkony se platí, případně neplatí
+
+    + MedicallActivityPriceId
+        - generovaný PK
+
+    + Name
+        - název výkonu
+        - např. "Vstupní vyšetření"
+
+    + Amount
+
+---------------------------------------
+
+MedicallBill
+    // Tabulka samotného vykázaného výkonu od doktora.
+    // Obsahuje info o tom, za co, jakého pacienta chce
+    // doktor od pojišťovny peníze.
+
+    + MedicallBillId
+        - generovaný PK
+
+    + Doctor
+        - odkaz do tabulky s doktorem, který chce peníze
+
+    + SocialSecurityNum
+        - rodné číslo pacienta kterého ošetřil
+        - pojišťovně stačí pouze tohle
+
+    + MedicallActivityPrice
+        - odkazuje do tabulky na konkrétní druh výkonu,
+          který lékař provedl
+
+    + Diagnosis
+        - diagnóza na jejímž základě provedl lékař vyšetření
+
+    + State
+        - stav zaplacení
+        - čeká/schváleno/zamítnuto
+
+    + CreateDate
+        - datum provedení výkonu
+
+    + DecisionDate
+        - datum rozhodnutí, nebo zamítnutí proplacení
+
+---------------------------------------
+
+MedicallReport
+    // Tabulka s lékařskou zprávou o vyšetření.
+    // Takových bude hodně.
+    // Spravuje je pouze ten lékař, který ji napsal.
+    // Lékař může předat svá práva jinému lékaři.
+
+    + MedicallReportId
+        - generovaný PK
+
+    + Author
+        - odkaz do tabulky Lékař na lékaře, který zprávu napsal.
+
+    + Patient
+        - odkaz do tabulky Patient na pacienta, jehož se zpráva
+          týká
+
+    +Description
+        - popis ve zprávě, text
+        - např. "Pacient se nedostavil, neomluven."
+                "Dochází ke stabilizaci okolí vředu...."
+
+    + IncludePic
+        - informace o přiloženém obrázku ke zprávě
+        - pokud je true, musí se prohledat tabulka Picture
+
+    + Owner
+        - odkaz do tabulky Lékař na lékaře, který má přístupová
+          práva k dané zprávě.
+        - Vlastnictví zprávy může být předáno na jiného lékaře.
+
+    + CreateDate
+        - Datum vytvoření zprávy.
+
+---------------------------------------
+
+Patient
+    // Tabulka Pacienta rozšiující entitu User.
+    // Jedná se o stejné rozšíření jako u Admina.
+
+    + UserId
+        - stejný PK, jaký má User nesoucí část jeho informací
+
+        -------------
+        |  User     |
+        |. PK = 137 |
+        |.....      |
+        |.....      |
+        -------------
+              ^
+              |             -------------
+              |             | InsureEmp |
+              |             |-----------|
+              |-------------|. PK = 137 |
+                            |WorkPhone  |
+                            |....       |
+                            |......     |
+                            -------------
+
+    + SocialSecurityNum
+        - PK
+        - rodné číslo
+        - je potřeba při vytváření zadat ručně
+        - vhodné jako FK
+
+    + InsuranceConpan
+        - kód pojišťovky
+        - např. "111"
+
+    + HomeAddress
+        - odkaz do tabulky Address na řádek s bydlištěm pacienta
+
+    + HealthCondition
+        - odkaz do tabulky na zdravotní stav pacienta
+
+---------------------------------------
+
+PatientTreatmentLog
+    // Tabulka s historií chorob s kterými se pacient
+    // léčí, nebo léčil.
+
+    + PatientTreatmentLogId
+        - generovaný PK
+
+    + Parient
+        - odkaz na pacienta
+
+    + Diagnosis
+        - odkaz na diagnózu
+
+    + StartOfTreatment
+        - začátek léčby dané diagnózy
+        - ukončení léčky
+
+---------------------------------------
+
+Picture
+    // Tabulka s všelijakými obrázky
+    // Dá se vyhledávat také podle rodného čísla pacienta
+
+    + PictureId
+        - generovaný PK
+
+    + SocilSecurityNum
+        - rodné číslo pacienta, k němuž se obrázek vztahuje
+
+    + CurrentPicture
+        - uložený obrázek
+
+    + Description
+        - politelný popis
+
+    + ToAllergy
+        - pokud se obrázek vztahuje k alergii, je zde odkaz
+
+    + ToMedicalReport
+        - pokud se obrázek vztahuje k lékařské zprávě,
+          je zde odkaz na tabulku MedicalReport
+
+    + ToCheckupTicket
+        - pokud se obrázek vztahuje k výsledku, nebo žádosti
+          o vyšetření, je zde odkaz
+
+    + CreateDate
+        - datum vložení obrázku
+
+---------------------------------------
+
+TicketPerDiagnosis
+    // Pomocná tabulka ke spojení vazby N:N 
+    // tabulek Diagnosis a CheckupTicket, za účelem
+    // přiřazení diagnózy k žádosti o vyšetření.
+
+    + TicketPerDiagnosisId
+        - generovaný PK
+
+    + Diagnosis
+        - odkaz do tabulky s diagnózou
+
+    + CheckupTicket
+        - odkaz do tabulky s konkrétní žádostí, ke které se
+          diagnóza vztahuje.
+
+---------------------------------------
+
+User
+    // Tabulka generalizující veškeré uživatele systému.
+    // Obsahuje základní informace společné všem.
+
+    + UserId
+        - generovaný PK
+
+    + Login
+        - odkaz do Tabulky Login na konkrétní login uživatele
+
+    + Name
+
+    + Surname
+
+    + Title
+
+    + Phone
+
+    + Email
+
+    + WorkAddress
+        - odkaz do tabulky WorkAddress na pracovní adresu uživatele
