@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace Nemocnice.Areas.Identity.Data
+namespace Nemocnice.Data
 {
     // Add profile data for application users by adding properties to the NemocniceUser class
     public class NemocniceUser : IdentityUser

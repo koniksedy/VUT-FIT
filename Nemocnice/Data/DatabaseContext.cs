@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,27 @@ using System.Threading.Tasks;
 
 namespace Nemocnice.Data
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : IdentityDbContext
     {
         /*
          * Základní konstruktor.
          */
         public DatabaseContext() 
         { }
+
+        public DatabaseContext(DbContextOptions<DatabaseContext> options)
+            : base(options)
+        {
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            // Customize the ASP.NET Identity model and override the defaults if needed.
+            // For example, you can rename the ASP.NET Identity table names and more.
+            // Add your customizations after calling base.OnModelCreating(builder);
+        }
+
 
         /*
          * ConnectionString pro připojení k databázi Azure.
@@ -69,5 +84,8 @@ namespace Nemocnice.Data
         public DbSet<CureProgress> CureProgressT { get; set; }
         public DbSet<Picture> PictureT { get; set; }      
         public DbSet<ActivityPricingPerDiagnosis> ActivityPricingPerDiagnosisT { get; set; }
+
+        public DbSet<NemocniceUser> NemocniceUser { get; set; }
     }
+        
 }

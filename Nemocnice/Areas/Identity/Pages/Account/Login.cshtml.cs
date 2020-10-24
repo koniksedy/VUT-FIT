@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
-using Nemocnice.Areas.Identity.Data;
+using Nemocnice.Data;
 
 namespace Nemocnice.Areas.Identity.Pages.Account
 {

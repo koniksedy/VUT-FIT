@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Nemocnice.Areas.Identity.Data;
+using Nemocnice.Data;
 
 namespace Nemocnice.Areas.Identity.Pages.Account
 {

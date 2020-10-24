@@ -24,6 +24,10 @@
     <Compile Remove="Migrations\20201015160959_InitialCreate.Designer.cs" />
     <Compile Remove="Migrations\20201015161110_InitialCreate.cs" />
     <Compile Remove="Migrations\20201015161110_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20201015173829_InitialCreate.cs" />
+    <Compile Remove="Migrations\20201015173829_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20201024171933_Identity.cs" />
+    <Compile Remove="Migrations\20201024171933_Identity.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,6 +40,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Data\" />
   </ItemGroup>
 
 </Project>
