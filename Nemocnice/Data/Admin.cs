@@ -5,13 +5,14 @@ namespace Nemocnice.Data
 {
     public class Admin
     {
-
-        public int AdminId { get; set; }
+        // AdminId == UserId při generalizaci na více tabulek musí být Id shodné
+        // s hlavní tabulkou.
+        [Key]
         [Required]
-        public virtual List<Role> Roles { get; set; }
-        [Required]
-        public string OutsorceCompany { get; set; }
+        public int UserId { get; set; }
+        public string Role { get; set; }
         [Required]
         public string WorkPhone { get; set; }
+        public string OutsorceCompany { get; set; }
     }
 }
