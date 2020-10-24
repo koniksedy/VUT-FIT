@@ -52,10 +52,7 @@ namespace Nemocnice
             app.UseStaticFiles();
 
             app.UseRouting();
-<<<<<<< HEAD
-=======
 
->>>>>>> 302795efe179539b75a7936e79cd84f72de8526a
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -64,11 +61,7 @@ namespace Nemocnice
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
-<<<<<<< HEAD
                 endpoints.MapRazorPages();
-=======
-               endpoints.MapRazorPages();
->>>>>>> 302795efe179539b75a7936e79cd84f72de8526a
             });
         }
     }
