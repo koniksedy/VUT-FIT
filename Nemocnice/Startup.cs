@@ -31,6 +31,7 @@ namespace Nemocnice
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddRazorPages();
 
         }
 
@@ -52,6 +53,7 @@ namespace Nemocnice
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -59,6 +61,7 @@ namespace Nemocnice
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+               endpoints.MapRazorPages();
             });
         }
     }
