@@ -1,4 +1,0 @@
-C:\Users\uzivatel\Source\Repos\Hospital-IIS\Nemocnice\obj\Debug\netcoreapp2.1\Nemocnice.dll.config
-C:\Users\uzivatel\Source\Repos\Hospital-IIS\Nemocnice\obj\Debug\netcoreapp2.1\Nemocnice.csproj.CoreCompileInputs.cache
-C:\Users\uzivatel\Source\Repos\Hospital-IIS\Nemocnice\obj\Debug\netcoreapp2.1\Nemocnice.AssemblyInfoInputs.cache
-C:\Users\uzivatel\Source\Repos\Hospital-IIS\Nemocnice\obj\Debug\netcoreapp2.1\Nemocnice.AssemblyInfo.cs

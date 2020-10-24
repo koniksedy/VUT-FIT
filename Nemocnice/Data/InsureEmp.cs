@@ -4,12 +4,15 @@ namespace Nemocnice.Data
 {
     public class InsureEmp
     {
-        public int InsureEmpId { get; set; }
+        // AdminId == UserId při generalizaci na více tabulek musí být Id shodné
+        // s hlavní tabulkou.
+        [Key]
         [Required]
-        public int InsuranceEmployeeId { get; set; }
+        public int UserId { get; set; }
         [Required]
-        public string WorkPhone { get; set; }
-        [Required]
+        public int PersonalId { get; set; }
         public string Possition { get; set; }
+        [Required]
+        public string WorkPhone { get; set; }     
     }
 }

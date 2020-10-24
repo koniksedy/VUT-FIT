@@ -49,33 +49,25 @@ namespace Nemocnice.Data
             options.UseSqlServer(connectionString, null);
         }
 
-        public DbSet<User> UserT { get; set; }
         public DbSet<Address> AddressT { get; set; }
-        public DbSet<HealthCondition> HealthConditionT { get; set; }
-        public DbSet<Allergy> AllergyT { get; set; }
-        public DbSet<MedicallBill> MedicallBillT { get; set; }
-        public DbSet<CheckupTicket> CheckupTicketT { get; set; }
-        public DbSet<MedicallReport> MedicallReportT { get; set; }
-        public DbSet<MedicallActivityPrice> MedicallActivityPriceT { get; set; }
-        public DbSet<Diagnosis> DiagnosisT { get; set; }
-        public DbSet<Login> LoginT { get; set; }
+        public DbSet<User> UserT { get; set; }
+        //public DbSet<Login> LoginT { get; set; }
         public DbSet<Patient> PatientT { get; set; }
         public DbSet<Admin> AdminT { get; set; }
         public DbSet<Doctor> DoctorT { get; set; }
         public DbSet<InsureEmp> InsureEmpT { get; set; }
-        public DbSet<CureProgress> CureProgressT { get; set; }
+        public DbSet<HealthCondition> HealthConditionT { get; set; }
+        public DbSet<AllergysOfPatient> AllergysOfPatientT { get; set; }
+        public DbSet<Allergy> AllergyT { get; set; }
+        public DbSet<CheckupTicket> CheckupTicketT { get; set; }
+        public DbSet<MedicallActivityPrice> MedicallActivityPriceT { get; set; }
+        public DbSet<Diagnosis> DiagnosisT { get; set; }
+        public DbSet<TicketPerDiagnosis> TicketPerDiagnosisT { get; set; }
         public DbSet<PatientTreatmentLog> PatientTreatmentLogT { get; set; }
-
-        public DbSet<Role> RoleT { get; set; }
-
-        public DbSet<Text> TextT { get; set; }
-
-        public DbSet<Picture> PictureT { get; set; }
-
-        public DbSet<DiagnosisTicket> DiagnosisTicketsT { get; set; }
-
-        public DbSet<AllergyHealth> AllegyHealthsT { get; set; }
-
-        public DbSet<DiagnosisActivityPricing> DiagnosisActivityPricingsT { get; set; }
+        public DbSet<MedicallBill> MedicallBillT { get; set; }
+        public DbSet<MedicallReport> MedicallReportT { get; set; }
+        public DbSet<CureProgress> CureProgressT { get; set; }
+        public DbSet<Picture> PictureT { get; set; }      
+        public DbSet<ActivityPricingPerDiagnosis> ActivityPricingPerDiagnosisT { get; set; }
     }
 }

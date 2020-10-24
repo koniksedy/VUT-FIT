@@ -5,10 +5,12 @@ namespace Nemocnice.Data
 {
     public class Login
     {
-        public int LoginId { get; set; }
+        [Key]
+        [Required]
+        public string CurrentLogin { get; set; }
         [Required]
         public string HashPassword { get; set; }
         [Required]
-        public virtual List<Role> Roles { get; set; }
+        public int RoleCode { get; set; }
     }
 }
