@@ -51,7 +51,7 @@ namespace Nemocnice.Data
 
         public DbSet<Address> AddressT { get; set; }
         public DbSet<User> UserT { get; set; }
-        public DbSet<Login> LoginT { get; set; }
+        //public DbSet<Login> LoginT { get; set; }
         public DbSet<Patient> PatientT { get; set; }
         public DbSet<Admin> AdminT { get; set; }
         public DbSet<Doctor> DoctorT { get; set; }
