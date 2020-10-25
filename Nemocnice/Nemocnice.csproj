@@ -26,39 +26,7 @@
     <Compile Remove="Migrations\20201015161110_InitialCreate.Designer.cs" />
     <Compile Remove="Migrations\20201015173829_InitialCreate.cs" />
     <Compile Remove="Migrations\20201015173829_InitialCreate.Designer.cs" />
-<<<<<<< HEAD
-    <Compile Remove="Migrations\20201024171933_Identity.cs" />
-    <Compile Remove="Migrations\20201024171933_Identity.Designer.cs" />
-=======
-    <Compile Remove="Migrations\20201022124338_fixHealthCondition.cs" />
-    <Compile Remove="Migrations\20201022124338_fixHealthCondition.Designer.cs" />
-    <Compile Remove="Migrations\20201022125250_Initialize.cs" />
-    <Compile Remove="Migrations\20201022125250_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201022125619_Initialize.cs" />
-    <Compile Remove="Migrations\20201022125619_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201022130258_initialCreate.cs" />
-    <Compile Remove="Migrations\20201022130258_initialCreate.Designer.cs" />
-    <Compile Remove="Migrations\20201022130855_initialCreate.cs" />
-    <Compile Remove="Migrations\20201022130855_initialCreate.Designer.cs" />
-    <Compile Remove="Migrations\20201024152244_Initialize.cs" />
-    <Compile Remove="Migrations\20201024152244_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201024152859_Initialize.cs" />
-    <Compile Remove="Migrations\20201024152859_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201024153332_Initialize.cs" />
-    <Compile Remove="Migrations\20201024153332_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201024153922_Initialize.cs" />
-    <Compile Remove="Migrations\20201024153922_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201024155249_Initialize.cs" />
-    <Compile Remove="Migrations\20201024155249_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201024163634_Initialize.cs" />
-    <Compile Remove="Migrations\20201024163634_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201025175057_Initialize.cs" />
-    <Compile Remove="Migrations\20201025175057_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201025175141_Initialize.cs" />
-    <Compile Remove="Migrations\20201025175141_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201025175250_Initialize.cs" />
-    <Compile Remove="Migrations\20201025175250_Initialize.Designer.cs" />
->>>>>>> 61b55db64b917d1b0c97bf915455c899b37999f7
+
   </ItemGroup>
 
   <ItemGroup>
