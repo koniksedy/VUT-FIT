@@ -28,8 +28,8 @@ namespace Nemocnice
         {
 
             DatabaseCreatorController Content = new DatabaseCreatorController();
-            //Tady pokraèovat
-            //Content.DatabaseContentCreate();
+
+            Content.DatabaseContentCreate();
 
             
             

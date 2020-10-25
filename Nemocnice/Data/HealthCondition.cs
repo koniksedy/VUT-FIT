@@ -8,8 +8,9 @@ namespace Nemocnice.Data
     {
         // rodné číslo
         [Key]
+        public int HealthConditionId { get; set; }
         [Required]
-        public int SocialSecurityNum { get; set; }
+        public long SocialSecurityNum { get; set; }
         public float Height { get; set; }
         public float Weight { get; set; }
         public string BloodType { get; set; }
