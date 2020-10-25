@@ -9,6 +9,8 @@ namespace Nemocnice.Data
         // s hlavní tabulkou.
         [Key]
         [Required]
+        public int AdminId { get; set; }
+        [Required]
         public int UserId { get; set; }
         public string Role { get; set; }
         [Required]
