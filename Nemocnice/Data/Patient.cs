@@ -7,11 +7,13 @@ namespace Nemocnice.Data
     {
         // AdminId == UserId při generalizaci na více tabulek musí být Id shodné
         // s hlavní tabulkou.
-        [Required]
         [Key]
+        [Required]
+        public int PatientID { get; set; }
+        [Required]
         public int UserId { get; set; }
         [Required]
-        public string SocialSecurityNum { get; set; }
+        public long SocialSecurityNum { get; set; }
         [Required]
         public int InsuranceCompany { get; set; }
         [Required]
