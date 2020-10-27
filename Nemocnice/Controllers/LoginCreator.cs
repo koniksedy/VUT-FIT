@@ -40,7 +40,7 @@ namespace Nemocnice.Controllers
             return View();
         }
 
-
+        /*
         public async Task AddUserAsynchAsync(string name, string password, int R)
         {
             //var user = new NemocniceUser();
@@ -49,13 +49,13 @@ namespace Nemocnice.Controllers
 
             //string userPWD = password;
 
-            var user = new NemocniceUser { UserName = name };
+            var user = new NemocniceUser { UserName = "Kokot2" };
             var result = await _userManager.CreateAsync(user, "1234567890");
 
 
            // IdentityResult chkUser = await _userManager.CreateAsync(user, userPWD);
 
-            /*
+            
             IdentityResult result1, result2, result3, result4;
             if(R >> 3 == 1)
             {
@@ -78,10 +78,10 @@ namespace Nemocnice.Controllers
                 result4 = await _userManager.AddToRoleAsync(user, "Insurance");
             }
 
-            */
+            
 
         }
-
+        */
 
         public async Task<IActionResult> CreateAsync()
         {
@@ -119,41 +119,151 @@ namespace Nemocnice.Controllers
                 await _roleManager.CreateAsync(role);
             }
 
-            var res1 = AddUserAsynchAsync("xnovot00@kokot.cz", "LongPassword", 1010);
-            //_ = AddUserAsynchAsync("xmalic0a", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xbilik00", "LongPassword", 1000);
-            //_ = AddUserAsynchAsync("xjanec0a", "LongPassword", 0011);
-            //_ = AddUserAsynchAsync("xsvobo00", "LongPassword", 0001);
-            //_ = AddUserAsynchAsync("xovale0a", "LongPassword", 0001);
-            //_ = AddUserAsynchAsync("xdvora0a", "LongPassword", 0100);
-            //_ = AddUserAsynchAsync("xcerny00", "LongPassword", 0100);
-            //_ = AddUserAsynchAsync("xvesel0a", "LongPassword", 0100);
-            //_ = AddUserAsynchAsync("xhorak00", "LongPassword", 0100);
-            //_ = AddUserAsynchAsync("xnemec08", "LongPassword", 0100);
-            //_ = AddUserAsynchAsync("xmarek05", "LongPassword", 0100);
-            //_ = AddUserAsynchAsync("xpospi0a", "LongPassword", 0110);
-            //_ = AddUserAsynchAsync("xhajek0a", "LongPassword", 0110);
-            //_ = AddUserAsynchAsync("xjelin00", "LongPassword", 0110);
-            //_ = AddUserAsynchAsync("xkrali06", "LongPassword", 0110);
-            //_ = AddUserAsynchAsync("xbenes01", "LongPassword", 0110);
-            //_ = AddUserAsynchAsync("xdolez00", "LongPassword", 0110);
-            //_ = AddUserAsynchAsync("xfiala01", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xsedla03", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xzeman0a", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xkolar05", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xkrejc02", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xnavra00", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xcerma0a", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xbarto08", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xsimek00", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xsykor01", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xsouku0a", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xmorav07", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xsevci06", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xmasek00", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xhrusk08", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xpavli00", "LongPassword", 0010);
-            //_ = AddUserAsynchAsync("xjanda0a", "LongPassword", 0010);
+            var user = new NemocniceUser { UserName = "xnovot00" };
+            var result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Admin");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xmalic0a" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xbilik00" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Admin");
+
+            user = new NemocniceUser { UserName = "xjanec0a" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+            await _userManager.AddToRoleAsync(user, "Insurance");
+
+            user = new NemocniceUser { UserName = "xsvobo00" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Insurance");
+
+            user = new NemocniceUser { UserName = "xovale0a" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Insurance");
+
+            user = new NemocniceUser { UserName = "xdvora0a" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+
+            user = new NemocniceUser { UserName = "xcerny00" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+
+            user = new NemocniceUser { UserName = "xvesel0a" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+
+            user = new NemocniceUser { UserName = "xhorak00" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+
+            user = new NemocniceUser { UserName = "xnemec08" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+
+            user = new NemocniceUser { UserName = "xmarek05" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+
+            user = new NemocniceUser { UserName = "xpospi0a" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xhajek0a" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xjelin00" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xkrali06" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xbenes01" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xdolez00" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Doctor");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xfiala01" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xsedla03" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xzeman0a" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xkolar05" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xkrejc02" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xnavra00" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xcerma0a" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xbarto08" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xsimek00" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xsykor01" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xsouku0a" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xmorav07" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xsevci06" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xmasek00" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xhrusk08" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+            user = new NemocniceUser { UserName = "xpavli00" };
+            result = await _userManager.CreateAsync(user, "1234567890");
+            await _userManager.AddToRoleAsync(user, "Patient");
+
+
 
             return View("Create");
         }
