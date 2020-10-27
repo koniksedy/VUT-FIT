@@ -9,8 +9,9 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container">
+                <a href="/Home/Index"><img src="~/Img/Shared/logo iis.png" class="logo_img"/></a>
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Nemocnice</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
@@ -20,16 +21,63 @@
                     <partial name="_LoginPartial"/>
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Aktuality</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                        <!--
+                        @if (User.IsInRole("Patient"))
+                        {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="LoginCreator" asp-action="Create">Create logins</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Patient" asp-action="PatientCard">Karta</a>
                             </li>
-                         -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Patient" asp-action="Checkup">Vyšetření</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Doctor") || User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Doctor" asp-action="Card">Kartotéka</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Doctor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Doctor" asp-action="Report">Výkon</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Doctor" asp-action="Request">Žádosti</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Insurance"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="InsuranceEmp" asp-action="InRequest">Žádosti</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="InsuranceEmp" asp-action="PaymentDb">Databáze úhrad</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="DoctorCard">Žádosti lékař</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="InsuranceEmp" asp-action="InRequest">Žádosti pojišťovna</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="UserAdministration">Správa uživatelů</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="DbAdministration">Správa databází</a>
+                            </li>
+                        }
+                        <!--
+       <li class="nav-item">
+           <a class="nav-link text-dark" asp-area="" asp-controller="LoginCreator" asp-action="Create">Create logins</a>
+       </li>
+    -->
                     </ul>
                 </div>
             </div>

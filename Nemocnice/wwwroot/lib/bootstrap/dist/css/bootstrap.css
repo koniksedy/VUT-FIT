@@ -413,7 +413,8 @@ h6, .h6 {
   line-height: 1.2;
 }
 
-.display-4 {
+.jsemkokot {
+    text-align: left;
   font-size: 3.5rem;
   font-weight: 300;
   line-height: 1.2;
@@ -6587,9 +6588,6 @@ button.bg-dark:focus {
   background-color: #1d2124 !important;
 }
 
-.bg-white {
-  background-color: #fff !important;
-}
 
 .bg-transparent {
   background-color: transparent !important;
@@ -9756,8 +9754,9 @@ button.bg-dark:focus {
   text-align: right !important;
 }
 
-.text-center {
-  text-align: center !important;
+.text-jdidoprdele {
+  height: 90vh !important;
+   
 }
 
 @media (min-width: 576px) {

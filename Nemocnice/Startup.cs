@@ -40,8 +40,8 @@ namespace Nemocnice
                 options.Password.RequireUppercase = false;
             });
 
-
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            //services.AddControllersWithViews();
             services.AddRazorPages();
 
         }

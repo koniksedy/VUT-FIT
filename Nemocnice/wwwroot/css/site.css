@@ -7,6 +7,20 @@ a.navbar-brand {
   word-break: break-all;
 }
 
+body{
+    background-color: white !important;
+    text-align: left !important;
+}
+img.logo_img{
+    height: 50px;
+    width: 150px;
+    padding-right: 10px;
+}
+
+header{
+    background-color: lightskyblue !important;
+}
+
 /* Provide sufficient contrast against white background */
 a {
   color: #0366d6;
