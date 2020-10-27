@@ -11,7 +11,7 @@ namespace Nemocnice.DatabaseDataCreator
         public void LoginCreate(DatabaseContext db)
         {
 
-             db.LoginT.Add(LoginAdd("xnovot00", "Heslo4", 1010));
+           /*  db.LoginT.Add(LoginAdd("xnovot00", "Heslo4", 1010));
              db.LoginT.Add(LoginAdd("xmalic0a", "Heslo5", 0010));
              db.LoginT.Add(LoginAdd("xbilik00", "Heslo5", 1000));
              db.LoginT.Add(LoginAdd("xjanec0a", "Heslo6", 0011));
@@ -46,11 +46,11 @@ namespace Nemocnice.DatabaseDataCreator
              db.LoginT.Add(LoginAdd("xhrusk08", "Heslo32", 0010));
              db.LoginT.Add(LoginAdd("xpavli00", "Heslo32", 0010));
              db.LoginT.Add(LoginAdd("xjanda0a", "Heslo32", 0010));
-             db.SaveChanges();
+             db.SaveChanges();*/
          }
-         private Login LoginAdd(string currentLogin, string hashPassword, int roleId)
+       /* private Login LoginAdd(string currentLogin, string hashPassword, int roleId)
          {
              return new Login { CurrentLogin = currentLogin, HashPassword = hashPassword, RoleCode = roleId };
-         } 
+         } */
      }
 }

@@ -8,7 +8,7 @@ namespace Nemocnice.Data
         [Required]
         public int UserId { get; set; }
         [Required]
-        public Login Login { get; set; }
+        public string Login { get; set; }
         [Required]
         public string Name { get; set; }
         [Required]

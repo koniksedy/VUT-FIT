@@ -10,10 +10,10 @@ namespace Nemocnice.DatabaseDataCreator
     {
         public void AdminCreate(DatabaseContext db)
         {
-            int ID = db.UserT.Where(s => s.Login.CurrentLogin == "xnovot00").Select(x => x.UserId).ToList().First();
+            int ID = db.UserT.Where(s => s.Login == "xnovot00").Select(x => x.UserId).ToList().First();
             db.AdminT.Add(AdminAdd(ID, "Síťový administrátor","778586603", null));
 
-            ID = db.UserT.Where(s => s.Login.CurrentLogin == "xbilik00").Select(x => x.UserId).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "xbilik00").Select(x => x.UserId).ToList().First();
             db.AdminT.Add(AdminAdd(ID, "Personální administrátor", "805258741", "People Company"));
 
             db.SaveChanges();

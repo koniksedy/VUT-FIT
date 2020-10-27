@@ -10,13 +10,13 @@ namespace Nemocnice.DatabaseDataCreator
     {
         public void InsureEmpCreate(DatabaseContext db)
         {
-            int ID = db.UserT.Where(s => s.Login.CurrentLogin == "xjanec0a").Select(x => x.UserId).ToList().First();
+            int ID = db.UserT.Where(s => s.Login == "xjanec0a").Select(x => x.UserId).ToList().First();
             db.InsureEmpT.Add(InsureEmpAdd(ID,"Specialistka zákaznické péče", "737562021"));
 
-            ID = db.UserT.Where(s => s.Login.CurrentLogin == "xsvobo00").Select(x => x.UserId).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "xsvobo00").Select(x => x.UserId).ToList().First();
             db.InsureEmpT.Add(InsureEmpAdd(ID, "Ředitel", "774541258"));
 
-            ID = db.UserT.Where(s => s.Login.CurrentLogin == "xovale0a").Select(x => x.UserId).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "xovale0a").Select(x => x.UserId).ToList().First();
             db.InsureEmpT.Add(InsureEmpAdd(ID, "Likvidátorka pojistných událostí", "887586214"));
             db.SaveChanges();
         }
