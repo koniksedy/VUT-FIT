@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Configurations>Debug;Release;jl</Configurations>
+    <UserSecretsId>89123ef0-2169-4875-bd59-900bd081aaf1</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
