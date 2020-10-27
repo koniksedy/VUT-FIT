@@ -19,7 +19,7 @@ namespace Nemocnice.Areas.Identity
                     options.UseSqlServer(
                         context.Configuration.GetConnectionString("IISdb")));
 
-                services.AddDefaultIdentity<NemocniceUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                services.AddDefaultIdentity<NemocniceUser>(options => options.SignIn.RequireConfirmedAccount = false)
                     .AddRoles<IdentityRole>()
                     .AddEntityFrameworkStores<DatabaseContext>();
             });
