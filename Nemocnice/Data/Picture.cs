@@ -10,7 +10,7 @@ namespace Nemocnice.Data
         [Required]
         public int PictureId { get; set; }
         [Required]
-        public string SocialSecurityNum { get; set; }
+        public long SocialSecurityNum { get; set; }
         [Required]
         public byte[] CurrentPicture { get; set; }
         public string Description { get; set; }

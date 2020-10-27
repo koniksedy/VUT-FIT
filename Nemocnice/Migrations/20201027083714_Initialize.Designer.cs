@@ -10,7 +10,7 @@ using Nemocnice.Data;
 namespace Nemocnice.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20201026093919_Initialize")]
+    [Migration("20201027083714_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -350,9 +350,8 @@ namespace Nemocnice.Migrations
                     b.Property<int>("MedicallActivityPriceId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SocialSecurityNum")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("SocialSecurityNum")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
@@ -480,9 +479,8 @@ namespace Nemocnice.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SocialSecurityNum")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("SocialSecurityNum")
+                        .HasColumnType("bigint");
 
                     b.Property<int?>("ToAllergyAllergyId")
                         .HasColumnType("int");

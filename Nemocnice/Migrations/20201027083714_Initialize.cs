@@ -258,7 +258,7 @@ namespace Nemocnice.Migrations
                     MedicallBillId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DoctorICZ = table.Column<int>(nullable: false),
-                    SocialSecurityNum = table.Column<string>(nullable: false),
+                    SocialSecurityNum = table.Column<long>(nullable: false),
                     MedicallActivityPriceId = table.Column<int>(nullable: false),
                     DiagnosisId = table.Column<int>(nullable: false),
                     State = table.Column<string>(nullable: true),
@@ -451,7 +451,7 @@ namespace Nemocnice.Migrations
                 {
                     PictureId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SocialSecurityNum = table.Column<string>(nullable: false),
+                    SocialSecurityNum = table.Column<long>(nullable: false),
                     CurrentPicture = table.Column<byte[]>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     ToAllergyAllergyId = table.Column<int>(nullable: true),

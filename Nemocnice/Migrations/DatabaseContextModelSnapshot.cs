@@ -348,9 +348,8 @@ namespace Nemocnice.Migrations
                     b.Property<int>("MedicallActivityPriceId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SocialSecurityNum")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("SocialSecurityNum")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
@@ -478,9 +477,8 @@ namespace Nemocnice.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SocialSecurityNum")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("SocialSecurityNum")
+                        .HasColumnType("bigint");
 
                     b.Property<int?>("ToAllergyAllergyId")
                         .HasColumnType("int");
