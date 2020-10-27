@@ -158,7 +158,11 @@ namespace Nemocnice.Migrations
                     b.Property<bool>("IncludePicRes")
                         .HasColumnType("bit");
 
+<<<<<<< HEAD
                     b.Property<int>("PatientID")
+=======
+                    b.Property<int>("PatientId")
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
                         .HasColumnType("int");
 
                     b.Property<string>("Result")
@@ -174,7 +178,11 @@ namespace Nemocnice.Migrations
 
                     b.HasIndex("CreatedByICZ");
 
+<<<<<<< HEAD
                     b.HasIndex("PatientID");
+=======
+                    b.HasIndex("PatientId");
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
 
                     b.HasIndex("ToDoctorICZ");
 
@@ -387,7 +395,11 @@ namespace Nemocnice.Migrations
                     b.Property<int?>("OwnerICZ")
                         .HasColumnType("int");
 
+<<<<<<< HEAD
                     b.Property<int>("PatientID")
+=======
+                    b.Property<int>("PatientId")
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
                         .HasColumnType("int");
 
                     b.HasKey("MedicallReportId");
@@ -396,14 +408,22 @@ namespace Nemocnice.Migrations
 
                     b.HasIndex("OwnerICZ");
 
+<<<<<<< HEAD
                     b.HasIndex("PatientID");
+=======
+                    b.HasIndex("PatientId");
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
 
                     b.ToTable("MedicallReportT");
                 });
 
             modelBuilder.Entity("Nemocnice.Data.Patient", b =>
                 {
+<<<<<<< HEAD
                     b.Property<int>("PatientID")
+=======
+                    b.Property<int>("PatientId")
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -423,7 +443,11 @@ namespace Nemocnice.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
+<<<<<<< HEAD
                     b.HasKey("PatientID");
+=======
+                    b.HasKey("PatientId");
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
 
                     b.HasIndex("HealthConditionId");
 
@@ -445,7 +469,11 @@ namespace Nemocnice.Migrations
                     b.Property<DateTime>("EndOfTreatment")
                         .HasColumnType("datetime2");
 
+<<<<<<< HEAD
                     b.Property<int>("PatientID")
+=======
+                    b.Property<int>("PatientId")
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartOfTreatment")
@@ -455,7 +483,11 @@ namespace Nemocnice.Migrations
 
                     b.HasIndex("DiagnosisId");
 
+<<<<<<< HEAD
                     b.HasIndex("PatientID");
+=======
+                    b.HasIndex("PatientId");
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
 
                     b.ToTable("PatientTreatmentLogT");
                 });
@@ -603,7 +635,11 @@ namespace Nemocnice.Migrations
 
                     b.HasOne("Nemocnice.Data.Patient", "Patient")
                         .WithMany()
+<<<<<<< HEAD
                         .HasForeignKey("PatientID")
+=======
+                        .HasForeignKey("PatientId")
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -662,7 +698,11 @@ namespace Nemocnice.Migrations
 
                     b.HasOne("Nemocnice.Data.Patient", "Patient")
                         .WithMany()
+<<<<<<< HEAD
                         .HasForeignKey("PatientID")
+=======
+                        .HasForeignKey("PatientId")
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -690,7 +730,11 @@ namespace Nemocnice.Migrations
 
                     b.HasOne("Nemocnice.Data.Patient", "Patient")
                         .WithMany()
+<<<<<<< HEAD
                         .HasForeignKey("PatientID")
+=======
+                        .HasForeignKey("PatientId")
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

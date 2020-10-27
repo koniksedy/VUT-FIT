@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Configurations>Debug;Release;jl</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +24,7 @@
     <Compile Remove="Migrations\20201015160959_InitialCreate.Designer.cs" />
     <Compile Remove="Migrations\20201015161110_InitialCreate.cs" />
     <Compile Remove="Migrations\20201015161110_InitialCreate.Designer.cs" />
+<<<<<<< HEAD
     <Compile Remove="Migrations\20201026085919_Initialize.cs" />
     <Compile Remove="Migrations\20201026085919_Initialize.Designer.cs" />
     <Compile Remove="Migrations\20201026090223_Initialize.cs" />
@@ -47,15 +49,27 @@
     <Compile Remove="Migrations\20201026102746_Initialize.Designer.cs" />
     <Compile Remove="Migrations\20201026105738_Initialize.cs" />
     <Compile Remove="Migrations\20201026105738_Initialize.Designer.cs" />
+=======
+    <Compile Remove="Migrations\20201015173829_InitialCreate.cs" />
+    <Compile Remove="Migrations\20201015173829_InitialCreate.Designer.cs" />
+
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Data\" />
   </ItemGroup>
 
 </Project>

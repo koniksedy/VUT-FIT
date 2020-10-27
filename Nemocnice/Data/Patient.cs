@@ -9,7 +9,11 @@ namespace Nemocnice.Data
         // s hlavní tabulkou.
         [Key]
         [Required]
+<<<<<<< HEAD
         public int PatientID { get; set; }
+=======
+        public int PatientId { get; set; }
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
         [Required]
         public int UserId { get; set; }
         [Required]

@@ -13,7 +13,11 @@ namespace Nemocnice.DatabaseDataCreator
         {
             using (var db = new DatabaseContext())
             {
+<<<<<<< HEAD
                 
+=======
+              /*
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
                 LoginCreator login = new LoginCreator();
                 login.LoginCreate(db); 
 
@@ -45,6 +49,7 @@ namespace Nemocnice.DatabaseDataCreator
                 doctor.DoctorCreate(db); 
 
                 PatientCreator patient = new PatientCreator();
+<<<<<<< HEAD
                 patient.PatientCreate(db); 
                
                 MedicallBillCreator medicallBill = new MedicallBillCreator();
@@ -77,6 +82,10 @@ namespace Nemocnice.DatabaseDataCreator
 
 
 
+=======
+                patient.PatientCreate(db);
+              */
+>>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
             }
         }
 
