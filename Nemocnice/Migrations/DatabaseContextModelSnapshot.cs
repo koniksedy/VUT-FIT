@@ -274,7 +274,7 @@ namespace Nemocnice.Migrations
 
             modelBuilder.Entity("Nemocnice.Data.Admin", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("AdminId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -285,11 +285,14 @@ namespace Nemocnice.Migrations
                     b.Property<string>("Role")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("WorkPhone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("AdminId");
 
                     b.ToTable("AdminT");
                 });
@@ -324,14 +327,14 @@ namespace Nemocnice.Migrations
                     b.Property<int>("AllergyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("HealthConditionSocialSecurityNum")
+                    b.Property<int>("HealthConditionId")
                         .HasColumnType("int");
 
                     b.HasKey("AllergysOfPatientId");
 
                     b.HasIndex("AllergyId");
 
-                    b.HasIndex("HealthConditionSocialSecurityNum");
+                    b.HasIndex("HealthConditionId");
 
                     b.ToTable("AllergysOfPatientT");
                 });
@@ -346,7 +349,7 @@ namespace Nemocnice.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("CreatedByUserId")
+                    b.Property<int>("CreatedByICZ")
                         .HasColumnType("int");
 
                     b.Property<string>("Description")
@@ -361,7 +364,7 @@ namespace Nemocnice.Migrations
                     b.Property<bool>("IncludePicRes")
                         .HasColumnType("bit");
 
-                    b.Property<int>("PatientUserId")
+                    b.Property<int>("PatientID")
                         .HasColumnType("int");
 
                     b.Property<string>("Result")
@@ -370,16 +373,16 @@ namespace Nemocnice.Migrations
                     b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ToDoctorUserId")
+                    b.Property<int?>("ToDoctorICZ")
                         .HasColumnType("int");
 
                     b.HasKey("CheckupTicketId");
 
-                    b.HasIndex("CreatedByUserId");
+                    b.HasIndex("CreatedByICZ");
 
-                    b.HasIndex("PatientUserId");
+                    b.HasIndex("PatientID");
 
-                    b.HasIndex("ToDoctorUserId");
+                    b.HasIndex("ToDoctorICZ");
 
                     b.ToTable("CheckupTicketT");
                 });
@@ -427,27 +430,26 @@ namespace Nemocnice.Migrations
 
             modelBuilder.Entity("Nemocnice.Data.Doctor", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("ICZ")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("ICZ")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("WorkPhone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("ICZ");
 
                     b.ToTable("DoctorT");
                 });
 
             modelBuilder.Entity("Nemocnice.Data.HealthCondition", b =>
                 {
-                    b.Property<int>("SocialSecurityNum")
+                    b.Property<int>("HealthConditionId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -461,51 +463,37 @@ namespace Nemocnice.Migrations
                     b.Property<DateTime>("LastCheckupDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<long>("SocialSecurityNum")
+                        .HasColumnType("bigint");
+
                     b.Property<float>("Weight")
                         .HasColumnType("real");
 
-                    b.HasKey("SocialSecurityNum");
+                    b.HasKey("HealthConditionId");
 
                     b.ToTable("HealthConditionT");
                 });
 
             modelBuilder.Entity("Nemocnice.Data.InsureEmp", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("PersonalId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("PersonalId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Possition")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("WorkPhone")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("PersonalId");
 
                     b.ToTable("InsureEmpT");
-                });
-
-            modelBuilder.Entity("Nemocnice.Data.Login", b =>
-                {
-                    b.Property<string>("CurrentLogin")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("HashPassword")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RoleCode")
-                        .HasColumnType("int");
-
-                    b.HasKey("CurrentLogin");
-
-                    b.ToTable("Login");
                 });
 
             modelBuilder.Entity("Nemocnice.Data.MedicallActivityPrice", b =>
@@ -543,15 +531,14 @@ namespace Nemocnice.Migrations
                     b.Property<int>("DiagnosisId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DoctorUserId")
+                    b.Property<int>("DoctorICZ")
                         .HasColumnType("int");
 
                     b.Property<int>("MedicallActivityPriceId")
                         .HasColumnType("int");
 
-                    b.Property<string>("SocialSecurityNum")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("SocialSecurityNum")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("State")
                         .HasColumnType("nvarchar(max)");
@@ -560,7 +547,7 @@ namespace Nemocnice.Migrations
 
                     b.HasIndex("DiagnosisId");
 
-                    b.HasIndex("DoctorUserId");
+                    b.HasIndex("DoctorICZ");
 
                     b.HasIndex("MedicallActivityPriceId");
 
@@ -574,7 +561,7 @@ namespace Nemocnice.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AuthorUserId")
+                    b.Property<int>("AuthorICZ")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreateDate")
@@ -586,31 +573,31 @@ namespace Nemocnice.Migrations
                     b.Property<bool>("IncludePic")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("OwnerUserId")
+                    b.Property<int?>("OwnerICZ")
                         .HasColumnType("int");
 
-                    b.Property<int>("PatientUserId")
+                    b.Property<int>("PatientID")
                         .HasColumnType("int");
 
                     b.HasKey("MedicallReportId");
 
-                    b.HasIndex("AuthorUserId");
+                    b.HasIndex("AuthorICZ");
 
-                    b.HasIndex("OwnerUserId");
+                    b.HasIndex("OwnerICZ");
 
-                    b.HasIndex("PatientUserId");
+                    b.HasIndex("PatientID");
 
                     b.ToTable("MedicallReportT");
                 });
 
             modelBuilder.Entity("Nemocnice.Data.Patient", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("PatientID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("HealthConditionSocialSecurityNum")
+                    b.Property<int?>("HealthConditionId")
                         .HasColumnType("int");
 
                     b.Property<int>("HomeAddressAddressId")
@@ -619,13 +606,15 @@ namespace Nemocnice.Migrations
                     b.Property<int>("InsuranceCompany")
                         .HasColumnType("int");
 
-                    b.Property<string>("SocialSecurityNum")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("SocialSecurityNum")
+                        .HasColumnType("bigint");
 
-                    b.HasKey("UserId");
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("HealthConditionSocialSecurityNum");
+                    b.HasKey("PatientID");
+
+                    b.HasIndex("HealthConditionId");
 
                     b.HasIndex("HomeAddressAddressId");
 
@@ -645,7 +634,7 @@ namespace Nemocnice.Migrations
                     b.Property<DateTime>("EndOfTreatment")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("PatientUserId")
+                    b.Property<int>("PatientID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartOfTreatment")
@@ -655,7 +644,7 @@ namespace Nemocnice.Migrations
 
                     b.HasIndex("DiagnosisId");
 
-                    b.HasIndex("PatientUserId");
+                    b.HasIndex("PatientID");
 
                     b.ToTable("PatientTreatmentLogT");
                 });
@@ -677,9 +666,8 @@ namespace Nemocnice.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SocialSecurityNum")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<long>("SocialSecurityNum")
+                        .HasColumnType("bigint");
 
                     b.Property<int?>("ToAllergyAllergyId")
                         .HasColumnType("int");
@@ -733,9 +721,9 @@ namespace Nemocnice.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LoginCurrentLogin")
+                    b.Property<string>("Login")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -756,8 +744,6 @@ namespace Nemocnice.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("UserId");
-
-                    b.HasIndex("LoginCurrentLogin");
 
                     b.HasIndex("WorkAddressAddressId");
 
@@ -847,7 +833,7 @@ namespace Nemocnice.Migrations
 
                     b.HasOne("Nemocnice.Data.HealthCondition", "HealthCondition")
                         .WithMany()
-                        .HasForeignKey("HealthConditionSocialSecurityNum")
+                        .HasForeignKey("HealthConditionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -856,19 +842,19 @@ namespace Nemocnice.Migrations
                 {
                     b.HasOne("Nemocnice.Data.Doctor", "CreatedBy")
                         .WithMany()
-                        .HasForeignKey("CreatedByUserId")
+                        .HasForeignKey("CreatedByICZ")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Nemocnice.Data.Patient", "Patient")
                         .WithMany()
-                        .HasForeignKey("PatientUserId")
+                        .HasForeignKey("PatientID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Nemocnice.Data.Doctor", "ToDoctor")
                         .WithMany()
-                        .HasForeignKey("ToDoctorUserId");
+                        .HasForeignKey("ToDoctorICZ");
                 });
 
             modelBuilder.Entity("Nemocnice.Data.CureProgress", b =>
@@ -896,7 +882,7 @@ namespace Nemocnice.Migrations
 
                     b.HasOne("Nemocnice.Data.Doctor", "Doctor")
                         .WithMany()
-                        .HasForeignKey("DoctorUserId")
+                        .HasForeignKey("DoctorICZ")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -911,17 +897,17 @@ namespace Nemocnice.Migrations
                 {
                     b.HasOne("Nemocnice.Data.Doctor", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorUserId")
+                        .HasForeignKey("AuthorICZ")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Nemocnice.Data.Doctor", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerUserId");
+                        .HasForeignKey("OwnerICZ");
 
                     b.HasOne("Nemocnice.Data.Patient", "Patient")
                         .WithMany()
-                        .HasForeignKey("PatientUserId")
+                        .HasForeignKey("PatientID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -930,7 +916,7 @@ namespace Nemocnice.Migrations
                 {
                     b.HasOne("Nemocnice.Data.HealthCondition", "HealthCondition")
                         .WithMany()
-                        .HasForeignKey("HealthConditionSocialSecurityNum");
+                        .HasForeignKey("HealthConditionId");
 
                     b.HasOne("Nemocnice.Data.Address", "HomeAddress")
                         .WithMany()
@@ -949,7 +935,7 @@ namespace Nemocnice.Migrations
 
                     b.HasOne("Nemocnice.Data.Patient", "Patient")
                         .WithMany()
-                        .HasForeignKey("PatientUserId")
+                        .HasForeignKey("PatientID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -986,12 +972,6 @@ namespace Nemocnice.Migrations
 
             modelBuilder.Entity("Nemocnice.Data.User", b =>
                 {
-                    b.HasOne("Nemocnice.Data.Login", "Login")
-                        .WithMany()
-                        .HasForeignKey("LoginCurrentLogin")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Nemocnice.Data.Address", "WorkAddress")
                         .WithMany()
                         .HasForeignKey("WorkAddressAddressId");

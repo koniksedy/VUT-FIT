@@ -13,7 +13,7 @@ namespace Nemocnice.DatabaseDataCreator
         {
             using (var db = new DatabaseContext())
             {
-                /*AddressCreator address = new AddressCreator();
+                AddressCreator address = new AddressCreator();
                 address.AddressCreate(db); 
 
                 AllergyCreator allergy = new AllergyCreator();
@@ -71,7 +71,7 @@ namespace Nemocnice.DatabaseDataCreator
                 //PictureCreator picture = new PictureCreator();
                 //picture.PictureCreate(db);
 
-                patient.PatientCreate(db);*/
+               
             }
         }
 

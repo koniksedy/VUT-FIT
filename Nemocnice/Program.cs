@@ -27,9 +27,9 @@ namespace Nemocnice
         public static void Main(string[] args)
         {
 
-            DatabaseCreatorController Content = new DatabaseCreatorController();
+            //DatabaseCreatorController Content = new DatabaseCreatorController();
 
-            Content.DatabaseContentCreate();
+            //Content.DatabaseContentCreate();
 
             
             

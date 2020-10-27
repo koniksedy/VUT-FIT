@@ -6,6 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20201024174338_Identity.cs" />
+    <Compile Remove="Migrations\20201024174338_Identity.Designer.cs" />
+    <Compile Remove="Migrations\20201027155111_Initialize.cs" />
+    <Compile Remove="Migrations\20201027155111_Initialize.Designer.cs" />
+    <Compile Remove="Migrations\20201027155434_Initialize.cs" />
+    <Compile Remove="Migrations\20201027155434_Initialize.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
@@ -19,8 +28,6 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\" />
-
-    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

@@ -82,11 +82,11 @@ namespace Nemocnice.DatabaseDataCreator
 
             db.UserT.Add(UserAdd("xcerma0a", "Jakub", "Čermák", "Bc.", "705456258", "cermak@seznam.cz", null));
 
-            db.UserT.Add(UserAdd("xbartos33", "Daniela", "Bartošová", null, "603258444", "bartosova@seznam.cz", null));
+            db.UserT.Add(UserAdd("xbarto08", "Daniela", "Bartošová", null, "603258444", "bartosova@seznam.cz", null));
 
             db.UserT.Add(UserAdd("xsimek00", "Pavel", "Šimek", null, "706582111", "simek@seznam.cz", null));
 
-            db.UserT.Add(UserAdd("xsykorka55", "Hana", "Sýkorová", "Mgr.", "704555021", "sykorova@seznam.cz", null));
+            db.UserT.Add(UserAdd("xsykor01", "Hana", "Sýkorová", "Mgr.", "704555021", "sykorova@seznam.cz", null));
 
             db.UserT.Add(UserAdd("xsouku0a", "Jana", "Soukupová", "Mgr.", "802369541", "soukupova@seznam.cz", null));
 
