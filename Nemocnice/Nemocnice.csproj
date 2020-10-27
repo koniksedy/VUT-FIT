@@ -24,36 +24,10 @@
     <Compile Remove="Migrations\20201015160959_InitialCreate.Designer.cs" />
     <Compile Remove="Migrations\20201015161110_InitialCreate.cs" />
     <Compile Remove="Migrations\20201015161110_InitialCreate.Designer.cs" />
-<<<<<<< HEAD
-    <Compile Remove="Migrations\20201026085919_Initialize.cs" />
-    <Compile Remove="Migrations\20201026085919_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201026090223_Initialize.cs" />
-    <Compile Remove="Migrations\20201026090223_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201026091428_Initialize.cs" />
-    <Compile Remove="Migrations\20201026091428_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201026091748_Init.cs" />
-    <Compile Remove="Migrations\20201026091748_Init.Designer.cs" />
-    <Compile Remove="Migrations\20201026093134_Initialize.cs" />
-    <Compile Remove="Migrations\20201026093134_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201026093427_Initialize.cs" />
-    <Compile Remove="Migrations\20201026093427_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201026093556_Initialize.cs" />
-    <Compile Remove="Migrations\20201026093556_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201026093736_Initialize.cs" />
-    <Compile Remove="Migrations\20201026093736_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201026093919_Initialize.cs" />
-    <Compile Remove="Migrations\20201026093919_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201026102043_Initialize.cs" />
-    <Compile Remove="Migrations\20201026102043_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201026102746_Initialize.cs" />
-    <Compile Remove="Migrations\20201026102746_Initialize.Designer.cs" />
-    <Compile Remove="Migrations\20201026105738_Initialize.cs" />
-    <Compile Remove="Migrations\20201026105738_Initialize.Designer.cs" />
-=======
+
     <Compile Remove="Migrations\20201015173829_InitialCreate.cs" />
     <Compile Remove="Migrations\20201015173829_InitialCreate.Designer.cs" />
 
->>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
   </ItemGroup>
 
   <ItemGroup>
@@ -70,6 +44,7 @@
 
   <ItemGroup>
     <Folder Include="Areas\Identity\Data\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 </Project>

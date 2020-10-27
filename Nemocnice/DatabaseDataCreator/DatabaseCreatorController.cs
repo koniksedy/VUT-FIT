@@ -13,43 +13,8 @@ namespace Nemocnice.DatabaseDataCreator
         {
             using (var db = new DatabaseContext())
             {
-<<<<<<< HEAD
-                
-=======
-              /*
->>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
-                LoginCreator login = new LoginCreator();
-                login.LoginCreate(db); 
-
-                AddressCreator address = new AddressCreator();
-                address.AddressCreate(db); 
-
-                AllergyCreator allergy = new AllergyCreator();
-                allergy.AllergyCreate(db); 
-
-                DiagnosisCreator diagnosis = new DiagnosisCreator();
-                diagnosis.DiagnosisCreate(db); 
-
-                HealthConditionCreator healthCondition = new HealthConditionCreator();
-                healthCondition.HealthConditionCreate(db);
-
-                MedicallActivityPriceCreator medicallActivityPrice = new MedicallActivityPriceCreator();
-                medicallActivityPrice.MedicallActivityPriceCreate(db); 
-
-                UserCreator user = new UserCreator();
-                user.UserCreate(db); 
-
-                AdminCreator admin = new AdminCreator();
-                admin.AdminCreate(db); 
-
-                InsureEmpCreator insureEmp = new InsureEmpCreator();
-                insureEmp.InsureEmpCreate(db); 
-
-                DoctorCreator doctor = new DoctorCreator();
-                doctor.DoctorCreate(db); 
-
+                /*
                 PatientCreator patient = new PatientCreator();
-<<<<<<< HEAD
                 patient.PatientCreate(db); 
                
                 MedicallBillCreator medicallBill = new MedicallBillCreator();
@@ -80,12 +45,9 @@ namespace Nemocnice.DatabaseDataCreator
                 //PictureCreator picture = new PictureCreator();
                 //picture.PictureCreate(db);
 
-
-
-=======
                 patient.PatientCreate(db);
-              */
->>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
+                */
+
             }
         }
 

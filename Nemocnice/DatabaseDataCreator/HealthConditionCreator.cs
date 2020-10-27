@@ -11,17 +11,12 @@ namespace Nemocnice.DatabaseDataCreator
     {
         public void HealthConditionCreate(DatabaseContext db)
         {
-            
-<<<<<<< HEAD
-            DateTime datumCas = new DateTime(2016, 1, 1, 14, 45, 5);
-=======
 
             DateTime datumCas = new DateTime(2016, 7, 15, 3, 15, 0);
             db.HealthConditionT.Add(HealthConditionAdd(9863215564, 180, 82,"A+", datumCas));
             datumCas = new DateTime(2016, 7, 4, 13, 21, 0);
             db.HealthConditionT.Add(HealthConditionAdd(9552254188, 165, 60, "A+", datumCas));
             datumCas = new DateTime(2016, 1, 1, 14, 45, 5);
->>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
             db.HealthConditionT.Add(HealthConditionAdd(9638521235, 170, 70, "A+", datumCas));
             datumCas = new DateTime(2016, 2, 2, 10, 32, 15);
             db.HealthConditionT.Add(HealthConditionAdd(2568745120, 156, 55, "A+", datumCas));
@@ -71,13 +66,10 @@ namespace Nemocnice.DatabaseDataCreator
             db.HealthConditionT.Add(HealthConditionAdd(7632589654, 195, 96, "B-", datumCas));
             datumCas = new DateTime(2020, 9, 10, 15, 30, 33);
             db.HealthConditionT.Add(HealthConditionAdd(5478512365, 191, 89, "B-", datumCas));
-<<<<<<< HEAD
-=======
             datumCas = new DateTime(2020, 10, 6, 16, 38, 44);
             db.HealthConditionT.Add(HealthConditionAdd(4521589632, 182, 80, "B-", datumCas));
             datumCas = new DateTime(2020, 9, 4, 14, 49, 55);
             db.HealthConditionT.Add(HealthConditionAdd(5236896541, 183, 82, "B-", datumCas));
->>>>>>> 1f99c343045d8f88e3676a1b024eb6503bbe5bac
             datumCas = new DateTime(2020, 5, 15, 13, 51, 12);
             db.HealthConditionT.Add(HealthConditionAdd(6325412547, 155, 54, "B-", datumCas));
             db.SaveChanges();
