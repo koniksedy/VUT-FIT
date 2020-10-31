@@ -30,11 +30,6 @@ namespace Nemocnice
             //DatabaseCreatorController Content = new DatabaseCreatorController();
             //Content.DatabaseContentCreate();
 
-            
-            
-            // Test exitence hodnot v databázi.
-            //var a = db.Tables1.Where(s => s.Table1Id >= 1).ToList();
-            //var b = db.Tables2.Where(s => s.Table2Id >= 1).ToList();*/
            
             CreateHostBuilder(args).Build().Run();
         }

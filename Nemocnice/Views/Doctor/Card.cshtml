@@ -1,0 +1,53 @@
+﻿@model IEnumerable<Nemocnice.Models.CardPatientModel>
+
+@{
+    ViewData["Title"] = "Kartotéka";
+}
+
+<h1>Kartotéka</h1>
+
+<p>
+    <a asp-action="Create">Nový pacient</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Příjmení
+            </th>
+            <th>
+                Jméno
+            </th>
+            <th>
+                Titul
+            </th>
+            <th>
+                Rodné číslo
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Surname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SocialSecurityNum)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
