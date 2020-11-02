@@ -1,0 +1,58 @@
+﻿@using Nemocnice.Data;
+@{
+    ViewData["Title"] = "Stránka zaměstance pojišťovny";
+    string[] TableHeaders = new string[] {
+        "Id výkonu",
+        "Název výkonu",
+        "Cena (Kč)",
+        "",
+        ""
+    };
+}
+
+<div class="pojistovna">
+    <h1 class="pojistovna-nadpis">Databáze proplácených vyšetření a úkonů</h1>
+
+    <form class="pridat-polozku">
+        <h3>Přidat položku</h3>
+        <label class="pridat">Název výkonu:</label><input type="text">
+        <label class="pridat">Cena (v Kč):</label><input type="text">
+        <input type="submit" value="Přidat" class="my_btn">
+    </form>
+
+    <div class="table">
+        <table>
+            <thead>
+                <tr>
+                    @{
+                        foreach (var head in TableHeaders)
+                        {
+                            <th>
+                                @head
+                            </th>
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (Nemocnice.Data.MedicallActivityPrice medicalActiviytPrice in Model)
+                {
+                <tr>
+                    <td>@medicalActiviytPrice.MedicallActivityPriceId</td>
+                    <td>@medicalActiviytPrice.Name</td>
+                    <td>@medicalActiviytPrice.Amount</td>
+                    <form>
+                        <td><button name="button" class="my_btn" value="upravit @medicalActiviytPrice.MedicallActivityPriceId" asp-action="PaymentDb">Upravit</button></td>
+                        <td><button name="button" class="my_btn" value="odstranit @medicalActiviytPrice.MedicallActivityPriceId" asp-action="PaymentDb">Odstranit</button></td>
+                    </form>
+                </tr>
+                }
+
+            </tbody>
+        </table>
+
+    </div>
+
+
+</div>
