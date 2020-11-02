@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Nemocnice.Models.CheckupTicketToMe>
 
 @{
-    ViewData["Title"] = "View";
+    ViewData["Title"] = "Příchozí žádosti";
 }
 
 <h1>Příchozí žádosti</h1>
@@ -24,6 +24,7 @@
             <th>
                 Datum vytvoření
             </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -42,7 +43,7 @@
                 @Html.DisplayFor(modelItem => item.FromDoctor)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreationDate.Date)
+                @Html.DisplayFor(modelItem => item.CreationDate)
             </td>
             <td>
                 @Html.ActionLink("Zobrazit", "Edit", new { /* id=item.PrimaryKey */ })

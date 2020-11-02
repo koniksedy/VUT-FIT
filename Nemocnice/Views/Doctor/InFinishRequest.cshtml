@@ -1,14 +1,11 @@
-﻿@model IEnumerable<Nemocnice.Models.CheckupTicketToOtherModel>
+﻿@model IEnumerable<Nemocnice.Models.CheckupTicketToMeFinish>
 
 @{
-    ViewData["Title"] = "Moje žádosti";
+    ViewData["Title"] = "Příchozí vyřízené žádosti";
 }
 
-<h1>Moje žádosti</h1>
+<h1>Příchozí vyřízené žádosti</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -28,7 +25,7 @@
                 Datum vytvoření
             </th>
             <th>
-                Dokončeno
+                Datum ošetření
             </th>
             <th></th>
         </tr>
@@ -46,13 +43,13 @@
                 @Html.DisplayFor(modelItem => item.SocialSecurityNumber)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ToDoctor)
+                @Html.DisplayFor(modelItem => item.FromDoctor)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreationDate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.State)
+                @Html.DisplayFor(modelItem => item.FinishDate)
             </td>
             <td>
                 @Html.ActionLink("Zobrazit", "Edit", new { /* id=item.PrimaryKey */ })

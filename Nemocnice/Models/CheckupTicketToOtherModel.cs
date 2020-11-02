@@ -7,11 +7,11 @@ namespace Nemocnice.Models
 {
     public class CheckupTicketToOtherModel
     {
-        public string PatientName;
-        public string PatientSurname;
-        public long SocialSecurityNumber;
-        public string ToDoctor;
-        public DateTime CreationDate;
-        public bool State;
+        public string PatientName { get; set; }
+        public string PatientSurname { get; set; }
+        public long SocialSecurityNumber { get; set; }
+        public string ToDoctor { get; set; }
+        public string CreationDate { get; set; }
+        public bool State { get; set; }
     }
 }

@@ -7,11 +7,11 @@ namespace Nemocnice.Models
 {
     public class ActivityModel
     {
-        public string ActivityName;
-        public decimal Value;
-        public long PatientNum;
-        public DateTime CreateDate;
-        public string State;
+        public string ActivityName { get; set; }
+        public decimal Value { get; set; }
+        public long PatientNum { get; set; }
+        public DateTime CreateDate { get; set; }
+        public string State { get; set; }
 
     }
 }
