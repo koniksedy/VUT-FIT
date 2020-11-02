@@ -1,0 +1,62 @@
+﻿@model IEnumerable<Nemocnice.Models.CheckupTicketToOtherModel>
+
+@{
+    ViewData["Title"] = "OutRequest";
+}
+
+<h1>OutRequest</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Příjmení
+            </th>
+            <th>
+                Jméno
+            </th>
+            <th>
+                Rodné číslo
+            </th>
+            <th>
+                Lékař
+            </th>
+            <th>
+                Datum vytvoření
+            </th>
+            <th>
+                Dokončeno
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PatientSurname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PatientName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SocialSecurityNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ToDoctor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationDate.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
+            <td>
+                @Html.ActionLink("Zobrazit", "Edit", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
