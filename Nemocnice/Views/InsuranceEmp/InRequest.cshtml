@@ -18,9 +18,12 @@
 
     <form asp-action="InRequest" method="get">
         <div class="search-doctor">
-            <p>
+            <p id="left">
                 <label>Jméno lékaře:</label><input type="text" name="SearchString" id="search">
                 <input type="submit" value="Hledat" class="my_btn"> | <a asp-action="InRequest" class="my_btn">Zpět na všechny výpisy</a>
+            </p>
+            <p id="right">
+                <button name="buttonAll" class="all" value="schvalit-vse" asp-action="InRequest">Schválit vše</button> | <button name="buttonAll" class="all" value="zamitnout-vse" asp-action="InRequest">Zamítnout vše</button>
             </p>
         </div>
     </form>
@@ -38,7 +41,7 @@
                         }
                     }
                 </tr>
-            </thead> 
+            </thead>
             <tbody>
 
                 @foreach (Nemocnice.Data.MedicallBill medicalBill in Model)

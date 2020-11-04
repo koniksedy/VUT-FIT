@@ -5,8 +5,10 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Nemocnice.Data;
+using Nemocnice.Models;
 
 namespace Nemocnice.Controllers
 {
@@ -20,7 +22,7 @@ namespace Nemocnice.Controllers
         }
         
 
-        public IActionResult InRequest(string searchString, string button)
+        public IActionResult InRequest(string searchString, string button, string buttonAll)
         {
 
             if (!String.IsNullOrEmpty(button))
@@ -47,6 +49,26 @@ namespace Nemocnice.Controllers
                 }
             }
 
+            if (!String.IsNullOrEmpty(buttonAll))
+            {
+                if (buttonAll == "schvalit-vse")
+                {
+                    List<MedicallBill> state = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
+                    state.ForEach(a => { a.State = "schváleno"; });
+                    List<MedicallBill> date = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
+                    date.ForEach(a => { a.DecisionDate = DateTime.Now; ; });
+                    this.Context.SaveChanges();
+                }
+                else if (buttonAll == "zamitnout-vse")
+                {
+                    List<MedicallBill> state = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
+                    state.ForEach(a => { a.State = "zamítnuto"; });
+                    List<MedicallBill> date = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
+                    date.ForEach(a => { a.DecisionDate = DateTime.Now; ; });
+                    this.Context.SaveChanges();
+                }
+            }
+
             if (!String.IsNullOrEmpty(searchString))
             {
                 searchString = searchString.Split(' ').Last();
@@ -63,8 +85,11 @@ namespace Nemocnice.Controllers
 
         }
 
-        public IActionResult PaymentDb(string button)
+        public IActionResult PaymentDb(string button, string buttonUpdate, string new_butt, InsuranceModel model)
         {
+
+
+
             if (!String.IsNullOrEmpty(button))
             {
                 String[] words = button.Split(" ");
@@ -81,8 +106,40 @@ namespace Nemocnice.Controllers
                 }
             }
 
-            var medicallActivityPrice = this.Context.MedicallActivityPriceT.ToList();
-            return View(medicallActivityPrice);
+            var db = new DatabaseContext();
+            model.medicallActivityPrice = this.Context.MedicallActivityPriceT.ToList();
+
+
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            else
+            {
+
+                if (!String.IsNullOrEmpty(new_butt))
+                {
+                    var activityPrice = new MedicallActivityPrice { Name = model.nazev, Amount = model.cena };
+                    db.Add<MedicallActivityPrice>(activityPrice);
+                    db.SaveChanges();
+                }
+
+
+                if (!String.IsNullOrEmpty(buttonUpdate))
+                {
+                    int ID = Int32.Parse(buttonUpdate);
+                    var pom = this.Context.MedicallActivityPriceT.First(a => a.MedicallActivityPriceId == ID);
+                    pom.Name = model.nazevZmena; 
+                    pom.Amount = model.cenaZmena;
+                    this.Context.SaveChanges();
+                }
+
+
+
+                return View(model);
+            }
+            
+
         }
     }
 }

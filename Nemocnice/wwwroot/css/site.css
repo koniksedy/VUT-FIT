@@ -88,16 +88,9 @@ body {
 -------------------------------------------------- */
 .pojistovna-nadpis{
     margin-top: 1em;
-    text-align: center;
-}
-
-table {
-    margin: 0 auto;
-    margin-top: 2em;
 }
 
 .search-doctor {
-    text-align: center;
     margin-top: 3em;
 }
 
@@ -122,9 +115,37 @@ table {
     border: none;
 }
 
-.pridat-polozku {
-    text-align: center;
-    margin-top: 3em;
-    margin-bottom: 3em;
+.all {
+    text-align: right;
+    color: dodgerblue;
+    background: none;
+    border: none;
 }
+
+
+.all:hover {
+    color: darkslategrey;
+    text-decoration: none;
+    border: none;
+}
+
+#left{
+    float: left;
+    margin-bottom: 2em;
+}
+
+
+#right {
+    float: right;
+    margin-right: 8em;
+    margin-bottom: 2em;
+}
+
+#payment{
+    margin-top: 3em;
+}
+
+
+
+
 
