@@ -1,14 +1,88 @@
-﻿@model IEnumerable<Nemocnice.Models.CardPatientModel>
+﻿
 
 @{
     ViewData["Title"] = "Kartotéka";
 }
 
+@model Nemocnice.Models.CardModel
+
 <h1>Kartotéka</h1>
 
-<p>
-    <a asp-action="Create">Nový pacient</a>
-</p>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="Data-whatever">Nový pacient</button>
+<form asp-action="CreatePatient">
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Vytvořit</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label asp-for="NewPatient.Name" class="col-form-label">Jméno</label>
+                        <input asp-for="NewPatient.Name" class="form-control" id="Jméno" />
+                        <span asp-validation-for="NewPatient.Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewPatient.Surname" class="col-form-label">Příjmení</label>
+                        <input asp-for="NewPatient.Surname" class="form-control" id="Příjmení" />
+                        <span asp-validation-for="NewPatient.Surname" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewPatient.Title" class="col-form-label">Titul</label>
+                        <input asp-for="NewPatient.Title" class="form-control" id="Titul" />
+                        <span asp-validation-for="NewPatient.Title" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewPatient.SocialSecurityNumber" class="col-form-label">Rodné číslo</label>
+                        <input asp-for="NewPatient.SocialSecurityNumber" class="form-control" id="Rodné číslo" />
+                        <span asp-validation-for="NewPatient.SocialSecurityNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewPatient.InsuranceCompany" class="col-form-label">Pojišťovna</label>
+                        <input asp-for="NewPatient.InsuranceCompany" class="form-control" id="Pojišťovna" />
+                        <span asp-validation-for="NewPatient.InsuranceCompany" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewPatient.Tel" class="col-form-label">Telefon</label>
+                        <input asp-for="NewPatient.Tel" class="form-control" id="Telefon" />
+                        <span asp-validation-for="NewPatient.Tel" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewPatient.Email" class="col-form-label">Email</label>
+                        <input asp-for="NewPatient.Email" class="form-control" id="Email" />
+                        <span asp-validation-for="NewPatient.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewPatient.Street" class="col-form-label">Ulice</label>
+                        <input asp-for="NewPatient.Street" class="form-control" id="Ulice" />
+                        <span asp-validation-for="NewPatient.Street" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewPatient.HouseNumber" class="col-form-label">Číslo popisné</label>
+                        <input asp-for="NewPatient.HouseNumber" class="form-control" id="Číslo popisné" />
+                        <span asp-validation-for="NewPatient.HouseNumber" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewPatient.City" class="col-form-label">Město</label>
+                        <input asp-for="NewPatient.City" class="form-control" id="Město" />
+                        <span asp-validation-for="NewPatient.City" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="NewPatient.Zip" class="col-form-label">Č.p.</label>
+                        <input asp-for="NewPatient.Zip" class="form-control" id="Č.p." />
+                        <span asp-validation-for="NewPatient.Zip" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-primary" type="submit" value="Uložit" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 
 <form asp-action="Card" method="get">
     <div class="form-actions no-color">
@@ -33,31 +107,32 @@
                 Titul
             </th>
             <th>
-                @Html.ActionLink("Rodné číslo", "Card", new { sortOrder = "byNumber", searchString = ViewData["Search"]})
+                @Html.ActionLink("Rodné číslo", "Card", new { sortOrder = "byNumber", searchString = ViewData["Search"] })
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Surname)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SocialSecurityNum)
-            </td>
-            <td>
-                @Html.ActionLink("Přehled", "Overview", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Zpráva", "Report", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.OldPatients)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Surname)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SocialSecurityNum)
+                </td>
+                <td>
+                    @Html.ActionLink("Přehled", "Overview", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Zpráva", "Report", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

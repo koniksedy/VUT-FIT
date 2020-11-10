@@ -32,10 +32,6 @@ namespace Nemocnice.Controllers
             return View();
         }
 
-        public IActionResult CreatePatient()
-        {
-            return View();
-        }
 
         public IActionResult Card(string sortOrder, string searchString)
         {
@@ -49,7 +45,7 @@ namespace Nemocnice.Controllers
                 Patients =
                     db.PatientT.Join(
                         db.UserT,
-                        patient => patient.PatientID,
+                        patient => patient.UserId,
                         user => user.UserId,
                         (patient, user) => new CardPatientModel
                         {
@@ -67,7 +63,7 @@ namespace Nemocnice.Controllers
                     Patients =
                     db.PatientT.Join(
                         db.UserT,
-                        patient => patient.PatientID,
+                        patient => patient.UserId,
                         user => user.UserId,
                         (patient, user) => new CardPatientModel
                         {
@@ -82,7 +78,7 @@ namespace Nemocnice.Controllers
                     Patients =
                         db.PatientT.Join(
                             db.UserT,
-                            patient => patient.PatientID,
+                            patient => patient.UserId,
                             user => user.UserId,
                             (patient, user) => new CardPatientModel
                             {
@@ -106,8 +102,10 @@ namespace Nemocnice.Controllers
                     Patients = Patients.OrderBy(o => o.Surname).ToList();
                     break;
             }
- 
-            return View(Patients);
+            
+
+
+            return View(new CardModel { OldPatients = Patients });
         }
 
         public IActionResult Activity(string userName)
@@ -164,8 +162,8 @@ namespace Nemocnice.Controllers
 #endif
                 .Select(s => new CheckupTicketToMe
                 {
-                    PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.PatientID).Select(p => p.Surname).First(),
-                    PatientName = db.UserT.Where(o => o.UserId == s.Patient.PatientID).Select(p => p.Name).First(),
+                    PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
+                    PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                     SocialSecurityNumber = s.Patient.SocialSecurityNum,
                     FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
                     CreationDate = s.CreateDate.ToString("dd.MM.yyyy")
@@ -197,8 +195,8 @@ namespace Nemocnice.Controllers
 #endif
                 .Select(s => new CheckupTicketToOtherModel
                 {
-                    PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.PatientID).Select(p => p.Surname).First(),
-                    PatientName = db.UserT.Where(o => o.UserId == s.Patient.PatientID).Select(p => p.Name).First(),
+                    PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
+                    PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                     SocialSecurityNumber = s.Patient.SocialSecurityNum,
                     ToDoctor = db.UserT.Where(o => o.UserId == s.ToDoctor.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
                     CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
@@ -230,8 +228,8 @@ namespace Nemocnice.Controllers
 #endif
                 .Select(s => new CheckupTicketToMeFinish
                 {
-                    PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.PatientID).Select(p => p.Surname).First(),
-                    PatientName = db.UserT.Where(o => o.UserId == s.Patient.PatientID).Select(p => p.Name).First(),
+                    PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
+                    PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                     SocialSecurityNumber = s.Patient.SocialSecurityNum,
                     FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
                     CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
@@ -244,55 +242,60 @@ namespace Nemocnice.Controllers
             return View(MyFinishRequests);
         }
 
-        public IActionResult Create()
-        {
-            return View();
-        }
 
-        [HttpPost]
-        public IActionResult Create(NewPatientModel newPatient)
+        public async Task<IActionResult> CreatePatientAsync(CardModel cardModel)
         {
+            NewPatientModel newPatient = cardModel.NewPatient;
             var db = new DatabaseContext();
 
             if(ModelState.IsValid && db.PatientT.Where(o => o.SocialSecurityNum == newPatient.SocialSecurityNumber).ToList().Count == 0)
             {
                 // Make address
-                var address = new Address
-                        {
-                            HouseNumber = newPatient.HouseNumber,
-                            StreetName = newPatient.Street,
-                            City = newPatient.City,
-                            ZIP = newPatient.Zip
-                        };
+                Address address = new Address
+                {
+                    HouseNumber = newPatient.HouseNumber,
+                    StreetName = newPatient.Street,
+                    City = newPatient.City,
+                    ZIP = newPatient.Zip
+                };
                 db.AddressT.Add(address);
+                db.SaveChanges();
+
                 // Make user
-                var user = new User
-                        {
-                            Login = newPatient.SocialSecurityNumber.ToString(),
-                            Name = newPatient.Name,
-                            Surname = newPatient.Surname,
-                            Title = newPatient.Title,
-                            Phone = newPatient.Tel,
-                            Email = newPatient.Email,
-                            WorkAddress = null
-                        };
+                User user = new User
+                {
+                    Login = newPatient.SocialSecurityNumber.ToString(),
+                    Name = newPatient.Name,
+                    Surname = newPatient.Surname,
+                    Title = newPatient.Title,
+                    Phone = newPatient.Tel,
+                    Email = newPatient.Email,
+                    WorkAddress = null
+                };
                 db.UserT.Add(user);
+                db.SaveChanges();
+
                 // Make patient
                 db.PatientT.Add(new Data.Patient
-                        {
-                            UserId = user.UserId,
-                            SocialSecurityNum = newPatient.SocialSecurityNumber,
-                            InsuranceCompany = newPatient.InsuranceCompany,
-                            HomeAddress = address,
-                            HealthCondition = null
-                        });
-                return RedirectToAction("Card");
-                // Make new patient in identity framework
+                {
+                    UserId = db.UserT.Where(o => o.Login == user.Login).Select(s => s.UserId).ToList().First(),
+                    SocialSecurityNum = newPatient.SocialSecurityNumber,
+                    InsuranceCompany = newPatient.InsuranceCompany,
+                    HomeAddress = address,
+                    HealthCondition = null
+                });
+                db.SaveChanges();
 
+                var userIdentity = new NemocniceUser { UserName = user.Login };
+                var result = await _userManager.CreateAsync(userIdentity, "1234567890");
+                await _userManager.AddToRoleAsync(userIdentity, "Patient");
+
+                // Make new patient in identity framework
+                return RedirectToAction("Card");
             }
             else
             {
-                return View();
+                return RedirectToAction("Card");
             }
         }
     }
