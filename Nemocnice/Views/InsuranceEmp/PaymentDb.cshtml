@@ -1,6 +1,6 @@
 ﻿@using Nemocnice.Data;
-
-
+@addTagHelper *, LazZiya.TagHelpers
+@model InsuranceModel
 
 @{
     ViewData["Title"] = "Stránka zaměstance pojišťovny";
@@ -12,7 +12,7 @@
         ""
     };
 }
-@model InsuranceModel
+
 <div class="pojistovna">
     <h1 class="pojistovna-nadpis">Databáze proplácených vyšetření a úkonů</h1>
 
@@ -85,38 +85,51 @@
         </table>
         <br>
 
-        <button name="pridat" type="button" class="my_btn" data-toggle="modal" data-target="#exampleModal0">Přidat položku</button>
-        <form asp-action="PaymentDb">
-            <div class="modal fade" id="exampleModal0" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
-                <div class="modal-dialog" role="document">
-                    <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
-                    <div class="modal-content">
-                        <!-- pozadi ve vyskakovacim oknu -->
-                        <div class="modal-header">
-                            <!-- formatovani nadpisu a krizku -->
-                            <h5>Nová položka</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <!-- formatovani vyskakovaciho okna -->
-                            <form>
-                                <label asp-for="nazev" class="col-form-label">Název:</label>
-                                <input asp-for="nazev" type="text" class="form-control" required>
-                                <label asp-for="cena" class="col-form-label">Cena:</label>
-                                <input asp-for="cena" type="text" class="form-control" required value="">
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <!-- formatovani tlacitka odeslat -->
-                            <input name="new_butt" type="submit" /> <!-- tlacitko odeslat -->
+        <div>
+            <div id="payment-down-left">
+                <paging total-records="Model.Records"
+                        page-no="Model.PageNum"
+                        page-size="Model.PageSize"
+                        show-total-pages="false"
+                        show-total-records="false"
+                        show-page-size-nav="false">
+                </paging>
+            </div>
+            <div id="payment-down-right">
+                <button name="pridat" type="button" class="my_btn" data-toggle="modal" data-target="#exampleModal0">Přidat položku</button>
+                <form asp-action="PaymentDb">
+                    <div class="modal fade" id="exampleModal0" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
+                        <div class="modal-dialog" role="document">
+                            <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
+                            <div class="modal-content">
+                                <!-- pozadi ve vyskakovacim oknu -->
+                                <div class="modal-header">
+                                    <!-- formatovani nadpisu a krizku -->
+                                    <h5>Nová položka</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- formatovani vyskakovaciho okna -->
+                                    <form>
+                                        <label asp-for="nazev" class="col-form-label">Název:</label>
+                                        <input asp-for="nazev" type="text" class="form-control" required>
+                                        <label asp-for="cena" class="col-form-label">Cena:</label>
+                                        <input asp-for="cena" type="text" class="form-control" required value="">
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <!-- formatovani tlacitka odeslat -->
+                                    <input name="new_butt" type="submit" /> <!-- tlacitko odeslat -->
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
-        </form>
+        </div>
 
     </div>
 

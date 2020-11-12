@@ -1,4 +1,7 @@
 ﻿@using Nemocnice.Data;
+@addTagHelper *, LazZiya.TagHelpers
+@model InsuranceModel
+
 @{
     ViewData["Title"] = "Stránka zaměstance pojišťovny";
     string[] TableHeaders = new string[] {
@@ -12,6 +15,7 @@
         ""
     };
 }
+
 
 <div class="pojistovna">
     <h1 class="pojistovna-nadpis">Žádosti o proplacení lékařských úkonů</h1>
@@ -44,7 +48,7 @@
             </thead>
             <tbody>
 
-                @foreach (Nemocnice.Data.MedicallBill medicalBill in Model)
+                @foreach (var medicalBill in Model.medicallBills)
                 {
                     using (var db = new DatabaseContext())
                     {
@@ -68,6 +72,18 @@
 
             </tbody>
         </table>
+
+        <br />
+        <paging total-records="Model.Records"
+                page-no="Model.PageNum"
+                page-size="Model.PageSize"
+                show-total-pages="false"
+                show-total-records="false"
+                show-page-size-nav="false">
+        </paging>
+
+
+
     </div>
 
 

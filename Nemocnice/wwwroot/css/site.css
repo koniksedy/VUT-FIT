@@ -145,6 +145,15 @@ body {
     margin-top: 3em;
 }
 
+#payment-down-left {
+    float: left;
+}
+
+#payment-down-right {
+    float: right;
+}
+
+
 
 
 
