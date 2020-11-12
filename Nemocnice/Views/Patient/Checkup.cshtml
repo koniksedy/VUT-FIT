@@ -1,0 +1,111 @@
+﻿@model Nemocnice.Models.PatientCheckupModel
+
+@{
+    ViewData["Title"] = "Vyšetření";
+}
+
+<h2>Aktivní prohlídky</h2>
+<table class="checkup table">
+    <thead>
+        <tr>
+            <th>
+                Vytvořil
+            </th>
+            <th>
+                Kam zajít
+            </th>
+            <th>
+                Stav
+            </th>
+            <th>
+                Vytvořeno
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.CheckupTicketsRunning.Count == 0)
+        {
+            <tr>
+                <td></td>
+                <td></td>
+                <td>
+                    <p>Nejsou zde žádné záznamy k zobrazení</p>
+                </td>
+            </tr>
+         }
+         @foreach (var prohlidka in Model.CheckupTicketsRunning)
+         {
+            <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => prohlidka.CreatedBy.UserId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => prohlidka.ToDoctor.UserId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => prohlidka.State)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => prohlidka.CreateDate)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Detail", "Detail", new { })
+                    </td>
+                </tr>
+            }
+            </tbody>
+    </table>
+
+<h2>Ukončené prohlídky</h2>
+<table class="checkup table">
+    <thead>
+        <tr>
+            <th>
+                Vytvořil
+            </th>
+            <th>
+                Ukončil
+            </th>
+            <th>
+                Výsledek
+            </th>
+            <th>
+                Ukončeno
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.CheckupTicketsDone.Count == 0)
+        {
+            <tr>
+                <td></td>
+                <td></td>
+                <td>
+                    <p>Nejsou zde žádné záznamy k zobrazení</p>
+                </td>
+            </tr>
+        }
+        @foreach (var prohlidka in Model.CheckupTicketsDone)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => prohlidka.CreatedBy)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => prohlidka.ToDoctor)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => prohlidka.Result)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => prohlidka.FinishDate)
+                </td>
+                <td>
+                    @Html.ActionLink("Detail", "Detail", new { })
+                </td>
+            </tr>
+        }
+    </tbody>
+    </table>

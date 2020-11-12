@@ -1,0 +1,48 @@
+﻿@model Nemocnice.Models.PatientCardModel
+
+@{
+    ViewData["Title"] = "Karta";
+}
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    /* Create two equal columns that floats next to each other */
+    .column {
+        float: left;
+        width: 50%;
+        padding: 10px;
+        height: 300px; /* Should be removed. Only for demonstration */
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+</style>
+
+
+
+
+
+<h2> Karta Pacienta</h2>
+
+<div class="row">
+    <div class="column">
+        <img src="~/Img/Shared/userImg.jpg" class="user_logo" height="60" width="60" style="margin-bottom : 10px" /></a>
+        <a><b> @Model.User.Title    </b></a>
+        <a><b> @Model.User.Name     </b></a>
+        <a><b> @Model.User.Surname  </b></a><br />
+        <a><b>Telefon:</b> @Model.User.Phone</a><br />
+        <a><b>Email:  </b> @Model.User.Email</a><br />
+
+    </div>
+    <div class="column">
+        <h2>Aktuální stav</h2>
+
+
+    </div>
+</div>
