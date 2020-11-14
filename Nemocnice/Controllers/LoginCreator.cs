@@ -40,49 +40,6 @@ namespace Nemocnice.Controllers
             return View();
         }
 
-        /*
-        public async Task AddUserAsynchAsync(string name, string password, int R)
-        {
-            //var user = new NemocniceUser();
-            //user.UserName = name;
-            //user.Email = name;
-
-            //string userPWD = password;
-
-            var user = new NemocniceUser { UserName = "Kokot2" };
-            var result = await _userManager.CreateAsync(user, "1234567890");
-
-
-           // IdentityResult chkUser = await _userManager.CreateAsync(user, userPWD);
-
-            
-            IdentityResult result1, result2, result3, result4;
-            if(R >> 3 == 1)
-            {
-                result1 = await _userManager.AddToRoleAsync(user, "Admin");
-
-            }
-
-            if(((R >> 2) & 1) == 1)
-            {
-                result2 = await _userManager.AddToRoleAsync(user, "Doctor");
-            }
-
-            if (((R >> 1) & 1) == 1)
-            {
-                result3 = await _userManager.AddToRoleAsync(user, "Patient");
-            }
-
-            if ((R & 1) == 1)
-            {
-                result4 = await _userManager.AddToRoleAsync(user, "Insurance");
-            }
-
-            
-
-        }
-        */
-
         public async Task<IActionResult> CreateAsync()
         {
 
@@ -119,6 +76,7 @@ namespace Nemocnice.Controllers
                 await _roleManager.CreateAsync(role);
             }
 
+            /*
             var user = new NemocniceUser { UserName = "xnovot00" };
             var result = await _userManager.CreateAsync(user, "1234567890");
             await _userManager.AddToRoleAsync(user, "Admin");
@@ -262,10 +220,9 @@ namespace Nemocnice.Controllers
             user = new NemocniceUser { UserName = "xpavli00" };
             result = await _userManager.CreateAsync(user, "1234567890");
             await _userManager.AddToRoleAsync(user, "Patient");
+            */
 
-
-
-            return View("Create");
+            return View();
         }
     }
 }

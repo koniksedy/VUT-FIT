@@ -1,0 +1,60 @@
+﻿@model IEnumerable<Nemocnice.Models.CheckupTicketToMeFinish>
+
+@{
+    ViewData["Title"] = "Příchozí vyřízené žádosti";
+}
+
+<h1>Příchozí vyřízené žádosti</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Příjmení
+            </th>
+            <th>
+                Jméno
+            </th>
+            <th>
+                Rodné číslo
+            </th>
+            <th>
+                Lékař
+            </th>
+            <th>
+                Datum vytvoření
+            </th>
+            <th>
+                Datum ošetření
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.PatientSurname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PatientName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SocialSecurityNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FromDoctor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FinishDate)
+            </td>
+            <td>
+                @Html.ActionLink("Zobrazit", "Edit", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
