@@ -496,7 +496,7 @@ namespace Nemocnice.Controllers
             return RedirectToAction("Card");
         }
 
-        public IActionResult Activity(string userName)
+        public IActionResult Activity(string userName, string SortOrder)
         {
             var db = new DatabaseContext();
 
@@ -522,7 +522,21 @@ namespace Nemocnice.Controllers
 #if (!TEST)
         }
 #endif
-                             
+
+            switch (SortOrder)
+            {
+                case "nazev":
+                    Activities = Activities.OrderBy(o => o.ActivityName).ToList();
+                    break;
+                case "stav":
+                    Activities = Activities.OrderBy(o => o.State).ToList();
+                    break;
+                default:
+                    Activities = Activities.OrderByDescending(o => o.CreateDate).ToList();
+                    break;
+            }
+
+
             return View(Activities);
         }
 

@@ -13,5 +13,6 @@ namespace Nemocnice.Models
         public DateTime CreateDate { get; set; }
         public string State { get; set; }
 
+
     }
 }

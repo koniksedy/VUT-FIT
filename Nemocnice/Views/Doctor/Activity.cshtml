@@ -10,16 +10,16 @@
     <thead>
         <tr>
             <th>
-                Název
+                @Html.ActionLink("Název", "Activity", new { SortOrder = "nazev"})
             </th>
             <th>
                 Pacient
             </th>
             <th>
-                Datum Vystavení
+                @Html.ActionLink("Datum vystavení", "Activity", new { SortOrder = "datum" })
             </th>
             <th>
-                Stav Schválení
+                @Html.ActionLink("Stav schválení", "Activity", new { SortOrder = "stav" })
             </th>
             <th></th>
         </tr>
