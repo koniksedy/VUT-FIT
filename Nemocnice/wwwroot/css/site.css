@@ -153,6 +153,10 @@ body {
     float: right;
 }
 
+tr:hover {
+    background-color: lightblue;
+}
+
 
 
 

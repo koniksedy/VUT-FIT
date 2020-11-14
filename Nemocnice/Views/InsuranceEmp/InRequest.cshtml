@@ -2,20 +2,6 @@
 @addTagHelper *, LazZiya.TagHelpers
 @model InsuranceModel
 
-@{
-    ViewData["Title"] = "Stránka zaměstance pojišťovny";
-    string[] TableHeaders = new string[] {
-        "Id žádosti",
-        "Doktor",
-        "RČ pacienta",
-        "Výkon (Kč)",
-        "Diagnóza",
-        "Datum výkonu",
-        "",
-        ""
-    };
-}
-
 
 <div class="pojistovna">
     <h1 class="pojistovna-nadpis">Žádosti o proplacení lékařských úkonů</h1>
@@ -23,7 +9,7 @@
     <form asp-action="InRequest" method="get">
         <div class="search-doctor">
             <p id="left">
-                <label>Jméno lékaře:</label><input type="text" name="SearchString" id="search">
+                <label>Jméno lékaře:</label><input type="text" name="SearchString" id="search" autocomplete="off">
                 <input type="submit" value="Hledat" class="my_btn"> | <a asp-action="InRequest" class="my_btn">Zpět na všechny výpisy</a>
             </p>
             <p id="right">
@@ -36,14 +22,26 @@
         <table>
             <thead>
                 <tr>
-                    @{
-                        foreach (var head in TableHeaders)
-                        {
-                            <th>
-                                @head
-                            </th>
-                        }
-                    }
+                    <th>
+                        Id žádosti
+                    </th>
+                    <th>
+                        Doktor
+                    </th>
+                    <th>
+                        RČ pacienta
+                    </th>
+                    <th>
+                        @Html.ActionLink("Výkon (Kč)", "InRequest", new { SortOrder = "cena", searchString = ViewData["Search"] })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Diagnóza", "InRequest", new { SortOrder = "diagnoza", searchString = ViewData["Search"] })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Datum výkonu", "InRequest", new { SortOrder = "datum", searchString = ViewData["Search"] })
+                    </th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>

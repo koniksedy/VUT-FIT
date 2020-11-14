@@ -11,9 +11,12 @@ using Microsoft.EntityFrameworkCore;
 using Nemocnice.Data;
 using Nemocnice.Models;
 using ReflectionIT.Mvc.Paging;
+using Microsoft.AspNetCore.Authorization;
+
 
 namespace Nemocnice.Controllers
 {
+    [Authorize(Roles = "Insurance")]
     public class InsuranceEmp : Controller
     {
 
@@ -24,7 +27,7 @@ namespace Nemocnice.Controllers
         }
 
 
-        public async Task<IActionResult> InRequest(string searchString, string button, string buttonAll, InsuranceModel model, int p = 1)
+        public async Task<IActionResult> InRequest(string searchString, string SortOrder, string button, string buttonAll, InsuranceModel model, int p = 1)
         {
 
             if (!String.IsNullOrEmpty(button))
@@ -76,7 +79,7 @@ namespace Nemocnice.Controllers
                 searchString = searchString.Split(' ').Last();
                 var user = this.Context.UserT.Where(s => s.Name.Contains(searchString) || s.Surname.Contains(searchString)).Select(x => x.UserId).FirstOrDefault();
                 model.medicallBills = this.Context.MedicallBillT.Where(x => x.Doctor.UserId == user).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).OrderByDescending(o => o.CreateDate).ToList();
-                return View(model);
+              
 
             }
             else
@@ -86,12 +89,27 @@ namespace Nemocnice.Controllers
                 model.Records = this.Context.MedicallBillT.Where(x => x.State == null).Count();
                 model.PageNum = p;
                 model.PageSize = 5;
-                return View(model);
+                
             }
+
+            switch (SortOrder)
+            {
+                case "cena":
+                    model.medicallBills = model.medicallBills.OrderBy(o => o.MedicallActivityPrice.Amount).ToList();
+                    break;
+                case "diagnoza":
+                    model.medicallBills = model.medicallBills.OrderBy(o => o.Diagnosis.Name).ToList();
+                    break;
+                default:
+                    model.medicallBills = model.medicallBills.OrderByDescending(o => o.CreateDate).ToList();
+                    break;
+            }
+
+            return View(model);
 
         }
 
-        public async Task<IActionResult> PaymentDb(string button, string buttonUpdate, string new_butt, InsuranceModel model, int p=1)
+        public async Task<IActionResult> PaymentDb(string button, string SortOrder, string buttonUpdate, string new_butt, InsuranceModel model, int p=1)
         {
 
 
@@ -114,14 +132,23 @@ namespace Nemocnice.Controllers
 
             var db = new DatabaseContext();
 
-    
             var query = this.Context.MedicallActivityPriceT.AsNoTracking().OrderBy(o => o.Name);
             model.medicallActivityPrice = await PagingList.CreateAsync(query, 5, p);
             model.Records = this.Context.MedicallBillT.Where(x => x.State == null).Count();
             model.PageNum = p;
             model.PageSize = 5;
-            return View(model);
 
+            switch (SortOrder)
+            {
+                case "cena":
+                    model.medicallActivityPrice = model.medicallActivityPrice.OrderBy(o => o.Amount).ToList();
+                    break;
+                default:
+                    model.medicallActivityPrice = model.medicallActivityPrice.OrderBy(o => o.Name).ToList();
+                    break;
+            }
+
+            return View(model);
 
             if (!ModelState.IsValid)
             {
@@ -148,11 +175,8 @@ namespace Nemocnice.Controllers
                 }
 
 
-
                 return View(model);
             }
-            
-
         }
     }
 }
