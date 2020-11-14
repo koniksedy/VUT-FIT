@@ -1,0 +1,118 @@
+﻿<!-- Zobrazení zprávy pacienta. -->
+<!-- Autor: Michal Šedý (xsedym02) -->
+<!-- Poslední úprava: 13.11.2020 -->
+
+@{
+    ViewData["Title"] = "Zpráva";
+}
+
+<!-- Knihovna pro dynamicky přidávatelné řádky. -->
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<!-- Model obsahující informace o pacientovi, všech zprávách a předchozí a aktuální zprávě. -->
+@model Nemocnice.Models.ReportModel
+<!-- Základní informace o pacientovi -->
+<h2>@Model.Name @Model.Surname@((String.IsNullOrEmpty(Model.Title)) ? " " : ",") @(Model.Title + " ") (r.č: @Model.SocialSecurityNumber, poj: @Model.Insurance)</h2>
+
+<!-- Tabulka všech zpráv pacienta. -->
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Datum
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.AllReports)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item)
+                </td>
+                <td>
+                    <!-- Zobrazení zprávy z daného data. -->
+                    @Html.ActionLink("Zobrazit", "Report", new { socialNum = Model.SocialSecurityNumber, date = item })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Pokud předchozí zpráva neexistuje, nepíše se datu ani čas. -->
+@if (!String.IsNullOrEmpty(Model.PreviousReport))
+{
+    <h4>[@Model.PreviousReportDate]</h4>
+}
+<!-- Text starší zprávy se nedá přepsat.-->
+<textarea readonly disabled cols="100" rows="5">@Model.PreviousReport</textarea>
+
+<!-- Čas nové/upravované zprávy -->
+<h4>[@Model.ActualReportDate]</h4>
+<!-- Úprave, nebo vytvoření zprávy. -->
+@if (Model.AllReports.Any() && DateTime.Compare(Model.AllReports.First(), Model.ActualReportDate) >= 0)
+{
+    <!-- Pacient má zápisy a jedná se o zobrazení/úpravu staré zprávy.-->
+    <form method="post" asp-action="UpdateReport">
+        <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
+        <input type="hidden" name="ReportDate" value="@Model.ActualReportDate"/>
+        <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber"/>
+        <!-- Primárně je text staré zprávy zavčen. Odemče se až po stisknutí tlačítka Upravit. -->
+        <textarea readonly disabled id="ReportText" name="ReportText" cols="100" rows="10">@Model.ActualReport</textarea>
+        <div id="lockbtn">
+            <button class="btn btn-primary" type="button" onclick="upravitBtnFunction()">Upravit</button>
+            <!-- Uložit, blokováno, dokud se nezmáčkne tlačítko Upravit-->
+            <input class="btn btn-primary" type="submit" id="RepareReportSaveBtn" disabled value="Uložit"/>
+        </div>
+    </form>
+}
+else
+{
+    <!-- Vytvoření nové zprávy. -->
+    <form method="post" asp-action="CreateReport">
+        <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
+        <input type="hidden" name="ReportDate" value="@Model.ActualReportDate"/>
+        <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber"/>
+        <textarea cols="100" rows="10" name="ReportText">@Model.ActualReport</textarea>
+        <!-- Dynamicky přidávatelné řádky pro Diagnozu a Výkon. -->
+        <!-- TODO autocomplete-->
+        <div class="row">
+            <div class="col-lg-12">
+                <div id="inputFormRowReport">
+                    <div class="input-group mb-3">
+                        <input type="text" name="Diagnosis[]" class="form-control m-input" placeholder="Halvní diagnoza" autocomplete="off">
+                        <div class="input-group-append">
+                            <!-- Tlačítko pro smazání konktétního řádku s diagnozou. -->
+                            <button id="removeRowReport" type="button" class="btn btn-danger">Smazat</button>
+                            <!-- Tlačítko pro označení léčby diagnozy jako ukončené. -->
+                            <div>
+                                <!-- Tyto dva elementy (button, input) musí následovat bezprostředně za sebou. Spoléha na ně javascript. -->
+                                <button name="curedButton[]" type="button" class="btn btn-dark" value="false" onclick="curedFunction(this)">Vyléčeno</button>
+                                <input type="hidden" name="DiagnosisState[]" value="noncured" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Přidat řádek pro Diagnozu. -->
+                <div id="newRow"></div>
+                <button id="addRowReport" type="button" class="btn btn-success">Přidat diagnozu</button>
+                <div></div>
+                <!-- Pole pro Výkon. (pouze jeden) -->
+                <input type="text" name="Bill" class="form-control m-input" placeholder="Výkon">
+            </div>
+        </div>
+        <!-- Uložit -->
+        <input class="btn btn-primary" type="submit" value="Uložit">
+    </form>
+}
+
+<!-- Návrat do kartotéky. -->
+<form asp-action="Card">
+    <div>
+        <button class="btn btn-primary">Zpět</button>
+    </div>
+</form>
+
+
+

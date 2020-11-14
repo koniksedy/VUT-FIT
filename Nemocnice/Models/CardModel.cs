@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿/*
+ * Model pro zobrazení Card (kartotéky)
+ * Autor: Michal Šedý (xsedym02)
+ * Poslední změna: 12.11.2020
+ */
 
 namespace Nemocnice.Models
 {
+    /*
+     * Model uchovává informace o pacientovi.
+     */
     public class CardModel
     {
-        public List<CardPatientModel> OldPatients { get; set; } = new List<CardPatientModel>();
-
-        public NewPatientModel NewPatient { get; set; }
-
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Title { get; set; }
+        public long SocialSecurityNum { get; set; }
+        public int Insurance { get; set; }
     }
 }

@@ -12,6 +12,10 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="Migrations\20201024174338_Identity.cs" />
     <Compile Remove="Migrations\20201024174338_Identity.Designer.cs" />

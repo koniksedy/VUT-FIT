@@ -1,79 +1,86 @@
-﻿
+﻿<!-- Zobrazení kartotéky přístupné pouze v s oprávněním Doctor -->
+<!-- Autor: Michal Šedý (xsedym02) -->
+<!-- Poslední změna: 12.11.2020 -->
 
 @{
     ViewData["Title"] = "Kartotéka";
 }
 
-@model Nemocnice.Models.CardModel
+<!-- Model obsahující seznam základních informací o pacientech pro kartotéku. -->
+@model List<Nemocnice.Models.CardModel>
+
+<style>
+    tr:hover{background-color:red;}
+    tr:active {
+        background-color: saddlebrown;
+        -webkit-tap-highlight-color: transparent;
+        outline-style: none;
+    }
+
+</style>
+
 
 <h1>Kartotéka</h1>
 
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="Data-whatever">Nový pacient</button>
-<form asp-action="CreatePatient">
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Tlačítko |Nový pacient|, které ve vyskakovacím okně umožní zadat údaje pro vytvoření nového pacienta. -->
+<button type="button" class="btn btn-info" data-toggle="modal" data-target="#newPatientModal">Nový pacient</button>
+
+<!-- Vyskakovací okno (modální dialog), k zadání údajů pro vytvoření nového pacienta. -->
+<!-- TODO Rozdělit okno do dvou sloupců. -->
+<form asp-action="CreatePatient" method="post">
+    <div class="modal fade" id="newPatientModal" tabindex="-1" role="dialog" aria-labelledby="newPatientModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Vytvořit</h5>
+                    <h5 class="modal-title" id="newPatientModalLabel">Nový pacient</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
-                        <label asp-for="NewPatient.Name" class="col-form-label">Jméno</label>
-                        <input asp-for="NewPatient.Name" class="form-control" id="Jméno" />
-                        <span asp-validation-for="NewPatient.Name" class="text-danger"></span>
+                        <label class="col-form-label">Jméno</label>
+                        <input name="NewName" type="text" required autocomplete="off" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewPatient.Surname" class="col-form-label">Příjmení</label>
-                        <input asp-for="NewPatient.Surname" class="form-control" id="Příjmení" />
-                        <span asp-validation-for="NewPatient.Surname" class="text-danger"></span>
+                        <label class="col-form-label">Příjmení</label>
+                        <input name="NewSurname" type="text" required autocomplete="off" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewPatient.Title" class="col-form-label">Titul</label>
-                        <input asp-for="NewPatient.Title" class="form-control" id="Titul" />
-                        <span asp-validation-for="NewPatient.Title" class="text-danger"></span>
+                        <label aclass="col-form-label">Titul</label>
+                        <input name="NewTitel" type="text" autocomplete="off" value="" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewPatient.SocialSecurityNumber" class="col-form-label">Rodné číslo</label>
-                        <input asp-for="NewPatient.SocialSecurityNumber" class="form-control" id="Rodné číslo" />
-                        <span asp-validation-for="NewPatient.SocialSecurityNumber" class="text-danger"></span>
+                        <label class="col-form-label">Rodné číslo</label>
+                        <input name="NewNum" type="text" required pattern="[0-9]{2}(([1,6][0-2])|([0,5][1-9]))((0[1-9])|1[0-9]|2[0-9]|3[0-1])[0-9]{3,4}" autocomplete="off" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewPatient.InsuranceCompany" class="col-form-label">Pojišťovna</label>
-                        <input asp-for="NewPatient.InsuranceCompany" class="form-control" id="Pojišťovna" />
-                        <span asp-validation-for="NewPatient.InsuranceCompany" class="text-danger"></span>
+                        <label class="col-form-label">Pojišťovna</label>
+                        <input name="NewInsurance" type="text" required pattern="205|207|213|111|201|209|211" autocomplete="off" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewPatient.Tel" class="col-form-label">Telefon</label>
-                        <input asp-for="NewPatient.Tel" class="form-control" id="Telefon" />
-                        <span asp-validation-for="NewPatient.Tel" class="text-danger"></span>
+                        <label class="col-form-label">Telefon</label>
+                        <input name="NewTel" type="text" required autocomplete="off" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewPatient.Email" class="col-form-label">Email</label>
-                        <input asp-for="NewPatient.Email" class="form-control" id="Email" />
-                        <span asp-validation-for="NewPatient.Email" class="text-danger"></span>
+                        <label class="col-form-label">Email</label>
+                        <input name="NewEmail" type="email" value="" autocomplete="off" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewPatient.Street" class="col-form-label">Ulice</label>
-                        <input asp-for="NewPatient.Street" class="form-control" id="Ulice" />
-                        <span asp-validation-for="NewPatient.Street" class="text-danger"></span>
+                        <label class="col-form-label">Ulice</label>
+                        <input name="NewStreet" autocomplete="off" value="" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewPatient.HouseNumber" class="col-form-label">Číslo popisné</label>
-                        <input asp-for="NewPatient.HouseNumber" class="form-control" id="Číslo popisné" />
-                        <span asp-validation-for="NewPatient.HouseNumber" class="text-danger"></span>
+                        <label class="col-form-label">Číslo popisné</label>
+                        <input name="NewHouseNum" type="text" pattern="[0-9]+" value="" autocomplete="off" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewPatient.City" class="col-form-label">Město</label>
-                        <input asp-for="NewPatient.City" class="form-control" id="Město" />
-                        <span asp-validation-for="NewPatient.City" class="text-danger"></span>
+                        <label class="col-form-label">Město</label>
+                        <input name="NewCity" required autocomplete="off" class="form-control"/>
                     </div>
                     <div class="form-group">
-                        <label asp-for="NewPatient.Zip" class="col-form-label">Č.p.</label>
-                        <input asp-for="NewPatient.Zip" class="form-control" id="Č.p." />
-                        <span asp-validation-for="NewPatient.Zip" class="text-danger"></span>
+                        <label class="col-form-label">Směrovací číslo</label>
+                        <input name="NewZip" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control"/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -84,16 +91,20 @@
     </div>
 </form>
 
+<!-- Vyhledávání pacienta podle zadaného výrazu. -->
+<!-- Zaměření na vyhledáné výsled je možné zrušit tlačítkem |Zrušit filtry|, které zobrazí zase všechny pacienty. -->
 <form asp-action="Card" method="get">
     <div class="form-actions no-color">
         <p>
-            Najít: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
-            <input type="submit" value="Hledat" class="btn btn-default" /> |
+            Najít: <input type="text" name="SearchString" value="@ViewData["Search"]")/>
+            <input type="submit" class="btn btn-primary" value="Hledat"/>
             <a asp-action="Card">Zrušit filtry</a>
         </p>
     </div>
 </form>
 
+<!-- Halvní tabulka kartotéky. Vybrané sloupce je mořné řadit (řazení je vždy sestupné). -->
+<!-- Řazení neovlivní výsledky vyhledávání. Provede pouze jejich seřazení. -->
 <table class="table">
     <thead>
         <tr>
@@ -109,30 +120,39 @@
             <th>
                 @Html.ActionLink("Rodné číslo", "Card", new { sortOrder = "byNumber", searchString = ViewData["Search"] })
             </th>
+            <th>
+                Pojišťovna
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model.OldPatients)
+        @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Surname)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Title)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SocialSecurityNum)
-                </td>
-                <td>
-                    @Html.ActionLink("Přehled", "Overview", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Zpráva", "Report", new { /* id=item.PrimaryKey */ })
-                </td>
-            </tr>
+        <tr ondblclick="kokotClick()">
+            <td>
+                @Html.DisplayFor(modelItem => item.Surname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SocialSecurityNum)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Insurance)
+            </td>
+            <td>
+                <!-- Zobrací celkový přehled pacienta se všemi jeho funkcemi. -->
+                <!-- TODO přehled pacienta-->
+                @Html.ActionLink("Přehled", "Overview", new { /* id=item.PrimaryKey */ }) |
+                <!-- Vytvoření nové zprávy k danému pacientovi. -->
+                @Html.ActionLink("Zpráva", "Report", new { socialNum = item.SocialSecurityNum })
+            </td>
+        </tr>
         }
     </tbody>
 </table>
