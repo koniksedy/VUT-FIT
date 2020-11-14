@@ -240,7 +240,7 @@ namespace Nemocnice.Controllers
          * socialNum - rodné číslo zobrazovaného pacienta
          * date - datum zobrazovaného zápisu (pro nový dápis se rovná default)
          */
-        public IActionResult Report(ReportModel reportModel, long socialNum, DateTime date)
+        public IActionResult Report(long socialNum, DateTime date)
         {
             // Získání loginu přihlášeného doktora pro kontrolu přístupu ke zprávám.
             // v id_list by vždy něco mělo být (do této metody se nemůže dostat nikdo, kdo není Doktorem,
@@ -248,10 +248,12 @@ namespace Nemocnice.Controllers
             string user = User.Identity.Name;
             var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
 
+            ReportModel reportModel = new ReportModel();
+
             // Kontrola modelu
             if (!ModelState.IsValid)
             {
-                return View(reportModel);
+                return View(new ReportModel());
             }
 
             // Nutná kontrola při nekonzistentní databázi (V databázi Identity je uživatel, který není v UserT).
@@ -461,7 +463,7 @@ namespace Nemocnice.Controllers
 
             // Aktualizace Healthcondition pacienta, konkrétně datum jeho poslední návštěvy.
             // Pokud nemá pacient vytvořen HealthCondition, vytvoříme jej.       
-            Data.Patient p = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).ToList().First();
+            Data.Patient p = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Include(s => s.HealthCondition).ToList().First();
             if (p.HealthCondition == null)
             {
                 p.HealthCondition = new HealthCondition
@@ -524,6 +526,198 @@ namespace Nemocnice.Controllers
 #endif
                              
             return View(Activities);
+        }
+
+        // https://www.c-sharpcorner.com/code/961/how-to-calculate-age-from-date-of-birth-in-c-sharp.aspx
+        static private string getAge(long patientNum)
+        {
+            // Převod rodného čísla na datum
+            string numAsStr = patientNum.ToString();
+            int yearInt = int.Parse(numAsStr.Substring(0, 2));
+            int monInt = int.Parse(numAsStr.Substring(2, 2));
+            int dayInt = int.Parse(numAsStr.Substring(4, 2));
+            yearInt = (yearInt < 54 && numAsStr.Length > 9) ? 2000 + yearInt : 1900 + yearInt;
+            int Years = 0;
+            int Months = 0;
+            try
+            {
+                monInt = (monInt > 50) ? monInt - 50 : monInt;
+                DateTime birth = new DateTime(yearInt, monInt, dayInt);
+                DateTime Now = DateTime.Now;
+                Years = new DateTime(DateTime.Now.Subtract(birth).Ticks).Year - 1;
+                DateTime PastYearDate = birth.AddYears(Years);
+                Months = 0;
+                for (int i = 1; i <= 12; i++)
+                {
+                    if (PastYearDate.AddMonths(i) == Now)
+                    {
+                        Months = i;
+                        break;
+                    }
+                    else if (PastYearDate.AddMonths(i) >= Now)
+                    {
+                        Months = i - 1;
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+                return "DateError";
+            }
+            return String.Format("{0} {1} {2} {3}", Years, (Years == 1) ? "Rok" : (Years < 5 && Years != 0) ? "Roky" : "Let",
+                                                    Months, (Months == 1) ? "Měsíc" : (Months < 5 && Months != 0) ? "Měsíce" : "Měsíců");
+        }
+
+
+        public IActionResult PatientProfile(long patientNum)
+        {
+            string user = User.Identity.Name;
+            var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
+
+            DoctorDisplayPatientModel model = new DoctorDisplayPatientModel();
+
+            // Získání informací o pacientovi.
+            int patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
+            Data.User patient = db.UserT.Where(o => o.UserId == patientId).ToList().First();
+            model.Name = patient.Name;
+            model.Surname = patient.Surname;
+            model.Title = patient.Title;
+            model.InsuranceCompany = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.InsuranceCompany).ToList().First();
+            model.SocialSecurityNumber = patientNum;
+            model.Tel = patient.Phone;
+            model.Email = patient.Email;
+            model.Age = getAge(patientNum);
+            model.Address = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.HomeAddress).ToList().First();
+            model.HealthCondition = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.HealthCondition).ToList().FirstOrDefault();
+            if(model.HealthCondition == default)
+            {
+                HealthCondition healthCondition = new HealthCondition { SocialSecurityNum = patientNum };
+                db.HealthConditionT.Add(healthCondition);
+                db.SaveChanges();
+                db.PatientT.Where(o => o.SocialSecurityNum == patientNum).ToList().First().HealthCondition = healthCondition;
+                db.SaveChanges();
+                model.HealthCondition = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.HealthCondition).ToList().First();
+
+            }
+            model.Allergys = db.AllergysOfPatientT.Where(o => o.HealthCondition.SocialSecurityNum == patientNum).Select(s => s.Allergy.Name).ToList();
+            model.AllReports = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum
+#if (!TEST)
+                                                             && o.Owner.UserId == id_list.First()
+#endif
+                                                        ).Select(s => s.CreateDate).ToList();
+
+            model.CheckupToMe = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum
+#if (!TEST)
+                                                             && o.ToDoctor.UserId == id_list.First()
+#endif
+                                                        ).Join(db.UserT,
+                                                        checkup => checkup.CreatedBy.UserId,
+                                                        user => user.UserId,
+                                                        (checkup, user) => new CheckupToMeLightModel
+                                                        {
+                                                            CreateDate = checkup.CreateDate,
+                                                            FromDoctor = user.Surname + " " + user.Name + ", " + user.Title
+                                                        }).ToList();
+            model.CheckupToOther = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum
+#if (!TEST)
+                                                             && o.CreatedBy.UserId == id_list.First()
+#endif
+                                                           ).Join(db.UserT,
+                                                            checkup => checkup.ToDoctor.UserId,
+                                                            user => user.UserId,
+                                                            (checkup, user) => new CheckupToOtherLightModle
+                                                           {
+                                                               CreateDate = checkup.CreateDate,
+                                                               ToDoctor = user.Surname + " " + user.Name + ", " + user.Title,
+                                                               State = checkup.State
+                                                           }).ToList();
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult UpdatePatientInfo()
+        {
+            long oldpatientNumber = long.Parse(Request.Form["OldNum"]);
+            // User
+            string name = Request.Form["UpdateName"];
+            string surname = Request.Form["UpdateSurname"];
+            string tel = Request.Form["UpdateTel"];
+            string email = Request.Form["UpdateEmail"];
+            // Patient
+            long patientNumber = long.Parse(Request.Form["UpdateNum"]);
+            int insurance = int.Parse(Request.Form["UpdateInsurance"]);
+            // Adresa
+            string street = Request.Form["UpdateStreet"];
+            int houseNum = int.Parse(Request.Form["UpdateHouseNum"]);
+            string city = Request.Form["UpdateCity"];
+            int zip = int.Parse(Request.Form["UpdateZip"]);
+
+
+
+            Data.Patient patient = db.PatientT.Where(o => o.SocialSecurityNum == oldpatientNumber).Include(s => s.HomeAddress).Include(s => s.HealthCondition).ToList().First();
+            // Aktualizace User
+            Data.User user = db.UserT.Where(o => o.UserId == patient.UserId).ToList().First();
+            user.Name = name;
+            user.Surname = surname;
+            user.Phone = tel;
+            user.Email = email;
+
+            // Aktualizace Patient
+            patient.InsuranceCompany = insurance;
+            if(patientNumber != oldpatientNumber)
+            {
+                patient.SocialSecurityNum = patientNumber;
+                if(patient.HealthCondition.SocialSecurityNum != default)
+                {
+                    patient.HealthCondition.SocialSecurityNum = patientNumber;
+                }
+            }
+
+            // Aktualizace address
+            patient.HomeAddress.StreetName = street;
+            patient.HomeAddress.HouseNumber = houseNum;
+            patient.HomeAddress.City = city;
+            patient.HomeAddress.ZIP = zip;
+
+            db.SaveChanges();
+
+            return RedirectToAction("PatientProfile", new { patientNum = patientNumber});
+        }
+
+        [HttpPost]
+        public IActionResult UpdateHealthInfo()
+        {
+            long patientNumber = long.Parse(Request.Form["PatientNum"]);
+            float patientHeight = float.Parse(Request.Form["UpdateHeight"]);
+            float patientWeight = float.Parse(Request.Form["UpdateWeight"]);
+            string patientBlodType = Request.Form["UpdateBlodType"];
+            // TODO alergie
+
+            HealthCondition healthCondition = db.PatientT.Where(o => o.SocialSecurityNum == patientNumber).Select(s => s.HealthCondition).ToList().First();
+            healthCondition.Height = patientHeight;
+            healthCondition.Weight = patientWeight;
+            healthCondition.BloodType = patientBlodType;
+            db.SaveChanges();
+
+
+            return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
+        }
+
+        public IActionResult CheckupIn(long patientNum,  DateTime date)
+        {
+            return View();
+        }
+
+        public IActionResult CheckupOut(long patientNum, DateTime date)
+        {
+            return View();
+        }
+
+        public IActionResult NewCheckup(long patienNum)
+        {
+            return View();
         }
 
         public IActionResult Requests()
@@ -628,10 +822,6 @@ namespace Nemocnice.Controllers
             }
 #endif
             return View(MyFinishRequests);
-        }
-
-        
-
-        
+        }     
     }
 }

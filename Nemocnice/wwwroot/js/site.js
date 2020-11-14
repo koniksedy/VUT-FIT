@@ -16,10 +16,43 @@ function upravitBtnFunction() {
         document.getElementById("RepareReportSaveBtn").disabled = false;
 }
 
-function kokotClick() {
-    location.href = "/Home";
-}
+function unlockPatientInfo() {
+    document.getElementById("UpdateName").disabled = false;
+    document.getElementById("UpdateName").readOnly = false;
 
+    document.getElementById("UpdateSurname").disabled = false;
+    document.getElementById("UpdateSurname").readOnly = false;
+
+    document.getElementById("UpdateTitle").disabled = false;
+    document.getElementById("UpdateTitle").readOnly = false;
+
+    document.getElementById("UpdateNum").disabled = false;
+    document.getElementById("UpdateNum").readOnly = false;
+
+    document.getElementById("UpdateInsurance").disabled = false;
+    document.getElementById("UpdateInsurance").readOnly = false;
+
+    document.getElementById("UpdateTel").disabled = false;
+    document.getElementById("UpdateTel").readOnly = false;
+
+    document.getElementById("UpdateEmail").disabled = false;
+    document.getElementById("UpdateEmail").readOnly = false;
+
+    document.getElementById("UpdateStreet").disabled = false;
+    document.getElementById("UpdateStreet").readOnly = false;
+
+    document.getElementById("UpdateHouseNum").disabled = false;
+    document.getElementById("UpdateHouseNum").readOnly = false;
+
+    document.getElementById("UpdateCity").disabled = false;
+    document.getElementById("UpdateCity").readOnly = false;
+
+    document.getElementById("UpdateZip").disabled = false;
+    document.getElementById("UpdateZip").readOnly = false;
+
+    document.getElementById("UpdateButton").disabled = false;
+    document.getElementById("UpdateButton").readOnly = false;
+}
 
 // add row
 $("#addRowReport").click(function () {
@@ -44,7 +77,7 @@ $(document).on('click', '#removeRowReport', function () {
             $(this).closest('#inputFormRowReport').remove();
 });
 
-// TODO změnit hodnotu DiagnosisState
+
 function curedFunction(thatButton) {
     if (thatButton.value == "false") {
         thatButton.className = "btn btn-success";
@@ -55,4 +88,8 @@ function curedFunction(thatButton) {
         thatButton.value = "false";
         thatButton.nextElementSibling.value = "noncured";
     }
+}
+
+function redirectToAction(hr) {
+    window.location.href = hr;
 }

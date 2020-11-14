@@ -9,16 +9,6 @@
 <!-- Model obsahující seznam základních informací o pacientech pro kartotéku. -->
 @model List<Nemocnice.Models.CardModel>
 
-<style>
-    tr:hover{background-color:red;}
-    tr:active {
-        background-color: saddlebrown;
-        -webkit-tap-highlight-color: transparent;
-        outline-style: none;
-    }
-
-</style>
-
 
 <h1>Kartotéka</h1>
 
@@ -48,7 +38,7 @@
                     </div>
                     <div class="form-group">
                         <label aclass="col-form-label">Titul</label>
-                        <input name="NewTitel" type="text" autocomplete="off" value="" class="form-control"/>
+                        <input name="NewTitle" type="text" autocomplete="off" value="" class="form-control"/>
                     </div>
                     <div class="form-group">
                         <label class="col-form-label">Rodné číslo</label>
@@ -129,7 +119,7 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr ondblclick="kokotClick()">
+        <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Surname)
             </td>
@@ -148,7 +138,7 @@
             <td>
                 <!-- Zobrací celkový přehled pacienta se všemi jeho funkcemi. -->
                 <!-- TODO přehled pacienta-->
-                @Html.ActionLink("Přehled", "Overview", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Pacient", "PatientProfile", new { patientNum = item.SocialSecurityNum }) |
                 <!-- Vytvoření nové zprávy k danému pacientovi. -->
                 @Html.ActionLink("Zpráva", "Report", new { socialNum = item.SocialSecurityNum })
             </td>
