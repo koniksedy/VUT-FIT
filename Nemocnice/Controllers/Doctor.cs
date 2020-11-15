@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Nemocnice.Data;
 using Nemocnice.DatabaseDataCreator;
 using Nemocnice.Models;
+using ReflectionIT.Mvc.Paging;
 
 namespace Nemocnice.Controllers
 {
@@ -496,48 +497,44 @@ namespace Nemocnice.Controllers
             return RedirectToAction("Card");
         }
 
-        public IActionResult Activity(string userName, string SortOrder)
+        public async Task<IActionResult> Activity(string searchString, string SortOrder, ActivityModel model, int p = 1)
         {
-            var db = new DatabaseContext();
 
-            string user = User.Identity.Name;
-            var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
+          
 
-            List<ActivityModel> Activities = new List<ActivityModel>();
-#if (!TEST)
-            if (id_list.Any())
-            {
-                Activities = db.MedicallBillT.Where(o => o.Doctor.UserId == id_list.First())
-#else
-                Activities = db.MedicallBillT
-#endif
-                                    .Select(s => new ActivityModel
-                                        {
-                                            ActivityName = s.MedicallActivityPrice.Name,
-                                            Value = s.MedicallActivityPrice.Amount,
-                                            PatientNum = s.SocialSecurityNum,
-                                            CreateDate = s.CreateDate,
-                                            State = s.State,
-                                        }).ToList();
-#if (!TEST)
-        }
-#endif
+                if (!String.IsNullOrEmpty(searchString))
+                {
+                    searchString = searchString.Split(' ').Last();
+                    var user = db.MedicallBillT.Where(s => s.Diagnosis.Name.Contains(searchString)).Select(x => x.MedicallBillId).FirstOrDefault();
+                    model.medicallBills = db.MedicallBillT.Where(x => x.MedicallBillId == user).Include(s => s.Diagnosis).OrderByDescending(o => o.CreateDate).ToList();
+                }
+                else
+                {
+                    var query = db.MedicallBillT.AsNoTracking().Include(s => s.Diagnosis).OrderByDescending(s => s.CreateDate);
+                    model.medicallBills = await PagingList.CreateAsync(query, 10, p);
+                    model.Records = db.MedicallBillT.Where(x => x.State == null).Count();
+                    model.PageNum = p;
+                    model.PageSize = 10;
 
-            switch (SortOrder)
-            {
-                case "nazev":
-                    Activities = Activities.OrderBy(o => o.ActivityName).ToList();
-                    break;
-                case "stav":
-                    Activities = Activities.OrderBy(o => o.State).ToList();
-                    break;
-                default:
-                    Activities = Activities.OrderByDescending(o => o.CreateDate).ToList();
-                    break;
-            }
+                }
 
+                switch (SortOrder)
+                {
+                    case "nazev":
+                        model.medicallBills = model.medicallBills.OrderBy(o => o.Diagnosis.Name).ToList();
+                        break;
+                    case "stav":
+                        model.medicallBills = model.medicallBills.OrderBy(o => o.State).ToList();
+                        break;
+                    default:
+                        model.medicallBills = model.medicallBills.OrderByDescending(o => o.CreateDate).ToList();
+                        break;
+                }
 
-            return View(Activities);
+                return View(model);
+
+            
+
         }
 
         public IActionResult Requests()
