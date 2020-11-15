@@ -511,25 +511,27 @@ namespace Nemocnice.Controllers
                 else
                 {
                     var query = db.MedicallBillT.AsNoTracking().Include(s => s.Diagnosis).OrderByDescending(s => s.CreateDate);
-                    model.medicallBills = await PagingList.CreateAsync(query, 10, p);
+
+                    switch (SortOrder)
+                    {
+                        case "nazev":
+                        query = query.OrderBy(o => o.Diagnosis.Name);
+                            break;
+                        case "stav":
+                        query = query.OrderBy(o => o.State);
+                            break;
+                        default:
+                        query = query.OrderByDescending(o => o.CreateDate);
+                            break;
+                    }
+
+                model.medicallBills = await PagingList.CreateAsync(query, 10, p);
                     model.Records = db.MedicallBillT.Where(x => x.State == null).Count();
                     model.PageNum = p;
                     model.PageSize = 10;
 
                 }
 
-                switch (SortOrder)
-                {
-                    case "nazev":
-                        model.medicallBills = model.medicallBills.OrderBy(o => o.Diagnosis.Name).ToList();
-                        break;
-                    case "stav":
-                        model.medicallBills = model.medicallBills.OrderBy(o => o.State).ToList();
-                        break;
-                    default:
-                        model.medicallBills = model.medicallBills.OrderByDescending(o => o.CreateDate).ToList();
-                        break;
-                }
 
                 return View(model);
 
