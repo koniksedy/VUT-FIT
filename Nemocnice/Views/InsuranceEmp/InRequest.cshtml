@@ -53,18 +53,19 @@
                         var name = db.UserT.Where(x => x.UserId == medicalBill.Doctor.UserId).Select(x => x.Name);
                         var surname = db.UserT.Where(x => x.UserId == medicalBill.Doctor.UserId).Select(x => x.Surname);
 
-                        <tr>
-                            <td>@Html.DisplayFor(modelItem => medicalBill.MedicallBillId)</td>
-                            <td>@Html.DisplayFor(modelItem => name) @Html.DisplayFor(modelItem => surname)</td>
-                            <td>@medicalBill.SocialSecurityNum</td>
-                            <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Amount)</td>
-                            <td>@medicalBill.Diagnosis.Name</td>
-                            <td>@medicalBill.CreateDate</td>
-                            <form>
-                                <td><button name="button" class="my_btn" value="schvaleno @medicalBill.MedicallBillId" asp-action="InRequest">Schválit</button></td>
-                                <td><button name="button" class="my_btn" value="zamitnuto @medicalBill.MedicallBillId" asp-action="InRequest">Zamítnout</button></td>
-                            </form>
-                        </tr>
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => medicalBill.MedicallBillId)</td>
+                    <td>@Html.DisplayFor(modelItem => name) @Html.DisplayFor(modelItem => surname)</td>
+                    <td>@medicalBill.SocialSecurityNum</td>
+                    <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Amount)</td>
+                    <td>@medicalBill.Diagnosis.Name</td>
+                    <td>@medicalBill.CreateDate</td>
+                    <td>@medicalBill.State</td>
+                    <form>
+                        <td><button name="button" class="my_btn" value="schvaleno @medicalBill.MedicallBillId" asp-action="InRequest">Schválit</button></td>
+                        <td><button name="button" class="my_btn" value="zamitnuto @medicalBill.MedicallBillId" asp-action="InRequest">Zamítnout</button></td>
+                    </form>
+                </tr>
                     }
                 }
 
