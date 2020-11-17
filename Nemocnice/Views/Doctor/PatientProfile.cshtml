@@ -207,7 +207,7 @@
             </tr>
         </thead>
         <tbody>
-            @if (Model.AllReports.Any())
+            @if (Model.CheckupToMe.Any())
             {
                 @foreach (var item in Model.CheckupToMe)
                 {
@@ -250,7 +250,7 @@
             </tr>
         </thead>
         <tbody>
-            @if (Model.AllReports.Any())
+            @if (Model.CheckupToOther.Any())
             {
                 @foreach (var item in Model.CheckupToOther)
                 {

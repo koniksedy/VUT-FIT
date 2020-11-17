@@ -578,7 +578,15 @@ namespace Nemocnice.Controllers
             DoctorDisplayPatientModel model = new DoctorDisplayPatientModel();
 
             // Získání informací o pacientovi.
-            int patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
+            int patientId;
+            try
+            {
+                patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
+            }
+            catch
+            {
+                return RedirectToAction("Card");
+            }
             Data.User patient = db.UserT.Where(o => o.UserId == patientId).ToList().First();
             model.Name = patient.Name;
             model.Surname = patient.Surname;
