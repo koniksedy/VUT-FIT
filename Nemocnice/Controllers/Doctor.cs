@@ -615,7 +615,7 @@ namespace Nemocnice.Controllers
 #endif
                                                         ).Select(s => s.CreateDate).ToList();
 
-            model.CheckupToMe = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum
+            model.CheckupToMe = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.State != "dokončeno"
 #if (!TEST)
                                                              && o.ToDoctor.UserId == id_list.First()
 #endif
@@ -715,18 +715,170 @@ namespace Nemocnice.Controllers
 
         public IActionResult CheckupIn(long patientNum,  DateTime date)
         {
-            return View();
+            // Získání informací o pacientovi a doktorovi
+            int patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
+            int doctorId = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.CreatedBy.UserId).ToList().First();
+            Data.User patient = db.UserT.Where(o => o.UserId == patientId).ToList().First();
+            Data.User doctor = db.UserT.Where(o => o.UserId == doctorId).ToList().First();
+
+            string state = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.State).ToList().First();
+
+            CheckupInModel model = new CheckupInModel
+            {
+                PatientName = patient.Name,
+                PatienSurname = patient.Surname,
+                PatientTitle = patient.Title,
+                SocialSecurityNumber = patientNum,
+                DoctorName = doctor.Name,
+                DoctorSurname = doctor.Surname,
+                DoctorTitle = doctor.Title,
+                DoctorICZ = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.CreatedBy.ICZ).ToList().First(),
+                State = state,
+                Date = date,
+                RequestText = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.Description).ToList().First()
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult TicketActualizeState()
+        {
+            long patientNumber = long.Parse(Request.Form["patientNumber"]);
+            DateTime createDate = DateTime.Parse(Request.Form["ticketDate"]);
+            string newState = Request.Form["newState"];
+
+            db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNumber && o.CreateDate == createDate)
+                .ToList().First().State = newState;
+            db.SaveChanges();
+
+            return RedirectToAction("CheckupIn", new { patientNum = patientNumber, date = createDate });
+        }
+
+        [HttpPost]
+        public IActionResult FinishTicket()
+        {
+            long patientNumber = long.Parse(Request.Form["patientNumber"]);
+            DateTime createDate = DateTime.Parse(Request.Form["ticketDate"]);
+            string reportText = Request.Form["reportText"];
+
+            CheckupTicket ticket = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNumber && o.CreateDate == createDate).ToList().First();
+            ticket.FinishDate = DateTime.Now;
+            ticket.State = "dokončeno";
+            ticket.Result = reportText;
+            db.SaveChanges();
+
+            return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
         }
 
         public IActionResult CheckupOut(long patientNum, DateTime date)
         {
-            return View();
+            // Získání informací o pacientovi a doktorovi
+            int patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
+            int doctorId = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.CreatedBy.UserId).ToList().First();
+            Data.User patient = db.UserT.Where(o => o.UserId == patientId).ToList().First();
+            Data.User doctor = db.UserT.Where(o => o.UserId == doctorId).ToList().First();
+
+            string state = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.State).ToList().First();
+
+            CheckupOutModel model = new CheckupOutModel
+            {
+                PatientName = patient.Name,
+                PatienSurname = patient.Surname,
+                PatientTitle = patient.Title,
+                SocialSecurityNumber = patientNum,
+                DoctorName = doctor.Name,
+                DoctorSurname = doctor.Surname,
+                DoctorTitle = doctor.Title,
+                DoctorICZ = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.CreatedBy.ICZ).ToList().First(),
+                State = state,
+                CreateDate = date,
+                FinishDate = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.FinishDate).ToList().First(),
+                RequestText = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.Description).ToList().First(),
+                ReportText = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.Result).ToList().First()
+            };
+
+            return View(model);
         }
 
-        public IActionResult NewCheckup(long patienNum)
+        public IActionResult NewCheckup(long patientNum)
         {
-            return View();
+            // Získání informací o pacientovi.
+            int userId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
+            Data.User user = db.UserT.Where(o => o.UserId == userId).ToList().First();
+            NewCheckupModel model = new NewCheckupModel
+            {
+                Name = user.Name,
+                Surname = user.Surname,
+                Title = user.Title,
+                SocialSecurityNum = patientNum
+            };
+            return View(model);
         }
+
+        [HttpPost]
+        public IActionResult CreateNewCheckup()
+        {
+            // Zíslání proměnných
+            long patientNumber = long.Parse(Request.Form["patientNum"]);
+            string checkupText = Request.Form["checkupText"];
+            string doctorString = Request.Form["doctorName"];
+            int idxStart = doctorString.IndexOf('(') + 1;
+            int stringLen = doctorString.IndexOf(')') - idxStart;
+            int doctorICZ = int.Parse(doctorString.Substring(idxStart, stringLen));
+
+            // Aktuální doktor
+            Data.Doctor doctor;
+#if (!TEST)
+            doctor = db.DoctorT.Where(o => o.UserId == id_list.First()).ToList().First();
+#else
+            // Pokud testový Doctor s UserId ještě neexistuje, vytvoříme jej.
+            if (!db.DoctorT.Where(o => o.UserId == 987654321).ToList().Any())
+            {
+                doctor = new Data.Doctor
+                {
+                    UserId = 987654321,
+                    WorkPhone = "777777777"
+                };
+                db.DoctorT.Add(doctor);
+                db.SaveChanges();
+            }
+            else
+            {
+                doctor = db.DoctorT.Where(o => o.UserId == 987654321).ToList().First();
+            }
+#endif
+
+            CheckupTicket ticket = new CheckupTicket
+            {
+                CreatedBy = doctor,
+                ToDoctor = db.DoctorT.Where(o => o.ICZ == doctorICZ).ToList().First(),
+                Patient = db.PatientT.Where(o => o.SocialSecurityNum == patientNumber).ToList().First(),
+                Description = checkupText,
+                State = "žádost vytvořena",
+                CreateDate = DateTime.Now
+            };
+            db.CheckupTicketT.Add(ticket);
+            db.SaveChanges();
+
+            foreach(string diag in Request.Form["Diagnosis[]"])
+            {
+                int start = diag.IndexOf('(') + 1;
+                int len = diag.IndexOf(')') - start;
+                int id = int.Parse(diag.Substring(start, len));
+
+                db.TicketPerDiagnosisT.Add(new TicketPerDiagnosis
+                {
+                    Diagnosis = db.DiagnosisT.Where(o => o.DiagnosisId == id).ToList().First(),
+                    CheckupTicket = ticket
+                });
+                // Možná může bát save až za forem.
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
+        }
+
 
         public IActionResult Requests()
         {

@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nemocnice.Data
 {
+    // TODO - weight na int
+    // TODO - height na int
     public class HealthCondition
     {
         // rodné číslo

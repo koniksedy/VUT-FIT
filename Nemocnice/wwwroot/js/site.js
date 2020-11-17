@@ -93,3 +93,23 @@ function curedFunction(thatButton) {
 function redirectToAction(hr) {
     window.location.href = hr;
 }
+
+
+// add row
+$("#addRowCheckup").click(function () {
+    var html = '';
+    html += '<div id="inputFormRowCheckup">';
+    html += '<div class="input-group mb-3">';
+    html += '<input type="text" name="Diagnosis[]" class="form-control m-input" placeholder="Diagnoza" autocomplete="off">';
+    html += '<div class="input-group-append">';
+    html += '<button id="removeRowCheckup" type="button" class="btn btn-danger">Smazat</button>';
+    html += '</div>';
+    html += '</div>';
+
+    $('#newRow').append(html);
+});
+
+// remove row
+$(document).on('click', '#removeRowCheckup', function () {
+    $(this).closest('#inputFormRowCheckup').remove();
+});

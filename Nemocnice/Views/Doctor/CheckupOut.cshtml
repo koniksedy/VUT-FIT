@@ -1,5 +1,25 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Příchozí žádost";
 }
+
+@model CheckupOutModel
+
+<div>
+    Patient: <b>@Model.PatientName @Model.PatienSurname@(String.IsNullOrEmpty(Model.PatientTitle) ? "" : ", " + Model.PatientTitle) (@Model.SocialSecurityNumber)</b><br />
+    Doctor:  <b>@Model.DoctorName @Model.DoctorSurname@(String.IsNullOrEmpty(Model.DoctorTitle) ? "" : ", " + Model.DoctorTitle) (@Model.DoctorICZ)</b><br />
+    Stav: @Model.State
+</div>
+
+<div>
+    <label>
+        Žádost [@Model.CreateDate]
+    </label>
+    <textarea cols="100" rows="10" readonly>@Model.RequestText</textarea>
+</div>
+
+<div>
+    <label>
+        Zpráva z vyšetření @((Model.State == "dokončeno") ? "[" + Model.FinishDate + "]" : "")
+        <textarea cols="100" rows="10" readonly>@Model.ReportText</textarea>
+    </label>
+</div>

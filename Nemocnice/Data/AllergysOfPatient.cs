@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Nemocnice.Data
 {
+    // TODO - smazat, pacient bude mít alergie ručně psané do stringu
     public class AllergysOfPatient
     {
         [Required]

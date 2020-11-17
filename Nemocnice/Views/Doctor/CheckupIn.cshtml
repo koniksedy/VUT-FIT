@@ -1,5 +1,40 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Příchozí žádost";
 }
+
+@model CheckupInModel
+
+<div>
+    Patient: <b>@Model.PatientName @Model.PatienSurname@(String.IsNullOrEmpty(Model.PatientTitle) ? "" : ", " + Model.PatientTitle) (@Model.SocialSecurityNumber)</b><br />
+    Doctor:  <b>@Model.DoctorName @Model.DoctorSurname@(String.IsNullOrEmpty(Model.DoctorTitle) ? "" : ", " + Model.DoctorTitle) (@Model.DoctorICZ)</b><br />
+    Vytvořeno: <b>@Model.Date</b>
+</div>
+
+
+<div>
+    <form asp-action="TicketActualizeState" method="post">
+        <label>Stav:</label>
+        <input type="text" class="form-control m-input" name="newState" value="@Model.State" />
+        <input hidden name="patientNumber" value="@Model.SocialSecurityNumber" />
+        <input hidden name="ticketDate" value="@Model.Date" />
+        <input class="btn btn-primary" type="submit" value="Aktualizovat">
+    </form>
+</div>
+
+<div>
+    <textarea cols="100" rows="10" readonly>@Model.RequestText</textarea>
+</div>
+
+<div>
+    <form asp-action="FinishTicket" method="post">
+        <label>Zpráva o vyšetření:</label>
+        <div>
+            <textarea cols="100" rows="10" name="reportText"></textarea>
+        </div> 
+        <input hidden name="patientNumber" value="@Model.SocialSecurityNumber" />
+        <input hidden name="ticketDate" value="@Model.Date" />
+        <div>
+            <input class="btn btn-primary" type="submit" value="Odeslat">
+        </div>
+    </form>
+</div>
