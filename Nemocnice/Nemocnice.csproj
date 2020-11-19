@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-
     <PackageReference Include="cloudscribe.Pagination.Models" Version="1.1.0" />
     <PackageReference Include="cloudscribe.Web.Pagination" Version="3.1.0" />
     <PackageReference Include="LazZiya.TagHelpers" Version="5.0.0" />
