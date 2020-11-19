@@ -9,5 +9,6 @@ namespace Nemocnice.Data
         public int DiagnosisId { get; set; }
         [Required]
         public string Name { get; set; }
+
     }
 }
