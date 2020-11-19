@@ -83,3 +83,78 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+/* Pojistovna
+-------------------------------------------------- */
+.pojistovna-nadpis{
+    margin-top: 1em;
+}
+
+.search-doctor {
+    margin-top: 3em;
+}
+
+#search{
+    margin-left: 1em;
+}
+
+.pridat {
+    margin-left: 3em;
+    margin-right: 1em;
+}
+
+.my_btn{
+    color: dodgerblue;
+    background: none;
+    border: none;
+}
+
+.my_btn:hover{
+    color: darkslategrey;
+    text-decoration: none;
+    border: none;
+}
+
+.all {
+    text-align: right;
+    color: dodgerblue;
+    background: none;
+    border: none;
+}
+
+
+.all:hover {
+    color: darkslategrey;
+    text-decoration: none;
+    border: none;
+}
+
+#left{
+    float: left;
+    margin-bottom: 2em;
+}
+
+
+#right {
+    float: right;
+    margin-right: 8em;
+    margin-bottom: 2em;
+}
+
+#payment{
+    margin-top: 3em;
+}
+
+#payment-down-left {
+    float: left;
+}
+
+#payment-down-right {
+    float: right;
+}
+
+
+
+
+
+

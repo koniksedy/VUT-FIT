@@ -1030,8 +1030,9 @@ namespace Nemocnice.Controllers
             return View();
         }
 
-        public IActionResult InRequest()
+        public IActionResult InRequest(string sortOrder, string searchString)
         {
+            ViewData["Search"] = searchString;
             var db = new DatabaseContext();
 
             List<CheckupTicketToMe> MyInRequests = new List<CheckupTicketToMe>();
@@ -1040,11 +1041,15 @@ namespace Nemocnice.Controllers
             var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
 
 
+
 #if (!TEST)
             if(id_list.Any())
             {
                 MyInRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno").Where(o => o.ToDoctor.UserId == id_list.First())
 #else
+
+            if (String.IsNullOrEmpty(searchString))
+            {
                 MyInRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno")
 #endif
                 .Select(s => new CheckupTicketToMe
@@ -1055,31 +1060,74 @@ namespace Nemocnice.Controllers
                     FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
                     CreationDate = s.CreateDate.ToString("dd.MM.yyyy")
                 }
-                ).ToList().OrderByDescending(o => DateTime.Parse(o.CreationDate)).ToList();
+                ).ToList();
+            }
+            else
+            {
+                Int64 parseRes;
+                if (Int64.TryParse(searchString, out parseRes))
+                {
+                    MyInRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno").Select(s => new CheckupTicketToMe
+                    {
+                    PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
+                    PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
+                    SocialSecurityNumber = s.Patient.SocialSecurityNum,
+                    FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
+                    CreationDate = s.CreateDate.ToString("dd.MM.yyyy")
+                    }
+                ).Where(s => s.SocialSecurityNumber == parseRes).ToList();
+                }
+                else
+                {
+                    MyInRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno").Select(s => new CheckupTicketToMe
+                    {
+                        PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
+                        PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
+                        SocialSecurityNumber = s.Patient.SocialSecurityNum,
+                        FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
+                        CreationDate = s.CreateDate.ToString("dd.MM.yyyy")
+                    }
+                    ).Where(s => s.PatientName.Contains(searchString) || s.PatientSurname.Contains(searchString) || s.FromDoctor.Contains(searchString)).ToList();
+                }
+            }
+
 #if (!TEST)
             }
 #endif
-
+                switch (sortOrder)
+            {
+                case "bySurname":
+                    MyInRequests = MyInRequests.OrderBy(s => s.PatientSurname).ToList();
+                    break;
+                case "byName":
+                    MyInRequests = MyInRequests.OrderBy(s => s.PatientName).ToList();
+                    break;
+                case "byNumber":
+                    MyInRequests = MyInRequests.OrderBy(s => s.SocialSecurityNumber).ToList();
+                    break;
+                case "byDoctor":
+                    MyInRequests = MyInRequests.OrderBy(s => s.FromDoctor).ToList();
+                    break;
+                default:
+                    MyInRequests = MyInRequests.OrderByDescending(o => DateTime.Parse(o.CreationDate)).ToList();
+                    break;
+            }
 
             return View(MyInRequests);
         }
 
-        public IActionResult OutRequest()
+        public IActionResult OutRequest(string sortOrder, string searchString)
         {
             var db = new DatabaseContext();
-
+            ViewData["Search"] = searchString;
             List<CheckupTicketToOtherModel> MyOutRequests = new List<CheckupTicketToOtherModel>();
 
             string user = User.FindFirstValue(ClaimTypes.Name);
             var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
 
-#if (!TEST)
-            if (id_list.Any())
+            if (String.IsNullOrEmpty(searchString))
             {
-                MyOutRequests = db.CheckupTicketT.Where(o => o.CreatedBy.UserId == id_list.First())
-#else
                 MyOutRequests = db.CheckupTicketT
-#endif
                 .Select(s => new CheckupTicketToOtherModel
                 {
                     PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
@@ -1089,16 +1137,73 @@ namespace Nemocnice.Controllers
                     CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
                     State = s.State == "dokončeno"
                 }
-                ).ToList().OrderByDescending(p => DateTime.Parse(p.CreationDate)).ToList();
+                               ).ToList().OrderByDescending(p => DateTime.Parse(p.CreationDate)).ToList();
                 MyOutRequests.Sort((x, y) => (y.State == x.State) ? DateTime.Compare(DateTime.Parse(y.CreationDate), DateTime.Parse(x.CreationDate)) : (x.State ? 1 : -1));
-#if (!TEST)
             }
-#endif
+            else
+            {
+                Int64 parseRes;
+                if (Int64.TryParse(searchString, out parseRes))
+                {
+                    MyOutRequests = db.CheckupTicketT
+                    .Select(s => new CheckupTicketToOtherModel
+                    {
+                        PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
+                        PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
+                        SocialSecurityNumber = s.Patient.SocialSecurityNum,
+                        ToDoctor = db.UserT.Where(o => o.UserId == s.ToDoctor.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
+                        CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
+                        State = s.State == "dokončeno"
+                    }
+               ).Where(s => s.SocialSecurityNumber == parseRes).ToList();
+                    MyOutRequests.Sort((x, y) => (y.State == x.State) ? DateTime.Compare(DateTime.Parse(y.CreationDate), DateTime.Parse(x.CreationDate)) : (x.State ? 1 : -1));
+                }
+                else
+                {
+                    MyOutRequests = db.CheckupTicketT
+                    .Select(s => new CheckupTicketToOtherModel
+                    {
+                        PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
+                        PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
+                        SocialSecurityNumber = s.Patient.SocialSecurityNum,
+                        ToDoctor = db.UserT.Where(o => o.UserId == s.ToDoctor.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
+                        CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
+                        State = s.State == "dokončeno"
+                    }
+               ).Where(s => s.PatientName.Contains(searchString) || s.PatientSurname.Contains(searchString) || s.ToDoctor.Contains(searchString)).ToList();
+                    MyOutRequests.Sort((x, y) => (y.State == x.State) ? DateTime.Compare(DateTime.Parse(y.CreationDate), DateTime.Parse(x.CreationDate)) : (x.State ? 1 : -1));
+                }
+            }
+
+                switch (sortOrder)
+            {
+                case "bySurname":
+                    MyOutRequests = MyOutRequests.OrderBy(s => s.PatientSurname).ToList();
+                    break;
+                case "byName":
+                    MyOutRequests = MyOutRequests.OrderBy(s => s.PatientName).ToList();
+                    break;
+                case "byNumber":
+                    MyOutRequests = MyOutRequests.OrderBy(s => s.SocialSecurityNumber).ToList();
+                    break;
+                case "byDoctor":
+                    MyOutRequests = MyOutRequests.OrderBy(s => s.ToDoctor).ToList();
+                    break;
+                case "byState":
+                    MyOutRequests = MyOutRequests.OrderBy(s => s.State).ToList();
+                    break;
+                default:
+                    MyOutRequests = MyOutRequests.OrderByDescending(o => DateTime.Parse(o.CreationDate)).ToList();
+                    break;
+            }
+
+
             return View(MyOutRequests);
         }
 
-        public IActionResult InFinishRequest()
+        public IActionResult InFinishRequest(string sortOrder, string searchString)
         {
+            ViewData["Search"] = searchString;
             var db = new DatabaseContext();
 
             List<CheckupTicketToMeFinish> MyFinishRequests = new List<CheckupTicketToMeFinish>();
@@ -1111,8 +1216,15 @@ namespace Nemocnice.Controllers
             {
                 MyFinishRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno").Where(o => o.ToDoctor.UserId == id_list.First())
 #else
-            MyFinishRequests = db.CheckupTicketT.Where(o => o.State == "dokončeno")
+
+#if (!TEST)
+            }
 #endif
+#endif
+
+            if (String.IsNullOrEmpty(searchString))
+            {
+                MyFinishRequests = db.CheckupTicketT.Where(o => o.State == "dokončeno")
                 .Select(s => new CheckupTicketToMeFinish
                 {
                     PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
@@ -1122,10 +1234,64 @@ namespace Nemocnice.Controllers
                     CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
                     FinishDate = s.FinishDate.ToString("dd.MM.yyyy")
                 }
-            ).ToList().OrderByDescending(o => DateTime.Parse(o.CreationDate)).ToList();
-#if (!TEST)
+                           ).ToList().OrderByDescending(o => DateTime.Parse(o.CreationDate)).ToList();
             }
-#endif
+            else
+            {
+                {
+                    Int64 parseRes;
+                    if (Int64.TryParse(searchString, out parseRes))
+                    {
+                        MyFinishRequests = db.CheckupTicketT.Where(o => o.State == "dokončeno")
+                        .Select(s => new CheckupTicketToMeFinish
+                        {
+                            PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
+                            PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
+                            SocialSecurityNumber = s.Patient.SocialSecurityNum,
+                            FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
+                            CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
+                            FinishDate = s.FinishDate.ToString("dd.MM.yyyy")
+                        }
+                        ).Where(s => s.SocialSecurityNumber == parseRes).ToList();
+                    }
+                    else
+                    {
+                        MyFinishRequests = db.CheckupTicketT.Where(o => o.State == "dokončeno")
+                        .Select(s => new CheckupTicketToMeFinish
+                        {
+                            PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
+                            PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
+                            SocialSecurityNumber = s.Patient.SocialSecurityNum,
+                            FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
+                            CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
+                            FinishDate = s.FinishDate.ToString("dd.MM.yyyy")
+                        }
+                        ).Where(s => s.PatientName.Contains(searchString) || s.PatientSurname.Contains(searchString) || s.FromDoctor.Contains(searchString)).ToList();
+                    }
+                }
+            }
+
+                switch (sortOrder)
+            {
+                case "bySurname":
+                    MyFinishRequests = MyFinishRequests.OrderBy(s => s.PatientSurname).ToList();
+                    break;
+                case "byName":
+                    MyFinishRequests = MyFinishRequests.OrderBy(s => s.PatientName).ToList();
+                    break;
+                case "byNumber":
+                    MyFinishRequests = MyFinishRequests.OrderBy(s => s.SocialSecurityNumber).ToList();
+                    break;
+                case "byDoctor":
+                    MyFinishRequests = MyFinishRequests.OrderBy(s => s.FromDoctor).ToList();
+                    break;
+                case "byOsetreniDate":
+                    MyFinishRequests = MyFinishRequests.OrderByDescending(s => s.FinishDate).ToList();
+                    break;
+                default:
+                    MyFinishRequests = MyFinishRequests.OrderByDescending(o => DateTime.Parse(o.CreationDate)).ToList();
+                    break;
+            }
             return View(MyFinishRequests);
         }
 

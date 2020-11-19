@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nemocnice.Data;
+using ReflectionIT.Mvc.Paging;
 
 
 /*
@@ -31,6 +32,7 @@ namespace Nemocnice
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -41,7 +43,8 @@ namespace Nemocnice
             });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
-            //services.AddControllersWithViews();
+            services.AddCloudscribePagination();
+            services.AddPaging();
             services.AddRazorPages();
 
         }
