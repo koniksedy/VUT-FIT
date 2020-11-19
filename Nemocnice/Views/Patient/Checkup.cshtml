@@ -1,171 +1,170 @@
 ﻿@model Nemocnice.Models.PatientCheckupModel
 @addTagHelper *, cloudscribe.Web.Pagination
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
+
 
 @{
     ViewData["Title"] = "Vyšetření";
 }
-
+<link href="~/lib/bootstrap/dist/css/PagedList.css" rel="stylesheet" type="text/css" />
 <style>
     .radek_zaznamu {
         border: solid;
         border-top: solid;
     }
 
-    .radek_zaznamu:hover {
-        background-color: lightgray;
-    }
+        .radek_zaznamu:hover {
+            background-color: lightgray;
+        }
 </style>
 
 <h2>Aktivní prohlídky</h2>
 <div>
-    <table class="checkup table">
-        <thead>
-            <tr>
-                <th>
-                    Vytvořil
-                </th>
-                <th>
-                    Kam zajít
-                </th>
-                <th>
-                    Stav
-                </th>
-                <th>
-                    Vytvořeno
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.CheckupTicketsRunning.Count == 0)
-            {
+    <div>
+        <table class="checkup table">
+            <thead>
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <p>Nejsou zde žádné záznamy k zobrazení</p>
-                    </td>
-                    <td></td>
-                    <td></td>
+                    <th>
+                        Vytvořil
+                    </th>
+                    <th>
+                        Kam zajít
+                    </th>
+                    <th>
+                        Stav
+                    </th>
+                    <th>
+                        Vytvořeno
+                    </th>
+                    <th></th>
                 </tr>
-            }
-            @foreach (var prohlidka in Model.CheckupTicketsRunning)
-            {
-                string desc = prohlidka.State.Substring(0, prohlidka.State.Length);
-                @try
+            </thead>
+            <tbody>
+                @if (Model.CheckupTicketsRunning.Count == 0)
                 {
-                    desc = prohlidka.State.Substring(0, 37);
-                    desc = desc + "...";
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                 }
-                catch (Exception e)
+                @foreach (var prohlidka in Model.CheckupTicketsRunning)
                 {
+                    string desc = prohlidka.State.Substring(0, prohlidka.State.Length);
+                    @try
+                    {
+                        desc = prohlidka.State.Substring(0, 37);
+                        desc = desc + "...";
+                    }
+                    catch (Exception e)
+                    {
 
+                    }
+                    <tr class="radek_zaznamu">
+                        <td>
+                            @Html.DisplayFor(modelItem => prohlidka.CreatedBy.UserId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => prohlidka.ToDoctor.UserId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => desc)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => prohlidka.CreateDate)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Detail", "Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId }, null)
+                        </td>
+                    </tr>
                 }
-                <tr class="radek_zaznamu">
-                    <td>
-                        @Html.DisplayFor(modelItem => prohlidka.CreatedBy.UserId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => prohlidka.ToDoctor.UserId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => desc)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => prohlidka.CreateDate)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Detail", "Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId }, null)
-                    </td>
+            </tbody>
+        </table>
+
+        @(Html.Pager(Model.CheckupTicketsRunning).Url(page => Url.Action("Checkup", new { tab1 = page, tab2 = Model.tab2}))
+            .Classic())
+    </div>
+
+    <h2>Ukončené prohlídky</h2>
+    <div>
+        <table class="checkup table">
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořil
+                    </th>
+                    <th>
+                        Ukončil
+                    </th>
+                    <th>
+                        Výsledek
+                    </th>
+                    <th>
+                        Ukončeno
+                    </th>
+                    <th></th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @if (Model.CheckupTicketsDone.Count == 0)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+                @foreach (var prohlidka in Model.CheckupTicketsDone)
+                {
+                    string desc = prohlidka.Result.Substring(0, prohlidka.Result.Length);
+                    @try
+                    {
+                        desc = prohlidka.Result.Substring(0, 37);
+                        desc = desc + "...";
+                    }
+                    catch (Exception e)
+                    {
 
+                    }
+
+                    <tr class="radek_zaznamu">
+                        <td>
+                            @Html.DisplayFor(modelItem => prohlidka.CreatedBy)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => prohlidka.ToDoctor)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => desc)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => prohlidka.FinishDate)
+                        </td>
+                        <td>
+                            @Html.ActionLink("Detail", "Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId }, null)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        </b>
+
+        @(Html.Pager(Model.CheckupTicketsDone).Url(page => Url.Action("Checkup", new { tab1 = Model.tab1, tab2 = page}))
+            .Classic())
+
+    </div>
 </div>
 
-<h2>Ukončené prohlídky</h2>
-<div>
-    <table class="checkup table">
-        <thead>
-            <tr>
-                <th>
-                    Vytvořil
-                </th>
-                <th>
-                    Ukončil
-                </th>
-                <th>
-                    Výsledek
-                </th>
-                <th>
-                    Ukončeno
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.CheckupTicketsDone.Count == 0)
-            {
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <p>Nejsou zde žádné záznamy k zobrazení</p>
-                    </td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            }
-            @foreach (var prohlidka in Model.CheckupTicketsDone)
-            {
-                string desc = prohlidka.Result.Substring(0, prohlidka.Result.Length);
-                @try
-                {
-                    desc = prohlidka.Result.Substring(0, 37);
-                    desc = desc + "...";
-                }
-                catch (Exception e)
-                {
 
-                }
-
-                <tr class="radek_zaznamu">
-                    <td>
-                        @Html.DisplayFor(modelItem => prohlidka.CreatedBy)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => prohlidka.ToDoctor)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => desc)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => prohlidka.FinishDate)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Detail", "Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId }, null)
-                    </td>
-                </tr>
-                }
-        </tbody>
-    </table>
-    </b>
-    <cs-pager cs-paging-pagenumber=Model.Result.PageNumber
-              cs-paging-totalitems=Model.Result.TotalItems
-              cs-paging-pagesize="1"
-              cs-pagenumber-param="pageNumber"
-              asp-controller="Patient"
-              asp-action="Checkup"
-              cs-pager-li-current-class="page-item active"
-              cs-pager-li-other-class="page-item"
-              cs-pager-li-non-active-class="page-item disabled"
-              cs-pager-link-current-class="page-link"
-              cs-pager-link-other-class="page-link"
-              
-              
-              >
-              
-    </cs-pager>
-
-</div>

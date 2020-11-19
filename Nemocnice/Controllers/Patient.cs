@@ -4,11 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Nemocnice.Data;
 using Nemocnice.Models;
 using System.Linq;
-using PagedList;
-using ReflectionIT.Mvc.Paging;
-using cloudscribe.Web.Pagination;
+using X.PagedList.Mvc.Core;
 using cloudscribe.Pagination.Models;
-
+using X.PagedList;
 
 namespace Nemocnice.Controllers
 {
@@ -20,25 +18,41 @@ namespace Nemocnice.Controllers
             return View();
         }
 
-        public IActionResult PatientCard()
+        public async System.Threading.Tasks.Task<IActionResult> PatientCardAsync(PatientCardModel PatientCardModel, int? page1, int? page2, int? page3, int? select)
         {
             var db = new DatabaseContext();
-            PatientCardModel PatientCardModel = new PatientCardModel();
+
             var user = User.Identity.Name;
 
+
+
+            
+            var query = db.MedicallBillT.AsNoTracking().Where(x => x.State == null).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).OrderByDescending(s => s.CreateDate);
             PatientCardModel.User = db.UserT.Where(x => x.Login == user).Include(s => s.WorkAddress).FirstOrDefault();
             PatientCardModel.Patient = db.PatientT.Where(x => x.UserId == PatientCardModel.User.UserId).Include(s => s.HomeAddress).Include(s => s.HealthCondition).FirstOrDefault();
+            PatientCardModel.medicallActivityPrice = db.MedicallActivityPriceT.ToList();
 
+            PatientCardModel.Records1 = db.MedicallBillT.Where(x => x.State == null).Count();
+
+            
+            PatientCardModel.PageNum1 = (page1 ?? 1);
+            int pageSize = 3;
+            PatientCardModel.PageNum2 = (page2 ?? 1);
+            PatientCardModel.PageNum3 = (page3 ?? 1);
+            PatientCardModel.TabNumber = (select ?? 1);
+            IPagedList<MedicallActivityPrice> lide1 = PatientCardModel.medicallActivityPrice.ToPagedList(PatientCardModel.PageNum1, pageSize);
+            IPagedList<MedicallActivityPrice> lide2 = PatientCardModel.medicallActivityPrice.ToPagedList(PatientCardModel.PageNum2, pageSize);
+            IPagedList<MedicallActivityPrice> lide3 = PatientCardModel.medicallActivityPrice.ToPagedList(PatientCardModel.PageNum3, pageSize);
+            PatientCardModel.medicallBills1 = lide1;
+            PatientCardModel.medicallBills2 = lide2;
+            PatientCardModel.medicallBills3 = lide3;
             return View(PatientCardModel);
         }
 
-        public async System.Threading.Tasks.Task<IActionResult> CheckupAsync(int pageNumber = 1, int pageSize = 3)
+        public async System.Threading.Tasks.Task<IActionResult> CheckupAsync(PatientCheckupModel PatientCheckupModel, int? tab1, int? tab2)
         {
-
-            int ExcludeRecord = (pageSize * pageNumber) - pageSize;
             var db = new DatabaseContext();
 
-            PatientCheckupModel PatientCheckupModel = new PatientCheckupModel();
             var user = User.Identity.Name;
 
             var query = db.CheckupTicketT.Where(x => x.State == "dokončeno").OrderByDescending(s => s.CreateDate);
@@ -46,18 +60,15 @@ namespace Nemocnice.Controllers
             PatientCheckupModel.User = db.UserT.Where(x => x.Login == user).Include(s => s.WorkAddress).FirstOrDefault();
             PatientCheckupModel.Patient = db.PatientT.Where(x => x.UserId == PatientCheckupModel.User.UserId).Include(s => s.HomeAddress).Include(s => s.HealthCondition).FirstOrDefault();
             //PatientCheckupModel.CheckupTicketsDone = db.CheckupTicketT.Where(x => x.State == "dokončeno" ).ToList();
-            PatientCheckupModel.CheckupTicketsRunning = db.CheckupTicketT.Where(x => x.State != "dokončeno").ToList();
-            PatientCheckupModel.CheckupTicketsDone = db.CheckupTicketT.Where(x => x.State == "dokončeno").OrderByDescending(s => s.CreateDate).Skip(ExcludeRecord).Take(pageSize).ToList();
 
-            var result = new PagedResult<CheckupTicket>
-            {
-                Data = db.CheckupTicketT.AsNoTracking().Where(x => x.State == "dokončeno").ToList(),
-                TotalItems = PatientCheckupModel.CheckupTicketsDone.Count(),
-                PageNumber = pageNumber,
-                PageSize = pageSize
+            PatientCheckupModel.tab1 = (tab1 ?? 1);
+            PatientCheckupModel.tab2 = (tab2 ?? 1);
+            int pageSize = 3;
 
-            };
-            PatientCheckupModel.Result = result;
+            PatientCheckupModel.CheckupTicketsRunning = db.CheckupTicketT.Where(x => x.State != "dokončeno").ToPagedList(PatientCheckupModel.tab1, pageSize);
+            PatientCheckupModel.CheckupTicketsDone = db.CheckupTicketT.Where(x => x.State == "dokončeno").ToPagedList(PatientCheckupModel.tab2, pageSize);
+
+
 
             return View(PatientCheckupModel);
         }

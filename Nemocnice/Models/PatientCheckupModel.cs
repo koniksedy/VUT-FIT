@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ReflectionIT.Mvc.Paging;
-using cloudscribe.Pagination.Models;
+using X.PagedList;
+
 
 namespace Nemocnice.Models
 {
@@ -12,8 +12,9 @@ namespace Nemocnice.Models
     {
         public User User { get; set; }
         public Patient Patient { get; set; }
-        public List<CheckupTicket> CheckupTicketsDone {get;set;}
-        public List<CheckupTicket> CheckupTicketsRunning { get; set; }
-        public PagedResult<CheckupTicket> Result { get; set; }
+        public IPagedList<CheckupTicket> CheckupTicketsDone {get;set;}
+        public IPagedList<CheckupTicket> CheckupTicketsRunning { get; set; }
+        public int tab1 { get; set; }
+        public int tab2 { get; set; }
     }
 }
