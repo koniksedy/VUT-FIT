@@ -28,21 +28,29 @@
 
 
 
-<h2> Karta Pacienta</h2>
-
 <div class="row">
     <div class="column">
+        <h2> Karta Pacienta</h2>
         <img src="~/Img/Shared/userImg.jpg" class="user_logo" height="60" width="60" style="margin-bottom : 10px" /></a>
         <a><b> @Model.User.Title    </b></a>
         <a><b> @Model.User.Name     </b></a>
         <a><b> @Model.User.Surname  </b></a><br />
         <a><b>Telefon:</b> @Model.User.Phone</a><br />
-        <a><b>Email:  </b> @Model.User.Email</a><br />
+        <a><b>Email:<span></span></b> @Model.User.Email</a><br />
+        <a><b>Rodné číslo:  </b> @Model.Patient.SocialSecurityNum </a><br />
+        <a><b>Pojišťovna:  </b> @Model.Patient.InsuranceCompany</a><br />
+        <a><b>Adresa:  </b> @Model.Patient.HomeAddress.HouseNumber @Model.Patient.HomeAddress.StreetName @Model.Patient.HomeAddress.City @Model.Patient.HomeAddress.ZIP</a><br />
+
 
     </div>
     <div class="column">
         <h2>Aktuální stav</h2>
-
-
+        <a><b>Datum poslední prohlídky: </b> @Model.Patient.HealthCondition.LastCheckupDate</a><br />
+        <a><b>Výška: </b> @Model.Patient.HealthCondition.Height cm</a><br />
+        <a><b>Váha: </b> @Model.Patient.HealthCondition.Weight kg</a><br />
+        <a><b>Krevní typ: </b> @Model.Patient.HealthCondition.BloodType</a>
     </div>
 </div>
+
+@Html.DropDownListFor(m => m.StudentGender,
+            new SelectList(Enum.GetValues(typeof(ResultOption))))

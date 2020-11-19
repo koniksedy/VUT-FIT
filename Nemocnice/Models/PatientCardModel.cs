@@ -10,5 +10,8 @@ namespace Nemocnice.Models
     {
         public User User { get; set; }
         public Patient Patient { get; set; }
+        public ResultOption StudentGender { get; set; }
+        public int StId { get; set; }
+        public IEnumerable<State> States { get; set; }
     }
 }
