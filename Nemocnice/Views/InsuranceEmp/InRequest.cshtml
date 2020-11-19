@@ -1,0 +1,101 @@
+﻿@using Nemocnice.Data;
+@addTagHelper *, LazZiya.TagHelpers
+@model InsuranceModel
+
+
+<div class="pojistovna">
+    <h1 class="pojistovna-nadpis">Žádosti o proplacení lékařských úkonů</h1>
+
+    <form asp-action="InRequest" method="get">
+        <div class="search-doctor">
+            <p id="left">
+                <label>Jméno lékaře:</label><input type="text" name="SearchString" id="search" autocomplete="off">
+                <input type="submit" value="Hledat" class="my_btn"> | <a asp-action="InRequest" class="my_btn">Zpět na všechny výpisy</a>
+            </p>
+            <p id="right">
+                <button name="buttonAll" class="all" value="schvalit-vse" asp-action="InRequest">Schválit vše</button> | <button name="buttonAll" class="all" value="zamitnout-vse" asp-action="InRequest">Zamítnout vše</button>
+            </p>
+        </div>
+    </form>
+
+    <div class="table">
+        <table>
+
+            @if (Model.medicallBills == null)
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <p>Nejsou zde žádné záznamy k zobrazení</p>
+                    </td>
+                </tr>
+            }
+
+            <thead>
+                <tr>
+                    <th>
+                        Id žádosti
+                    </th>
+                    <th>
+                        Doktor
+                    </th>
+                    <th>
+                        RČ pacienta
+                    </th>
+                    <th>
+                        @Html.ActionLink("Výkon (Kč)", "InRequest", new { SortOrder = "cena", searchString = ViewData["Search"] })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Diagnóza", "InRequest", new { SortOrder = "diagnoza", searchString = ViewData["Search"] })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Datum výkonu", "InRequest", new { SortOrder = "datum", searchString = ViewData["Search"] })
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var medicalBill in Model.medicallBills)
+                {
+                    using (var db = new DatabaseContext())
+                    {
+                        var name = db.UserT.Where(x => x.UserId == medicalBill.Doctor.UserId).Select(x => x.Name);
+                        var surname = db.UserT.Where(x => x.UserId == medicalBill.Doctor.UserId).Select(x => x.Surname);
+
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => medicalBill.MedicallBillId)</td>
+                            <td>@Html.DisplayFor(modelItem => name) @Html.DisplayFor(modelItem => surname)</td>
+                            <td>@medicalBill.SocialSecurityNum</td>
+                            <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Amount)</td>
+                            <td>@medicalBill.Diagnosis.Name</td>
+                            <td>@medicalBill.CreateDate</td>
+                            <td>@medicalBill.State</td>
+                            <form>
+                                <td><button name="button" class="my_btn" value="schvaleno @medicalBill.MedicallBillId" asp-action="InRequest">Schválit</button></td>
+                                <td><button name="button" class="my_btn" value="zamitnuto @medicalBill.MedicallBillId" asp-action="InRequest">Zamítnout</button></td>
+                            </form>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+
+        <br />
+        <paging total-records="Model.Records"
+                page-no="Model.PageNum"
+                page-size="Model.PageSize"
+                show-total-pages="false"
+                show-total-records="false"
+                show-page-size-nav="false">
+        </paging>
+
+
+
+    </div>
+
+
+</div>

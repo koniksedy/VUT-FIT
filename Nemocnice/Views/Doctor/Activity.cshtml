@@ -20,6 +20,18 @@
 
     <div class="table">
         <table>
+
+            @if (Model.medicallBills == null)
+            {
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <p>Nejsou zde žádné záznamy k zobrazení</p>
+                    </td>
+                </tr>
+            }
+
             <thead>
                 <tr>
                     <th>
