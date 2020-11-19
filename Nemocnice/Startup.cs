@@ -43,6 +43,7 @@ namespace Nemocnice
             });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
+            services.AddCloudscribePagination();
             services.AddPaging();
             services.AddRazorPages();
 
