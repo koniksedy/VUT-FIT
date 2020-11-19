@@ -29,8 +29,15 @@ namespace Nemocnice.Controllers
 
         public async Task<IActionResult> InRequest(string searchString, string SortOrder, string button, string buttonAll, InsuranceModel model, int p = 1)
         {
+            /* OBNOVA DAT */
+            /*
+            List<MedicallBill> a = this.Context.MedicallBillT.Where(a => a.State == "schváleno").ToList();
+            a.ForEach(a => { a.State =null; });
+            List<MedicallBill> b = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
+            b.ForEach(a => { a.DecisionDate = DateTime.Now; ; });
+            this.Context.SaveChanges();
+            */
 
-            
             if (!String.IsNullOrEmpty(button))
             {
                 String[] words = button.Split(" ");
