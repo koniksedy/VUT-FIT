@@ -88,3 +88,7 @@ body {
 tr:hover{
     background-color: lightblue;
 }
+
+.null_record {
+    text-align: center;
+}
