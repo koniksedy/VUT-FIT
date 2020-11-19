@@ -1,5 +1,5 @@
 ﻿/*
- * Třída kontroleru uživatele s rolí Doctor.
+ * Soubor kontroleru uživatele s rolí Doctor, nebo Admin.
  * Autor: Michal Šedý <xsedym02>
  * Poslední úprave: 12.11.2020
  */
@@ -7,6 +7,7 @@
 /*
  * Testovací makro, když je nastaveno nejsou pacienti filtrování dle doktorů.
  * Všichni doktori vydí všechno.
+ * TODO - odstranit
  */
 #define TEST    
 
@@ -27,10 +28,10 @@ using Nemocnice.Models;
 namespace Nemocnice.Controllers
 {
     /*
-     * Třída kontroleru obslujujícího uživatele s oprávněním Doktor.
+     * Třída kontroleru zpracovávající požadavky uživatele s oprávněním Doktor, nebo Admin.
      * K jednotlivým akcím a následně zobrazením může přistoupit pouze oprávněný uživatel.
      */
-    [Authorize(Roles = "Doctor")]
+    [Authorize(Roles = "Doctor,Admin")]
     public class Doctor : Controller
     {
         /*
@@ -49,12 +50,6 @@ namespace Nemocnice.Controllers
         }
 
 
-        public IActionResult Index()
-        {
-            return View();
-        }
-
-
         /*
          * Akce karotéky. Vypíše všechny pacienty uložené v databázi.
          * sortOrder - typ řazení (podle jnéma, příjmení, rodného čísla)
@@ -66,74 +61,74 @@ namespace Nemocnice.Controllers
             // Při řazení výsledků budeme už vědět, o jaké výsledky se jedná.
             ViewData["Search"] = searchString;
 
-            // Seznam všech pacientů v databázi
+            // Model - Seznam všech pacientů v databázi
             List<CardModel> Patients;
-
             
             // Získání údajů ke každému pacientovi (Příjmení, Jméno, Titul, R.Č., pojišťovny).
             // Informace jsou získávány ze spojení dvou tabulek: PatientT (R.Č., pojišťovna) a UserT (Příjmení, Jméno, Titul).
             if (String.IsNullOrEmpty(searchString))
             {
                 // Není použito vyhledávání (chceme všechny pacienty)
-                Patients =
-                    db.PatientT.Join(
-                        db.UserT,
-                        patient => patient.UserId,
-                        user => user.UserId,
-                        (patient, user) => new CardModel
-                        {
-                            Surname = user.Surname,
-                            Name = user.Name,
-                            Title = user.Title,
-                            SocialSecurityNum = patient.SocialSecurityNum,
-                            Insurance = patient.InsuranceCompany
-                        }
-                        ).ToList();
+                Patients =  db.PatientT.Join(db.UserT,
+                                patient => patient.UserId,
+                                user => user.UserId,
+                                (patient, user) => new CardModel
+                                {
+                                    PatientFullName = new NameModel
+                                    {
+                                        Surname = user.Surname,
+                                        Name = user.Name,
+                                        Title = user.Title,
+                                    },
+                                    SocialSecurityNum = patient.SocialSecurityNum,
+                                    Insurance = patient.InsuranceCompany
+                                }
+                                ).ToList();
             }
             else
             {
                 // Je potřeba vyhledat konkrétní pacienty odpovídající hledanému výrazu.
                 // Hledání probíhá skrz položky (Jméno, Příjmení, R.Č.).
-                // Rodné číslo je převáděno na string. Hledání probíhá na základě StartsWith.
-                Patients =
-                db.PatientT.Join(
-                    db.UserT,
-                    patient => patient.UserId,
-                    user => user.UserId,
-                    (patient, user) => new CardModel
-                    {
-                        Surname = user.Surname,
-                        Name = user.Name,
-                        Title = user.Title,
-                        SocialSecurityNum = patient.SocialSecurityNum,
-                        Insurance = patient.InsuranceCompany
-                    }
-                    ).Where(s => s.SocialSecurityNum.ToString().StartsWith(searchString) ||
-                                    s.Name.StartsWith(searchString) ||
-                                    s.Surname.StartsWith(searchString)).ToList();
+                // Rodné číslo je převáděno na string. Hledání probíhá na základě metody StartsWith.
+                Patients = db.PatientT.Join(db.UserT,
+                                patient => patient.UserId,
+                                user => user.UserId,
+                                (patient, user) => new CardModel
+                                {
+                                    PatientFullName = new NameModel
+                                    {
+                                        Surname = user.Surname,
+                                        Name = user.Name,
+                                        Title = user.Title,
+                                    },
+                                    SocialSecurityNum = patient.SocialSecurityNum,
+                                    Insurance = patient.InsuranceCompany
+                                }
+                                ).Where(s => s.SocialSecurityNum.ToString().StartsWith(searchString) ||
+                                             s.PatientFullName.Name.StartsWith(searchString) ||
+                                             s.PatientFullName.Surname.StartsWith(searchString)).ToList();
             }
 
             // Řazení dle jednotlivých krytérií nastaveních v sortOrder.
             switch (sortOrder)
             {
                 case "byName":
-                    Patients = Patients.OrderBy(o => o.Name).ToList();
+                    Patients = Patients.OrderBy(o => o.PatientFullName.Name).ToList();
                     break;
                 case "byNumber":
                     Patients = Patients.OrderBy(o => o.SocialSecurityNum).ToList();
                     break;
                 default:
-                    Patients = Patients.OrderBy(o => o.Surname).ToList();
+                    Patients = Patients.OrderBy(o => o.PatientFullName.Surname).ToList();
                     break;
             }
             
-            // TODO mohu poslat samostatný model? není tam něco navíc?
             return View(Patients);
         }
 
 
         /*
-         * Metoda pro vytvoření nového pacienta v databázi.
+         * Akce vytvoří nového pacienta v databázi.
          * Zahrnuje vytvoření Adresy, Uživatele, Pacienta, Uživatele pro Identity FW a přidělení práv.
          */
         [HttpPost]
@@ -157,7 +152,7 @@ namespace Nemocnice.Controllers
             Address address;
             User user;
 
-            // Kontrola, zda pacient již neexistuje, pokud ano, nic neděláme.
+            // Kontrola, zda pacient již existuje, pokud ano, nic neděláme.
             // TODO - vypsat upozornění
             if (db.PatientT.Where(o => o.SocialSecurityNum == socialNum).ToList().Count != 0)
             {
@@ -191,6 +186,7 @@ namespace Nemocnice.Controllers
             db.SaveChanges();
 
             // Vytvoření uživatele (Jméno, Příjmení, Titul, ...)
+            // Uživatelským jménem pacientů je jejich rodné číslo.
             user = new User
             {
                 Login = socialNum.ToString(),
@@ -212,11 +208,11 @@ namespace Nemocnice.Controllers
                 SocialSecurityNum = socialNum,
                 InsuranceCompany = insurance,
                 HomeAddress = address,
-                HealthCondition = null
+                HealthCondition = new HealthCondition { SocialSecurityNum = socialNum }
             });
             db.SaveChanges();
 
-            // Vytvoření nového uřivatele pro Identity Framework.
+            // Vytvoření nového uživatele pro Identity Framework.
             // Základní heslo je 1234567890, uživatelské jméno je shodné s rodným číslem.
             // Udělení oprávnění Patient.
             var userIdentity = new NemocniceUser { UserName = user.Login };
@@ -225,114 +221,116 @@ namespace Nemocnice.Controllers
 
             // Návrat zpět do kartotéky.
             return RedirectToAction("Card");
-
         }
 
 
         /*
-         * Metoda pro zobrazení zpráv (ne žádanek a jejich výsledků) pojících se k pacientovi.
+         * Akce zobrazí zprávy (ne žádanek a jejich výsledků) pojících se k pacientovi.
          * V základu slouží k vytvoření nové zprávy.
          * Umožňuje zobrazit a upravoval libovolné stare zprávy.
-         * Netoda zpřístupní poze ty zápisy, jejichž správcem je přihlášený doktor.
-         * (Během testování (TEST) jsou přístupné všechny záznamy všem.
-         * TODO - Odstranit TEST
-         * reportModel - model obsahující informace pro zobrazení zprávy pacienta
+         * Netoda zpřístupní pouze ty zápisy, jejichž správcem je přihlášený Doktor.
+         * Pokud se jedná o Administrátora, jsou mi zpřístupněny zprávy všech dokutorů
          * socialNum - rodné číslo zobrazovaného pacienta
-         * date - datum zobrazovaného zápisu (pro nový dápis se rovná default)
+         * date - datum zobrazovaného zápisu (pro nový zápis se rovná default)
          */
         public IActionResult Report(long socialNum, DateTime date)
         {
-            // Získání loginu přihlášeného doktora pro kontrolu přístupu ke zprávám.
-            // v id_list by vždy něco mělo být (do této metody se nemůže dostat nikdo, kdo není Doktorem,
-            // Při použití TEST k tomu může dojít. (V databázi Identity je uživatel, který není v UserT).
-            string user = User.Identity.Name;
-            var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
-
-            ReportModel reportModel = new ReportModel();
+            // Získání ID přihlášeného doktora pro kontrolu přístupu ke zprávám.
+            string userDoctor = User.Identity.Name;
+            // HACK - pokud bude databáze nekonzistentní a přihlášený uživatel nebude mít data v tabulce UserT, dojde k chybě.
+            int doctorId = db.UserT.Where(s => s.Login == userDoctor).Select(o => o.UserId).ToList().First();
+            PatientReportsModel reportsModel = new PatientReportsModel();
 
             // Kontrola modelu
             if (!ModelState.IsValid)
             {
-                return View(new ReportModel());
+                return View(new PatientReportsModel());
             }
 
-            // Nutná kontrola při nekonzistentní databázi (V databázi Identity je uživatel, který není v UserT).
-            // Němělo by k tomu dojít, ale je to celkem vhodné ponechat (Kdo ví, co se může pokazit).
-#if (!TEST)
-            if (id_list.Any())
+            IQueryable<MedicallReport> patientDoctorReports;
+            // Pokud je uživatl v roli admin, pak vidí zprávy od všech lékařů,
+            // v opačném případě pouze zprávy, kterých je zprávcem.
+            if(User.IsInRole("Admin"))
             {
-                // Získání Všech zpráv napsaných přihášeným doktorem pro pacienta s rodným číslem socialNum
-                var patiensDoctorReport = db.MedicallReportT.Where(o => (o.Patient.SocialSecurityNum == socialNum) && o.Owner.UserId == id_list.First());
-#else
-            var patiensDoctorReport = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == socialNum);
-#endif
-            // Pokud je datum default, pak se vytváří nová zpráva, jinak se zobrazuje stará.
-            reportModel.ActualReportDate = (date == default) ? DateTime.Now : date;
-            // Soubor všech zpráv, pouze data. (to stačí)
-            reportModel.AllReports = patiensDoctorReport.Select(s => s.CreateDate).ToList();
+                patientDoctorReports = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == socialNum);
+            }
+            else
+            {
+                patientDoctorReports = db.MedicallReportT.Where(o => (o.Patient.SocialSecurityNum == socialNum) && o.Owner.UserId == doctorId);
+            }
 
-            // Pokud má pasient již nějakou starší zprávu, vybereme tu o jednu jednotku starší a zobrazíme.
-            if (reportModel.AllReports.Any())
+            // Pokud je datum default, pak se vytváří nová zpráva, jinak se zobrazuje stará.
+            reportsModel.ActualReportDate = (date == default) ? DateTime.Now : date;
+            // Soubor všech zpráv, pouze Data(datum). (to stačí)
+            reportsModel.AllReports = patientDoctorReports.Select(s => s.CreateDate).ToList();
+
+            // Pokud má pacient již nějakou starší zprávu, vybereme tu o jednu jednotku starší a zobrazíme.
+            if (reportsModel.AllReports.Any())
             {
                 // Seřazení časů všech pacientových zpráv.
-                reportModel.AllReports = reportModel.AllReports.OrderByDescending(x => x).ToList();
+                reportsModel.AllReports = reportsModel.AllReports.OrderByDescending(x => x).ToList();
 
                 // Kontrola, zda je vytvářená nová zpráva.
                 if (date == default)
                 {
                     // Pokud je vytvářená nová zpráva zpbrazíme také poslední zprávu.
-                    reportModel.PreviousReportDate = reportModel.AllReports.First();
-                    reportModel.PreviousReport = patiensDoctorReport.Where(o => o.CreateDate == reportModel.PreviousReportDate).Select(s => s.Description).ToList().First();
+                    reportsModel.PreviousReportDate = reportsModel.AllReports.First();
+                    reportsModel.PreviousReport = patientDoctorReports.Where(o => o.CreateDate == reportsModel.PreviousReportDate)
+                                                                      .Select(s => s.Description).ToList().First();
                 }
                 else
                 {
                     // Zobrazujeme starší zprávu. Jako aktuální (k případné úpravě) bude hledaná zpráva.
-                    reportModel.ActualReport = patiensDoctorReport.Where(o => o.CreateDate == date).Select(s => s.Description).ToList().First();
+                    reportsModel.ActualReport = patientDoctorReports.Where(o => o.CreateDate == date).Select(s => s.Description).ToList().First();
+
                     // Získání zprávy o jednu jednotku starší, pokud taková existuje.
-                    var oldCreateDateIdx = reportModel.AllReports.FindIndex(o => o == date) + 1;
-                    if (oldCreateDateIdx < reportModel.AllReports.Count)
+                    var oldCreateDateIdx = reportsModel.AllReports.FindIndex(o => o == date) + 1;
+                    if (oldCreateDateIdx < reportsModel.AllReports.Count)
                     {
-                        reportModel.PreviousReportDate = reportModel.AllReports.ElementAt(oldCreateDateIdx);
-                        reportModel.PreviousReport = patiensDoctorReport.Where(o => o.CreateDate == reportModel.PreviousReportDate).Select(s => s.Description).ToList().First();
+                        reportsModel.PreviousReportDate = reportsModel.AllReports.ElementAt(oldCreateDateIdx);
+                        reportsModel.PreviousReport = patientDoctorReports.Where(o => o.CreateDate == reportsModel.PreviousReportDate)
+                                                                          .Select(s => s.Description).ToList().First();
                     }
                     else
                     {
-                        reportModel.PreviousReportDate = default;
-                        reportModel.PreviousReport = "";
+                        reportsModel.PreviousReportDate = default;
+                        reportsModel.PreviousReport = "";
                     }
                 }
             }
             else
             {
                 // Píšeme novou zprávu a pacient nemá žádnou předchozí.
-                reportModel.PreviousReportDate = default;
-                reportModel.PreviousReport = "";
+                reportsModel.PreviousReportDate = default;
+                reportsModel.PreviousReport = "";
             }
 
             // Získání informací o pacientovi.
-            var userId = db.PatientT.Where(o => o.SocialSecurityNum == socialNum).Select(s => s.UserId).ToList().First();
-            var patient = db.UserT.Where(o => o.UserId == userId);
+            Data.Patient patient = db.PatientT.Where(o => o.SocialSecurityNum == socialNum).ToList().First();
+            Data.User userPatient = db.UserT.Where(o => o.UserId == patient.UserId).ToList().First();
+
             // Uložení informací o pacientovi do modelu.
-            reportModel.Name = patient.Select(s => s.Name).ToList().First();
-            reportModel.Surname = patient.Select(s => s.Surname).ToList().First();
-            reportModel.Title = patient.Select(s => s.Title).ToList().First();
-            reportModel.Insurance = db.PatientT.Where(o => o.SocialSecurityNum == socialNum).Select(s => s.InsuranceCompany).ToList().First();
-            reportModel.SocialSecurityNumber = socialNum;
-#if (!TEST)
-        }
-#endif
-            return View(reportModel);
+            reportsModel.PatientFullName = new NameModel
+            {
+                Name = userPatient.Name,
+                Surname = userPatient.Surname,
+                Title = userPatient.Title
+            };
+            reportsModel.Insurance = patient.InsuranceCompany;
+            reportsModel.SocialSecurityNumber = socialNum;
+
+            return View(reportsModel);
         }
 
 
         /*
-         * Metoda obsatrávající vytvoření nové zprávy. S tím související aktualizace/vytvoření
+         * Akce vytvoří novou zprávu. S tím souvisí aktualizace/vytvoření
          * zdravotního stavu, vytvoření výkazu pro pojišťovnu a aktualizace stavu pacienta.
          */
         [HttpPost]
         public IActionResult CreateReport()
         {
-            // Získání potřebných hodnot o pacientovi, zprávě, diagnozach a výkonu pomocí POST.
+            // Získání potřebných hodnot o pacientovi, zprávě, diagnozách a výkonu pomocí POST.
             long patientNum = long.Parse(Request.Form["PatientNum"].ToString());
             string reportText = Request.Form["ReportText"];
             string billString = Request.Form["Bill"];
@@ -340,7 +338,7 @@ namespace Nemocnice.Controllers
             int stringLen = billString.IndexOf(')') - idxStart;
             int billCode = int.Parse(billString.Substring(idxStart, stringLen));
             DateTime reportDate = DateTime.Parse(Request.Form["ReportDate"]);
-
+            // Získání kódů všech diagnóz přidělených ke zprávě.
             List<int> diagnosis = new List<int>();
             foreach(string str in Request.Form["Diagnosis[]"])
             {
@@ -348,40 +346,47 @@ namespace Nemocnice.Controllers
                 stringLen = str.IndexOf(')') - idxStart;
                 diagnosis.Add(int.Parse(str.Substring(idxStart, stringLen)));
             }
+            // Všechny stavy diagnód. Korespondují s indexy kódů diagnóz.
             List<string> diagnosisState = new List<string>(Request.Form["DiagnosisState[]"]);
 
-            // Zíkání informací o lékařovi, který zprávu napsal.
-            // Pokud nebude lékař v tabulce DoctorT, pakbude id_list prázdný.
-            // K tomu může dojít pouze při nekonzistentní databázi, nebo definici makra TEST.
-            string user = User.Identity.Name;
-            var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
+            // Zíkání informací o doktorovi, který zprávu napsal.
+            // HACK - pokud nebude přihášený uživatl mít zíznam v tabulce UserT, dojde k erroru.
+            string userDoctor = User.Identity.Name;
+            var doctorId = db.UserT.Where(s => s.Login == userDoctor).Select(o => o.UserId).ToList().First();
 
-            // Pokud je nastaven TEST, pak bude jako doktor lokálně určen Doctor {UserId = 987654321}
+            // Pokud je přihlášeným uživatelem admin, a ještě nemá přiřezený
+            // svůj pracovní doktorský profil, vytvoříme ho.
             Data.Doctor doctor;
-#if (!TEST)
-            doctor = db.DoctorT.Where(o => o.UserId == id_list.First()).ToList().First();
-#else
-            // Pokud testový Doctor s UserId ještě neexistuje, vytvoříme jej.
-            if (!db.DoctorT.Where(o => o.UserId == 987654321).ToList().Any())
+            if (User.IsInRole("Admin"))
             {
-                doctor = new Data.Doctor
+                var tmp = db.DoctorT.Where(o => o.UserId == doctorId).ToList();
+                if (!tmp.Any())
                 {
-                    UserId = 987654321,
-                    WorkPhone = "777777777"
-                };
-                db.DoctorT.Add(doctor);
-                db.SaveChanges();
+                    // Vytvoření pracovního doktorského profilu pro administrátora
+                    var tmpTel = db.AdminT.Where(o => o.UserId == doctorId).Select(s => s.WorkPhone).ToList().First();
+                    db.DoctorT.Add(new Data.Doctor
+                    {
+                        UserId = doctorId,
+                        WorkPhone = tmpTel
+                    });
+                    db.SaveChanges();
+
+                    doctor = db.DoctorT.Where(o => o.UserId == doctorId).ToList().First();
+                }
+                else
+                {
+                    // Pracovní profil již existuje.
+                    doctor = tmp.First();
+                }
             }
             else
             {
-                doctor = db.DoctorT.Where(o => o.UserId == 987654321).ToList().First();
+                doctor = db.DoctorT.Where(o => o.UserId == doctorId).ToList().First();
             }
-#endif
-
+            
             // Vytvoření zprávy
             MedicallReport report = new MedicallReport
             {
-
                 Author = doctor,
                 Patient = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).ToList().First(),
                 Description = reportText,
@@ -391,8 +396,8 @@ namespace Nemocnice.Controllers
             db.MedicallReportT.Add(report);
             db.SaveChanges();
 
-            // Registrace výkonu
-            // Kód výkonu musí v databázi výkonú existovat, jinak ERROR.
+            // Registrace výkonu s hlavní diagnozou
+            // HACK - Kód výkonu musí v databázi výkonú existovat.
             MedicallBill bill = new MedicallBill()
             {
                 Doctor = doctor,
@@ -411,18 +416,23 @@ namespace Nemocnice.Controllers
             for(int i = 0; i < diagnosis.Count; i++)
             {
                 // Všechny neukonžené léčby pacienta.
-                List<PatientTreatmentLog> openDiagnosis =
-                    oldTreatementLog.Any() ? oldTreatementLog.Where(o => o.Diagnosis.DiagnosisId == diagnosis.ElementAt(i) && o.EndOfTreatment == default).ToList() : new List<PatientTreatmentLog>();
+                List<PatientTreatmentLog> openDiagnosis = oldTreatementLog.Any() ?
+                    oldTreatementLog.Where(o => o.Diagnosis.DiagnosisId == diagnosis.ElementAt(i) && o.EndOfTreatment == default).ToList() :
+                    new List<PatientTreatmentLog>();
+
+                // Různá funkciolalita pro ukončované a zahajované léčby.
                 if (diagnosisState.ElementAt(i) == "cured")
                 {
+                    // Kontrola, zda existuje nějaká otevřená léčba dané diagnózy,
+                    // kterou je možné ukončit.
                     if(openDiagnosis.Any())
                     {
-                        // Ukončení existujícího léčení
+                        // Ukončení existující léčby
                         openDiagnosis.First().EndOfTreatment = reportDate;
                     }
                     else
                     {
-                        // Vytvoření a okamžité ukončení
+                        // Vytvoření a okamžité ukončení léčby
                         db.PatientTreatmentLogT.Add(new PatientTreatmentLog
                         {
                             Patient = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).ToList().First(),
@@ -436,10 +446,10 @@ namespace Nemocnice.Controllers
                 else
                 {
                     // Kontrola, zda existuje už nějaká otevřená léčba s touto diagnozou.
-                    // Pokud ne, pak se vytvoří nová poznámka, v opačném případě se jedná pouze o kontrolu.
+                    // Pokud ne, pak se vytvoří nová léčba, v opačném případě se jedná pouze o kontrolu.
                     if(!openDiagnosis.Any())
                     {
-                        // Vytvoření nové diagnozy pacienta
+                        // Vytvoření nové léčby pacienta
                         db.PatientTreatmentLogT.Add(new PatientTreatmentLog
                         {
                             Patient = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).ToList().First(),
@@ -450,35 +460,37 @@ namespace Nemocnice.Controllers
                     }
                 }
                 
-                // Určení CureProgress pro každou diagnozu vráci zprávy. (Zahájení léčby, kontrola, konec)
+                // Určení CureProgress pro každou diagnozu vrámci zprávy. (Zahájení léčby, kontrola, konec)
                 db.CureProgressT.Add(new CureProgress
                 {
                     MedicallReport = report,
                     Diagnosis = db.DiagnosisT.Where(o => o.DiagnosisId == diagnosis.ElementAt(i)).ToList().First(),
-                    StateOfTreatment = (diagnosisState.ElementAt(i) == "cured") ? (openDiagnosis.Any() ? "Ukončení léčby" : "Jednorázová léčba")
-                                                                            : (openDiagnosis.Any() ? "Kontrola" : "Zahájení léčby")
+                    StateOfTreatment = (diagnosisState.ElementAt(i) == "cured") ?
+                                       (openDiagnosis.Any() ?
+                                            "Ukončení léčby" :
+                                            "Jednorázová léčba"):
+                                       (openDiagnosis.Any() ?
+                                            "Kontrola" :
+                                            "Zahájení léčby")
                 });
                 db.SaveChanges();
             }
 
             // Aktualizace Healthcondition pacienta, konkrétně datum jeho poslední návštěvy.
             // Pokud nemá pacient vytvořen HealthCondition, vytvoříme jej.       
-            Data.Patient p = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Include(s => s.HealthCondition).ToList().First();
-            if (p.HealthCondition == null)
+            Data.Patient patient = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Include(s => s.HealthCondition).ToList().First();
+            if (patient.HealthCondition == null)
             {
-                p.HealthCondition = new HealthCondition
-                {
-                    SocialSecurityNum = patientNum
-                };
+                patient.HealthCondition = new HealthCondition { SocialSecurityNum = patientNum };
             }
-            p.HealthCondition.LastCheckupDate = reportDate;
+            patient.HealthCondition.LastCheckupDate = reportDate;
             db.SaveChanges();
 
             return RedirectToAction("Card");
         }
 
         /*
-         * Metoda upraví text staréhé zprávy.
+         * Akce upraví text staré zprávy.
          * Není zde prováděná kontrola na lékaře.
          * Předpokládá se, že do systému se neuloží ve stejný čas pro pacienta dvě stejné zprávy.
          */
@@ -492,43 +504,19 @@ namespace Nemocnice.Controllers
 
             // Aktualizace textu.
             db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date)
-                .ToList().First().Description = reportText;
+                              .ToList().First().Description = reportText;
             db.SaveChanges();
 
             return RedirectToAction("Card");
         }
 
-        public IActionResult Activity(string userName)
-        {
-            var db = new DatabaseContext();
-
-            string user = User.Identity.Name;
-            var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
-
-            List<ActivityModel> Activities = new List<ActivityModel>();
-#if (!TEST)
-            if (id_list.Any())
-            {
-                Activities = db.MedicallBillT.Where(o => o.Doctor.UserId == id_list.First())
-#else
-                Activities = db.MedicallBillT
-#endif
-                                    .Select(s => new ActivityModel
-                                        {
-                                            ActivityName = s.MedicallActivityPrice.Name,
-                                            Value = s.MedicallActivityPrice.Amount,
-                                            PatientNum = s.SocialSecurityNum,
-                                            CreateDate = s.CreateDate,
-                                            State = s.State,
-                                        }).ToList();
-#if (!TEST)
-        }
-#endif
-                             
-            return View(Activities);
-        }
-
-        // https://www.c-sharpcorner.com/code/961/how-to-calculate-age-from-date-of-birth-in-c-sharp.aspx
+        /*
+         * Funkce pro získání věku z rodného čísla.
+         * Funkce je převzata z: https://www.c-sharpcorner.com/code/961/how-to-calculate-age-from-date-of-birth-in-c-sharp.aspx
+         * patientNum - rodné číslo
+         * Funkce vrací textovou podobu věku ve tvaru "10 Let 9 Měsíců".
+         * Pokud se výpočet nezdaří bude vrácoeno "DateError"
+         */
         static private string getAge(long patientNum)
         {
             // Převod rodného čísla na datum
@@ -537,6 +525,8 @@ namespace Nemocnice.Controllers
             int monInt = int.Parse(numAsStr.Substring(2, 2));
             int dayInt = int.Parse(numAsStr.Substring(4, 2));
             yearInt = (yearInt < 54 && numAsStr.Length > 9) ? 2000 + yearInt : 1900 + yearInt;
+
+            // Získání počtu roků a měsíců ze dnů, které vrátí funkce Subtract
             int Years = 0;
             int Months = 0;
             try
@@ -565,88 +555,121 @@ namespace Nemocnice.Controllers
             {
                 return "DateError";
             }
-            return String.Format("{0} {1} {2} {3}", Years, (Years == 1) ? "Rok" : (Years < 5 && Years != 0) ? "Roky" : "Let",
-                                                    Months, (Months == 1) ? "Měsíc" : (Months < 5 && Months != 0) ? "Měsíce" : "Měsíců");
+
+            // Zprávné vyskloňování Roků a Měsíců
+            return String.Format("{0} {1} {2} {3}", Years, 
+                                                    (Years == 1) ?
+                                                    "Rok" :
+                                                    (Years < 5 && Years != 0) ?
+                                                        "Roky" :
+                                                        "Let",
+                                                    Months,
+                                                    (Months == 1) ?
+                                                        "Měsíc" :
+                                                        (Months < 5 && Months != 0) ?
+                                                            "Měsíce" :
+                                                            "Měsíců");
         }
 
 
+        /*
+         * Akce zobrazí hlavní kartu pacienta se všemi informacemi.
+         * patientNum - rodné číslo pacienta, jehož karta je zobrazována.
+         */
         public IActionResult PatientProfile(long patientNum)
         {
+            // Získání informaci o lékaři, který si pacienta zobrazuje.
+            // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
             string user = User.Identity.Name;
-            var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
+            var doctorId = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList().First();
 
-            DoctorDisplayPatientModel model = new DoctorDisplayPatientModel();
+            // Model s informacemi pro zobrazení v kartě pacienta.
+            PatientProfileModel patientProfileModel = new PatientProfileModel();
 
             // Získání informací o pacientovi.
-            int patientId;
+            // HACK - Může se stát, že bylo rozné číslo pacienta změněno, ale při použití
+            // caschování a šipky zpět byl proveden dotaz na již neexistující rodné číslo.
+            // V takovém případě bude řízení přesměrováno zpět do kartotéky.
+            Data.Patient patient;
             try
             {
-                patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
+                patient = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Include(i => i.HealthCondition).Include(i => i.HomeAddress).ToList().First();
             }
             catch
             {
                 return RedirectToAction("Card");
             }
-            Data.User patient = db.UserT.Where(o => o.UserId == patientId).ToList().First();
-            model.Name = patient.Name;
-            model.Surname = patient.Surname;
-            model.Title = patient.Title;
-            model.InsuranceCompany = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.InsuranceCompany).ToList().First();
-            model.SocialSecurityNumber = patientNum;
-            model.Tel = patient.Phone;
-            model.Email = patient.Email;
-            model.Age = getAge(patientNum);
-            model.Address = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.HomeAddress).ToList().First();
-            model.HealthCondition = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.HealthCondition).ToList().FirstOrDefault();
-            if(model.HealthCondition == default)
+
+            // Získání základní informací o pacientovi
+            Data.User patientUser = db.UserT.Where(o => o.UserId == patient.UserId).ToList().First();
+            patientProfileModel.PatientFullName = new NameModel
             {
-                HealthCondition healthCondition = new HealthCondition { SocialSecurityNum = patientNum };
-                db.HealthConditionT.Add(healthCondition);
-                db.SaveChanges();
-                db.PatientT.Where(o => o.SocialSecurityNum == patientNum).ToList().First().HealthCondition = healthCondition;
-                db.SaveChanges();
-                model.HealthCondition = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.HealthCondition).ToList().First();
+                Name = patientUser.Name,
+                Surname = patientUser.Surname,
+                Title = patientUser.Title
+            };
+            patientProfileModel.InsuranceCompany = patient.InsuranceCompany;
+            patientProfileModel.SocialSecurityNumber = patientNum;
+            patientProfileModel.Tel = patientUser.Phone;
+            patientProfileModel.Email = patientUser.Email;
+            patientProfileModel.Age = getAge(patientNum);
+            patientProfileModel.Address = patient.HomeAddress;
+            patientProfileModel.HealthCondition = patient.HealthCondition;
 
+            // Pokud neexistuje HealthCondition, vytvoříme jej.
+            if(patientProfileModel.HealthCondition == default)
+            {
+                patient.HealthCondition = new HealthCondition { SocialSecurityNum = patientNum };
+                db.SaveChanges();
             }
-            model.Allergys = db.AllergysOfPatientT.Where(o => o.HealthCondition.SocialSecurityNum == patientNum).Select(s => s.Allergy.Name).ToList();
-            model.AllReports = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum
-#if (!TEST)
-                                                             && o.Owner.UserId == id_list.First()
-#endif
-                                                        ).Select(s => s.CreateDate).ToList();
 
-            model.CheckupToMe = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.State != "dokončeno"
-#if (!TEST)
-                                                             && o.ToDoctor.UserId == id_list.First()
-#endif
-                                                        ).Join(db.UserT,
-                                                        checkup => checkup.CreatedBy.UserId,
-                                                        user => user.UserId,
-                                                        (checkup, user) => new CheckupToMeLightModel
-                                                        {
-                                                            CreateDate = checkup.CreateDate,
-                                                            FromDoctor = user.Surname + " " + user.Name + ", " + user.Title
-                                                        }).ToList();
-            model.CheckupToOther = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum
-#if (!TEST)
-                                                             && o.CreatedBy.UserId == id_list.First()
-#endif
-                                                           ).Join(db.UserT,
-                                                            checkup => checkup.ToDoctor.UserId,
-                                                            user => user.UserId,
-                                                            (checkup, user) => new CheckupToOtherLightModle
-                                                           {
-                                                               CreateDate = checkup.CreateDate,
-                                                               ToDoctor = user.Surname + " " + user.Name + ", " + user.Title,
-                                                               State = checkup.State
-                                                           }).ToList();
+            // Získání alergií.
+            // TODO - alrgie budou string
+            patientProfileModel.Allergys = db.AllergysOfPatientT.Where(o => o.HealthCondition.SocialSecurityNum == patientNum)
+                                                                .Select(s => s.Allergy.Name).ToList();
 
-            return View(model);
+            // Získání lékařských zpráv, jejichž autorem je přihlášený lékař.
+            // Pokud de přihlášen administrátor, vidí všechny zprávy.
+            patientProfileModel.AllReports = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum &&
+                                                                           (User.IsInRole("Admin") || o.Owner.UserId == doctorId))
+                                                                .Select(s => s.CreateDate).ToList();
+
+            // Získání příchozích žádostí o vyšetření, které čekají na vyřízení.
+            // Pokud je přihlášený administrátor, uvidí žádosti určené všem doktorům.
+            patientProfileModel.CheckupToMe = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && 
+                                                                           o.State != "dokončeno" &&
+                                                                           (User.IsInRole("Admin") || o.ToDoctor.UserId == doctorId))
+                                                               .Join(db.UserT,
+                                                                     checkup => checkup.CreatedBy.UserId,
+                                                                     user => user.UserId,
+                                                                     (checkup, user) => new CheckupToMeLightModel
+                                                                     {
+                                                                         CreateDate = checkup.CreateDate,
+                                                                         FromDoctor = user.Surname + " " + user.Name + ", " + user.Title
+                                                                     }).ToList();
+
+            // Získání všech vytvořených žádostí pro ostatní lékaře.
+            // Pokud je přihlášený administrátor, uvidí žádosti vytvořené všemi doktory.
+            patientProfileModel.CheckupToOther = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum &&
+                                                                              (User.IsInRole("Admin") || o.CreatedBy.UserId == doctorId))
+                                                                  .Join(db.UserT,
+                                                                        checkup => checkup.ToDoctor.UserId,
+                                                                        user => user.UserId,
+                                                                        (checkup, user) => new CheckupToOtherLightModle
+                                                                        {
+                                                                            CreateDate = checkup.CreateDate,
+                                                                            ToDoctor = user.Surname + " " + user.Name + ", " + user.Title,
+                                                                            State = checkup.State
+                                                                        }).ToList();
+
+            return View(patientProfileModel);
         }
 
+        // Akce aktualizuje základní informace o pacientovi (Adresa, jméno, r.č., ...)
         [HttpPost]
         public IActionResult UpdatePatientInfo()
         {
+            // Získání nových dat o uživateli z meotdy POST.
             long oldpatientNumber = long.Parse(Request.Form["OldNum"]);
             // User
             string name = Request.Form["UpdateName"];
@@ -656,15 +679,19 @@ namespace Nemocnice.Controllers
             // Patient
             long patientNumber = long.Parse(Request.Form["UpdateNum"]);
             int insurance = int.Parse(Request.Form["UpdateInsurance"]);
-            // Adresa
+            // Adress
             string street = Request.Form["UpdateStreet"];
             int houseNum = int.Parse(Request.Form["UpdateHouseNum"]);
             string city = Request.Form["UpdateCity"];
             int zip = int.Parse(Request.Form["UpdateZip"]);
 
 
-
-            Data.Patient patient = db.PatientT.Where(o => o.SocialSecurityNum == oldpatientNumber).Include(s => s.HomeAddress).Include(s => s.HealthCondition).ToList().First();
+            // Získání instance upravovaného pacietna z databáze.
+            // Získání pacienta musí probáhat podle starého rodného čísla,
+            // protoře při úpravě mohlo být změněno (a pacient s tímto změněným číslem ještě neexituje).
+            Data.Patient patient = db.PatientT.Where(o => o.SocialSecurityNum == oldpatientNumber)
+                                              .Include(s => s.HomeAddress)
+                                              .Include(s => s.HealthCondition).ToList().First();
             // Aktualizace User
             Data.User user = db.UserT.Where(o => o.UserId == patient.UserId).ToList().First();
             user.Name = name;
@@ -674,6 +701,7 @@ namespace Nemocnice.Controllers
 
             // Aktualizace Patient
             patient.InsuranceCompany = insurance;
+            // Pokud se mění rodné číslo, je potřeba změnit také rodné číslo v HalthCondition.
             if(patientNumber != oldpatientNumber)
             {
                 patient.SocialSecurityNum = patientNumber;
@@ -681,145 +709,206 @@ namespace Nemocnice.Controllers
                 {
                     patient.HealthCondition.SocialSecurityNum = patientNumber;
                 }
+                else
+                {
+                    // Pokud HealthCondition neexistuje, vytvoříme jej.
+                    patient.HealthCondition = new HealthCondition { SocialSecurityNum = patientNumber };
+                }
             }
 
-            // Aktualizace address
+            // Aktualizace Address
             patient.HomeAddress.StreetName = street;
             patient.HomeAddress.HouseNumber = houseNum;
             patient.HomeAddress.City = city;
             patient.HomeAddress.ZIP = zip;
-
             db.SaveChanges();
 
+            // Po aktualizaci pacienta je provedeno přesněrování na kartu pacienta s těmito novými údaji.
             return RedirectToAction("PatientProfile", new { patientNum = patientNumber});
         }
 
+        /*
+         * Akce aktualizuje stav pacienta (Typ krve, výška, váha, ...)
+         */
         [HttpPost]
         public IActionResult UpdateHealthInfo()
         {
+            // Získání dat o pacientovi a zdravotním stavu z metody POST
             long patientNumber = long.Parse(Request.Form["PatientNum"]);
             float patientHeight = float.Parse(Request.Form["UpdateHeight"]);
             float patientWeight = float.Parse(Request.Form["UpdateWeight"]);
             string patientBlodType = Request.Form["UpdateBlodType"];
-            // TODO alergie
+            // TODO alergie jako string
 
+            // Získání a aktualizace zdravotního stavu.
             HealthCondition healthCondition = db.PatientT.Where(o => o.SocialSecurityNum == patientNumber).Select(s => s.HealthCondition).ToList().First();
             healthCondition.Height = patientHeight;
             healthCondition.Weight = patientWeight;
             healthCondition.BloodType = patientBlodType;
             db.SaveChanges();
 
-
+            // Přesměrování na kartu pacienta s upravenými údaji.
             return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
         }
 
+
+        /*
+         * Akce zpbrazí příchozí žádost o vyšetření daného pacienta.
+         * patientNum - rodné číslo zobrazovaného pacienta
+         * date - datum vytvoření konkrétní zobrazované žádosti.
+         */
         public IActionResult CheckupIn(long patientNum,  DateTime date)
-        {
-            // Získání informací o pacientovi a doktorovi
-            int patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
-            int doctorId = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.CreatedBy.UserId).ToList().First();
-            Data.User patient = db.UserT.Where(o => o.UserId == patientId).ToList().First();
-            Data.User doctor = db.UserT.Where(o => o.UserId == doctorId).ToList().First();
+        { 
+            // Získání dané žádosti o vyšetření
+            CheckupTicket checkupTicket = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date)
+                                                           .Include(i => i.CreatedBy)
+                                                           .Include(i => i.Patient).ToList().First();
 
-            string state = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.State).ToList().First();
+            // Získání entit pacienta a doktora, který žádost vytvořil
+            Data.User patient = db.UserT.Where(o => o.UserId == checkupTicket.Patient.UserId).ToList().First();
+            Data.User doctorFrom = db.UserT.Where(o => o.UserId == checkupTicket.CreatedBy.UserId).ToList().First();
 
-            CheckupInModel model = new CheckupInModel
+            // Vytvoření modelu pro zobrazení příchozí žádosti.
+            CheckupTicketModel model = new CheckupTicketModel
             {
-                PatientName = patient.Name,
-                PatienSurname = patient.Surname,
-                PatientTitle = patient.Title,
+                PatientFullName = new NameModel
+                {
+                    Name = patient.Name,
+                    Surname = patient.Surname,
+                    Title = patient.Title
+                },
                 SocialSecurityNumber = patientNum,
-                DoctorName = doctor.Name,
-                DoctorSurname = doctor.Surname,
-                DoctorTitle = doctor.Title,
-                DoctorICZ = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.CreatedBy.ICZ).ToList().First(),
-                State = state,
-                Date = date,
-                RequestText = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.Description).ToList().First()
+                DoctorFullName = new NameModel
+                {
+                    Name = doctorFrom.Name,
+                    Surname = doctorFrom.Surname,
+                    Title = doctorFrom.Title
+                },
+                State = checkupTicket.State,
+                CreateDate = date,
+                RequestText = checkupTicket.Description
             };
 
             return View(model);
         }
 
+        /*
+         * Akce aktualizuje stav příchozí žádosti o vyšetření.
+         */
         [HttpPost]
         public IActionResult TicketActualizeState()
         {
+            // Získání informací o Pcientovi, žádosti a novém stavu z metody POST.
             long patientNumber = long.Parse(Request.Form["patientNumber"]);
             DateTime createDate = DateTime.Parse(Request.Form["ticketDate"]);
             string newState = Request.Form["newState"];
 
+            // Aktualizace stavu dané žádosti a aktualizace databáze.
             db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNumber && o.CreateDate == createDate)
                 .ToList().First().State = newState;
             db.SaveChanges();
 
+            // Přesněrování na stejnou žádost s aktualizovaným stavem.
             return RedirectToAction("CheckupIn", new { patientNum = patientNumber, date = createDate });
         }
 
+        /*
+         * Akce ukončí žádost o vyšetření jako vyřešenou s příslušnýnou zprávou z vyšetření.
+         */
         [HttpPost]
         public IActionResult FinishTicket()
         {
+            // Získání informací o žádosti, pacientovi a zprávě z vyšetření.
             long patientNumber = long.Parse(Request.Form["patientNumber"]);
             DateTime createDate = DateTime.Parse(Request.Form["ticketDate"]);
             string reportText = Request.Form["reportText"];
 
-            CheckupTicket ticket = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNumber && o.CreateDate == createDate).ToList().First();
-            ticket.FinishDate = DateTime.Now;
-            ticket.State = "dokončeno";
-            ticket.Result = reportText;
+            // Ukončení žádosti a nahrání zprávy z vyšetření.
+            CheckupTicket checkupTicket = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNumber && o.CreateDate == createDate).ToList().First();
+            checkupTicket.FinishDate = DateTime.Now;
+            checkupTicket.State = "dokončeno";
+            checkupTicket.Result = reportText;
             db.SaveChanges();
 
+            // Přesměrování zpět na kartu pacienta.
             return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
         }
 
+        /*
+         * Akce zpbrazí odchozí (vytvořenou) žádost o vyšetření,
+         * kterou má provést jiný lékař.
+         * patientNum - rodné číslo pacienta
+         * date - datum vytvoření žádosti
+         */
         public IActionResult CheckupOut(long patientNum, DateTime date)
         {
+            // Získání dané žádosti o vyšetření
+            CheckupTicket checkupTicket = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date)
+                                                           .Include(i => i.ToDoctor)
+                                                           .Include(i => i.Patient).ToList().First();
+
             // Získání informací o pacientovi a doktorovi
-            int patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
-            int doctorId = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.CreatedBy.UserId).ToList().First();
-            Data.User patient = db.UserT.Where(o => o.UserId == patientId).ToList().First();
-            Data.User doctor = db.UserT.Where(o => o.UserId == doctorId).ToList().First();
+            Data.User patient = db.UserT.Where(o => o.UserId == checkupTicket.Patient.UserId).ToList().First();
+            Data.User doctorTo = db.UserT.Where(o => o.UserId == checkupTicket.ToDoctor.UserId).ToList().First();
 
-            string state = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.State).ToList().First();
-
-            CheckupOutModel model = new CheckupOutModel
+            // Naplnění modelu pro zobrazení
+            CheckupTicketModel model = new CheckupTicketModel
             {
-                PatientName = patient.Name,
-                PatienSurname = patient.Surname,
-                PatientTitle = patient.Title,
+                PatientFullName = new NameModel
+                {
+                    Name = patient.Name,
+                    Surname = patient.Surname,
+                    Title = patient.Title
+                },
                 SocialSecurityNumber = patientNum,
-                DoctorName = doctor.Name,
-                DoctorSurname = doctor.Surname,
-                DoctorTitle = doctor.Title,
-                DoctorICZ = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.CreatedBy.ICZ).ToList().First(),
-                State = state,
+                DoctorFullName = new NameModel
+                {
+                    Name = doctorTo.Name,
+                    Surname = doctorTo.Surname,
+                    Title = doctorTo.Title
+                },
+                State = checkupTicket.State,
                 CreateDate = date,
-                FinishDate = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.FinishDate).ToList().First(),
-                RequestText = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.Description).ToList().First(),
-                ReportText = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date).Select(s => s.Result).ToList().First()
+                FinishDate = checkupTicket.FinishDate,
+                RequestText = checkupTicket.Description,
+                ReportText = checkupTicket.Result
             };
 
             return View(model);
         }
 
+        /*
+         * Akce fobrazí formulář pro vytvoření nové žádost k vyšetření.
+         * patientNum - rodné číslo pacienta pro kterého bude zpráva vytvořena
+         */
         public IActionResult NewCheckup(long patientNum)
         {
             // Získání informací o pacientovi.
-            int userId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
-            Data.User user = db.UserT.Where(o => o.UserId == userId).ToList().First();
+            int patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
+            Data.User patient = db.UserT.Where(o => o.UserId == patientId).ToList().First();
+
+            // Naplnění modelu
             NewCheckupModel model = new NewCheckupModel
             {
-                Name = user.Name,
-                Surname = user.Surname,
-                Title = user.Title,
+                FullName = new NameModel
+                {
+
+                    Name = patient.Name,
+                    Surname = patient.Surname,
+                    Title = patient.Title,
+                },
                 SocialSecurityNum = patientNum
             };
             return View(model);
         }
 
+        /*
+         * Akce vytvoří novou žádost o vyšetření.
+         */
         [HttpPost]
         public IActionResult CreateNewCheckup()
         {
-            // Zíslání proměnných
+            // Zíslání informací o pacientovi, cílovém lékaři, a textu zprávy
             long patientNumber = long.Parse(Request.Form["patientNum"]);
             string checkupText = Request.Form["checkupText"];
             string doctorString = Request.Form["doctorName"];
@@ -827,31 +916,46 @@ namespace Nemocnice.Controllers
             int stringLen = doctorString.IndexOf(')') - idxStart;
             int doctorICZ = int.Parse(doctorString.Substring(idxStart, stringLen));
 
-            // Aktuální doktor
-            Data.Doctor doctor;
-#if (!TEST)
-            doctor = db.DoctorT.Where(o => o.UserId == id_list.First()).ToList().First();
-#else
-            // Pokud testový Doctor s UserId ještě neexistuje, vytvoříme jej.
-            if (!db.DoctorT.Where(o => o.UserId == 987654321).ToList().Any())
+            // Zíkání informací o doktorovi (Autorovi, právě přihášeném), který žádost napsal.
+            // HACK - pokud nebude přihášený uživatl mít záznam v tabulce UserT, dojde k erroru.
+            var doctorId = db.UserT.Where(s => s.Login == User.Identity.Name).Select(o => o.UserId).ToList().First();
+
+            // Pokud se jedná o admina, pak bude autorem žádosti a příjemcem výsledku on.
+            // Pro admina se musí zkontrolovat, jestli má vytvořený pracovní doktorský účet.
+            Data.Doctor doctorAuthor;
+            if (User.IsInRole("Admin"))
             {
-                doctor = new Data.Doctor
+                var tmp = db.DoctorT.Where(o => o.UserId == doctorId).ToList();
+                if (!tmp.Any())
                 {
-                    UserId = 987654321,
-                    WorkPhone = "777777777"
-                };
-                db.DoctorT.Add(doctor);
-                db.SaveChanges();
+                    // Vytvoření pracovního doktorského profilu pro administrátora
+                    var tmpTel = db.AdminT.Where(o => o.UserId == doctorId).Select(s => s.WorkPhone).ToList().First();
+                    db.DoctorT.Add(new Data.Doctor
+                    {
+                        UserId = doctorId,
+                        WorkPhone = tmpTel
+                    });
+                    db.SaveChanges();
+
+                    doctorAuthor = db.DoctorT.Where(o => o.UserId == doctorId).ToList().First();
+                }
+                else
+                {
+                    // Pracovní profil již existuje.
+                    doctorAuthor = tmp.First();
+                }
             }
             else
             {
-                doctor = db.DoctorT.Where(o => o.UserId == 987654321).ToList().First();
+                doctorAuthor = db.DoctorT.Where(o => o.UserId == doctorId).ToList().First();
             }
-#endif
 
+            // Vytvoření žádosti.
+            // Je potřeba mít jako samostatnou proměnnou, kvůli pozdějšímu užití.
             CheckupTicket ticket = new CheckupTicket
             {
-                CreatedBy = doctor,
+                CreatedBy = doctorAuthor,
+                // Cílový lékař se vyhledává podle ICZ
                 ToDoctor = db.DoctorT.Where(o => o.ICZ == doctorICZ).ToList().First(),
                 Patient = db.PatientT.Where(o => o.SocialSecurityNum == patientNumber).ToList().First(),
                 Description = checkupText,
@@ -861,24 +965,65 @@ namespace Nemocnice.Controllers
             db.CheckupTicketT.Add(ticket);
             db.SaveChanges();
 
+            // Pro kažnou diagnózu přiřazenou k žádosti o vyšetření,
+            // je třeba vložit údaje do propojovací tabulky diagnozy a žádosti.
             foreach(string diag in Request.Form["Diagnosis[]"])
             {
+                // Získání kódu diagnózy
                 int start = diag.IndexOf('(') + 1;
                 int len = diag.IndexOf(')') - start;
                 int id = int.Parse(diag.Substring(start, len));
 
+                // Vytvoření propojení
                 db.TicketPerDiagnosisT.Add(new TicketPerDiagnosis
                 {
                     Diagnosis = db.DiagnosisT.Where(o => o.DiagnosisId == id).ToList().First(),
                     CheckupTicket = ticket
                 });
-                // Možná může bát save až za forem.
-                db.SaveChanges();
+                //db.SaveChanges();
             }
+            // Původně byl SaveChanges na ve foru, kdyby nefungovalo, vrátit.
+            db.SaveChanges();
 
+            // Přesměrování na kartu pacietna.
             return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
         }
 
+
+        public IActionResult Activity(string userName)
+        {
+            var db = new DatabaseContext();
+
+            string doctorUser = User.Identity.Name;
+            var doctorId = db.UserT.Where(s => s.Login == doctorUser).Select(o => o.UserId).ToList().First();
+
+            List<ActivityModel> Activities = new List<ActivityModel>();
+            if (User.IsInRole("Admin"))
+            {
+                Activities = db.MedicallBillT.Where(o => o.Doctor.UserId == doctorId)
+                                             .Select(s => new ActivityModel
+                                             {
+                                                 ActivityName = s.MedicallActivityPrice.Name,
+                                                 Value = s.MedicallActivityPrice.Amount,
+                                                 PatientNum = s.SocialSecurityNum,
+                                                 CreateDate = s.CreateDate,
+                                                 State = s.State,
+                                             }).ToList();
+            }
+            else
+            {
+                Activities = db.MedicallBillT
+                                    .Select(s => new ActivityModel
+                                    {
+                                        ActivityName = s.MedicallActivityPrice.Name,
+                                        Value = s.MedicallActivityPrice.Amount,
+                                        PatientNum = s.SocialSecurityNum,
+                                        CreateDate = s.CreateDate,
+                                        State = s.State,
+                                    }).ToList();
+            }
+            return View(Activities);
+        }
 
         public IActionResult Requests()
         {
@@ -982,6 +1127,13 @@ namespace Nemocnice.Controllers
             }
 #endif
             return View(MyFinishRequests);
-        }     
+        }
+
+        public JsonResult GetAllDiagnosis(string search)
+        {
+            List<Diagnosis> matchedDiagnosis = db.DiagnosisT.Where(o => o.Name.ToUpper().Contains(search.ToUpper())).ToList();
+
+            return new JsonResult(matchedDiagnosis);
+        }
     }
 }

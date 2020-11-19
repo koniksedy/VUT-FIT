@@ -2,12 +2,12 @@
     ViewData["Title"] = "Příchozí žádost";
 }
 
-@model CheckupInModel
+@model CheckupTicketModel
 
 <div>
-    Patient: <b>@Model.PatientName @Model.PatienSurname@(String.IsNullOrEmpty(Model.PatientTitle) ? "" : ", " + Model.PatientTitle) (@Model.SocialSecurityNumber)</b><br />
-    Doctor:  <b>@Model.DoctorName @Model.DoctorSurname@(String.IsNullOrEmpty(Model.DoctorTitle) ? "" : ", " + Model.DoctorTitle) (@Model.DoctorICZ)</b><br />
-    Vytvořeno: <b>@Model.Date</b>
+    Patient: <b>@Model.PatientFullName.getFullName() (@Model.SocialSecurityNumber)</b><br />
+    Doctor:  <b>@Model.DoctorFullName.getFullName()</b><br />
+    Vytvořeno: <b>@Model.CreateDate</b>
 </div>
 
 
@@ -16,7 +16,7 @@
         <label>Stav:</label>
         <input type="text" class="form-control m-input" name="newState" value="@Model.State" />
         <input hidden name="patientNumber" value="@Model.SocialSecurityNumber" />
-        <input hidden name="ticketDate" value="@Model.Date" />
+        <input hidden name="ticketDate" value="@Model.CreateDate" />
         <input class="btn btn-primary" type="submit" value="Aktualizovat">
     </form>
 </div>
@@ -32,7 +32,7 @@
             <textarea cols="100" rows="10" name="reportText"></textarea>
         </div> 
         <input hidden name="patientNumber" value="@Model.SocialSecurityNumber" />
-        <input hidden name="ticketDate" value="@Model.Date" />
+        <input hidden name="ticketDate" value="@Model.CreateDate" />
         <div>
             <input class="btn btn-primary" type="submit" value="Odeslat">
         </div>

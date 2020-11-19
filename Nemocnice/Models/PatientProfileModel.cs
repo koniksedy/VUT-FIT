@@ -5,14 +5,11 @@ using System.Threading.Tasks;
 
 namespace Nemocnice.Models
 {
-    public class DoctorDisplayPatientModel
+    public class PatientProfileModel
     {
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Title { get; set; }
+        public NameModel PatientFullName { get; set; }
         public long SocialSecurityNumber { get; set; }
         public int InsuranceCompany { get; set; }
-
         public string Email { get; set; }
         public string Tel { get; set; }
         public string Age { get; set; }

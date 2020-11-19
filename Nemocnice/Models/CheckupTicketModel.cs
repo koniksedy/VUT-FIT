@@ -5,16 +5,11 @@ using System.Threading.Tasks;
 
 namespace Nemocnice.Models
 {
-    public class CheckupOutModel
+    public class CheckupTicketModel
     {
-        public string PatientName { get; set; }
-        public string PatienSurname { get; set; }
-        public string PatientTitle { get; set; }
+        public NameModel PatientFullName { get; set; }
         public long SocialSecurityNumber { get; set; }
-        public string DoctorName { get; set; }
-        public string DoctorSurname { get; set; }
-        public string DoctorTitle { get; set; }
-        public int DoctorICZ { get; set; }
+        public NameModel DoctorFullName { get; set; }
         public string State { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime FinishDate { get; set; }

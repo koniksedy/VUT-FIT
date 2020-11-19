@@ -2,11 +2,11 @@
     ViewData["Title"] = "Příchozí žádost";
 }
 
-@model CheckupOutModel
+@model CheckupTicketModel
 
 <div>
-    Patient: <b>@Model.PatientName @Model.PatienSurname@(String.IsNullOrEmpty(Model.PatientTitle) ? "" : ", " + Model.PatientTitle) (@Model.SocialSecurityNumber)</b><br />
-    Doctor:  <b>@Model.DoctorName @Model.DoctorSurname@(String.IsNullOrEmpty(Model.DoctorTitle) ? "" : ", " + Model.DoctorTitle) (@Model.DoctorICZ)</b><br />
+    Patient: <b>@Model.PatientFullName.getFullName() (@Model.SocialSecurityNumber)</b><br />
+    Doctor:  <b>@Model.DoctorFullName.getFullName()</b><br />
     Stav: @Model.State
 </div>
 
@@ -20,6 +20,6 @@
 <div>
     <label>
         Zpráva z vyšetření @((Model.State == "dokončeno") ? "[" + Model.FinishDate + "]" : "")
-        <textarea cols="100" rows="10" readonly>@Model.ReportText</textarea>
     </label>
+    <textarea cols="100" rows="10" readonly>@Model.ReportText</textarea>
 </div>

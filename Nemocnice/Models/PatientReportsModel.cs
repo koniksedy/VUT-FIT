@@ -15,22 +15,15 @@ namespace Nemocnice.Models
      *     - Předchozí zprávě (o jednu jednotku starší než je aktuální)
      *     - Údaje o pacientovi
      */
-    public class ReportModel
+    public class PatientReportsModel
     {
+        public NameModel PatientFullName { get; set; }
+        public long SocialSecurityNumber { get; set; }
+        public int Insurance { get; set; }
         public string PreviousReport { get; set; }
         public DateTime PreviousReportDate { get; set; }
         public string ActualReport { get; set; }
         public DateTime ActualReportDate { get; set; }
-        public string Name { get; set; }
-
-        public string Surname { get; set; }
-
-        public string Title { get; set; }
-
-        public long SocialSecurityNumber { get; set; }
-
-        public int Insurance { get; set; }
-
         public List<DateTime> AllReports {get; set;} = new List<DateTime>();
     }
 }

@@ -1,12 +1,12 @@
 ﻿<!-- Model obsahující seznam základních informací o pacientech pro kartotéku. -->
-@model DoctorDisplayPatientModel
+@model PatientProfileModel
 
 @{
-    ViewData["Title"] = Model.Surname + " " + Model.Name;
+    ViewData["Title"] = Model.PatientFullName.Surname + " " + Model.PatientFullName.Name;
 }
 
 <div>
-    <b>@(Model.Name + " " + Model.Surname + (String.IsNullOrEmpty(Model.Title) ? "" : ", ") + Model.Title) </b> <br />
+    <b>@Model.PatientFullName.getFullName() </b> <br />
     R.Č.: <b>@Model.SocialSecurityNumber</b><br />
     Poj.: <b>@Model.InsuranceCompany</b><br />
     Věk:  @Model.Age<br />
@@ -25,15 +25,15 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label class="col-form-label">Jméno</label>
-                            <input name="UpdateName" id="UpdateName" type="text" required disabled readonly autocomplete="off" class="form-control" value="@Model.Name" />
+                            <input name="UpdateName" id="UpdateName" type="text" required disabled readonly autocomplete="off" class="form-control" value="@Model.PatientFullName.Name" />
                         </div>
                         <div class="form-group">
                             <label class="col-form-label">Příjmení</label>
-                            <input name="UpdateSurname" id="UpdateSurname" type="text" required disabled readonly autocomplete="off" class="form-control" value="@Model.Surname" />
+                            <input name="UpdateSurname" id="UpdateSurname" type="text" required disabled readonly autocomplete="off" class="form-control" value="@Model.PatientFullName.Surname" />
                         </div>
                         <div class="form-group">
                             <label aclass="col-form-label">Titul</label>
-                            <input name="UpdateTitle" id="UpdateTitle" type="text" disabled readonly autocomplete="off" class="form-control" value="@Model.Title" />
+                            <input name="UpdateTitle" id="UpdateTitle" type="text" disabled readonly autocomplete="off" class="form-control" value="@Model.PatientFullName.Title" />
                         </div>
                         <div class="form-group">
                             <label class="col-form-label">Rodné číslo</label>
@@ -79,9 +79,9 @@
 </div>
 
 <div>
-    Výška: @(((int)Model.HealthCondition.Height != 0) ? Model.HealthCondition.Height.ToString() : "---") cm<br />
-    Váha : @(((int)Model.HealthCondition.Weight != 0) ? Model.HealthCondition.Weight.ToString() : "---") kg<br />
-    Krevní skupina: @(String.IsNullOrEmpty(Model.HealthCondition.BloodType) ? "---" : Model.HealthCondition.BloodType) <br />
+    Výška: @Model.HealthCondition.GetWeightString() cm<br />
+    Váha : @Model.HealthCondition.GetHeightString() kg<br />
+    Krevní skupina: @Model.HealthCondition.GetBlodTypeString() <br />
 
     @if (Model.Allergys.Count < 4)
     {

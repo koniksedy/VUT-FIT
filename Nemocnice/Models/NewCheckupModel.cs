@@ -7,9 +7,7 @@ namespace Nemocnice.Models
 {
     public class NewCheckupModel
     {
-        public string Name { get; set; }
-        public string Surname { get; set; }
-        public string Title { get; set; }
+        public NameModel FullName { get; set; }
         public long SocialSecurityNum { get; set; }
     }
 }

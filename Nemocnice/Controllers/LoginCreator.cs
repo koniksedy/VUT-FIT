@@ -220,8 +220,12 @@ namespace Nemocnice.Controllers
             user = new NemocniceUser { UserName = "xpavli00" };
             result = await _userManager.CreateAsync(user, "1234567890");
             await _userManager.AddToRoleAsync(user, "Patient");
-            */
+            
 
+            var user = await _userManager.FindByNameAsync("Sedy");
+
+            await _userManager.AddToRoleAsync( user, "Admin");
+            */
             return View();
         }
     }

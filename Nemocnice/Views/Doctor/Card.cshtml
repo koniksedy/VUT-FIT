@@ -81,6 +81,7 @@
     </div>
 </form>
 
+
 <!-- Vyhledávání pacienta podle zadaného výrazu. -->
 <!-- Zaměření na vyhledáné výsled je možné zrušit tlačítkem |Zrušit filtry|, které zobrazí zase všechny pacienty. -->
 <form asp-action="Card" method="get">
@@ -121,13 +122,13 @@
         {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Surname)
+                @Html.DisplayFor(modelItem => item.PatientFullName.Surname)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name)
+                @Html.DisplayFor(modelItem => item.PatientFullName.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
+                @Html.DisplayFor(modelItem => item.PatientFullName.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.SocialSecurityNum)
@@ -137,7 +138,6 @@
             </td>
             <td>
                 <!-- Zobrací celkový přehled pacienta se všemi jeho funkcemi. -->
-                <!-- TODO přehled pacienta-->
                 @Html.ActionLink("Pacient", "PatientProfile", new { patientNum = item.SocialSecurityNum }) |
                 <!-- Vytvoření nové zprávy k danému pacientovi. -->
                 @Html.ActionLink("Zpráva", "Report", new { socialNum = item.SocialSecurityNum })

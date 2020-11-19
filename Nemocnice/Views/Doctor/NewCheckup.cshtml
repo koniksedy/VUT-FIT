@@ -6,7 +6,7 @@
 
 <form method="post" asp-action="CreateNewCheckup">
     <div>
-        Pacient: <b>@Model.Name @Model.Surname@(String.IsNullOrEmpty(Model.Title) ? "" : (", " + Model.Title)) (@Model.SocialSecurityNum)</b>
+        Pacient: <b>@Model.FullName.getFullName() (@Model.SocialSecurityNum)</b>
         <input hidden name="patientNum" value="@Model.SocialSecurityNum" />
     </div>
     <div>
