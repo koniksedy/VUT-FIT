@@ -6,32 +6,30 @@
 }
 
 
-    <h1>Výkazy</h1>
+<h1>Výkazy</h1>
 
-    <form asp-action="Activity" method="get">
-        <div class="search-doctor">
-            <p id="left">
-                <label>Název výkonu:</label><input type="text" name="SearchString" id="search" autocomplete="off">
-                <input type="submit" value="Hledat" class="my_btn"> | <a asp-action="Activity" class="my_btn">Zpět na všechny výpisy</a>
-            </p>
-        </div>
-    </form>
+<form asp-action="Activity" method="get">
+    <div class="search-doctor">
+        <p id="left">
+            <label>Název výkonu:</label><input type="text" name="SearchString" id="search" autocomplete="off">
+            <input type="submit" value="Hledat" class="my_btn"> | <a asp-action="Activity" class="my_btn">Zpět na všechny výpisy</a>
+        </p>
+    </div>
+</form>
 
+@if (Model.medicallBills.Count == 0)
+{
+    <br />
+    <br />
+    <br />
+    <hr /><p class="null_record">Nejsou zde žádné záznamy k zobrazení</p>
+    <hr />
+}
+else
+{
 
     <div class="table">
         <table>
-
-            @if (Model.medicallBills == null)
-            {
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <p>Nejsou zde žádné záznamy k zobrazení</p>
-                    </td>
-                </tr>
-            }
-
             <thead>
                 <tr>
                     <th>
@@ -75,5 +73,4 @@
 
     </div>
 
-
-
+}
