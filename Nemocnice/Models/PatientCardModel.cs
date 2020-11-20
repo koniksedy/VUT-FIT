@@ -12,9 +12,12 @@ namespace Nemocnice.Models
         public User User { get; set; }
         public Patient Patient { get; set; }
         public List<MedicallActivityPrice> medicallActivityPrice { get; set; }
-        public IPagedList<MedicallActivityPrice> medicallBills1 { get; set; }
-        public IPagedList<MedicallActivityPrice> medicallBills2 { get; set; }
-        public IPagedList<MedicallActivityPrice> medicallBills3 { get; set; }
+        public IPagedList<MedicallReport> medicallReports { get; set; }
+        public IPagedList<CheckupTicket> checkupTickets { get; set; }
+        public IPagedList<Allergy> Allergies { get; set; }
+        public IPagedList<MedicallBill> MedicallBills { get; set; }
+        public IPagedList<PatientTreatmentLog> PatientTreatmentLogs { get; set; }
+        public IPagedList<CureProgress> CureProgresses { get; set; }
         public int Records1 { get; set; }
         public int PageNum1 { get; set; }
         public int PageSize1 { get; set; }
@@ -25,6 +28,8 @@ namespace Nemocnice.Models
         public int PageNum3 { get; set; }
         public int PageSize3 { get; set; }
         public int pagetoswap { get; set; }
-        public int TabNumber { get; internal set; }
+        public int TabNumber { get; set; }
+        public int PageNum4 { get; set; }
+        public int PageNum5 { get; set; }
     }
 }

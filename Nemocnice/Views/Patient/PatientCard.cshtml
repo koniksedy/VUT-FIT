@@ -67,8 +67,11 @@
         <li><a href="#tabs-1" onclick="$('#pozice').value = 1">Zprávy</a></li>
         <li><a href="#tabs-2" onclick="$('#pozice').value = 2">Nemoci</a></li>
         <li><a href="#tabs-3" onclick="$('#pozice').value = 3">Alergie</a></li>
+        <li><a href="#tabs-4" onclick="$('#pozice').value = 1">Úkony pojišťovna</a></li>
+        <li><a href="#tabs-5" onclick="$('#pozice').value = 2">Léčba</a></li>
+        <li><a href="#tabs-6" onclick="$('#pozice').value = 3">Historie návštěv</a></li>
     </ul>
-    
+
     <div id="tabs-1">
         <table class="checkup table">
             <thead>
@@ -101,7 +104,7 @@
                         <td></td>
                     </tr>
                 }
-                @foreach (var prohlidka in Model.medicallBills1)
+                @foreach (var prohlidka in Model.medicallReports)
                 {
 
                     <tr class="radek_zaznamu">
@@ -125,8 +128,8 @@
             </tbody>
         </table>
         <br />
-     
-        @(Html.Pager(Model.medicallBills1).Url(page => Url.Action("PatientCard", new { page1 = page, page2 = Model.PageNum2, page3 = Model.PageNum3, select = 1 }))
+
+        @(Html.Pager(Model.medicallReports).Url(page => Url.Action("PatientCard", new { pageReport = page, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum3, select = 1 }))
         .Classic())
     </div>
     <div id="tabs-2">
@@ -161,7 +164,7 @@
                         <td></td>
                     </tr>
                 }
-                @foreach (var prohlidka in Model.medicallBills2)
+                @foreach (var prohlidka in Model.checkupTickets)
                 {
 
                     <tr class="radek_zaznamu">
@@ -185,7 +188,7 @@
             </tbody>
         </table>
 
-        @(Html.Pager(Model.medicallBills2).Url(page => Url.Action("PatientCard", new { page1 = Model.PageNum2, page2 = page, page3 = Model.PageNum3, select = 2 }))
+        @(Html.Pager(Model.checkupTickets).Url(page => Url.Action("PatientCard", new { page1 = Model.PageNum2, page2 = page, page3 = Model.PageNum3, select = 2 }))
         .Classic())
     </div>
     <div id="tabs-3">
@@ -221,7 +224,7 @@
                         <td></td>
                     </tr>
                 }
-                @foreach (var prohlidka in Model.medicallBills3)
+                @foreach (var prohlidka in Model.Allergies)
                 {
 
                     <tr class="radek_zaznamu">
@@ -245,7 +248,187 @@
             </tbody>
         </table>
 
-        @(Html.Pager(Model.medicallBills3).Url(page => Url.Action("PatientCard", new { page1= Model.PageNum1, page2 = Model.PageNum2, page3= page, select=3 }))
+        @(Html.Pager(Model.Allergies).Url(page => Url.Action("PatientCard", new { page1= Model.PageNum1, page2 = Model.PageNum2, page3= page, select=3 }))
+        .Classic())
+    </div>
+    <div id="tabs-3">
+        <table class="checkup table">
+
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořil
+                    </th>
+                    <th>
+                        Kam zajít
+                    </th>
+                    <th>
+                        Stav
+                    </th>
+                    <th>
+                        Vytvořeno
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (1 == 0)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+                @foreach (var prohlidka in Model.Allergies)
+                {
+
+                    <tr class="radek_zaznamu">
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @(Html.Pager(Model.Allergies).Url(page => Url.Action("PatientCard", new { page1= Model.PageNum1, page2 = Model.PageNum2, page3= page, select=3 }))
+        .Classic())
+    </div>
+    <div id="tabs-3">
+        <table class="checkup table">
+
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořil
+                    </th>
+                    <th>
+                        Kam zajít
+                    </th>
+                    <th>
+                        Stav
+                    </th>
+                    <th>
+                        Vytvořeno
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (1 == 0)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+                @foreach (var prohlidka in Model.Allergies)
+                {
+
+                    <tr class="radek_zaznamu">
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @(Html.Pager(Model.Allergies).Url(page => Url.Action("PatientCard", new { page1= Model.PageNum1, page2 = Model.PageNum2, page3= page, select=3 }))
+        .Classic())
+    </div>
+    <div id="tabs-3">
+        <table class="checkup table">
+
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořil
+                    </th>
+                    <th>
+                        Kam zajít
+                    </th>
+                    <th>
+                        Stav
+                    </th>
+                    <th>
+                        Vytvořeno
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (1 == 0)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+                @foreach (var prohlidka in Model.Allergies)
+                {
+
+                    <tr class="radek_zaznamu">
+                        <td>
+                            3
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                        <td>
+                            asfasfafasf
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @(Html.Pager(Model.Allergies).Url(page => Url.Action("PatientCard", new { page1= Model.PageNum1, page2 = Model.PageNum2, page3= page, select=3 }))
         .Classic())
     </div>
 </div>
