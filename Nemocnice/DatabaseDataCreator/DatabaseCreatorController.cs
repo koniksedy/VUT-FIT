@@ -16,9 +16,6 @@ namespace Nemocnice.DatabaseDataCreator
                 AddressCreator address = new AddressCreator();
                 address.AddressCreate(db); 
 
-                AllergyCreator allergy = new AllergyCreator();
-                allergy.AllergyCreate(db); 
-
                 DiagnosisCreator diagnosis = new DiagnosisCreator();
                 diagnosis.DiagnosisCreate(db); 
 
@@ -54,9 +51,6 @@ namespace Nemocnice.DatabaseDataCreator
 
                 ActivityPricingPerDiagnosisCreator activityPricingPerDiagnosis = new ActivityPricingPerDiagnosisCreator();
                 activityPricingPerDiagnosis.ActivityPricingPerDiagnosisCreate(db);
-
-                AllergysOfPatientCreator allergysOfPatient = new AllergysOfPatientCreator();
-                allergysOfPatient.AllergysOfPatientCreate(db);
 
                 CheckUpTicketCreator checkUpTicket = new CheckUpTicketCreator();
                 checkUpTicket.CheckUpTicketCreate(db);

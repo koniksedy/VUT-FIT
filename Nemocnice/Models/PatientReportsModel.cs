@@ -18,7 +18,7 @@ namespace Nemocnice.Models
     public class PatientReportsModel
     {
         public NameModel PatientFullName { get; set; }
-        public long SocialSecurityNumber { get; set; }
+        public string SocialSecurityNumber { get; set; }
         public int Insurance { get; set; }
         public string PreviousReport { get; set; }
         public DateTime PreviousReportDate { get; set; }

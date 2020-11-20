@@ -11,140 +11,138 @@ namespace Nemocnice.DatabaseDataCreator
         public void PatientCreate(DatabaseContext db)
         {
             int ID = db.UserT.Where(s => s.Login == "xmalic0a").Select(x => x.UserId).ToList().First();
-
-            HealthCondition health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 6325412547).ToList().First();
-
+            HealthCondition health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "8605274117").ToList().First();
             Address add = db.AddressT.Where(s => s.AddressId == 3).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 6325412547, 111, add,health));
+            db.PatientT.Add(PatientAdd(ID, "8605274117", 111, add,health));
 
-            ID = db.UserT.Where(s => s.Login == "xnovot00").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 9638521235).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "7204236798").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "7204236798").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 4).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 9638521235, 201, add, health));
+            db.PatientT.Add(PatientAdd(ID, "7204236798", 201, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xjanec0a").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 2568745120).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "9409278736").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "9409278736").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 5).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 2568745120, 111, add, health));
+            db.PatientT.Add(PatientAdd(ID, "9409278736", 111, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xpospi0a").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 5698742103).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "7306261116").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "7306261116").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 6).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 5698742103, 201, add, health));
+            db.PatientT.Add(PatientAdd(ID, "7306261116", 201, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xhajek0a").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 2356987452).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "5804249330").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "5804249330").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 7).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 2356987452, 201, add, health));
+            db.PatientT.Add(PatientAdd(ID, "5804249330", 201, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xjelin00").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 8562101478).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "7310079755").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "7310079755").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 8).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 8562101478, 111, add, health));
+            db.PatientT.Add(PatientAdd(ID, "7310079755", 111, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xkrali06").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 8963214568).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "5609101014").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "5609101014").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 9).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 8963214568, 211, add, health));
+            db.PatientT.Add(PatientAdd(ID, "5609101014", 211, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xbenes01").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 7458236985).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "5407078259").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "5407078259").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 10).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 7458236985, 211, add, health));
+            db.PatientT.Add(PatientAdd(ID, "5407078259", 211, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xdolez00").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 7412563201).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "7952217779").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "7952217779").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 11).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 7412563201, 111, add, health));
+            db.PatientT.Add(PatientAdd(ID, "7952217779", 111, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xfiala01").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 8745213698).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "6454221719").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "6454221719").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 12).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 8745213698, 111, add, health));
+            db.PatientT.Add(PatientAdd(ID, "6454221719", 111, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xsedla03").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 2014785630).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "6960249307").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "6960249307").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 13).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 2014785630, 111, add, health));
+            db.PatientT.Add(PatientAdd(ID, "6960249307", 111, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xzeman0a").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 9852369874).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "8661094849").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "8661094849").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 14).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 9852369874, 207, add, health));
+            db.PatientT.Add(PatientAdd(ID, "8661094849", 207, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xkolar05").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 3562147852).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "7262204400").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "7262204400").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 15).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 3562147852, 207, add, health));
+            db.PatientT.Add(PatientAdd(ID, "7262204400", 207, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xkrejc02").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 214785236).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "0254270401").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "0254270401").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 16).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 214785236, 207, add, health));
+            db.PatientT.Add(PatientAdd(ID, "0254270401", 207, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xnavra00").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 9856321452).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "0261203349").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "0261203349").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 17).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 9856321452, 209, add, health));
+            db.PatientT.Add(PatientAdd(ID, "0261203349", 209, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xcerma0a").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 8520147852).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "7561200394").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "7561200394").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 18).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 8520147852, 209, add, health));
+            db.PatientT.Add(PatientAdd(ID, "7561200394", 209, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xbarto08").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 4563217892).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "7356020210").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "7356020210").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 19).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 4563217892, 209, add, health));
+            db.PatientT.Add(PatientAdd(ID, "7356020210", 209, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xsimek00").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 7523698214).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "0110038379").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "0110038379").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 20).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 7523698214, 205, add, health));
+            db.PatientT.Add(PatientAdd(ID, "0110038379", 205, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xsykor01").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 9632541205).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "7310190998").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "7310190998").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 21).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 9632541205, 205, add, health));
+            db.PatientT.Add(PatientAdd(ID, "7310190998", 205, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xsouku0a").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 9321458745).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "7705156437").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "7705156437").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 22).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 9321458745, 205, add, health));
+            db.PatientT.Add(PatientAdd(ID, "7705156437", 205, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xmorav07").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 9236541258).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "0053229792").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "0053229792").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 23).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 9236541258, 205, add, health));
+            db.PatientT.Add(PatientAdd(ID, "0053229792", 205, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xsevci06").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 8745213698).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "8862026096").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "8862026096").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 24).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 8745213698, 205, add, health));
+            db.PatientT.Add(PatientAdd(ID, "8862026096", 205, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xmasek00").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 9032145698).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "7951257193").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "7951257193").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 25).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 9032145698, 111, add, health));
+            db.PatientT.Add(PatientAdd(ID, "7951257193", 111, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xhrusk08").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 8523654124).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "8052047377").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "8052047377").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 26).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 8523654124, 111, add, health));
+            db.PatientT.Add(PatientAdd(ID, "8052047377", 111, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xpavli00").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 7632589654).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "6712254901").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "6712254901").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 27).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 7632589654, 111, add, health));
+            db.PatientT.Add(PatientAdd(ID, "6712254901", 111, add, health));
 
-            ID = db.UserT.Where(s => s.Login == "xjanda0a").Select(x => x.UserId).ToList().First();
-            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == 5478512365).ToList().First();
+            ID = db.UserT.Where(s => s.Login == "6261046044").Select(x => x.UserId).ToList().First();
+            health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "6261046044").ToList().First();
             add = db.AddressT.Where(s => s.AddressId == 28).ToList().First();
-            db.PatientT.Add(PatientAdd(ID, 5478512365, 111, add, health));
+            db.PatientT.Add(PatientAdd(ID, "5478512365", 111, add, health));
 
             db.SaveChanges();
         }
-        private Patient PatientAdd(int userId, long socialSecurityNum, int insuranceCompany, Address homeAddress, HealthCondition healthCondition)
+        private Patient PatientAdd(int userId, string socialSecurityNum, int insuranceCompany, Address homeAddress, HealthCondition healthCondition)
         {
             return new Patient { UserId = userId, SocialSecurityNum = socialSecurityNum, InsuranceCompany = insuranceCompany, HomeAddress = homeAddress, HealthCondition = healthCondition };
         }

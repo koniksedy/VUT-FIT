@@ -12,11 +12,12 @@ namespace Nemocnice.Data
         [Key]
         public int HealthConditionId { get; set; }
         [Required]
-        public long SocialSecurityNum { get; set; }
-        public float Height { get; set; }
-        public float Weight { get; set; }
+        public string SocialSecurityNum { get; set; }
+        public int Height { get; set; }
+        public int Weight { get; set; }
         public string BloodType { get; set; }
         public DateTime LastCheckupDate { get; set; }
+        public string Allergys { get; set; }
 
         public string GetHeightString()
         {

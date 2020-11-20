@@ -45,7 +45,9 @@ namespace Nemocnice.DatabaseDataCreator
              db.LoginT.Add(LoginAdd("xmasek00", "Heslo32", 0010));
              db.LoginT.Add(LoginAdd("xhrusk08", "Heslo32", 0010));
              db.LoginT.Add(LoginAdd("xpavli00", "Heslo32", 0010));
-             db.LoginT.Add(LoginAdd("xjanda0a", "Heslo32", 0010));
+             db.LoginT.Add(LoginAdd("xjanda0a", "Heslo32"
+           
+            010));
              db.SaveChanges();*/
          }
        /* private Login LoginAdd(string currentLogin, string hashPassword, int roleId)

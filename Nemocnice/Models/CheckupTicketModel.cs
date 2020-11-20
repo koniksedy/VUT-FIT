@@ -8,7 +8,7 @@ namespace Nemocnice.Models
     public class CheckupTicketModel
     {
         public NameModel PatientFullName { get; set; }
-        public long SocialSecurityNumber { get; set; }
+        public string SocialSecurityNumber { get; set; }
         public NameModel DoctorFullName { get; set; }
         public string State { get; set; }
         public DateTime CreateDate { get; set; }

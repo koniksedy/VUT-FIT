@@ -40,20 +40,6 @@ namespace Nemocnice.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AllergyT",
-                columns: table => new
-                {
-                    AllergyId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(nullable: false),
-                    Description = table.Column<string>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AllergyT", x => x.AllergyId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -110,14 +96,15 @@ namespace Nemocnice.Migrations
                 name: "DoctorT",
                 columns: table => new
                 {
-                    ICZ = table.Column<int>(nullable: false)
+                    DoctorId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ICZ = table.Column<int>(nullable: false),
                     UserId = table.Column<int>(nullable: false),
                     WorkPhone = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DoctorT", x => x.ICZ);
+                    table.PrimaryKey("PK_DoctorT", x => x.DoctorId);
                 });
 
             migrationBuilder.CreateTable(
@@ -126,11 +113,12 @@ namespace Nemocnice.Migrations
                 {
                     HealthConditionId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SocialSecurityNum = table.Column<long>(nullable: false),
-                    Height = table.Column<float>(nullable: false),
-                    Weight = table.Column<float>(nullable: false),
+                    SocialSecurityNum = table.Column<string>(nullable: false),
+                    Height = table.Column<int>(nullable: false),
+                    Weight = table.Column<int>(nullable: false),
                     BloodType = table.Column<string>(nullable: true),
-                    LastCheckupDate = table.Column<DateTime>(nullable: false)
+                    LastCheckupDate = table.Column<DateTime>(nullable: false),
+                    Allergys = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -298,39 +286,13 @@ namespace Nemocnice.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AllergysOfPatientT",
-                columns: table => new
-                {
-                    AllergysOfPatientId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AllergyId = table.Column<int>(nullable: false),
-                    HealthConditionId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AllergysOfPatientT", x => x.AllergysOfPatientId);
-                    table.ForeignKey(
-                        name: "FK_AllergysOfPatientT_AllergyT_AllergyId",
-                        column: x => x.AllergyId,
-                        principalTable: "AllergyT",
-                        principalColumn: "AllergyId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AllergysOfPatientT_HealthConditionT_HealthConditionId",
-                        column: x => x.HealthConditionId,
-                        principalTable: "HealthConditionT",
-                        principalColumn: "HealthConditionId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PatientT",
                 columns: table => new
                 {
                     PatientID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(nullable: false),
-                    SocialSecurityNum = table.Column<long>(nullable: false),
+                    SocialSecurityNum = table.Column<string>(nullable: false),
                     InsuranceCompany = table.Column<int>(nullable: false),
                     HomeAddressAddressId = table.Column<int>(nullable: false),
                     HealthConditionId = table.Column<int>(nullable: true)
@@ -384,8 +346,8 @@ namespace Nemocnice.Migrations
                 {
                     MedicallBillId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DoctorICZ = table.Column<int>(nullable: false),
-                    SocialSecurityNum = table.Column<long>(nullable: false),
+                    DoctorId = table.Column<int>(nullable: false),
+                    SocialSecurityNum = table.Column<string>(nullable: false),
                     MedicallActivityPriceId = table.Column<int>(nullable: false),
                     DiagnosisId = table.Column<int>(nullable: false),
                     State = table.Column<string>(nullable: true),
@@ -402,10 +364,10 @@ namespace Nemocnice.Migrations
                         principalColumn: "DiagnosisId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MedicallBillT_DoctorT_DoctorICZ",
-                        column: x => x.DoctorICZ,
+                        name: "FK_MedicallBillT_DoctorT_DoctorId",
+                        column: x => x.DoctorId,
                         principalTable: "DoctorT",
-                        principalColumn: "ICZ",
+                        principalColumn: "DoctorId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_MedicallBillT_MedicallActivityPriceT_MedicallActivityPriceId",
@@ -421,8 +383,8 @@ namespace Nemocnice.Migrations
                 {
                     CheckupTicketId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatedByICZ = table.Column<int>(nullable: false),
-                    ToDoctorICZ = table.Column<int>(nullable: true),
+                    CreatedByDoctorId = table.Column<int>(nullable: false),
+                    ToDoctorDoctorId = table.Column<int>(nullable: true),
                     PatientID = table.Column<int>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     IncludePicDescript = table.Column<bool>(nullable: false),
@@ -436,10 +398,10 @@ namespace Nemocnice.Migrations
                 {
                     table.PrimaryKey("PK_CheckupTicketT", x => x.CheckupTicketId);
                     table.ForeignKey(
-                        name: "FK_CheckupTicketT_DoctorT_CreatedByICZ",
-                        column: x => x.CreatedByICZ,
+                        name: "FK_CheckupTicketT_DoctorT_CreatedByDoctorId",
+                        column: x => x.CreatedByDoctorId,
                         principalTable: "DoctorT",
-                        principalColumn: "ICZ",
+                        principalColumn: "DoctorId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CheckupTicketT_PatientT_PatientID",
@@ -448,10 +410,10 @@ namespace Nemocnice.Migrations
                         principalColumn: "PatientID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CheckupTicketT_DoctorT_ToDoctorICZ",
-                        column: x => x.ToDoctorICZ,
+                        name: "FK_CheckupTicketT_DoctorT_ToDoctorDoctorId",
+                        column: x => x.ToDoctorDoctorId,
                         principalTable: "DoctorT",
-                        principalColumn: "ICZ",
+                        principalColumn: "DoctorId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -461,27 +423,27 @@ namespace Nemocnice.Migrations
                 {
                     MedicallReportId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AuthorICZ = table.Column<int>(nullable: false),
+                    AuthorDoctorId = table.Column<int>(nullable: false),
                     PatientID = table.Column<int>(nullable: false),
                     Description = table.Column<string>(nullable: true),
                     IncludePic = table.Column<bool>(nullable: false),
-                    OwnerICZ = table.Column<int>(nullable: true),
+                    OwnerDoctorId = table.Column<int>(nullable: true),
                     CreateDate = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MedicallReportT", x => x.MedicallReportId);
                     table.ForeignKey(
-                        name: "FK_MedicallReportT_DoctorT_AuthorICZ",
-                        column: x => x.AuthorICZ,
+                        name: "FK_MedicallReportT_DoctorT_AuthorDoctorId",
+                        column: x => x.AuthorDoctorId,
                         principalTable: "DoctorT",
-                        principalColumn: "ICZ",
+                        principalColumn: "DoctorId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MedicallReportT_DoctorT_OwnerICZ",
-                        column: x => x.OwnerICZ,
+                        name: "FK_MedicallReportT_DoctorT_OwnerDoctorId",
+                        column: x => x.OwnerDoctorId,
                         principalTable: "DoctorT",
-                        principalColumn: "ICZ",
+                        principalColumn: "DoctorId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_MedicallReportT_PatientT_PatientID",
@@ -578,10 +540,9 @@ namespace Nemocnice.Migrations
                 {
                     PictureId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SocialSecurityNum = table.Column<long>(nullable: false),
+                    SocialSecurityNum = table.Column<string>(nullable: false),
                     CurrentPicture = table.Column<byte[]>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    ToAllergyAllergyId = table.Column<int>(nullable: true),
                     ToMedicalReportMedicallReportId = table.Column<int>(nullable: true),
                     ToCheckupTicketCheckupTicketId = table.Column<int>(nullable: true),
                     CreateDate = table.Column<DateTime>(nullable: false)
@@ -589,12 +550,6 @@ namespace Nemocnice.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PictureT", x => x.PictureId);
-                    table.ForeignKey(
-                        name: "FK_PictureT_AllergyT_ToAllergyAllergyId",
-                        column: x => x.ToAllergyAllergyId,
-                        principalTable: "AllergyT",
-                        principalColumn: "AllergyId",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_PictureT_CheckupTicketT_ToCheckupTicketCheckupTicketId",
                         column: x => x.ToCheckupTicketCheckupTicketId,
@@ -618,16 +573,6 @@ namespace Nemocnice.Migrations
                 name: "IX_ActivityPricingPerDiagnosisT_MedicallActivityPriceId",
                 table: "ActivityPricingPerDiagnosisT",
                 column: "MedicallActivityPriceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AllergysOfPatientT_AllergyId",
-                table: "AllergysOfPatientT",
-                column: "AllergyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AllergysOfPatientT_HealthConditionId",
-                table: "AllergysOfPatientT",
-                column: "HealthConditionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -679,9 +624,9 @@ namespace Nemocnice.Migrations
                 column: "MedicallReportId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CheckupTicketT_CreatedByICZ",
+                name: "IX_CheckupTicketT_CreatedByDoctorId",
                 table: "CheckupTicketT",
-                column: "CreatedByICZ");
+                column: "CreatedByDoctorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CheckupTicketT_PatientID",
@@ -689,9 +634,9 @@ namespace Nemocnice.Migrations
                 column: "PatientID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CheckupTicketT_ToDoctorICZ",
+                name: "IX_CheckupTicketT_ToDoctorDoctorId",
                 table: "CheckupTicketT",
-                column: "ToDoctorICZ");
+                column: "ToDoctorDoctorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MedicallBillT_DiagnosisId",
@@ -699,9 +644,9 @@ namespace Nemocnice.Migrations
                 column: "DiagnosisId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MedicallBillT_DoctorICZ",
+                name: "IX_MedicallBillT_DoctorId",
                 table: "MedicallBillT",
-                column: "DoctorICZ");
+                column: "DoctorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MedicallBillT_MedicallActivityPriceId",
@@ -709,14 +654,14 @@ namespace Nemocnice.Migrations
                 column: "MedicallActivityPriceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MedicallReportT_AuthorICZ",
+                name: "IX_MedicallReportT_AuthorDoctorId",
                 table: "MedicallReportT",
-                column: "AuthorICZ");
+                column: "AuthorDoctorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MedicallReportT_OwnerICZ",
+                name: "IX_MedicallReportT_OwnerDoctorId",
                 table: "MedicallReportT",
-                column: "OwnerICZ");
+                column: "OwnerDoctorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MedicallReportT_PatientID",
@@ -742,11 +687,6 @@ namespace Nemocnice.Migrations
                 name: "IX_PatientTreatmentLogT_PatientID",
                 table: "PatientTreatmentLogT",
                 column: "PatientID");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PictureT_ToAllergyAllergyId",
-                table: "PictureT",
-                column: "ToAllergyAllergyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PictureT_ToCheckupTicketCheckupTicketId",
@@ -781,9 +721,6 @@ namespace Nemocnice.Migrations
 
             migrationBuilder.DropTable(
                 name: "AdminT");
-
-            migrationBuilder.DropTable(
-                name: "AllergysOfPatientT");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -829,9 +766,6 @@ namespace Nemocnice.Migrations
 
             migrationBuilder.DropTable(
                 name: "MedicallActivityPriceT");
-
-            migrationBuilder.DropTable(
-                name: "AllergyT");
 
             migrationBuilder.DropTable(
                 name: "MedicallReportT");
