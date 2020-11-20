@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Nová žádost";
+}
+
+@model NewCheckupModel
+
+<form method="post" asp-action="CreateNewCheckup">
+    <div>
+        Pacient: <b>@Model.FullName.getFullName() (@Model.SocialSecurityNum)</b>
+        <input hidden name="patientNum" value="@Model.SocialSecurityNum" />
+    </div>
+    <div>
+        <label>Lékař:</label>
+        <input type="text" class="form-control m-input" name="doctorName" />
+    </div>
+
+    <div>
+        <label>Diagnózy:</label>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="inputFormRowCheckup">
+                <div class="input-group mb-3">
+                    <input type="text" name="Diagnosis[]" class="form-control m-input" placeholder="Diagnoza" autocomplete="off">
+                    <div class="input-group-append">
+                        <!-- Tlačítko pro smazání konktétního řádku s diagnozou. -->
+                        <button id="removeRowCheckup" type="button" class="btn btn-danger">Smazat</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Přidat řádek pro Diagnozu. -->
+            <div id="newRow"></div>
+            <button id="addRowCheckup" type="button" class="btn btn-success">Přidat diagnozu</button>
+            <div></div>
+        </div>
+    </div>
+
+    <div>
+        <label>Text:</label>
+    </div>
+    <div>
+        <textarea cols="100" rows="10" name="checkupText"></textarea>
+    </div>
+
+    <div>
+        <!-- Uložit -->
+        <input class="btn btn-primary" type="submit" value="Uložit">
+    </div>
+</form>

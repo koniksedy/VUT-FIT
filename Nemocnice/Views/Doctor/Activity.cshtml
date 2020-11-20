@@ -1,0 +1,77 @@
+﻿@addTagHelper *, LazZiya.TagHelpers
+@model ActivityModel
+
+@{
+    ViewData["Title"] = "Activity";
+}
+
+<div class="container">
+    <h1>Výkazy</h1>
+
+
+    <form asp-action="Activity" method="get">
+        <div class="search-doctor">
+            <p id="left">
+                <label>Název výkonu:</label><input type="text" name="SearchString" id="search" autocomplete="off">
+                <input type="submit" value="Hledat" class="my_btn"> | <a asp-action="Activity" class="my_btn">Zpět na všechny výpisy</a>
+            </p>
+        </div>
+    </form>
+</div>
+
+    @if (Model.medicallBills.Count == 0)
+    {
+        <br />
+        <br />
+        <br />
+        <hr /><p class="null_record">Nejsou zde žádné záznamy k zobrazení</p>
+        <hr />
+    }
+    else
+    {
+
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    @Html.ActionLink("Diagnóza", "Activity", new { SortOrder = "nazev", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    Pacient
+                </th>
+                <th>
+                    @Html.ActionLink("Datum vystavení", "Activity", new { SortOrder = "datum", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Stav schválení", "Activity", new { SortOrder = "stav", searchString = ViewData["Search"] })
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var medicalBill in Model.medicallBills)
+            {
+
+                <tr>
+                    <td>@medicalBill.Diagnosis.Name</td>
+                    <td>@medicalBill.SocialSecurityNum</td>
+                    <td>@medicalBill.CreateDate</td>
+                    <td>@medicalBill.State</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+
+    <br />
+    <paging total-records="Model.Records"
+            page-no="Model.PageNum"
+            page-size="Model.PageSize"
+            show-total-pages="false"
+            show-total-records="false"
+            show-page-size-nav="false">
+    </paging>
+
+</div>
+    }

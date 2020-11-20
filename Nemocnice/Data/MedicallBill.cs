@@ -12,7 +12,7 @@ namespace Nemocnice.Data
         [Required]
         public virtual Doctor Doctor { get; set; }
         [Required]
-        public long SocialSecurityNum { get; set; }
+        public string SocialSecurityNum { get; set; }
         [Required]
         public MedicallActivityPrice MedicallActivityPrice { get; set; }
         [Required]

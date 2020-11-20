@@ -7,13 +7,15 @@ namespace Nemocnice.Data
     {
         // AdminId == UserId při generalizaci na více tabulek musí být Id shodné
         // s hlavní tabulkou.
+        // TODO vytvořit správný formát rodných čísel
+        // TODO rodné číslo jako string a nalézt všechny kolize
         [Key]
         [Required]
         public int PatientID { get; set; }
         [Required]
         public int UserId { get; set; }
         [Required]
-        public long SocialSecurityNum { get; set; }
+        public string SocialSecurityNum { get; set; }
         [Required]
         public int InsuranceCompany { get; set; }
         [Required]

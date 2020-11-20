@@ -16,6 +16,9 @@ namespace Nemocnice.DatabaseDataCreator
             ID = db.UserT.Where(s => s.Login == "xbilik00").Select(x => x.UserId).ToList().First();
             db.AdminT.Add(AdminAdd(ID, "Personální administrátor", "805258741", "People Company"));
 
+            ID = db.UserT.Where(s => s.Login == "Admin").Select(x => x.UserId).ToList().First();
+            db.AdminT.Add(AdminAdd(ID, "Hlavní ADMIN", "777777778", "Databaze"));
+
             db.SaveChanges();
         }
         private Admin AdminAdd(int userId, string role, string workPhone, string outsorcecompany)

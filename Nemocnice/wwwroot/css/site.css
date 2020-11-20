@@ -153,6 +153,9 @@ body {
     float: right;
 }
 
+
+
+/*-------------------  DOCTOR -----------------------------*/
 tr:hover {
     background-color: lightblue;
 }
@@ -160,9 +163,5 @@ tr:hover {
 .null_record{
     text-align:center;
 }
-
-
-
-
 
 

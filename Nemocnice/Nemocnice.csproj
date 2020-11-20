@@ -4,6 +4,21 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Configurations>Debug;Release;jl</Configurations>
     <UserSecretsId>89123ef0-2169-4875-bd59-900bd081aaf1</UserSecretsId>
+    <StartupObject></StartupObject>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -26,14 +41,25 @@
     <Compile Remove="Migrations\20201027155111_Initialize.Designer.cs" />
     <Compile Remove="Migrations\20201027155434_Initialize.cs" />
     <Compile Remove="Migrations\20201027155434_Initialize.Designer.cs" />
+    <Compile Remove="Migrations\20201027160632_Initialize.cs" />
+    <Compile Remove="Migrations\20201027160632_Initialize.Designer.cs" />
+    <Compile Remove="Migrations\20201120100445_InitialCreate.cs" />
+    <Compile Remove="Migrations\20201120100445_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20201120101102_Initialize.cs" />
+    <Compile Remove="Migrations\20201120101102_Initialize.Designer.cs" />
+    <Compile Remove="Migrations\20201120101625_Initialize.cs" />
+    <Compile Remove="Migrations\20201120101625_Initialize.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="cloudscribe.Pagination.Models" Version="1.1.0" />
+    <PackageReference Include="cloudscribe.Web.Pagination" Version="3.1.0" />
+    <PackageReference Include="LazZiya.TagHelpers" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.1.9" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.9">
       <PrivateAssets>all</PrivateAssets>
@@ -41,6 +67,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.SqlServer.Types" Version="14.0.1016.290" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.4" />
+    <PackageReference Include="PagedList.MVC" Version="4.5.0" />
+    <PackageReference Include="ReflectionIT.Mvc.Paging" Version="4.0.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     <PackageReference Include="X.PagedList" Version="8.0.7" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.0.7" />
