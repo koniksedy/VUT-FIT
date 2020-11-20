@@ -1,6 +1,10 @@
 ﻿@using Nemocnice.Data;
-@addTagHelper *, LazZiya.TagHelpers
 @model InsuranceModel
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
 
 
 <div class="pojistovna">
@@ -10,7 +14,7 @@
         <div class="search-doctor">
             <p id="left">
                 <label>Jméno lékaře:</label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
-                <input type="submit" value="Hledat" class="my_btn"> | @Html.ActionLink("Zpět na všechny výpisy", "InRequest", new {})
+                <input type="submit" value="Hledat" class="my_btn"> | @Html.ActionLink("Zpět na všechny výpisy", "InRequest", new { })
             </p>
             <p id="right">
                 @Html.ActionLink("Schválit vše", "InRequest", new { buttonAll = "schvalit-vse", searchString = ViewData["Search"] }) | @Html.ActionLink("Zamítnout vše", "InRequest", new { buttonAll = "zamitnout-vse", searchString = ViewData["Search"] })
@@ -79,15 +83,7 @@
             </table>
 
             <br />
-            <paging total-records="Model.Records"
-                    page-no="Model.PageNum"
-                    page-size="Model.PageSize"
-                    show-total-pages="false"
-                    show-total-records="false"
-                    show-page-size-nav="false">
-            </paging>
-
-
+            @(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("InRequest", new { page = page})).Classic())
 
         </div>
     }

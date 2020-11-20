@@ -1,5 +1,4 @@
 ﻿@using Nemocnice.Data;
-@addTagHelper *, LazZiya.TagHelpers
 @model InsuranceModel
 
 
@@ -86,13 +85,7 @@
 
             <div>
                 <div id="payment-down-left">
-                    <paging total-records="Model.Records"
-                            page-no="Model.PageNum"
-                            page-size="Model.PageSize"
-                            show-total-pages="false"
-                            show-total-records="false"
-                            show-page-size-nav="false">
-                    </paging>
+
                 </div>
                 <div id="payment-down-right">
                     <button name="pridat" type="button" class="my_btn" data-toggle="modal" data-target="#exampleModal0">Přidat položku</button>

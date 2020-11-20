@@ -16,8 +16,10 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Nemocnice.Data;
 using Nemocnice.Models;
-using ReflectionIT.Mvc.Paging;
 using Microsoft.AspNetCore.Authorization;
+using X.PagedList.Mvc.Core;
+using cloudscribe.Pagination.Models;
+using X.PagedList;
 
 
 namespace Nemocnice.Controllers
@@ -49,7 +51,7 @@ namespace Nemocnice.Controllers
          * model - model pro uložení vybraných dat
          * p - proměnná pro stránkování
          */
-        public async Task<IActionResult> InRequest(int ID_accept, int ID_reject, string searchString, string SortOrder, string buttonAll, InsuranceModel model, int p = 1)
+        public async Task<IActionResult> InRequest(int ID_accept, int ID_reject, string searchString, string SortOrder, string buttonAll, InsuranceModel model, int? p)
         {
             //uložení aktuálně vyhledaného řetězce
             ViewData["Search"] = searchString;
@@ -84,30 +86,34 @@ namespace Nemocnice.Controllers
             //pokud je vyhledávací řetězec prázdný, vypisujeme všechny nerozhodnuté žádosti -> ty, co moají stav null
             else
             {
-                var query = this.Context.MedicallBillT.AsNoTracking().Where(x => x.State == null).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).OrderByDescending(s => s.CreateDate);
+                model.medicallBills = this.Context.MedicallBillT.Where(x => x.State == null).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).OrderByDescending(s => s.CreateDate).ToList();
 
                 //řazení dle následujících kritériíí
                 switch (SortOrder)
                 {
                     case "cena":
-                        query = query.OrderBy(o => o.MedicallActivityPrice.Amount);
+                        model.medicallBills = model.medicallBills.OrderBy(o => o.MedicallActivityPrice.Amount).ToList();
                         break;
                     case "diagnoza":
-                        query = query.OrderBy(o => o.Diagnosis.Name);
+                        model.medicallBills = model.medicallBills.OrderBy(o => o.Diagnosis.Name).ToList();
                         break;
                     default:
-                        query = query.OrderByDescending(o => o.CreateDate);
+                        model.medicallBills = model.medicallBills.OrderByDescending(o => o.CreateDate).ToList();
                         break;
                 }
 
-                //stránkování vybraných dat
-                model.medicallBills = await PagingList.CreateAsync(query, 5, p);
-                model.Records = this.Context.MedicallBillT.Where(x => x.State == null).Count();
-                model.PageNum = p;
-                model.PageSize = 5;
-                
+                //model.medicallBills = await PagingList.CreateAsync(query, 5, p);
+                //model.Records = this.Context.MedicallBillT.Where(x => x.State == null).Count();
+                //model.PageNum = p;
+                //model.PageSize = 5;
             }
-            
+
+            //stránkování vybraných dat
+            model.PageNum = (p ?? 1);
+            int pageSize = 5;
+            IPagedList<MedicallBill> lide = model.medicallBills.ToPagedList(model.PageNum, pageSize);
+            model.medicallBillsPage = lide;
+
             //pokud je string naplněný, schválí/zamítne se vše na dané stránce
             if (!String.IsNullOrEmpty(buttonAll))
             {
@@ -166,7 +172,7 @@ namespace Nemocnice.Controllers
      * model - model pro uložení vybraných dat
      * p - proměnná pro stránkování
      */
-        public async Task<IActionResult> PaymentDb(int ID_delete, string SortOrder, string buttonUpdate, string new_butt, InsuranceModel model, int p = 1)
+        public async Task<IActionResult> PaymentDb(int ID_delete, string SortOrder, string buttonUpdate, string new_butt, InsuranceModel model)
         {
 
             //pokud je ID_delete různé od 0, víme, jaký úkon s daným ID máme vymazat
@@ -189,12 +195,6 @@ namespace Nemocnice.Controllers
                     query = query.OrderBy(o => o.Name);
                     break;
             }
-
-            //stránkování vybraných dat
-            model.medicallActivityPrice = await PagingList.CreateAsync(query, 5, p);
-            model.Records = this.Context.MedicallActivityPriceT.Count();
-            model.PageNum = p;
-            model.PageSize = 5;
 
         
             //pokud následující string něco obsahuje, jedná se o přidání nového úkonu
