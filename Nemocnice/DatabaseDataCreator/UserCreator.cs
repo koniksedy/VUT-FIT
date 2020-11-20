@@ -13,13 +13,20 @@ namespace Nemocnice.DatabaseDataCreator
             Address add = db.AddressT.Where(s => s.AddressId == 3).ToList().First();
             db.UserT.Add(UserAdd("xnovot00", "Adam", "Novotný", "Ing.", "737564254", "novotny@seznam.cz", add));
 
+            add = db.AddressT.Where(s => s.AddressId == 3).ToList().First();
+            db.UserT.Add(UserAdd("7204236798", "Adam", "Novotný", "Ing.", "737564254", "novotny@seznam.cz", add));
+
             add = db.AddressT.Where(s => s.AddressId == 1).ToList().First();
             db.UserT.Add(UserAdd("xmalic0a", "Jana", "Malíčková", null, "789456123", "malickova@seznam.cz", add));
 
             add = db.AddressT.Where(s => s.AddressId == 2).ToList().First();
             db.UserT.Add(UserAdd("xbilik00", "Jan", "Bilík", "Ing.", "256321478", "bilik@seznam.cz", add));
+
             add = db.AddressT.Where(s => s.AddressId == 4).ToList().First();
-            db.UserT.Add(UserAdd("xjanec0a", "Iva", "Janečková", "Ing.", "785985654", "janeckova@seznam.cz", add));
+            db.UserT.Add(UserAdd("xjanec0a", "Ivan", "Janečka", "Ing.", "785985654", "janecka@seznam.cz", add));
+
+            add = db.AddressT.Where(s => s.AddressId == 4).ToList().First();
+            db.UserT.Add(UserAdd("9409278736", "Ivan", "Janečka", "Ing.", "785985654", "janecka@seznam.cz", add));
 
             add = db.AddressT.Where(s => s.AddressId == 5).ToList().First();
             db.UserT.Add(UserAdd("xsvobo00", "David", "Svoboda", "Ing.", "785123589", "svoboda@seznam.cz", add));
@@ -48,65 +55,85 @@ namespace Nemocnice.DatabaseDataCreator
             add = db.AddressT.Where(s => s.AddressId == 13).ToList().First();
             db.UserT.Add(UserAdd("xpospi0a", "Dominik", "Pospíšil", "Mudr.", "774547123", "pospisil@seznam.cz", add));
 
+            add = db.AddressT.Where(s => s.AddressId == 13).ToList().First();
+            db.UserT.Add(UserAdd("7306261116", "Dominik", "Pospíšil", "Mudr.", "774547123", "pospisil@seznam.cz", add));
+
             add = db.AddressT.Where(s => s.AddressId == 14).ToList().First();
             db.UserT.Add(UserAdd("xhajek0a", "Adam", "Hájek", "Mudr.", "789456123", "hajek@seznam.cz", add));
 
+            add = db.AddressT.Where(s => s.AddressId == 14).ToList().First();
+            db.UserT.Add(UserAdd("5804249330", "Adam", "Hájek", "Mudr.", "789456123", "hajek@seznam.cz", add));
+
             add = db.AddressT.Where(s => s.AddressId == 15).ToList().First();
-            db.UserT.Add(UserAdd("xjelin00", "Sabina", "Jelínková", "Mudr.", "502635452", "jelinkova@seznam.cz", add));
+            db.UserT.Add(UserAdd("xjelin00", "Sabina", "Jelínek", "Mudr.", "502635452", "jelinek@seznam.cz", add));
+
+            add = db.AddressT.Where(s => s.AddressId == 15).ToList().First();
+            db.UserT.Add(UserAdd("7310079755", "Sabina", "Jelínek", "Mudr.", "502635452", "jelinek@seznam.cz", add));
 
             add = db.AddressT.Where(s => s.AddressId == 16).ToList().First();
-            db.UserT.Add(UserAdd("xkrali06", "Martina", "Králíková", "Mudr.", "708985456", "kralikova@seznam.cz", add));
+            db.UserT.Add(UserAdd("xkrali06", "Martin", "Králík", "Mudr.", "708985456", "kralik@seznam.cz", add));
+
+            add = db.AddressT.Where(s => s.AddressId == 16).ToList().First();
+            db.UserT.Add(UserAdd("5609101014", "Martin", "Králík", "Mudr.", "708985456", "kralik@seznam.cz", add));
 
             add = db.AddressT.Where(s => s.AddressId == 17).ToList().First();
-            db.UserT.Add(UserAdd("xbenes01", "Kateřina", "Benešová", "Mudr.", "789456258", "benesova@seznam.cz", add));
+            db.UserT.Add(UserAdd("xbenes01", "Marek", "Beneš", "Mudr.", "789456258", "benes@seznam.cz", add));
+
+            add = db.AddressT.Where(s => s.AddressId == 17).ToList().First();
+            db.UserT.Add(UserAdd("5407078259", "Marek", "Beneš", "Mudr.", "789456258", "benes@seznam.cz", add));
 
             add = db.AddressT.Where(s => s.AddressId == 18).ToList().First();
-            db.UserT.Add(UserAdd("xdolez00", "Jakub", "Doležal", "Mudr.", "778582654", "dolezal@seznam.cz", add));
+            db.UserT.Add(UserAdd("xdolez00", "Java", "Doležalová", "Mudr.", "778582654", "dolezalova@seznam.cz", add));
+
+            add = db.AddressT.Where(s => s.AddressId == 18).ToList().First();
+            db.UserT.Add(UserAdd("7952217779", "Java", "Doležalová", "Mudr.", "778582654", "dolezalova@seznam.cz", add));
 
             add = db.AddressT.Where(s => s.AddressId == 19).ToList().First();
-            db.UserT.Add(UserAdd("xfiala01", "Karel", "Fiala", null, "741852541", "fiala@seznam.cz", add));
+            db.UserT.Add(UserAdd("6454221719", "Karla", "Fialova", null, "741852541", "fialova@seznam.cz", add));
 
             add = db.AddressT.Where(s => s.AddressId == 20).ToList().First();
-            db.UserT.Add(UserAdd("xsedla03", "Kamil", "Sedláček", null, "805695555", "sedlacek@seznam.cz", add));
+            db.UserT.Add(UserAdd("6960249307", "Kamila", "Sedláčková", null, "805695555", "sedlackova@seznam.cz", add));
 
             add = db.AddressT.Where(s => s.AddressId == 21).ToList().First();
-            db.UserT.Add(UserAdd("xzeman0a", "Ondřej", "Zeman", null, "987456254", "zeman@seznam.cz", add));
+            db.UserT.Add(UserAdd("8661094849", "Marta", "Zemanová", null, "987456254", "zemanova@seznam.cz", add));
 
             add = db.AddressT.Where(s => s.AddressId == 22).ToList().First();
-            db.UserT.Add(UserAdd("xkolar05", "Ivan", "Kolář", null, "605258321", "kolar@seznam.cz", add));
+            db.UserT.Add(UserAdd("7262204400", "Ivana", "Kolářová", null, "605258321", "kolarova@seznam.cz", add));
 
             add = db.AddressT.Where(s => s.AddressId == 23).ToList().First();
-            db.UserT.Add(UserAdd("xkrejc02", "Marie", "Krejčířová", "Bc.", "778555421", "krejcirova@seznam.cz", add));
+            db.UserT.Add(UserAdd("0254270401", "Marie", "Krejčířová", "Bc.", "778555421", "krejcirova@seznam.cz", add));
 
-            db.UserT.Add(UserAdd("xnavra00", "Josef", "Navrátil", "Bc.", "802369544", "krejcirova@seznam.cz", null));
+            db.UserT.Add(UserAdd("0261203349", "Josefie", "Navrátilová", "Bc.", "802369544", "navratilova@seznam.cz", null));
 
-            db.UserT.Add(UserAdd("xcerma0a", "Jakub", "Čermák", "Bc.", "705456258", "cermak@seznam.cz", null));
+            db.UserT.Add(UserAdd("7561200394", "Jiřina", "Čermákáková", "Bc.", "705456258", "cermak@seznam.cz", null));
 
-            db.UserT.Add(UserAdd("xbarto08", "Daniela", "Bartošová", null, "603258444", "bartosova@seznam.cz", null));
+            db.UserT.Add(UserAdd("7356020210", "Daniela", "Bartošová", null, "603258444", "bartosova@seznam.cz", null));
 
-            db.UserT.Add(UserAdd("xsimek00", "Pavel", "Šimek", null, "706582111", "simek@seznam.cz", null));
+            db.UserT.Add(UserAdd("0110038379", "Pavel", "Šimek", null, "706582111", "simek@seznam.cz", null));
 
-            db.UserT.Add(UserAdd("xsykor01", "Hana", "Sýkorová", "Mgr.", "704555021", "sykorova@seznam.cz", null));
+            db.UserT.Add(UserAdd("7310190998", "Herman", "Sýkora", "Mgr.", "704555021", "sykora@seznam.cz", null));
 
-            db.UserT.Add(UserAdd("xsouku0a", "Jana", "Soukupová", "Mgr.", "802369541", "soukupova@seznam.cz", null));
+            db.UserT.Add(UserAdd("7705156437", "Jan", "Soukup", "Mgr.", "802369541", "soukup@seznam.cz", null));
 
-            db.UserT.Add(UserAdd("xmorav07", "Tereza", "Moravcová", "Ing.", "708596023", "moravcova@seznam.cz", null));
+            db.UserT.Add(UserAdd("0053229792", "Tereza", "Moravcová", "Ing.", "708596023", "moravcova@seznam.cz", null));
 
-            db.UserT.Add(UserAdd("xsevci06", "Ladislav", "Ševčík", null, "705258452", "sevcik@seznam.cz", null));
-
-
-            db.UserT.Add(UserAdd("xmasek00", "Karel", "Maseka", null, "809632025", "maseka@seznam.cz", null));
+            db.UserT.Add(UserAdd("8862026096", "Ladislava", "Ševčíková", null, "705258452", "sevcikova@seznam.cz", null));
 
 
-            db.UserT.Add(UserAdd("xhrusk08", "Pavlína", "Hrušková", null, "702555412", "hruskova@seznam.cz", null));
+            db.UserT.Add(UserAdd("7951257193", "Karla", "Masecká", null, "809632025", "masekcka@seznam.cz", null));
+
+
+            db.UserT.Add(UserAdd("8052047377", "Pavlína", "Hrušková", null, "702555412", "hruskova@seznam.cz", null));
 
 
             add = db.AddressT.Where(s => s.AddressId == 25).ToList().First();
-            db.UserT.Add(UserAdd("xpavli00", "Zbyněk", "Pavlíček", null, "706589789", "pavlicek@seznam.cz", add));
+            db.UserT.Add(UserAdd("6712254901", "Zbyněk", "Pavlíček", null, "706589789", "pavlicek@seznam.cz", add));
 
 
             add = db.AddressT.Where(s => s.AddressId == 28).ToList().First();
-            db.UserT.Add(UserAdd("xjanda0a", "Daniel", "Janda", "Bc.", "737562205", "janda@seznam.cz", add));
+            db.UserT.Add(UserAdd("6261046044", "Daniela", "Jandaová", "Bc.", "737562205", "jandova@seznam.cz", add));
+
+            db.UserT.Add(UserAdd("Admin", "Admin", "Adminovič", null, "777777777", "admin@admin.cz", null));
 
             db.SaveChanges();
         }

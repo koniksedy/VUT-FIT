@@ -12,7 +12,7 @@ namespace Nemocnice.Models
     public class CardModel
     {
         public NameModel PatientFullName { get; set; }
-        public long SocialSecurityNum { get; set; }
+        public string SocialSecurityNum { get; set; }
         public int Insurance { get; set; }
     }
 }

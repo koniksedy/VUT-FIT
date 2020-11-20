@@ -139,7 +139,7 @@ namespace Nemocnice.Controllers
             string name = Request.Form["NewName"];
             string surname = Request.Form["NewSurname"];
             string title = Request.Form["NewTitle"];
-            long socialNum = long.Parse(Request.Form["NewNum"]);
+            string socialNum = Request.Form["NewNum"];
             int insurance = int.Parse(Request.Form["NewInsurance"]);
             string tel = Request.Form["NewTel"];
             string email = Request.Form["NewEmail"];
@@ -234,7 +234,7 @@ namespace Nemocnice.Controllers
          * socialNum - rodné číslo zobrazovaného pacienta
          * date - datum zobrazovaného zápisu (pro nový zápis se rovná default)
          */
-        public IActionResult Report(long socialNum, DateTime date)
+        public IActionResult Report(string socialNum, DateTime date)
         {
             // Získání ID přihlášeného doktora pro kontrolu přístupu ke zprávám.
             string userDoctor = User.Identity.Name;
@@ -332,7 +332,7 @@ namespace Nemocnice.Controllers
         public IActionResult CreateReport()
         {
             // Získání potřebných hodnot o pacientovi, zprávě, diagnozách a výkonu pomocí POST.
-            long patientNum = long.Parse(Request.Form["PatientNum"].ToString());
+            string patientNum = Request.Form["PatientNum"];
             string reportText = Request.Form["ReportText"];
             string billString = Request.Form["Bill"];
             int idxStart = billString.IndexOf('(') + 1;
@@ -500,7 +500,7 @@ namespace Nemocnice.Controllers
         {
             // Získání dat o konkrétním pacientovi a datu zprávy z POST
             DateTime date = DateTime.Parse(Request.Form["ReportDate"]);
-            long patientNum = long.Parse(Request.Form["PatientNum"]);
+            string patientNum = Request.Form["PatientNum"];
             string reportText = Request.Form["ReportText"];
 
             // Aktualizace textu.
@@ -518,14 +518,13 @@ namespace Nemocnice.Controllers
          * Funkce vrací textovou podobu věku ve tvaru "10 Let 9 Měsíců".
          * Pokud se výpočet nezdaří bude vrácoeno "DateError"
          */
-        static private string getAge(long patientNum)
+        static private string getAge(string patientNum)
         {
             // Převod rodného čísla na datum
-            string numAsStr = patientNum.ToString();
-            int yearInt = int.Parse(numAsStr.Substring(0, 2));
-            int monInt = int.Parse(numAsStr.Substring(2, 2));
-            int dayInt = int.Parse(numAsStr.Substring(4, 2));
-            yearInt = (yearInt < 54 && numAsStr.Length > 9) ? 2000 + yearInt : 1900 + yearInt;
+            int yearInt = int.Parse(patientNum.Substring(0, 2));
+            int monInt = int.Parse(patientNum.Substring(2, 2));
+            int dayInt = int.Parse(patientNum.Substring(4, 2));
+            yearInt = (yearInt < 54 && patientNum.Length > 9) ? 2000 + yearInt : 1900 + yearInt;
 
             // Získání počtu roků a měsíců ze dnů, které vrátí funkce Subtract
             int Years = 0;
@@ -577,7 +576,7 @@ namespace Nemocnice.Controllers
          * Akce zobrazí hlavní kartu pacienta se všemi informacemi.
          * patientNum - rodné číslo pacienta, jehož karta je zobrazována.
          */
-        public IActionResult PatientProfile(long patientNum)
+        public IActionResult PatientProfile(string patientNum)
         {
             // Získání informaci o lékaři, který si pacienta zobrazuje.
             // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
@@ -626,8 +625,12 @@ namespace Nemocnice.Controllers
 
             // Získání alergií.
             // TODO - alrgie budou string
-            patientProfileModel.Allergys = db.AllergysOfPatientT.Where(o => o.HealthCondition.SocialSecurityNum == patientNum)
-                                                                .Select(s => s.Allergy.Name).ToList();
+            patientProfileModel.Allergys = db.PatientT.Where(o => o.SocialSecurityNum == patientNum)
+                                                      .Select(s => s.HealthCondition.Allergys).ToList().First();
+            if (String.IsNullOrEmpty(patientProfileModel.Allergys))
+            {
+                patientProfileModel.Allergys = "---";
+            }
 
             // Získání lékařských zpráv, jejichž autorem je přihlášený lékař.
             // Pokud de přihlášen administrátor, vidí všechny zprávy.
@@ -671,14 +674,14 @@ namespace Nemocnice.Controllers
         public IActionResult UpdatePatientInfo()
         {
             // Získání nových dat o uživateli z meotdy POST.
-            long oldpatientNumber = long.Parse(Request.Form["OldNum"]);
+            string oldpatientNumber = Request.Form["OldNum"];
             // User
             string name = Request.Form["UpdateName"];
             string surname = Request.Form["UpdateSurname"];
             string tel = Request.Form["UpdateTel"];
             string email = Request.Form["UpdateEmail"];
             // Patient
-            long patientNumber = long.Parse(Request.Form["UpdateNum"]);
+            string patientNumber = Request.Form["UpdateNum"];
             int insurance = int.Parse(Request.Form["UpdateInsurance"]);
             // Adress
             string street = Request.Form["UpdateStreet"];
@@ -735,9 +738,9 @@ namespace Nemocnice.Controllers
         public IActionResult UpdateHealthInfo()
         {
             // Získání dat o pacientovi a zdravotním stavu z metody POST
-            long patientNumber = long.Parse(Request.Form["PatientNum"]);
-            float patientHeight = float.Parse(Request.Form["UpdateHeight"]);
-            float patientWeight = float.Parse(Request.Form["UpdateWeight"]);
+            string patientNumber = Request.Form["PatientNum"];
+            int patientHeight = int.Parse(Request.Form["UpdateHeight"]);
+            int patientWeight = int.Parse(Request.Form["UpdateWeight"]);
             string patientBlodType = Request.Form["UpdateBlodType"];
             // TODO alergie jako string
 
@@ -758,7 +761,7 @@ namespace Nemocnice.Controllers
          * patientNum - rodné číslo zobrazovaného pacienta
          * date - datum vytvoření konkrétní zobrazované žádosti.
          */
-        public IActionResult CheckupIn(long patientNum,  DateTime date)
+        public IActionResult CheckupIn(string patientNum,  DateTime date)
         { 
             // Získání dané žádosti o vyšetření
             CheckupTicket checkupTicket = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date)
@@ -800,7 +803,7 @@ namespace Nemocnice.Controllers
         public IActionResult TicketActualizeState()
         {
             // Získání informací o Pcientovi, žádosti a novém stavu z metody POST.
-            long patientNumber = long.Parse(Request.Form["patientNumber"]);
+            string patientNumber = Request.Form["patientNumber"];
             DateTime createDate = DateTime.Parse(Request.Form["ticketDate"]);
             string newState = Request.Form["newState"];
 
@@ -820,7 +823,7 @@ namespace Nemocnice.Controllers
         public IActionResult FinishTicket()
         {
             // Získání informací o žádosti, pacientovi a zprávě z vyšetření.
-            long patientNumber = long.Parse(Request.Form["patientNumber"]);
+            string patientNumber = Request.Form["patientNumber"];
             DateTime createDate = DateTime.Parse(Request.Form["ticketDate"]);
             string reportText = Request.Form["reportText"];
 
@@ -841,7 +844,7 @@ namespace Nemocnice.Controllers
          * patientNum - rodné číslo pacienta
          * date - datum vytvoření žádosti
          */
-        public IActionResult CheckupOut(long patientNum, DateTime date)
+        public IActionResult CheckupOut(string patientNum, DateTime date)
         {
             // Získání dané žádosti o vyšetření
             CheckupTicket checkupTicket = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date)
@@ -882,7 +885,7 @@ namespace Nemocnice.Controllers
          * Akce fobrazí formulář pro vytvoření nové žádost k vyšetření.
          * patientNum - rodné číslo pacienta pro kterého bude zpráva vytvořena
          */
-        public IActionResult NewCheckup(long patientNum)
+        public IActionResult NewCheckup(string patientNum)
         {
             // Získání informací o pacientovi.
             int patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
@@ -910,7 +913,7 @@ namespace Nemocnice.Controllers
         public IActionResult CreateNewCheckup()
         {
             // Zíslání informací o pacientovi, cílovém lékaři, a textu zprávy
-            long patientNumber = long.Parse(Request.Form["patientNum"]);
+            string patientNumber = Request.Form["patientNum"];
             string checkupText = Request.Form["checkupText"];
             string doctorString = Request.Form["doctorName"];
             int idxStart = doctorString.IndexOf('(') + 1;
@@ -1016,7 +1019,7 @@ namespace Nemocnice.Controllers
                         break;
                 }
 
-            model.medicallBills = await PagingList.CreateAsync(query, 10, p);
+                model.medicallBills = await PagingList.CreateAsync(query, 10, p);
                 model.Records = db.MedicallBillT.Where(x => x.State == null).Count();
                 model.PageNum = p;
                 model.PageSize = 10;
@@ -1076,7 +1079,7 @@ namespace Nemocnice.Controllers
                     FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
                     CreationDate = s.CreateDate.ToString("dd.MM.yyyy")
                     }
-                ).Where(s => s.SocialSecurityNumber == parseRes).ToList();
+                ).Where(s => s.SocialSecurityNumber == searchString).ToList();
                 }
                 else
                 {
@@ -1156,7 +1159,7 @@ namespace Nemocnice.Controllers
                         CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
                         State = s.State == "dokončeno"
                     }
-               ).Where(s => s.SocialSecurityNumber == parseRes).ToList();
+               ).Where(s => s.SocialSecurityNumber == searchString).ToList();
                     MyOutRequests.Sort((x, y) => (y.State == x.State) ? DateTime.Compare(DateTime.Parse(y.CreationDate), DateTime.Parse(x.CreationDate)) : (x.State ? 1 : -1));
                 }
                 else
@@ -1253,7 +1256,7 @@ namespace Nemocnice.Controllers
                             CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
                             FinishDate = s.FinishDate.ToString("dd.MM.yyyy")
                         }
-                        ).Where(s => s.SocialSecurityNumber == parseRes).ToList();
+                        ).Where(s => s.SocialSecurityNumber == searchString).ToList();
                     }
                     else
                     {

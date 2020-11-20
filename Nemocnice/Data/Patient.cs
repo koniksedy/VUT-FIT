@@ -15,7 +15,7 @@ namespace Nemocnice.Data
         [Required]
         public int UserId { get; set; }
         [Required]
-        public long SocialSecurityNum { get; set; }
+        public string SocialSecurityNum { get; set; }
         [Required]
         public int InsuranceCompany { get; set; }
         [Required]

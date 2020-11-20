@@ -8,6 +8,6 @@ namespace Nemocnice.Models
     public class NewCheckupModel
     {
         public NameModel FullName { get; set; }
-        public long SocialSecurityNum { get; set; }
+        public string SocialSecurityNum { get; set; }
     }
 }

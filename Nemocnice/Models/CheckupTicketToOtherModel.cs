@@ -9,7 +9,7 @@ namespace Nemocnice.Models
     {
         public string PatientName { get; set; }
         public string PatientSurname { get; set; }
-        public long SocialSecurityNumber { get; set; }
+        public string SocialSecurityNumber { get; set; }
         public string ToDoctor { get; set; }
         public string CreationDate { get; set; }
         public bool State { get; set; }

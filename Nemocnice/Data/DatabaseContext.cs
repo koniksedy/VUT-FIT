@@ -72,8 +72,6 @@ namespace Nemocnice.Data
         public DbSet<Doctor> DoctorT { get; set; }
         public DbSet<InsureEmp> InsureEmpT { get; set; }
         public DbSet<HealthCondition> HealthConditionT { get; set; }
-        public DbSet<AllergysOfPatient> AllergysOfPatientT { get; set; }
-        public DbSet<Allergy> AllergyT { get; set; }
         public DbSet<CheckupTicket> CheckupTicketT { get; set; }
         public DbSet<MedicallActivityPrice> MedicallActivityPriceT { get; set; }
         public DbSet<Diagnosis> DiagnosisT { get; set; }

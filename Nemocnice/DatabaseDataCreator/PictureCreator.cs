@@ -15,9 +15,9 @@ namespace Nemocnice.DatabaseDataCreator
 
             db.SaveChanges();
         }
-        private Picture PictureAdd(long socialSecurityNum, byte[] currentPicture, string Description, Allergy toAllergy, MedicallReport toMedicalReport, CheckupTicket toCheckupTicket, DateTime createDate)
+        private Picture PictureAdd(string socialSecurityNum, byte[] currentPicture, string Description, MedicallReport toMedicalReport, CheckupTicket toCheckupTicket, DateTime createDate)
         {
-            return new Picture { SocialSecurityNum = socialSecurityNum, CurrentPicture = currentPicture, Description = Description, ToAllergy = toAllergy, ToMedicalReport = toMedicalReport, ToCheckupTicket = toCheckupTicket, CreateDate = createDate };
+            return new Picture { SocialSecurityNum = socialSecurityNum, CurrentPicture = currentPicture, Description = Description, ToMedicalReport = toMedicalReport, ToCheckupTicket = toCheckupTicket, CreateDate = createDate };
         }
     }
 }
