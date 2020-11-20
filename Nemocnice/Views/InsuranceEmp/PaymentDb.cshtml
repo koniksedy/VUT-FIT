@@ -39,12 +39,12 @@
                         string pom2 = "exampleModal" + @medicalActivityPrice.MedicallActivityPriceId.ToString();
                         int cena = Convert.ToInt32(@medicalActivityPrice.Amount);
 
-                        <tr>
-                            <td>@medicalActivityPrice.MedicallActivityPriceId</td>
-                            <td>@medicalActivityPrice.Name</td>
-                            <td>@medicalActivityPrice.Amount</td>
-
-                            <td><button name="button" type="button" class="my_btn" data-toggle="modal" data-target="@pom">Upravit</button></td>
+                    <tr>
+                        <td>@medicalActivityPrice.MedicallActivityPriceId</td>
+                        <td>@medicalActivityPrice.Name</td>
+                        <td>@medicalActivityPrice.Amount</td>
+                        <td>
+                            <button name="button" type="button" class="my_btn" data-toggle="modal" data-target="@pom">Upravit</button>
                             <form asp-action="PaymentDb">
                                 <div class="modal fade" id="@pom2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                     <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
@@ -61,25 +61,23 @@
                                             </div>
                                             <div class="modal-body">
                                                 <!-- formatovani vyskakovaciho okna -->
-                                                <form>
-                                                    <label asp-for="nazevZmena" class="col-form-label">Název:</label>
-                                                    <input asp-for="nazevZmena" type="text" class="form-control" value="@medicalActivityPrice.Name" required autocomplete="off">
-                                                    <label asp-for="cenaZmena" class="col-form-label">Cena:</label>
-                                                    <input asp-for="cenaZmena" type="text" class="form-control" value="@cena" required autocomplete="off">
-                                                    <div class="modal-footer">
-                                                        <!-- formatovani tlacitka odeslat -->
-                                                        <button name="buttonUpdate" class="my_btn" value="@medicalActivityPrice.MedicallActivityPriceId">Odeslat</button> <!-- tlacitko odeslat -->
-                                                    </div>
-                                                </form>
+                                                <label asp-for="nazevZmena" class="col-form-label">Název:</label>
+                                                <input asp-for="nazevZmena" type="text" class="form-control" value="@medicalActivityPrice.Name" required autocomplete="off">
+                                                <label asp-for="cenaZmena" class="col-form-label">Cena:</label>
+                                                <input asp-for="cenaZmena" type="text" class="form-control" value="@cena" required autocomplete="off">
+                                                <div class="modal-footer">
+                                                    <!-- formatovani tlacitka odeslat -->
+                                                    <button name="buttonUpdate" class="my_btn" value="@medicalActivityPrice.MedicallActivityPriceId">Odeslat</button> <!-- tlacitko odeslat -->
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </form>
-
-                            <form><td><button name="button" class="my_btn" value="odstranit @medicalActivityPrice.MedicallActivityPriceId" asp-action="PaymentDb">Odstranit</button></td></form>
-
-                        </tr>
+                        </td>
+                        <td><button name="button" class="my_btn" onclick="redirectToAction('@Url.Action("PaymentDb", "InsuranceEmp", new { ID_delete = @medicalActivityPrice.MedicallActivityPriceId})')">Odstranit</button></td>
+                    </tr>
                     }
 
                 </tbody>
@@ -114,12 +112,12 @@
                                     </div>
                                     <div class="modal-body">
                                         <!-- formatovani vyskakovaciho okna -->
-                                        <form>
-                                            <label asp-for="nazev" class="col-form-label">Název:</label>
-                                            <input asp-for="nazev" type="text" class="form-control" required autocomplete="off">
-                                            <label asp-for="cena" class="col-form-label">Cena:</label>
-                                            <input asp-for="cena" type="text" class="form-control" required value="" autocomplete="off">
-                                        </form>
+
+                                        <label asp-for="nazev" class="col-form-label">Název:</label>
+                                        <input asp-for="nazev" type="text" class="form-control" required autocomplete="off">
+                                        <label asp-for="cena" class="col-form-label">Cena:</label>
+                                        <input asp-for="cena" type="text" class="form-control" required value="" autocomplete="off">
+
                                     </div>
                                     <div class="modal-footer">
                                         <!-- formatovani tlacitka odeslat -->
@@ -136,3 +134,9 @@
     }
 
 </div>
+
+<script>
+    function redirectToAction(hr) {
+        window.location.href = hr;
+    }
+</script>

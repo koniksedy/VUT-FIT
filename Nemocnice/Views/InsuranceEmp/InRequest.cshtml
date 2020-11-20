@@ -9,11 +9,11 @@
     <form asp-action="InRequest" method="get">
         <div class="search-doctor">
             <p id="left">
-                <label>Jméno lékaře:</label><input type="text" name="SearchString" id="search" autocomplete="off">
-                <input type="submit" value="Hledat" class="my_btn"> | <a asp-action="InRequest" class="my_btn">Zpět na všechny výpisy</a>
+                <label>Jméno lékaře:</label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
+                <input type="submit" value="Hledat" class="my_btn"> | @Html.ActionLink("Zpět na všechny výpisy", "InRequest", new {})
             </p>
             <p id="right">
-                <button name="buttonAll" class="all" value="schvalit-vse" asp-action="InRequest">Schválit vše</button> | <button name="buttonAll" class="all" value="zamitnout-vse" asp-action="InRequest">Zamítnout vše</button>
+                @Html.ActionLink("Schválit vše", "InRequest", new { buttonAll = "schvalit-vse", searchString = ViewData["Search"] }) | @Html.ActionLink("Zamítnout vše", "InRequest", new { buttonAll = "zamitnout-vse", searchString = ViewData["Search"] })
             </p>
         </div>
     </form>
@@ -69,10 +69,8 @@
                                 <td>@medicalBill.Diagnosis.Name</td>
                                 <td>@medicalBill.CreateDate</td>
                                 <td>@medicalBill.State</td>
-                                <form>
-                                    <td><button name="button" class="my_btn" value="schvaleno @medicalBill.MedicallBillId" asp-action="InRequest">Schválit</button></td>
-                                    <td><button name="button" class="my_btn" value="zamitnuto @medicalBill.MedicallBillId" asp-action="InRequest">Zamítnout</button></td>
-                                </form>
+                                <td><button name="button" class="my_btn" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_accept = @medicalBill.MedicallBillId})')">Schválit</button></td>
+                                <td><button name="button" class="my_btn" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_reject = @medicalBill.MedicallBillId})')">Zamítnout</button></td>
                             </tr>
                         }
                     }
@@ -95,3 +93,9 @@
     }
 
 </div>
+
+<script>
+    function redirectToAction(hr) {
+        window.location.href = hr;
+    }
+</script>
