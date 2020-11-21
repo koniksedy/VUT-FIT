@@ -190,7 +190,7 @@ namespace Nemocnice.Controllers
             // Uživatelským jménem pacientů je jejich rodné číslo.
             user = new User
             {
-                Login = socialNum.ToString(),
+                Login = socialNum,
                 Name = name,
                 Surname = surname,
                 Title = title,
