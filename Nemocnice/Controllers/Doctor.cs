@@ -858,9 +858,6 @@ namespace Nemocnice.Controllers
         public IActionResult CheckupOut(string patientNum, DateTime date)
         {
             // Získání dané žádosti o vyšetření
-            // TODO bug při vytvoření nové zprávy ji pak není možné otevřít chyba je v porovnávání data.
-            var test = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum).ToList().First();
-            var test2 = test.CreateDate == date;
             CheckupTicket checkupTicket = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date)
                                                            .Include(i => i.ToDoctor)
                                                            .Include(i => i.Patient).ToList().First();
@@ -981,6 +978,7 @@ namespace Nemocnice.Controllers
 
             // Vytvoření žádosti.
             // Je potřeba mít jako samostatnou proměnnou, kvůli pozdějšímu užití.
+            DateTime time = DateTime.Now;
             CheckupTicket ticket = new CheckupTicket
             {
                 CreatedBy = doctorAuthor,
@@ -989,7 +987,7 @@ namespace Nemocnice.Controllers
                 Patient = db.PatientT.Where(o => o.SocialSecurityNum == patientNumber).ToList().First(),
                 Description = checkupText,
                 State = "žádost vytvořena",
-                CreateDate = DateTime.Now
+                CreateDate = new DateTime(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second)
             };
             db.CheckupTicketT.Add(ticket);
             db.SaveChanges();
