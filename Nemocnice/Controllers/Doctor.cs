@@ -105,7 +105,7 @@ namespace Nemocnice.Controllers
                                     SocialSecurityNum = patient.SocialSecurityNum,
                                     Insurance = patient.InsuranceCompany
                                 }
-                                ).Where(s => s.SocialSecurityNum.ToString().StartsWith(searchString) ||
+                                ).Where(s => s.SocialSecurityNum.StartsWith(searchString) ||
                                              s.PatientFullName.Name.StartsWith(searchString) ||
                                              s.PatientFullName.Surname.StartsWith(searchString)).ToList();
             }
@@ -190,7 +190,7 @@ namespace Nemocnice.Controllers
             // Uživatelským jménem pacientů je jejich rodné číslo.
             user = new User
             {
-                Login = socialNum.ToString(),
+                Login = socialNum,
                 Name = name,
                 Surname = surname,
                 Title = title,
