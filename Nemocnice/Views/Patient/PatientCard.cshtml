@@ -1,5 +1,6 @@
 ﻿@model Nemocnice.Models.PatientCardModel
 @using X.PagedList
+@using Nemocnice.Data 
 @using X.PagedList.Mvc
 @using X.PagedList.Mvc.Core.Fluent
 @using X.PagedList.Web.Common;
@@ -16,12 +17,7 @@
     }
 
     /* Create two equal columns that floats next to each other */
-    .column {
-        float: left;
-        width: 50%;
-        padding: 10px;
-        height: 300px; /* Should be removed. Only for demonstration */
-    }
+
 
     /* Clear floats after the columns */
     .row:after {
@@ -29,7 +25,8 @@
         display: table;
         clear: both;
     }
- 
+
+
 </style>
 
 
@@ -80,20 +77,21 @@
                         Vytvořil
                     </th>
                     <th>
-                        Kam zajít
-                    </th>
-                    <th>
-                        Stav
+                        Popis
                     </th>
                     <th>
                         Vytvořeno
+                    </th>
+                    <th>
+                        Detail
                     </th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                @if (1 == 0)
+                @if (Model.medicallReports.Count() == 0)
                 {
+
                     <tr>
                         <td></td>
                         <td></td>
@@ -106,30 +104,41 @@
                 }
                 @foreach (var prohlidka in Model.medicallReports)
                 {
+                    string desc = prohlidka.Description.Substring(0, prohlidka.Description.Length);
+                    @try
+                    {
+                        desc = prohlidka.Description.Substring(0, 37);
+                        desc = desc + "...";
+                    }
+                    catch (Exception e)
+                    {
 
-                    <tr class="radek_zaznamu">
-                        <td>
-                            1
-                        </td>
-                        <td>
-                            asfasfafasf
-                        </td>
-                        <td>
-                            asfasfafasf
-                        </td>
-                        <td>
-                            asfasfafasf
-                        </td>
-                        <td>
-                            asfasfafasf
-                        </td>
-                    </tr>
+                    }
+                    @using (var db = new DatabaseContext())
+                    {
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Author.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
+
+                        <tr class="radek_zaznamu">
+                            <td>
+                                @DoctorCreator.Name @DoctorCreator.Surname
+                            </td>
+                            <td>
+                                @desc
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.CreateDate)
+                            </td>
+                            <td>
+                                @Html.ActionLink("Detail", "DetailMedRep", "Patient", new { currentTicketID = prohlidka.MedicallReportId }, null)
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>
         <br />
 
-        @(Html.Pager(Model.medicallReports).Url(page => Url.Action("PatientCard", new { pageReport = page, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum3, select = 1 }))
+        @(Html.Pager(Model.medicallReports).Url(page => Url.Action("PatientCard", new { pageReport = page, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select = 1 }))
         .Classic())
     </div>
     <div id="tabs-2">
@@ -152,7 +161,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if (1 == 0)
+                @if (Model.checkupTickets.Count() == 0)
                 {
                     <tr>
                         <td></td>
@@ -188,10 +197,50 @@
             </tbody>
         </table>
 
-        @(Html.Pager(Model.checkupTickets).Url(page => Url.Action("PatientCard", new { page1 = Model.PageNum2, page2 = page, page3 = Model.PageNum3, select = 2 }))
+        @(Html.Pager(Model.checkupTickets).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = page, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select = 2 }))
         .Classic())
     </div>
     <div id="tabs-3">
+        <table class="checkup table">
+
+            <thead>
+                <tr>
+                    <th>
+                        JTyp:
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Allergies.Count() == 0)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+                @foreach (var prohlidka in Model.Allergies)
+                {
+
+                    <tr class="radek_zaznamu">
+                        <td>
+                            @prohlidka
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @(Html.Pager(Model.Allergies).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = page, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select=3 }))
+        .Classic())
+    </div>
+    <div id="tabs-4">
         <table class="checkup table">
 
             <thead>
@@ -212,7 +261,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if (1 == 0)
+                @if (Model.Allergies.Count() == 0)
                 {
                     <tr>
                         <td></td>
@@ -224,12 +273,12 @@
                         <td></td>
                     </tr>
                 }
-                @foreach (var prohlidka in Model.Allergies)
+                @foreach (var prohlidka in Model.MedicallBills)
                 {
 
                     <tr class="radek_zaznamu">
                         <td>
-                            3
+                            4
                         </td>
                         <td>
                             asfasfafasf
@@ -248,10 +297,10 @@
             </tbody>
         </table>
 
-        @(Html.Pager(Model.Allergies).Url(page => Url.Action("PatientCard", new { page1= Model.PageNum1, page2 = Model.PageNum2, page3= page, select=3 }))
+        @(Html.Pager(Model.MedicallBills).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = page, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select=4 }))
         .Classic())
     </div>
-    <div id="tabs-3">
+    <div id="tabs-5">
         <table class="checkup table">
 
             <thead>
@@ -272,7 +321,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if (1 == 0)
+                @if (Model.PatientTreatmentLogs.Count() == 0)
                 {
                     <tr>
                         <td></td>
@@ -284,12 +333,12 @@
                         <td></td>
                     </tr>
                 }
-                @foreach (var prohlidka in Model.Allergies)
+                @foreach (var prohlidka in Model.PatientTreatmentLogs)
                 {
 
                     <tr class="radek_zaznamu">
                         <td>
-                            3
+                            5
                         </td>
                         <td>
                             asfasfafasf
@@ -308,10 +357,10 @@
             </tbody>
         </table>
 
-        @(Html.Pager(Model.Allergies).Url(page => Url.Action("PatientCard", new { page1= Model.PageNum1, page2 = Model.PageNum2, page3= page, select=3 }))
+        @(Html.Pager(Model.PatientTreatmentLogs).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = page, pageCure = Model.PageNum6, select=5 }))
         .Classic())
     </div>
-    <div id="tabs-3">
+    <div id="tabs-6">
         <table class="checkup table">
 
             <thead>
@@ -332,7 +381,7 @@
                 </tr>
             </thead>
             <tbody>
-                @if (1 == 0)
+                @if (Model.CureProgresses.Count() == 0)
                 {
                     <tr>
                         <td></td>
@@ -344,12 +393,12 @@
                         <td></td>
                     </tr>
                 }
-                @foreach (var prohlidka in Model.Allergies)
+                @foreach (var prohlidka in Model.CureProgresses)
                 {
 
                     <tr class="radek_zaznamu">
                         <td>
-                            3
+                            6
                         </td>
                         <td>
                             asfasfafasf
@@ -368,67 +417,7 @@
             </tbody>
         </table>
 
-        @(Html.Pager(Model.Allergies).Url(page => Url.Action("PatientCard", new { page1= Model.PageNum1, page2 = Model.PageNum2, page3= page, select=3 }))
-        .Classic())
-    </div>
-    <div id="tabs-3">
-        <table class="checkup table">
-
-            <thead>
-                <tr>
-                    <th>
-                        Vytvořil
-                    </th>
-                    <th>
-                        Kam zajít
-                    </th>
-                    <th>
-                        Stav
-                    </th>
-                    <th>
-                        Vytvořeno
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (1 == 0)
-                {
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <p>Nejsou zde žádné záznamy k zobrazení</p>
-                        </td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                }
-                @foreach (var prohlidka in Model.Allergies)
-                {
-
-                    <tr class="radek_zaznamu">
-                        <td>
-                            3
-                        </td>
-                        <td>
-                            asfasfafasf
-                        </td>
-                        <td>
-                            asfasfafasf
-                        </td>
-                        <td>
-                            asfasfafasf
-                        </td>
-                        <td>
-                            asfasfafasf
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-
-        @(Html.Pager(Model.Allergies).Url(page => Url.Action("PatientCard", new { page1= Model.PageNum1, page2 = Model.PageNum2, page3= page, select=3 }))
+        @(Html.Pager(Model.CureProgresses).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = page, select=6 }))
         .Classic())
     </div>
 </div>
