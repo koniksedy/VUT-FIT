@@ -54,62 +54,74 @@ function unlockPatientInfo() {
     document.getElementById("UpdateButton").readOnly = false;
 }
 
-// add row
-$("#addRowReport").click(function () {
-    var html = '';
-    html += '<div id="inputFormRowReport">';
-    html += '<div class="input-group mb-3">';
-    html += '<input type="text" name="Diagnosis[]" class="form-control m-input" placeholder="Diagnoza" autocomplete="off">';
-    html += '<div class="input-group-append">';
-    html += '<button id="removeRowReport" type="button" class="btn btn-danger">Smazat</button>';
-    html += '<div>';
-    html += '<button name="curedButton[]" type="button" class="btn btn-dark" onclick="curedFunction(this)" value="false">Vyléčeno</button>';
-    html += '<input type="hidden" name="DiagnosisState[]" value="noncured" />';
-    html += '</div>';
-    html += '</div>';
-    html += '</div>';
-
-    $('#newRow').append(html);
-});
-
-// remove row
-$(document).on('click', '#removeRowReport', function () {
-            $(this).closest('#inputFormRowReport').remove();
-});
-
-
-function curedFunction(thatButton) {
-    if (thatButton.value == "false") {
-        thatButton.className = "btn btn-success";
-        thatButton.value = "true";
-        thatButton.nextElementSibling.value = "cured";
-    } else {
-        thatButton.className = "btn btn-dark";
-        thatButton.value = "false";
-        thatButton.nextElementSibling.value = "noncured";
-    }
-}
 
 function redirectToAction(hr) {
     window.location.href = hr;
 }
 
-
-// add row
-$("#addRowCheckup").click(function () {
-    var html = '';
-    html += '<div id="inputFormRowCheckup">';
-    html += '<div class="input-group mb-3">';
-    html += '<input type="text" name="Diagnosis[]" class="form-control m-input" placeholder="Diagnoza" autocomplete="off">';
-    html += '<div class="input-group-append">';
-    html += '<button id="removeRowCheckup" type="button" class="btn btn-danger">Smazat</button>';
-    html += '</div>';
-    html += '</div>';
-
-    $('#newRow').append(html);
-});
-
-// remove row
-$(document).on('click', '#removeRowCheckup', function () {
-    $(this).closest('#inputFormRowCheckup').remove();
-});
+// Kod převzat z https://www.zizka.ch/pages/programming/ruzne/rodne-cislo-identifikacni-cislo-rc-ico-kontrola-validace.html
+function testRC(RC) {
+    x = document.getElementById(RC).value;
+    x = x.replace('/', '');
+    try {
+        if (x.length < 9) throw 1;
+        var year = parseInt(x.substr(0, 2), 10);
+        var month = parseInt(x.substr(2, 2), 10);
+        var day = parseInt(x.substr(4, 2), 10);
+        // Rodná čáslo před rokem 54 nepodléhají kontrole dělitelnosti.
+        if ((x.length == 9) && (year < 54)) {
+            // před rokem 54 bylo k měsícům povolemo přičítat pouze 50
+            if ((month > 12 && month < 51) || (month > 62)) {
+                alert("K měsícům rodných čísel před rokem 2003 je možné přičítat pouze 50.")
+                throw 1;
+            }
+            return true;
+        }
+        var c = 0;
+        if (x.length == 10) c = parseInt(x.substr(9, 1));
+        var m = parseInt(x.substr(0, 9)) % 11;
+        // Velkou vyjímku tvoří čísla se zbytkem dělitoelnosti 10.
+        // U těchto čísel je jako kontrolní číslice zvolena 0
+        if (m == 10) m = 0;
+        // Pokud není dělitelné 11 bezezbytku, nebo se nejedná o vyjímku,
+        // Pak je rodné číslo chybné.
+        if (m != c) {
+            Alert("Rodné číslo nesplňuje kontrolu dělitelnosti 11.")
+            throw 1;
+        }
+        // Čísla o délce 10, jsou rodná čísla od roku 1954.
+        year += (year < 54) ? 2000 : 1900;
+        // Zvláštní pravidla pro nová rodná čísla on roku 2003.
+        if ((month > 70) && (year > 2003)) month -= 70;
+        else if (month > 50) month -= 50;
+        else if ((month > 20) && (year > 2003)) month -= 20;
+        // Kontrola měsíců a dnů
+        if (month == 0) {
+            alert("Měsic zakódovaný v rodném čísle nemůže být 0.")
+            throw 1;
+        }
+        if (month > 12) {
+            alert("Měsíc zakódovaný v rodném čísle nemůže být větší než 12.")
+            throw 1;
+        }
+        if (day == 0) {
+            alert("Den zakódovaný v rodném čísle nemůže být roven 0.")
+            throw 1;
+        }
+        if (day > 31) {
+            alert("Den zakódovaný v rodném čísle nemůže být větší než 31.")
+            throw 1;
+        }
+        // Kontrola, zda se jedná o datum v minulosti
+        var dateFromRC = new Date(year, month-1, day);
+        var dateNow = new Date();
+        if (dateFromRC > dateNow) {
+            alert("Datum zakódované v rodném čísle je datum z budoucnosti.")
+            throw 1;
+        }
+    }
+    catch (e) {
+        return false;
+    }
+    return true;
+}

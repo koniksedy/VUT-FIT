@@ -4,42 +4,49 @@
 
 @model NewCheckupModel
 
-<form method="post" asp-action="CreateNewCheckup">
+<style>
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    /* IE 6 doesn't support max-height
+    * we use height instead, but this forces the menu to always be this tall
+    */
+    * html .ui-autocomplete {
+        height: 100px;
+    }
+</style>
+
+<script src="~/lib/extern/jquery.js"></script>
+<script src="~/lib/extern/jquery-ui.js"></script>   
+
+<form method="post" asp-action="CreateNewCheckup" onsubmit="return TicketValidation()">
     <div>
         Pacient: <b>@Model.FullName.getFullName() (@Model.SocialSecurityNum)</b>
         <input hidden name="patientNum" value="@Model.SocialSecurityNum" />
     </div>
     <div>
         <label>Lékař:</label>
-        <input type="text" class="form-control m-input" name="doctorName" />
+        <input type="text" id="doctorName" name="doctorName" placeholder="Vyberte lékaře" />
+        <input hidden id="doctorICZ" name="doctorICZ" value="" />
     </div>
 
     <div>
         <label>Diagnózy:</label>
     </div>
     <div class="row">
-        <div class="col-lg-12">
-            <div id="inputFormRowCheckup">
-                <div class="input-group mb-3">
-                    <input type="text" name="Diagnosis[]" class="form-control m-input" placeholder="Diagnoza" autocomplete="off">
-                    <div class="input-group-append">
-                        <!-- Tlačítko pro smazání konktétního řádku s diagnozou. -->
-                        <button id="removeRowCheckup" type="button" class="btn btn-danger">Smazat</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Přidat řádek pro Diagnozu. -->
-            <div id="newRow"></div>
-            <button id="addRowCheckup" type="button" class="btn btn-success">Přidat diagnozu</button>
-            <div></div>
-        </div>
+        <input type="text" id="Diagnosis1" name="Diagnosis1"  placeholder="Halvní diagnoza" autocomplete="off">
+        <input type="text" id="Diagnosis2" name="Diagnosis2"  placeholder="Diagnoza 2" autocomplete="off">
+        <input type="text" id="Diagnosis3" name="Diagnosis3"  placeholder="Diagnoza 3" autocomplete="off">
+        <input type="text" id="Diagnosis4" name="Diagnosis4"  placeholder="Diagnoza 4" autocomplete="off">
     </div>
 
     <div>
         <label>Text:</label>
     </div>
     <div>
-        <textarea cols="100" rows="10" name="checkupText"></textarea>
+        <textarea cols="100" rows="10" id="checkupText" name="checkupText"></textarea>
     </div>
 
     <div>
@@ -47,3 +54,5 @@
         <input class="btn btn-primary" type="submit" value="Uložit">
     </div>
 </form>
+
+<script src="~/js/NewTicket.js"></script>

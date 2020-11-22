@@ -39,19 +39,14 @@
             <th>
                 Datum
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.AllReports)
         {
-            <tr>
+            <tr onmousedown="redirectToAction('@Url.Action("Report", "Doctor", new { socialNum = Model.SocialSecurityNumber, date = item })')">
                 <td>
                     @Html.DisplayFor(modelItem => item)
-                </td>
-                <td>
-                    <!-- Zobrazení zprávy z daného data. -->
-                    @Html.ActionLink("Zobrazit", "Report", new { socialNum = Model.SocialSecurityNumber, date = item })
                 </td>
             </tr>
         }
@@ -88,93 +83,48 @@
 else
 {
     <!-- Vytvoření nové zprávy. -->
-<form method="post" asp-action="CreateReport">
-    <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
-    <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
-    <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
-    <textarea cols="100" rows="10" name="ReportText">@Model.ActualReport</textarea>
-    <!-- Dynamicky přidávatelné řádky pro Diagnozu a Výkon. -->
-    <div class="row">
-        <input type="text" name="Diagnosis1" id="Diagnosis1" placeholder="Hlavní diagnoza" autocomplete="off" />
-        <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, '#cured1')">Vyléčeno</button>
-        <input hidden name="cure1" id="cure1" />
-    </div>
-    <div class="row">
-        <input type="text" name="Diagnosis2" id="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off" />
-        <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, '#cured2')">Vyléčeno</button>
-        <input hidden name="cured2" id="cured2" />
-    </div>
-
-    <div class="row">
-        <input type="text" name="Diagnosis3" id="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off" />
-        <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, '#cured3')">Vyléčeno</button>
-        <input hidden name="cured3" id="cured3" />
-    </div>
-
-    <div class="row">
-        <input type="text" name="Diagnosis4" id="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off" />
-        <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, '#cured4')">Vyléčeno</button>
-        <input hidden name="cured4" id="cured4" />
-    </div>
-    <script>
-
-    </script>
-    <script>
-        var availableTags = ["ActionScript",
-            "AppleScript",
-            "Asp",
-            "BASIC",
-            "C",
-            "C++",
-            "Clojure",
-            "COBOL",
-            "ColdFusion",
-            "Erlang",
-            "Fortran",
-            "Groovy",
-            "Haskell",
-            "Java",
-            "JavaScript",
-            "Lisp",
-            "Python",
-            "Ruby",
-            "Scala",
-            "Scheme"
-
-        ];
-
-
-
-        $("#Diagnosis2").autocomplete({
-            source: availableTags
-        });
-
-        $("#Diagnosis3").autocomplete({
-            source: availableTags
-        });
-
-        $("#Diagnosis4").autocomplete({
-            source: availableTags
-        });
-
-
-
-    </script>
-    <script src="~/js/Report.js"></script>
-    <script>
-
-    </script>
-    <!-- TODO autocomplete-->
-    <div class="row">
-        <div class="col-lg-12">
-
-            <!-- Pole pro Výkon. (pouze jeden) -->
-            <input type="text" name="Bill" class="form-control m-input" placeholder="Výkon">
+    <form method="post" asp-action="CreateReport" onsubmit="return ReportValidation()">
+        <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
+        <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
+        <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
+        <textarea cols="100" rows="10" id="ReportText" name="ReportText">@Model.ActualReport</textarea>
+        <!-- Dynamicky přidávatelné řádky pro Diagnozu a Výkon. -->
+        <div class="row">
+            <input type="text" name="Diagnosis1" id="Diagnosis1" placeholder="Hlavní diagnoza*" autocomplete="off" />
+            <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured1')">Vyléčeno</button>
+            <input hidden name="Cured1" id="Cured1" value="noncured" />
         </div>
-    </div>
-    <!-- Uložit -->
-    <input class="btn btn-primary" type="submit" value="Uložit">
-</form>
+        <div class="row">
+            <input type="text" name="Diagnosis2" id="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off" />
+            <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured2')">Vyléčeno</button>
+            <input hidden name="Cured2" id="Cured2" value="noncured" />
+        </div>
+
+        <div class="row">
+            <input type="text" name="Diagnosis3" id="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off" />
+            <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured3')">Vyléčeno</button>
+            <input hidden name="Cured3" id="Cured3" value="noncured" />
+        </div>
+
+        <div class="row">
+            <input type="text" name="Diagnosis4" id="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off" />
+            <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured4')">Vyléčeno</button>
+            <input hidden name="Cured4" id="Cured4" value="noncured" />
+        </div>
+
+
+
+        <!-- TODO autocomplete-->
+        <div class="row">
+            <div class="col-lg-12">
+
+                <!-- Pole pro Výkon. (pouze jeden) -->
+                <input type="text" id="Bill" name="Bill" placeholder="Výkon*" autocomplete="off">
+            </div>
+        </div>
+        <!-- Uložit -->
+        <input class="btn btn-primary" type="submit" value="Uložit">
+    </form>
 }
 
 <!-- Návrat do kartotéky. -->
@@ -185,4 +135,5 @@ else
 </form>
 
 
-
+<script src="~/js/Report.js"></script>
+<script src="~/js/site.js"></script>
