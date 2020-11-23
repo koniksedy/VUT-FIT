@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Titulní stránka";
 }
+<link rel="stylesheet" href="~/css/MainPage.css" />
 
 <style>
     a.test {
@@ -8,31 +9,57 @@
         display: inline-block;
         height: 200px !important;
         width: 350px;
-        
-    }
-    .test-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-top: -1em;
-        margin-left: -50%;
-        width: 100%;
-        height: 2em;
     }
 
+    .test-text {
+        position: absolute;
+        text-align: left;
+        top: 50%;
+        opacity: 1;
+        margin-top: -1em;
+        margin-left: 10px;
+        width: 100%;
+        height: 2em;
+        pointer-events: none;
+        cursor: default;
+        text-decoration: none;
+        font-size: 28px;
+        color: #333333;
+    }
     .mouseover {
         position: relative;
+
         height: 100%;
         width: 100%;
         background-image: url("Img/Shared/btn-image-active.png");
     }
-
-
 </style>
 
-<div class="row">
-    <div class="col-6">
-        <h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="first_row">
+    <div class="first_row_first_item">
+        <h1 class="nadpis_padding">
             Zdaravotní informace<br />
             <strong>na jednom místě</strong>
         </h1>
@@ -40,26 +67,38 @@
             Mějte své lékařské zprávy neustále pod hodledem.<br />
             Ať už z role lékaře, nebo pacienta.
         </p>
-       
     </div>
-    <div class="col-6">
+    <div class="first_row_second_item">
         <div class="row">
             <div onmouseover="addgreen()" onmouseout="delgreen()" onmouseup="delgreen()" class="col12" style="width:350px;height:200px">
                 <a class="test" href="/Home/Corona">
-                    <div id="corona" >
-                        <div class="test-text">Corona-19</div>
-                    </div>   
-                </a>               
+                    <div id="corona">
+                    </div>
+                </a>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    function addgreen() {
-        document.getElementById("corona").classList.add("mouseover");
-    }
-    function delgreen() {
-        document.getElementById("corona").classList.remove("mouseover");
-    }
-</script>
+<div class="second_row">
+    <div class="second_row_first_item">
+        <img class="Doctor" alt="Doctor" height="240" width="370" src="~/Img/Shared/doctors.jpg" onclick="ImgClicked()" />
+        <div class="test-text"><a class="test-text" href="Home/Privacy">DOKTOŘI</a></div>
+    </div>
+    <div class="second_row_second_item" >
+        <h1></h1>
+    </div>
+</div>
+
+
+    <script>
+        function ImgClicked() {
+            window.location.href = "Home/Privacy";
+        }
+        function addgreen() {
+            document.getElementById("corona").classList.add("mouseover");
+        }
+        function delgreen() {
+            document.getElementById("corona").classList.remove("mouseover");
+        }
+    </script>
