@@ -4,24 +4,28 @@
     justify-content: space-evenly;
 }
 
-div .first_row_first_item{
-    min-width:360px;
+div .first_row_first_item {
+    padding-top: 30px;
+    min-width: 360px;
     max-width: 390px;
 }
 div .first_row_second_item {
+    padding-top: 30px;
     min-width: 360px;
     max-width: 390px;
     padding-left: 15px;
 }
 div .second_row_first_item {
-    min-width: 360px;
+    padding-top:30px;
     position: relative;
     text-align: center;
     max-width: 390px;
 }
 div .second_row_second_item {
+    padding-left: 55px;
     min-width: 360px;
     max-width: 390px;
+    padding-top: 30px;
 }
 
 
@@ -61,3 +65,10 @@ img:hover {
     filter: blur(1px);
 }
 
+.second_second{
+    padding-top: 40px;
+}
+
+.first_second {
+    padding-bottom: 40px;
+}
