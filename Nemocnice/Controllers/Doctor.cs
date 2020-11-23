@@ -646,7 +646,7 @@ namespace Nemocnice.Controllers
             // Pokud de přihlášen administrátor, vidí všechny zprávy.
             patientProfileModel.AllReports = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum &&
                                                                            (User.IsInRole("Admin") || o.Owner.UserId == doctorId))
-                                                                .Select(s => s.CreateDate).ToList();
+                                                                .Select(s => s.CreateDate).ToList().OrderByDescending(o => o).ToList();
 
             // Získání příchozích žádostí o vyšetření, které čekají na vyřízení.
             // Pokud je přihlášený administrátor, uvidí žádosti určené všem doktorům.
@@ -660,7 +660,7 @@ namespace Nemocnice.Controllers
                                                                      {
                                                                          CreateDate = checkup.CreateDate,
                                                                          FromDoctor = user.Surname + " " + user.Name + ", " + user.Title
-                                                                     }).ToList();
+                                                                     }).ToList().OrderByDescending(o => o.CreateDate).ToList();
 
             // Získání všech vytvořených žádostí pro ostatní lékaře.
             // Pokud je přihlášený administrátor, uvidí žádosti vytvořené všemi doktory.
@@ -674,7 +674,7 @@ namespace Nemocnice.Controllers
                                                                             CreateDate = checkup.CreateDate,
                                                                             ToDoctor = user.Surname + " " + user.Name + ", " + user.Title,
                                                                             State = checkup.State
-                                                                        }).ToList();
+                                                                        }).ToList().OrderByDescending(o => o.CreateDate).ToList();
 
             return View(patientProfileModel);
         }
@@ -1319,6 +1319,29 @@ namespace Nemocnice.Controllers
             return View(MyFinishRequests);
         }
 
+        [HttpPost]
+        public IActionResult ChangeOwner()
+        {
+            string[] changeState = Request.Form["Checkbox[]"];
+            int doctorToICZ = int.Parse(Request.Form["doctorICZ"]);
+            string patientNumber = Request.Form["patientNumber"];
+            var doctorId = db.UserT.Where(s => s.Login == User.Identity.Name).Select(o => o.UserId).ToList().First();
+
+            var reports = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNumber && (User.IsInRole("Admin") || o.Owner.UserId == doctorId))
+                                            .Include(o => o.Owner).ToList().OrderByDescending(o => o.CreateDate).ToList();
+
+            for(int i = 0; i < changeState.Length; i++)
+            {
+                if(changeState[i] == "on")
+                {
+                    reports.ElementAt(i).Owner = db.DoctorT.Where(o => o.ICZ == doctorToICZ).ToList().First();       
+                }    
+            }
+            db.SaveChanges();
+
+            return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
+        }
+
         public JsonResult GetAllDiagnosis(string search)
         {
             List<Diagnosis> matchedDiagnosis;
@@ -1328,7 +1351,7 @@ namespace Nemocnice.Controllers
             }
             else
             {
-                matchedDiagnosis = db.DiagnosisT.Where(o => o.Name.ToUpper().Contains(search.ToUpper())).ToList();
+                matchedDiagnosis = db.DiagnosisT.Where(o => o.Name.ToUpper().Contains(search.ToUpper())).ToList().OrderBy(o => o.Name).ToList();
             }
 
             return new JsonResult(matchedDiagnosis);
@@ -1343,7 +1366,7 @@ namespace Nemocnice.Controllers
                                                                                      {
                                                                                          Id = s.MedicallActivityPriceId,
                                                                                          Name = s.Name
-                                                                                     }).ToList();
+                                                                                     }).ToList().OrderBy(o => o.Name).ToList();
             }
             else
             {
@@ -1352,7 +1375,7 @@ namespace Nemocnice.Controllers
                                                                                      {
                                                                                          Id = s.MedicallActivityPriceId,
                                                                                          Name = s.Name
-                                                                                     }).ToList();
+                                                                                     }).ToList().OrderBy(o => o.Name).ToList();
             }
             return new JsonResult(matchedActivities);
         }
@@ -1369,7 +1392,7 @@ namespace Nemocnice.Controllers
                                                 {
                                                     Id = doctor.ICZ,
                                                     Name = user.getFullName()
-                                                }).ToList();
+                                                }).ToList().OrderBy(o => o.Name).ToList();
             }
             else
             {
@@ -1380,7 +1403,7 @@ namespace Nemocnice.Controllers
                                                 {
                                                     Id = doctor.ICZ,
                                                     Name = user.getFullName()
-                                                }).ToList();
+                                                }).ToList().OrderBy(o => o.Name).ToList();
             }
             return new JsonResult(matchedDoctors);
         }
