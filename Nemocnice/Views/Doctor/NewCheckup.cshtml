@@ -36,10 +36,37 @@
         <label>Diagnózy:</label>
     </div>
     <div class="row">
-        <input type="text" id="Diagnosis1" name="Diagnosis1"  placeholder="Halvní diagnoza" autocomplete="off">
-        <input type="text" id="Diagnosis2" name="Diagnosis2"  placeholder="Diagnoza 2" autocomplete="off">
-        <input type="text" id="Diagnosis3" name="Diagnosis3"  placeholder="Diagnoza 3" autocomplete="off">
-        <input type="text" id="Diagnosis4" name="Diagnosis4"  placeholder="Diagnoza 4" autocomplete="off">
+        <input type="text" id="Diagnosis1" name="Diagnosis1" placeholder="Halvní diagnoza" autocomplete="off">
+        <input type="text" id="Diagnosis2" name="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off">
+        <input type="text" id="Diagnosis3" name="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off">
+        <input type="text" id="Diagnosis4" name="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off">
+    </div>
+
+    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">Přiložit zprávu</button>
+    <div class="modal fade" id="CopyReportModal" tabindex="-1" role="dialog" aria-labelledby="CopyReportModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="CopyReportModalLabel">Přiložit zprávu</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table-responsive-md">
+                        @foreach (var item in Model.Reports)
+                        {
+                            <tr>
+                                <td data-dismiss="modal" onclick="selectedReport('@item', '@Model.SocialSecurityNum')">
+                                    @item
+                                </td>
+                            </tr>
+                        }
+                    </table>
+
+                </div>
+            </div>
+        </div>
     </div>
 
     <div>
@@ -56,3 +83,22 @@
 </form>
 
 <script src="~/js/NewTicket.js"></script>
+<script>
+    function selectedReport(report, patNum) {
+        result = $.ajax({
+            url: '/Doctor/GetReport',
+            dataType: "json",
+            data: {
+                patientNum: patNum,
+                date: report,
+            },
+            success: function (data) {
+                var text = document.getElementById('checkupText').value;
+                document.getElementById('checkupText').value = text.concat(data);
+            },
+            error: function () {
+                alert("Nepodařilo se zkoírovat zprávu.");
+            }
+        }).responseJSON;
+    }
+</script>

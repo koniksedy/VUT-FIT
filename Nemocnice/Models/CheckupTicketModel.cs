@@ -15,5 +15,6 @@ namespace Nemocnice.Models
         public DateTime FinishDate { get; set; }
         public string RequestText { get; set; }
         public string ReportText { get; set; }
+        public List<DateTime> AllReports { get; set; } = new List<DateTime>();
     }
 }
