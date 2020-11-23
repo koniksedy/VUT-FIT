@@ -9,5 +9,6 @@ namespace Nemocnice.Models
     {
         public NameModel FullName { get; set; }
         public string SocialSecurityNum { get; set; }
+        public List<DateTime> Reports { get; set; } = new List<DateTime>();
     }
 }

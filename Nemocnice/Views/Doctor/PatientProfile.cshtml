@@ -17,7 +17,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="PatientInfoLabel">Informace</h5>
+                        <h5 class="modal-title" id="PatientInfoModalLabel">Informace</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -83,17 +83,17 @@
     Váha : @Model.HealthCondition.GetHeightString() kg<br />
     Krevní skupina: @Model.HealthCondition.GetBlodTypeString() <br />
 
-    @if (Model.Allergys.Length < 50)
+    @if (Model.Allergys.Length < 25)
     {
         <div>
-            <b>Alergie: @Model.Allergys</b>
+            <b class="text-danger">Alergie: @Model.Allergys</b>
         </div>
     }
     else
     {
         
         <div>
-            Alergie: <b>@Model.Allergys</b>  <button class="btn btn-info" data-toggle="modal" data-target="#AllergysModal">...</button>
+            Alergie: <b class="text-danger">@Model.Allergys.Substring(0, 25)</b>  <button class="btn btn-info" data-toggle="modal" data-target="#AllergysModal">...</button>
             <div class="modal fade" id="AllergysModal" tabindex="-1" role="dialog" aria-labelledby="AllergysModalLabel" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -119,7 +119,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="PatientInfoLabel">Upravit zdravotní přehled</h5>
+                        <h5 class="modal-title" id="PatientHealthModalLabel">Upravit zdravotní přehled</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -153,6 +153,30 @@
 
 <div>
     <h2>Dekurzy</h2>
+    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#ChangeOwnerModal">Upravit</button>
+    <form asp-action="ChangeOwner" method="post">
+        <div class="modal fade" id="ChangeOwnerModal" tabindex="-1" role="dialog" aria-labelledby="ChangeOwnerLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ChangeOwnerLabel">Předat správu nad záznamy jinému lékaři</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label class="col-form-label">Výška</label>
+                            <input name="UpdateHeight" type="text" required autocomplete="off" class="form-control" value="Lékař" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-primary" id="UpdateButton" type="submit" value="Předat" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
     <table class="table">
         <tbody>
             @if (Model.AllReports.Any())
@@ -198,7 +222,7 @@
                 @foreach (var item in Model.CheckupToMe)
                 {
                     <tr>
-                        <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                        <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate, reports = Model.AllReports })')">
                             @Html.DisplayFor(modelItem => item.CreateDate)
                         </td>
                         <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
@@ -263,5 +287,5 @@
             }
         </tbody>
     </table>
-    @Html.ActionLink("Nový poukaz na vyšetření", "NewCheckup", new { patientNum = Model.SocialSecurityNumber })
+    @Html.ActionLink("Nový poukaz na vyšetření", "NewCheckup", new { patientNum = Model.SocialSecurityNumber, reports = Model.AllReports })
 </div>

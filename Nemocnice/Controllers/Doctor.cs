@@ -635,12 +635,11 @@ namespace Nemocnice.Controllers
             }
 
             // Získání alergií.
-            // TODO - alrgie budou string
             patientProfileModel.Allergys = db.PatientT.Where(o => o.SocialSecurityNum == patientNum)
                                                       .Select(s => s.HealthCondition.Allergys).ToList().First();
             if (String.IsNullOrEmpty(patientProfileModel.Allergys))
             {
-                patientProfileModel.Allergys = "---";
+                patientProfileModel.Allergys = "Sine";
             }
 
             // Získání lékařských zpráv, jejichž autorem je přihlášený lékař.
@@ -753,13 +752,14 @@ namespace Nemocnice.Controllers
             int patientHeight = int.Parse(Request.Form["UpdateHeight"]);
             int patientWeight = int.Parse(Request.Form["UpdateWeight"]);
             string patientBlodType = Request.Form["UpdateBlodType"];
-            // TODO alergie jako string
+            string patientAlergys = Request.Form["UpdateAllergys"];
 
             // Získání a aktualizace zdravotního stavu.
             HealthCondition healthCondition = db.PatientT.Where(o => o.SocialSecurityNum == patientNumber).Select(s => s.HealthCondition).ToList().First();
             healthCondition.Height = patientHeight;
             healthCondition.Weight = patientWeight;
             healthCondition.BloodType = patientBlodType;
+            healthCondition.Allergys = patientAlergys;
             db.SaveChanges();
 
             // Přesměrování na kartu pacienta s upravenými údaji.
@@ -772,7 +772,7 @@ namespace Nemocnice.Controllers
          * patientNum - rodné číslo zobrazovaného pacienta
          * date - datum vytvoření konkrétní zobrazované žádosti.
          */
-        public IActionResult CheckupIn(string patientNum,  DateTime date)
+        public IActionResult CheckupIn(string patientNum,  DateTime date, List<DateTime> reports)
         { 
             // Získání dané žádosti o vyšetření
             CheckupTicket checkupTicket = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date)
@@ -801,7 +801,8 @@ namespace Nemocnice.Controllers
                 },
                 State = checkupTicket.State,
                 CreateDate = date,
-                RequestText = checkupTicket.Description
+                RequestText = checkupTicket.Description,
+                AllReports = reports
             };
 
             return View(model);
@@ -896,7 +897,7 @@ namespace Nemocnice.Controllers
          * Akce fobrazí formulář pro vytvoření nové žádost k vyšetření.
          * patientNum - rodné číslo pacienta pro kterého bude zpráva vytvořena
          */
-        public IActionResult NewCheckup(string patientNum)
+        public IActionResult NewCheckup(string patientNum, List<DateTime> reports)
         {
             // Získání informací o pacientovi.
             int patientId = db.PatientT.Where(o => o.SocialSecurityNum == patientNum).Select(s => s.UserId).ToList().First();
@@ -912,7 +913,8 @@ namespace Nemocnice.Controllers
                     Surname = patient.Surname,
                     Title = patient.Title,
                 },
-                SocialSecurityNum = patientNum
+                SocialSecurityNum = patientNum,
+                Reports = reports
             };
             return View(model);
         }
@@ -1525,6 +1527,15 @@ namespace Nemocnice.Controllers
                 result = TestDoctor(db, doctor);
             }
 
+            return new JsonResult(result);
+        }
+
+        public JsonResult GetReport(string patientNum, string date)
+        {
+            DateTime mydate = DateTime.ParseExact(date, "d.M.yyyy H:m:s", null);
+            var test = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum).ToList().First();
+            string result = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == mydate).Select(s => s.Description).ToList().First();
+            result = String.Format("##########################{0}##########################\n==============================================\n{1}\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n", date, result);
             return new JsonResult(result);
         }
     }
