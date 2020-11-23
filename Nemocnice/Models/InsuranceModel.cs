@@ -14,8 +14,10 @@ namespace Nemocnice.Models
         public string nazev { get; set; }
         public string nazevZmena { get; set; }
         public int cenaZmena { get; set; }
+        public int PageNum1 { get; set; }
         public int PageNum { get; set; }
         public IPagedList<MedicallBill> medicallBillsPage { get; set; }
+        public IPagedList<MedicallActivityPrice> medicallActivityPricePage { get; set; }
         public List<MedicallActivityPrice> medicallActivityPrice { get; set; }
         public List<MedicallBill> medicallBills { get; set; }
     }

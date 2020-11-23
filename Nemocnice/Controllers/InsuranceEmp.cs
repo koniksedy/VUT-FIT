@@ -18,7 +18,6 @@ using Nemocnice.Data;
 using Nemocnice.Models;
 using Microsoft.AspNetCore.Authorization;
 using X.PagedList.Mvc.Core;
-using cloudscribe.Pagination.Models;
 using X.PagedList;
 
 
@@ -56,6 +55,10 @@ namespace Nemocnice.Controllers
             //uložení aktuálně vyhledaného řetězce
             ViewData["Search"] = searchString;
 
+            ViewData["CurrentSort"] = SortOrder;
+
+            ViewData["CurrentPage"] = p;
+
             //pokud je různé od 0, byla schválena žádost s daným ID a tu d datbázi změníme z null na "schváleno"
             if (ID_accept != 0)
             {
@@ -79,34 +82,44 @@ namespace Nemocnice.Controllers
             //pokud vyhledávací řetězec něco obsahuje, podle jeho obsahu provedeme vyhledání v databázi
             if (!String.IsNullOrEmpty(searchString))
             {
-                searchString = searchString.Split(' ').Last();
-                var user = this.Context.UserT.Where(s => s.Name.StartsWith(searchString) || s.Surname.StartsWith(searchString)).Select(x => x.UserId).FirstOrDefault();
-                model.medicallBills = this.Context.MedicallBillT.Where(i => i.State==null && i.Doctor.UserId == user).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).OrderByDescending(o => o.CreateDate).ToList();                
+                model.medicallBills = this.Context.MedicallBillT.Join(this.Context.UserT.Where(s => s.Name.Contains(searchString) || s.Surname.Contains(searchString)),
+                                                                                                 bill => bill.Doctor.UserId,
+                                                                                                 user => user.UserId,
+                                                                                                 (bill, user) => new MedicallBill
+                                                                                                 {
+                                                                                                     MedicallBillId = bill.MedicallBillId,
+                                                                                                     Doctor = bill.Doctor,
+                                                                                                     SocialSecurityNum = bill.SocialSecurityNum,
+                                                                                                     MedicallActivityPrice = bill.MedicallActivityPrice,
+                                                                                                     Diagnosis = bill.Diagnosis,
+                                                                                                     State = bill.State,
+                                                                                                     CreateDate = bill.CreateDate,
+                                                                                                     DecisionDate = bill.DecisionDate
+                                                                                                 }).Where(s => s.State == null).ToList();
             }
             //pokud je vyhledávací řetězec prázdný, vypisujeme všechny nerozhodnuté žádosti -> ty, co moají stav null
             else
             {
-                model.medicallBills = this.Context.MedicallBillT.Where(x => x.State == null).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).OrderByDescending(s => s.CreateDate).ToList();
-
-                //řazení dle následujících kritériíí
-                switch (SortOrder)
-                {
-                    case "cena":
-                        model.medicallBills = model.medicallBills.OrderBy(o => o.MedicallActivityPrice.Amount).ToList();
-                        break;
-                    case "diagnoza":
-                        model.medicallBills = model.medicallBills.OrderBy(o => o.Diagnosis.Name).ToList();
-                        break;
-                    default:
-                        model.medicallBills = model.medicallBills.OrderByDescending(o => o.CreateDate).ToList();
-                        break;
-                }
-
-                //model.medicallBills = await PagingList.CreateAsync(query, 5, p);
-                //model.Records = this.Context.MedicallBillT.Where(x => x.State == null).Count();
-                //model.PageNum = p;
-                //model.PageSize = 5;
+                model.medicallBills = this.Context.MedicallBillT.Where(x => x.State == null).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).ToList();
             }
+
+            //řazení dle následujících kritériíí
+            switch (SortOrder)
+            {
+                case "cena":
+                    model.medicallBills = model.medicallBills.OrderBy(o => o.MedicallActivityPrice.Amount).ToList();
+                    break;
+                case "typ":
+                    model.medicallBills = model.medicallBills.OrderBy(o => o.MedicallActivityPrice.Name).ToList();
+                    break;
+                case "diagnoza":
+                    model.medicallBills = model.medicallBills.OrderBy(o => o.Diagnosis.Name).ToList();
+                    break;
+                default:
+                    model.medicallBills = model.medicallBills.OrderByDescending(o => o.CreateDate).ToList();
+                    break;
+            }
+
 
             //stránkování vybraných dat
             model.PageNum = (p ?? 1);
@@ -163,17 +176,52 @@ namespace Nemocnice.Controllers
 
         }
 
-     /*
-     * Akce vypíše tabulku s úkony, které se proplácí
-     * ID_delete - ID úkonu, který se z tabulky vymaže
-     * sortOrder - typ řazení (dle jména doktora, data nebo diagnózy)
-     * buttonUpdate - ID úkonu, který bude upraven
-     * new_butt - ID s nově vytvořeným úkonem
-     * model - model pro uložení vybraných dat
-     * p - proměnná pro stránkování
-     */
-        public async Task<IActionResult> PaymentDb(int ID_delete, string SortOrder, string buttonUpdate, string new_butt, InsuranceModel model)
+        [HttpPost]
+        public IActionResult EditDb()
         {
+
+            int edit_ID = int.Parse(Request.Form["edit_ID"]);
+            string edit_name = Request.Form["edit_name"];
+            decimal edit_amount = decimal.Parse(Request.Form["edit_amount"]);
+
+            var pom = this.Context.MedicallActivityPriceT.First(a => a.MedicallActivityPriceId == edit_ID);
+            pom.Name = edit_name;
+            pom.Amount = edit_amount;
+            this.Context.SaveChanges();
+
+            return RedirectToAction("PaymentDb", new { SortOrder = Request.Form["SortOrder"], p1 = Request.Form["p1"] });
+        }
+
+        [HttpPost]
+        public IActionResult NewDb()
+        {
+            string new_name = Request.Form["new_name"];
+            decimal new_amount = decimal.Parse(Request.Form["new_amount"]);
+
+            var activityPrice = new MedicallActivityPrice { Name = new_name, Amount = new_amount };
+            this.Context.Add<MedicallActivityPrice>(activityPrice);
+            this.Context.SaveChanges();
+
+            return RedirectToAction("PaymentDb", new { SortOrder = Request.Form["SortOrder"], p1 = Request.Form["p1"] });
+        }
+
+
+
+        /*
+        * Akce vypíše tabulku s úkony, které se proplácí
+        * ID_delete - ID úkonu, který se z tabulky vymaže
+        * sortOrder - typ řazení (dle jména doktora, data nebo diagnózy)
+        * ID_edit - ID výkonu, který bude upraven
+        * new_butt - ID s nově vytvořeným úkonem
+        * model - model pro uložení vybraných dat
+        * p - proměnná pro stránkování
+        */
+        public IActionResult PaymentDb(int ID_delete, string SortOrder, InsuranceModel model, int ? p1)
+        {
+
+            ViewData["CurrentSort"] = SortOrder;
+
+            ViewData["CurrentPage"] = p1;
 
             //pokud je ID_delete různé od 0, víme, jaký úkon s daným ID máme vymazat
             if (ID_delete != 0)
@@ -183,37 +231,24 @@ namespace Nemocnice.Controllers
             }
 
             //nachystání celé tabulky se všemi úkony k vypsání
-            var query = this.Context.MedicallActivityPriceT.AsNoTracking().OrderBy(o => o.Name);
+            model.medicallActivityPrice = this.Context.MedicallActivityPriceT.OrderBy(o => o.Name).ToList();
 
             //řazení dle následujících kritériíí
             switch (SortOrder)
             {
                 case "cena":
-                    query = query.OrderBy(o => o.Amount);
+                    model.medicallActivityPrice = model.medicallActivityPrice.OrderBy(o => o.Amount).ToList();
                     break;
                 default:
-                    query = query.OrderBy(o => o.Name);
+                    model.medicallActivityPrice = model.medicallActivityPrice.OrderBy(o => o.Name).ToList();
                     break;
             }
 
-        
-            //pokud následující string něco obsahuje, jedná se o přidání nového úkonu
-            if (!String.IsNullOrEmpty(new_butt))
-            {
-                var activityPrice = new MedicallActivityPrice { Name = model.nazev, Amount = model.cena };
-                this.Context.Add<MedicallActivityPrice>(activityPrice);
-                this.Context.SaveChanges();
-            }
-
-            //pokud následující string něco obsahuje, jedná se o update daného úkonu
-            if (!String.IsNullOrEmpty(buttonUpdate))
-            {
-                int ID = Int32.Parse(buttonUpdate);
-                var pom = this.Context.MedicallActivityPriceT.First(a => a.MedicallActivityPriceId == ID);
-                pom.Name = model.nazevZmena; 
-                pom.Amount = model.cenaZmena;
-                this.Context.SaveChanges();
-            }
+            //stránkování vybraných dat
+            model.PageNum1 = (p1 ?? 1);
+            int pageSize = 5;
+            IPagedList<MedicallActivityPrice> lide = model.medicallActivityPrice.ToPagedList(model.PageNum1, pageSize);
+            model.medicallActivityPricePage = lide;
 
              return View(model);
             

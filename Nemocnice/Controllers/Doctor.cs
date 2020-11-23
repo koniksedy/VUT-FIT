@@ -24,7 +24,8 @@ using Microsoft.EntityFrameworkCore;
 using Nemocnice.Data;
 using Nemocnice.DatabaseDataCreator;
 using Nemocnice.Models;
-using ReflectionIT.Mvc.Paging;
+using X.PagedList.Mvc.Core;
+using X.PagedList;
 
 namespace Nemocnice.Controllers
 {
@@ -994,37 +995,43 @@ namespace Nemocnice.Controllers
         }
 
 
-        public async Task<IActionResult> Activity(string searchString, string SortOrder, ActivityModel model, int p = 1)
+        public IActionResult Activity(string searchString, string SortOrder, ActivityModel model, int ? p)
         {
+
+            //uložení aktuálně vyhledaného řetězce
+            ViewData["Search"] = searchString;
+
+            ViewData["CurrentSort"] = SortOrder;
+
             if (!String.IsNullOrEmpty(searchString))
             {
-                searchString = searchString.Split(' ').Last();
-                var user = db.MedicallBillT.Where(s => s.Diagnosis.Name.Contains(searchString)).Select(x => x.MedicallBillId).FirstOrDefault();
-                model.medicallBills = db.MedicallBillT.Where(x => x.MedicallBillId == user).Include(s => s.Diagnosis).OrderByDescending(o => o.CreateDate).ToList();
+                model.medicallBills = db.MedicallBillT.Where(s => s.Diagnosis.Name.Contains(searchString)).Include(s => s.Diagnosis).ToList();
             }
             else
             {
-                var query = db.MedicallBillT.AsNoTracking().Include(s => s.Diagnosis).OrderByDescending(s => s.CreateDate);
-
-                switch (SortOrder)
-                {
-                    case "nazev":
-                    query = query.OrderBy(o => o.Diagnosis.Name);
-                        break;
-                    case "stav":
-                    query = query.OrderBy(o => o.State);
-                        break;
-                    default:
-                    query = query.OrderByDescending(o => o.CreateDate);
-                        break;
-                }
-
-                model.medicallBills = await PagingList.CreateAsync(query, 10, p);
-                model.Records = db.MedicallBillT.Where(x => x.State == null).Count();
-                model.PageNum = p;
-                model.PageSize = 10;
-
+                model.medicallBills = db.MedicallBillT.Include(s => s.Diagnosis).OrderByDescending(s => s.CreateDate).ToList();
             }
+
+            switch (SortOrder)
+            {
+                case "nazev":
+                    model.medicallBills = model.medicallBills.OrderBy(o => o.Diagnosis.Name).ToList();
+                    break;
+                case "stav":
+                    model.medicallBills = model.medicallBills.OrderBy(o => o.State).ToList();
+                    break;
+                default:
+                    model.medicallBills = model.medicallBills.OrderByDescending(o => o.CreateDate).ToList();
+                    break;
+            }
+
+            //stránkování vybraných dat
+            model.PageNum = (p ?? 1);
+            int pageSize = 8;
+            IPagedList<MedicallBill> lide = model.medicallBills.ToPagedList(model.PageNum, pageSize);
+            model.medicallBillsPage = lide;
+
+
 
             return View(model);
         }
