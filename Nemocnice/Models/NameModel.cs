@@ -15,11 +15,11 @@ namespace Nemocnice.Models
         {
             if(String.IsNullOrEmpty(Title))
             {
-                return Name + Surname;
+                return Name + " " + Surname;
             }
             else
             {
-                return Name + Surname + ", " + Title;
+                return Name + " " + Surname + ", " + Title;
             }
         }
     }

@@ -106,7 +106,7 @@ namespace Nemocnice.Controllers
                                     SocialSecurityNum = patient.SocialSecurityNum,
                                     Insurance = patient.InsuranceCompany
                                 }
-                                ).Where(s => s.SocialSecurityNum.ToString().StartsWith(searchString) ||
+                                ).Where(s => s.SocialSecurityNum.StartsWith(searchString) ||
                                              s.PatientFullName.Name.StartsWith(searchString) ||
                                              s.PatientFullName.Surname.StartsWith(searchString)).ToList();
             }
@@ -191,7 +191,7 @@ namespace Nemocnice.Controllers
             // Uživatelským jménem pacientů je jejich rodné číslo.
             user = new User
             {
-                Login = socialNum.ToString(),
+                Login = socialNum,
                 Name = name,
                 Surname = surname,
                 Title = title,
@@ -336,20 +336,31 @@ namespace Nemocnice.Controllers
             string patientNum = Request.Form["PatientNum"];
             string reportText = Request.Form["ReportText"];
             string billString = Request.Form["Bill"];
-            int idxStart = billString.IndexOf('(') + 1;
-            int stringLen = billString.IndexOf(')') - idxStart;
-            int billCode = int.Parse(billString.Substring(idxStart, stringLen));
+            int billCode = int.Parse(Request.Form["Bill"]);
+            // HACK - Získáním data z POSTU se oříznou hodnoty menší než sekundy,
+            // datum se uniformuje pouze na rok,měsíc,den,hodinu,minutu,sekudy.
             DateTime reportDate = DateTime.Parse(Request.Form["ReportDate"]);
-            // Získání kódů všech diagnóz přidělených ke zprávě.
+
+            // Získání kódů všech diagnóz a jejich stavů přidělených ke zprávě.
             List<int> diagnosis = new List<int>();
-            foreach(string str in Request.Form["Diagnosis[]"])
+            List<string> diagnosisState = new List<string>();
+            diagnosis.Add(int.Parse(Request.Form["Diagnosis1"]));
+            diagnosisState.Add(Request.Form["Cured1"]);
+            if (!String.IsNullOrEmpty(Request.Form["Diagnosis2"]))
             {
-                idxStart = str.IndexOf('(') + 1;
-                stringLen = str.IndexOf(')') - idxStart;
-                diagnosis.Add(int.Parse(str.Substring(idxStart, stringLen)));
+                diagnosis.Add(int.Parse(Request.Form["Diagnosis2"]));
+                diagnosisState.Add(Request.Form["Cured2"]);
             }
-            // Všechny stavy diagnód. Korespondují s indexy kódů diagnóz.
-            List<string> diagnosisState = new List<string>(Request.Form["DiagnosisState[]"]);
+            if (!String.IsNullOrEmpty(Request.Form["Diagnosis3"]))
+            {
+                diagnosis.Add(int.Parse(Request.Form["Diagnosis3"]));
+                diagnosisState.Add(Request.Form["Cured3"]);
+            }
+            if (!String.IsNullOrEmpty(Request.Form["Diagnosis4"]))
+            {
+                diagnosis.Add(int.Parse(Request.Form["Diagnosis4"]));
+                diagnosisState.Add(Request.Form["Cured4"]);
+            }
 
             // Zíkání informací o doktorovi, který zprávu napsal.
             // HACK - pokud nebude přihášený uživatl mít zíznam v tabulce UserT, dojde k erroru.
@@ -916,10 +927,21 @@ namespace Nemocnice.Controllers
             // Zíslání informací o pacientovi, cílovém lékaři, a textu zprávy
             string patientNumber = Request.Form["patientNum"];
             string checkupText = Request.Form["checkupText"];
-            string doctorString = Request.Form["doctorName"];
-            int idxStart = doctorString.IndexOf('(') + 1;
-            int stringLen = doctorString.IndexOf(')') - idxStart;
-            int doctorICZ = int.Parse(doctorString.Substring(idxStart, stringLen));
+            int doctorICZ = int.Parse(Request.Form["doctorICZ"]);
+            List<int> diagnosisList = new List<int>();
+            diagnosisList.Add(int.Parse(Request.Form["Diagnosis1"]));
+            if (!String.IsNullOrEmpty(Request.Form["Diagnosis2"]))
+            {
+                diagnosisList.Add(int.Parse(Request.Form["Diagnosis2"]));
+            }
+            if (!String.IsNullOrEmpty(Request.Form["Diagnosis3"]))
+            {
+                diagnosisList.Add(int.Parse(Request.Form["Diagnosis3"]));
+            }
+            if (!String.IsNullOrEmpty(Request.Form["Diagnosis4"]))
+            {
+                diagnosisList.Add(int.Parse(Request.Form["Diagnosis4"]));
+            }
 
             // Zíkání informací o doktorovi (Autorovi, právě přihášeném), který žádost napsal.
             // HACK - pokud nebude přihášený uživatl mít záznam v tabulce UserT, dojde k erroru.
@@ -957,6 +979,7 @@ namespace Nemocnice.Controllers
 
             // Vytvoření žádosti.
             // Je potřeba mít jako samostatnou proměnnou, kvůli pozdějšímu užití.
+            DateTime time = DateTime.Now;
             CheckupTicket ticket = new CheckupTicket
             {
                 CreatedBy = doctorAuthor,
@@ -965,24 +988,19 @@ namespace Nemocnice.Controllers
                 Patient = db.PatientT.Where(o => o.SocialSecurityNum == patientNumber).ToList().First(),
                 Description = checkupText,
                 State = "žádost vytvořena",
-                CreateDate = DateTime.Now
+                CreateDate = new DateTime(time.Year, time.Month, time.Day, time.Hour, time.Minute, time.Second)
             };
             db.CheckupTicketT.Add(ticket);
             db.SaveChanges();
 
             // Pro kažnou diagnózu přiřazenou k žádosti o vyšetření,
             // je třeba vložit údaje do propojovací tabulky diagnozy a žádosti.
-            foreach(string diag in Request.Form["Diagnosis[]"])
+            foreach(int diag in diagnosisList)
             {
-                // Získání kódu diagnózy
-                int start = diag.IndexOf('(') + 1;
-                int len = diag.IndexOf(')') - start;
-                int id = int.Parse(diag.Substring(start, len));
-
                 // Vytvoření propojení
                 db.TicketPerDiagnosisT.Add(new TicketPerDiagnosis
                 {
-                    Diagnosis = db.DiagnosisT.Where(o => o.DiagnosisId == id).ToList().First(),
+                    Diagnosis = db.DiagnosisT.Where(o => o.DiagnosisId == diag).ToList().First(),
                     CheckupTicket = ticket
                 });
                 //db.SaveChanges();
@@ -1308,9 +1326,213 @@ namespace Nemocnice.Controllers
 
         public JsonResult GetAllDiagnosis(string search)
         {
-            List<Diagnosis> matchedDiagnosis = db.DiagnosisT.Where(o => o.Name.ToUpper().Contains(search.ToUpper())).ToList();
+            List<Diagnosis> matchedDiagnosis;
+            if (search == null || search == "?")
+            {
+                matchedDiagnosis = db.DiagnosisT.ToList();
+            }
+            else
+            {
+                matchedDiagnosis = db.DiagnosisT.Where(o => o.Name.ToUpper().Contains(search.ToUpper())).ToList();
+            }
 
             return new JsonResult(matchedDiagnosis);
+        }
+
+        public JsonResult GetAllActivities(string search)
+        {
+            List<ActivityJsonModel> matchedActivities;
+            if (search == null || search == "?")
+            {
+                matchedActivities = db.MedicallActivityPriceT.Select(s => new ActivityJsonModel
+                                                                                     {
+                                                                                         Id = s.MedicallActivityPriceId,
+                                                                                         Name = s.Name
+                                                                                     }).ToList();
+            }
+            else
+            {
+                matchedActivities = db.MedicallActivityPriceT.Where(o => o.Name.ToUpper().Contains(search.ToUpper()))
+                                                                                     .Select(s => new ActivityJsonModel
+                                                                                     {
+                                                                                         Id = s.MedicallActivityPriceId,
+                                                                                         Name = s.Name
+                                                                                     }).ToList();
+            }
+            return new JsonResult(matchedActivities);
+        }
+
+        public JsonResult GetAllDoctors(string search)
+        {
+            List<DoctorJsonModel> matchedDoctors;
+            if (search == null || search == "?")
+            {
+                matchedDoctors = db.DoctorT.Join(db.UserT,
+                                                doctor => doctor.UserId,
+                                                user => user.UserId,
+                                                (doctor, user) => new DoctorJsonModel
+                                                {
+                                                    Id = doctor.ICZ,
+                                                    Name = user.getFullName()
+                                                }).ToList();
+            }
+            else
+            {
+                matchedDoctors = db.DoctorT.Join(db.UserT.Where(o => o.Name.ToUpper().StartsWith(search.ToUpper()) || o.Surname.ToUpper().StartsWith(search.ToUpper())),
+                                                doctor => doctor.UserId,
+                                                user => user.UserId,
+                                                (doctor, user) => new DoctorJsonModel
+                                                {
+                                                    Id = doctor.ICZ,
+                                                    Name = user.getFullName()
+                                                }).ToList();
+            }
+            return new JsonResult(matchedDoctors);
+        }
+
+        static public int TestDiagnosis(DatabaseContext db, string diag1, string diag2, string diag3, string diag4)
+        {
+            if (String.IsNullOrEmpty(diag1))
+            {
+                return 1;
+            }
+
+            int diagCnt = 1;
+            int diag1Code = -1;
+            int diag2Code = -1;
+            int diag3Code = -1;
+            int diag4Code = -1;
+
+            if (!int.TryParse(diag1, out diag1Code))
+            {
+                return 1;
+            }
+
+            if (!String.IsNullOrEmpty(diag2))
+            {
+                if (!int.TryParse(diag2, out diag2Code))
+                {
+                    return 2;
+                }
+                diagCnt++;
+            }
+
+            if (!String.IsNullOrEmpty(diag3))
+            {
+                if (!int.TryParse(diag3, out diag3Code))
+                {
+                    return 3;
+                }
+                diagCnt++;
+            }
+
+            if (!String.IsNullOrEmpty(diag4))
+            {
+                if (!int.TryParse(diag4, out diag4Code))
+                {
+                    return 4;
+                }
+                diagCnt++;
+            }
+
+
+            List<int> listDiag = db.DiagnosisT.Select(s => s.DiagnosisId).Where(o => o == diag1Code ||
+                                                            (diag2Code != -1 && o == diag2Code) ||
+                                                            (diag3Code != -1 && o == diag3Code) ||
+                                                            (diag4Code != -1 && o == diag4Code)).ToList();
+
+            // Kontrola, zda všechny diagnozy existují
+            if (listDiag.IndexOf(diag1Code) == -1)
+            {
+                return 1;
+            }
+            else if (diag2Code != -1 && listDiag.IndexOf(diag2Code) == -1)
+            {
+                return 2;
+            }
+            else if (diag3Code != -1 && listDiag.IndexOf(diag3Code) == -1)
+            {
+                return 3;
+            }
+            else if (diag4Code != -1 && listDiag.IndexOf(diag4Code) == -1)
+            {
+                return 4;
+            }
+            else if (diagCnt != listDiag.Count)
+            {
+                return 10;
+            }
+
+            return 0;
+        }
+
+        static public int TestActivity(DatabaseContext db, string activity)
+        {
+            if (String.IsNullOrEmpty(activity))
+            {
+                return 5;
+            }
+
+            int activityCode = -1;
+
+            if (!int.TryParse(activity, out activityCode))
+            {
+                return 5;
+            }
+
+            if (!db.MedicallActivityPriceT.Select(s => s.MedicallActivityPriceId).Where(o => o == activityCode).ToList().Any())
+            {
+                return 5;
+            }
+            
+            return 0;
+        }
+    
+
+        public JsonResult CheckNewReport(string diag1, string diag2, string diag3, string diag4, string activity)
+        {
+            int result = TestDiagnosis(db, diag1, diag2, diag3, diag4);
+
+            if(result == 0)
+            {
+                result = TestActivity(db, activity);
+            }
+
+            return new JsonResult(result);
+        }
+
+        static public int TestDoctor(DatabaseContext db, string doctor)
+        {
+            if (String.IsNullOrEmpty(doctor))
+            {
+                return 6;
+            }
+
+            int doctorICZ = -1;
+
+            if (!int.TryParse(doctor, out doctorICZ))
+            {
+                return 6;
+            }
+
+            if (!db.DoctorT.Select(s => s.ICZ).Where(o => o == doctorICZ).ToList().Any())
+            {
+                return 6;
+            }
+
+            return 0;
+        }
+
+        public JsonResult CheckNewTicket(string diag1, string diag2, string diag3, string diag4, string doctor)
+        {
+            int result = TestDiagnosis(db, diag1, diag2, diag3, diag4);
+
+            if(result == 0)
+            {
+                result = TestDoctor(db, doctor);
+            }
+
+            return new JsonResult(result);
         }
     }
 }

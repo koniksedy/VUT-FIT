@@ -15,9 +15,11 @@
 
     <form asp-action="Activity" method="get">
         <div class="search-doctor">
+
             <p>
                 <label>Název výkonu:</label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
                 <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]">Hledat</button> @Html.ActionLink("Zpět na všechny výpisy", "Activity", new { SortOrder = ViewData["CurrentSort"] })
+
             </p>
         </div>
     </form>
