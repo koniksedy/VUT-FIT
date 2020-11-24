@@ -28,9 +28,36 @@
 <div>
     <form asp-action="FinishTicket" method="post">
         <label>Zpráva o vyšetření:</label>
+
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">Přiložit zprávu</button>
+        <div class="modal fade" id="CopyReportModal" tabindex="-1" role="dialog" aria-labelledby="CopyReportModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="CopyReportModalLabel">Přiložit zprávu</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table-responsive-md">
+                            @foreach (var item in Model.AllReports)
+                            {
+                                <tr>
+                                    <td data-dismiss="modal" onclick="selectedReport('@item', '@Model.SocialSecurityNumber')">
+                                        @item
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
         <div>
-            <textarea cols="100" rows="10" name="reportText"></textarea>
-        </div> 
+            <textarea cols="100" rows="10" id="reportText" name="reportText"></textarea>
+        </div>
         <input hidden name="patientNumber" value="@Model.SocialSecurityNumber" />
         <input hidden name="ticketDate" value="@Model.CreateDate" />
         <div>
@@ -38,3 +65,23 @@
         </div>
     </form>
 </div>
+
+<script>
+    function selectedReport(report, patNum) {
+        result = $.ajax({
+            url: '/Doctor/GetReport',
+            dataType: "json",
+            data: {
+                patientNum: patNum,
+                date: report,
+            },
+            success: function (data) {
+                var text = document.getElementById('reportText').value;
+                document.getElementById('reportText').value = text.concat(data);
+            },
+            error: function () {
+                alert("Nepodařilo se zkoírovat zprávu.");
+            }
+        }).responseJSON;
+    }
+</script>

@@ -43,16 +43,16 @@ namespace Nemocnice.Areas.Identity.Pages.Account
 
         public class InputModel
         {
-            [Required]
+            [Required(ErrorMessage = "Login/Rodné číslo je povinné")]
             [DataType(DataType.Text)]
             [Display(Name = "User Name")]
             public string UserName { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "Heslo je povinné")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
-            [Display(Name = "Remember me?")]
+            [Display(Name = "Zapamatovat si mě?")]
             public bool RememberMe { get; set; }
         }
 
@@ -98,7 +98,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Nesprávný pokus o přihlášení");
                     return Page();
                 }
             }
