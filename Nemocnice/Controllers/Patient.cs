@@ -6,6 +6,9 @@ using Nemocnice.Models;
 using System.Linq;
 using X.PagedList.Mvc.Core;
 using cloudscribe.Pagination.Models;
+
+using System;
+using System.Collections.Generic;
 using X.PagedList;
 
 namespace Nemocnice.Controllers
@@ -16,6 +19,10 @@ namespace Nemocnice.Controllers
         public IActionResult Index()
         {
             return View();
+        }
+        public static IPagedList<T> Empty<T>()
+        {
+            return new List<T>().ToPagedList(0, 1);
         }
 
         public IActionResult PatientCard(PatientCardModel PatientCardModel, int? pageReport, int? pageCheckup, int? pageAllergies, int? pageBill, int? pageTreatmentLogs, int? pageCure, int? select)
@@ -45,7 +52,24 @@ namespace Nemocnice.Controllers
 
             PatientCardModel.medicallReports = db.MedicallReportT.Include(x => x.Author).Include(x => x.Patient).Include(x => x.Owner).ToPagedList(PatientCardModel.PageNum1, pageSize);//Where(x => x.Patient.UserId == PatientCardModel.User.UserId).ToPagedList();
             PatientCardModel.checkupTickets = db.CheckupTicketT.Include(x => x.ToDoctor).Include(x => x.Patient).Include(x => x.CreatedBy).ToPagedList(PatientCardModel.PageNum2, pageSize);//.Where(x => x.Patient.UserId == PatientCardModel.User.UserId).ToPagedList();
-            PatientCardModel.Allergies = db.HealthConditionT.Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).Select(x => x.Allergys).FirstOrDefault().Split(',').ToPagedList();//Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList();
+            try
+            {
+                IPagedList<string> hotovo;
+                var list = db.HealthConditionT.Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).Select(x => x.Allergys).DefaultIfEmpty("Kunda").ToPagedList();
+
+
+                
+                PatientCardModel.Allergies = list;
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+
+
+
+                   //Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList();
             PatientCardModel.MedicallBills = db.MedicallBillT.Include(x => x.Doctor).Include(x => x.MedicallActivityPrice).Include(x => x.Diagnosis).ToPagedList(PatientCardModel.PageNum4, pageSize);//Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList();
             PatientCardModel.PatientTreatmentLogs = db.PatientTreatmentLogT.Include(x => x.Patient).Include(x => x.Diagnosis).ToPagedList(PatientCardModel.PageNum5, pageSize);//Where(x => x.Patient.UserId == PatientCardModel.Patient.UserId).ToPagedList();
             PatientCardModel.CureProgresses = db.CureProgressT.Include(x => x.MedicallReport).Include(x => x.Diagnosis).ToPagedList(PatientCardModel.PageNum6, pageSize); //Where(x => x.MedicallReport.Patient.UserId == PatientCardModel.Patient.UserId).ToPagedList();
