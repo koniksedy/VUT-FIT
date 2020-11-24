@@ -13,11 +13,11 @@
     <form asp-action="InRequest" method="get">
         <div class="search-doctor">
             <p id="left">
-                <label>Jméno lékaře:</label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
-                <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]">Hledat</button> @Html.ActionLink("Zpět na všechny výpisy", "InRequest", new { SortOrder = ViewData["CurrentSort"] })
+                <label><strong>Jméno lékaře:</strong></label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
+                <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]" class="btn-insurance">Hledat</button> @Html.ActionLink("Zrušit hledání", "InRequest", new { SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-cancel" })
             </p>
             <p id="right">
-                @Html.ActionLink("Schválit vše", "InRequest", new { buttonAll = "schvalit-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] }) | @Html.ActionLink("Zamítnout vše", "InRequest", new { buttonAll = "zamitnout-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })
+                @Html.ActionLink("Schválit vše", "InRequest", new { buttonAll = "schvalit-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-accept" } )  @Html.ActionLink("Zamítnout vše", "InRequest", new { buttonAll = "zamitnout-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-denied" } )
             </p>
         </div>
     </form>
@@ -31,7 +31,7 @@
     {
 
         <div class="table">
-            <table>
+            <table style="text-align:center;">
                 <thead>
                     <tr>
                         <th>
@@ -41,7 +41,7 @@
                             Doktor
                         </th>
                         <th>
-                            RČ pacienta
+                            Pacient
                         </th>
                         <th>
                             @Html.ActionLink("Cena", "InRequest", new { SortOrder = "cena", searchString = ViewData["Search"] })
@@ -76,17 +76,16 @@
                         <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Name)</td>
                         <td>@medicalBill.Diagnosis.Name</td>
                         <td>@medicalBill.CreateDate</td>
-                        <td><button name="button" class="my_btn" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_accept = @medicalBill.MedicallBillId, p = ViewData["CurrentPage"], SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })')">Schválit</button></td>
-                        <td><button name="button" class="my_btn" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_reject = @medicalBill.MedicallBillId, p = ViewData["CurrentPage"], SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })')">Zamítnout</button></td>
+                        <td><button name="button" class="accept" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_accept = @medicalBill.MedicallBillId, p = ViewData["CurrentPage"], SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })')">Schválit</button></td>
+                        <td><button name="button" class="denied" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_reject = @medicalBill.MedicallBillId, p = ViewData["CurrentPage"], SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })')">Zamítnout</button></td>
                     </tr>
                         }
                     }
 
                 </tbody>
             </table>
-
             @(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("InRequest", new { p = page, SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
-
+            <br /><br /><br />
         </div>
     }
 

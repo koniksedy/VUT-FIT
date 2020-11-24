@@ -10,15 +10,15 @@
 }
 
 <div class="container">
-    <h1>Výkazy</h1>
+    <h1 class="pojistovna-nadpis">Výkazy</h1>
 
 
     <form asp-action="Activity" method="get">
         <div class="search-doctor">
 
             <p>
-                <label>Název výkonu:</label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
-                <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]">Hledat</button> @Html.ActionLink("Zpět na všechny výpisy", "Activity", new { SortOrder = ViewData["CurrentSort"] })
+                <label><strong>Název výkonu:</strong></label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
+                <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]" class="btn-insurance">Hledat</button> @Html.ActionLink("Zrušit hledání", "Activity", new { SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-cancel" })
 
             </p>
         </div>
@@ -36,52 +36,52 @@
 else
 {
 
-    <div class="table">
-        <table>
-            <thead>
-                <tr>
-                    <th>
-                        @Html.ActionLink("Diagnóza", "Activity", new { SortOrder = "nazev", searchString = ViewData["Search"] })
-                    </th>
-                    <th>
-                        Pacient
-                    </th>
-                    <th>
-                        @Html.ActionLink("Datum vystavení", "Activity", new { SortOrder = "datum", searchString = ViewData["Search"] })
-                    </th>
-                    <th>
-                        @Html.ActionLink("Stav schválení", "Activity", new { SortOrder = "stav", searchString = ViewData["Search"] })
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
+<div class="table">
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    @Html.ActionLink("Diagnóza", "Activity", new { SortOrder = "nazev", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    Pacient
+                </th>
+                <th>
+                    @Html.ActionLink("Datum vystavení", "Activity", new { SortOrder = "datum", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Stav schválení", "Activity", new { SortOrder = "stav", searchString = ViewData["Search"] })
+                </th>
+            </tr>
+        </thead>
+        <tbody>
 
-                @foreach (var medicalBill in Model.medicallBillsPage)
+            @foreach (var medicalBill in Model.medicallBillsPage)
+            {
+                string state = "";
+
+                if (medicalBill.State == null)
                 {
-                    string state = "";
-
-                    if (medicalBill.State == null)
-                    {
-                        state = "čeká na schválení...";
-                    }
-                    else
-                    {
-                        state = medicalBill.State;
-                    }
-
-                    <tr>
-                        <td>@medicalBill.Diagnosis.Name</td>
-                        <td>@medicalBill.SocialSecurityNum</td>
-                        <td>@medicalBill.CreateDate</td>
-                        <td>@state</td>
-                    </tr>
+                    state = "čeká na schválení...";
+                }
+                else
+                {
+                    state = medicalBill.State;
                 }
 
-            </tbody>
-        </table>
+                <tr>
+                    <td>@medicalBill.Diagnosis.Name</td>
+                    <td>@medicalBill.SocialSecurityNum</td>
+                    <td>@medicalBill.CreateDate</td>
+                    <td>@state</td>
+                </tr>
+            }
 
-        <br />
-        @(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("Activity", new { p = page, searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })).Classic())
+        </tbody>
+    </table>
 
-    </div>
+    <br />
+    @(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("Activity", new { p = page, searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })).Classic())
+    <br /><br /><br />
+</div>
 }
