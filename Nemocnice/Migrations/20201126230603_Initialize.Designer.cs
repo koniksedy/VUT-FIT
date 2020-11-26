@@ -10,7 +10,7 @@ using Nemocnice.Data;
 namespace Nemocnice.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20201126225403_Initialize")]
+    [Migration("20201126230603_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -720,6 +720,9 @@ namespace Nemocnice.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("Deactivated")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");

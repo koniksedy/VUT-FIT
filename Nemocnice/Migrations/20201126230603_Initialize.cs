@@ -183,7 +183,8 @@ namespace Nemocnice.Migrations
                     Title = table.Column<string>(nullable: true),
                     Phone = table.Column<string>(nullable: false),
                     Email = table.Column<string>(nullable: true),
-                    WorkAddressAddressId = table.Column<int>(nullable: true)
+                    WorkAddressAddressId = table.Column<int>(nullable: true),
+                    Deactivated = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
