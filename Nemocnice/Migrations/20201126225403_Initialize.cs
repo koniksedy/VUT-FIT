@@ -155,6 +155,23 @@ namespace Nemocnice.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PictureT",
+                columns: table => new
+                {
+                    PictureId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NameInt = table.Column<int>(nullable: false),
+                    Type = table.Column<string>(nullable: false),
+                    Description = table.Column<string>(nullable: false),
+                    SocialSecurityNum = table.Column<string>(nullable: false),
+                    CreateDate = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PictureT", x => x.PictureId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserT",
                 columns: table => new
                 {
@@ -482,6 +499,32 @@ namespace Nemocnice.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PictureOnTicketsT",
+                columns: table => new
+                {
+                    PictureOnTicketId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PictureId = table.Column<int>(nullable: false),
+                    TicketCheckupTicketId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PictureOnTicketsT", x => x.PictureOnTicketId);
+                    table.ForeignKey(
+                        name: "FK_PictureOnTicketsT_PictureT_PictureId",
+                        column: x => x.PictureId,
+                        principalTable: "PictureT",
+                        principalColumn: "PictureId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PictureOnTicketsT_CheckupTicketT_TicketCheckupTicketId",
+                        column: x => x.TicketCheckupTicketId,
+                        principalTable: "CheckupTicketT",
+                        principalColumn: "CheckupTicketId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TicketPerDiagnosisT",
                 columns: table => new
                 {
@@ -535,33 +578,29 @@ namespace Nemocnice.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "PictureT",
+                name: "PictureOnReportT",
                 columns: table => new
                 {
-                    PictureId = table.Column<int>(nullable: false)
+                    PictureOnReportId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SocialSecurityNum = table.Column<string>(nullable: false),
-                    CurrentPicture = table.Column<byte[]>(nullable: false),
-                    Description = table.Column<string>(nullable: true),
-                    ToMedicalReportMedicallReportId = table.Column<int>(nullable: true),
-                    ToCheckupTicketCheckupTicketId = table.Column<int>(nullable: true),
-                    CreateDate = table.Column<DateTime>(nullable: false)
+                    PictureId = table.Column<int>(nullable: false),
+                    ReportMedicallReportId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PictureT", x => x.PictureId);
+                    table.PrimaryKey("PK_PictureOnReportT", x => x.PictureOnReportId);
                     table.ForeignKey(
-                        name: "FK_PictureT_CheckupTicketT_ToCheckupTicketCheckupTicketId",
-                        column: x => x.ToCheckupTicketCheckupTicketId,
-                        principalTable: "CheckupTicketT",
-                        principalColumn: "CheckupTicketId",
-                        onDelete: ReferentialAction.Restrict);
+                        name: "FK_PictureOnReportT_PictureT_PictureId",
+                        column: x => x.PictureId,
+                        principalTable: "PictureT",
+                        principalColumn: "PictureId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_PictureT_MedicallReportT_ToMedicalReportMedicallReportId",
-                        column: x => x.ToMedicalReportMedicallReportId,
+                        name: "FK_PictureOnReportT_MedicallReportT_ReportMedicallReportId",
+                        column: x => x.ReportMedicallReportId,
                         principalTable: "MedicallReportT",
                         principalColumn: "MedicallReportId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -689,14 +728,24 @@ namespace Nemocnice.Migrations
                 column: "PatientID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PictureT_ToCheckupTicketCheckupTicketId",
-                table: "PictureT",
-                column: "ToCheckupTicketCheckupTicketId");
+                name: "IX_PictureOnReportT_PictureId",
+                table: "PictureOnReportT",
+                column: "PictureId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PictureT_ToMedicalReportMedicallReportId",
-                table: "PictureT",
-                column: "ToMedicalReportMedicallReportId");
+                name: "IX_PictureOnReportT_ReportMedicallReportId",
+                table: "PictureOnReportT",
+                column: "ReportMedicallReportId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PictureOnTicketsT_PictureId",
+                table: "PictureOnTicketsT",
+                column: "PictureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PictureOnTicketsT_TicketCheckupTicketId",
+                table: "PictureOnTicketsT",
+                column: "TicketCheckupTicketId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TicketPerDiagnosisT_CheckupTicketId",
@@ -750,7 +799,10 @@ namespace Nemocnice.Migrations
                 name: "PatientTreatmentLogT");
 
             migrationBuilder.DropTable(
-                name: "PictureT");
+                name: "PictureOnReportT");
+
+            migrationBuilder.DropTable(
+                name: "PictureOnTicketsT");
 
             migrationBuilder.DropTable(
                 name: "TicketPerDiagnosisT");
@@ -769,6 +821,9 @@ namespace Nemocnice.Migrations
 
             migrationBuilder.DropTable(
                 name: "MedicallReportT");
+
+            migrationBuilder.DropTable(
+                name: "PictureT");
 
             migrationBuilder.DropTable(
                 name: "CheckupTicketT");

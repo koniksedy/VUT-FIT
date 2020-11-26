@@ -13,10 +13,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -40,15 +43,17 @@ namespace Nemocnice.Controllers
          * Informace o právě přihlášeném uživateli.
          */
         private readonly UserManager<NemocniceUser> _userManager;
+        private readonly IWebHostEnvironment webHostEnvironment;
 
         /*
          * Proměnná umožňující napříč kontrollerem přistupovat k databázi
          */
         private DatabaseContext db { get; set; } = new DatabaseContext();
 
-        public Doctor(UserManager<NemocniceUser> userManager)
+        public Doctor(UserManager<NemocniceUser> userManager, IWebHostEnvironment hostEnvironment)
         {
             _userManager = userManager;
+            webHostEnvironment = hostEnvironment;
         }
 
 
@@ -320,6 +325,16 @@ namespace Nemocnice.Controllers
             };
             reportsModel.Insurance = patient.InsuranceCompany;
             reportsModel.SocialSecurityNumber = socialNum;
+
+            // Získání všech obrázků pacienta ke zprávě
+            reportsModel.Pictures = db.PictureOnReportT.Where(o => o.Report.CreateDate == reportsModel.ActualReportDate &&
+                                                                   o.Picture.SocialSecurityNum == socialNum)
+                                                       .Select(s => new PictureJsonModel
+                                                       {
+                                                           id = s.Picture.NameInt,
+                                                           name = s.Picture.Description,
+                                                           date = s.Picture.CreateDate.ToString()
+                                                       }).ToList();
 
             return View(reportsModel);
         }
@@ -647,7 +662,7 @@ namespace Nemocnice.Controllers
             // Pokud de přihlášen administrátor, vidí všechny zprávy.
             patientProfileModel.AllReports = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum &&
                                                                            (User.IsInRole("Admin") || o.Owner.UserId == doctorId))
-                                                                .Select(s => s.CreateDate).ToList();
+                                                                .Select(s => s.CreateDate).ToList().OrderByDescending(o => o).ToList();
 
             // Získání příchozích žádostí o vyšetření, které čekají na vyřízení.
             // Pokud je přihlášený administrátor, uvidí žádosti určené všem doktorům.
@@ -661,7 +676,7 @@ namespace Nemocnice.Controllers
                                                                      {
                                                                          CreateDate = checkup.CreateDate,
                                                                          FromDoctor = user.Surname + " " + user.Name + ", " + user.Title
-                                                                     }).ToList();
+                                                                     }).ToList().OrderByDescending(o => o.CreateDate).ToList();
 
             // Získání všech vytvořených žádostí pro ostatní lékaře.
             // Pokud je přihlášený administrátor, uvidí žádosti vytvořené všemi doktory.
@@ -675,7 +690,7 @@ namespace Nemocnice.Controllers
                                                                             CreateDate = checkup.CreateDate,
                                                                             ToDoctor = user.Surname + " " + user.Name + ", " + user.Title,
                                                                             State = checkup.State
-                                                                        }).ToList();
+                                                                        }).ToList().OrderByDescending(o => o.CreateDate).ToList();
 
             return View(patientProfileModel);
         }
@@ -1010,10 +1025,69 @@ namespace Nemocnice.Controllers
             // Původně byl SaveChanges na ve foru, kdyby nefungovalo, vrátit.
             db.SaveChanges();
 
+            // Přilinkování obrázků
+            // Existujících
+            if (Request.Form.Keys.Contains("FileExist"))
+            {
+                foreach (int name in new List<int> { int.Parse(Request.Form["FileExist"]) })
+                {
+                    Picture pic = db.PictureT.Where(o => o.NameInt == name).ToList().First();
+                    db.PictureOnTicketsT.Add(new PictureOnTicket
+                    {
+                        Picture = pic,
+                        Ticket = ticket
+                    });
+                }
+                db.SaveChanges();
+            }
+
+            // Nových
+            int maxName = 0;
+            if (db.PictureT.Any())
+            {
+                maxName = db.PictureT.Max(m => m.PictureId);
+            }
+            foreach(IFormFile image in Request.Form.Files)
+            {
+                UploadImage(image, webHostEnvironment, maxName);
+                Picture pic = new Picture
+                {
+                    NameInt = maxName,
+                    Description = image.FileName,
+                    SocialSecurityNum = patientNumber,
+                    CreateDate = TimeNowTruncateToSec()
+                };
+                db.PictureT.Add(pic);
+                db.SaveChanges();
+                db.PictureOnTicketsT.Add(new PictureOnTicket
+                {
+                    Picture = pic,
+                    Ticket = ticket
+                });
+                db.SaveChanges();
+            }
+
             // Přesměrování na kartu pacietna.
             return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
         }
 
+        static DateTime TimeNowTruncateToSec()
+        {
+            DateTime now = DateTime.Now;
+            DateTime ret = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second);
+
+            return ret;
+        }
+
+        static private void UploadImage(IFormFile image, IWebHostEnvironment webHostEnv, int newName)
+        {
+            string uploadsFolder = Path.Combine(webHostEnv.WebRootPath, "images");
+            string filePath = Path.Combine(uploadsFolder, newName.ToString() + ".jpg");
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                image.CopyTo(fileStream);
+            }
+        }
 
         public IActionResult Activity(string searchString, string SortOrder, ActivityModel model, int ? p)
         {
@@ -1326,6 +1400,29 @@ namespace Nemocnice.Controllers
             return View(MyFinishRequests);
         }
 
+        [HttpPost]
+        public IActionResult ChangeOwner()
+        {
+            string[] changeState = Request.Form["Checkbox[]"];
+            int doctorToICZ = int.Parse(Request.Form["doctorICZ"]);
+            string patientNumber = Request.Form["patientNumber"];
+            var doctorId = db.UserT.Where(s => s.Login == User.Identity.Name).Select(o => o.UserId).ToList().First();
+
+            var reports = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNumber && (User.IsInRole("Admin") || o.Owner.UserId == doctorId))
+                                            .Include(o => o.Owner).ToList().OrderByDescending(o => o.CreateDate).ToList();
+
+            for(int i = 0; i < changeState.Length; i++)
+            {
+                if(changeState[i] == "on")
+                {
+                    reports.ElementAt(i).Owner = db.DoctorT.Where(o => o.ICZ == doctorToICZ).ToList().First();       
+                }    
+            }
+            db.SaveChanges();
+
+            return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
+        }
+
         public JsonResult GetAllDiagnosis(string search)
         {
             List<Diagnosis> matchedDiagnosis;
@@ -1335,7 +1432,7 @@ namespace Nemocnice.Controllers
             }
             else
             {
-                matchedDiagnosis = db.DiagnosisT.Where(o => o.Name.ToUpper().Contains(search.ToUpper())).ToList();
+                matchedDiagnosis = db.DiagnosisT.Where(o => o.Name.ToUpper().Contains(search.ToUpper())).ToList().OrderBy(o => o.Name).ToList();
             }
 
             return new JsonResult(matchedDiagnosis);
@@ -1350,7 +1447,7 @@ namespace Nemocnice.Controllers
                                                                                      {
                                                                                          Id = s.MedicallActivityPriceId,
                                                                                          Name = s.Name
-                                                                                     }).ToList();
+                                                                                     }).ToList().OrderBy(o => o.Name).ToList();
             }
             else
             {
@@ -1359,7 +1456,7 @@ namespace Nemocnice.Controllers
                                                                                      {
                                                                                          Id = s.MedicallActivityPriceId,
                                                                                          Name = s.Name
-                                                                                     }).ToList();
+                                                                                     }).ToList().OrderBy(o => o.Name).ToList();
             }
             return new JsonResult(matchedActivities);
         }
@@ -1376,7 +1473,7 @@ namespace Nemocnice.Controllers
                                                 {
                                                     Id = doctor.ICZ,
                                                     Name = user.getFullName()
-                                                }).ToList();
+                                                }).ToList().OrderBy(o => o.Name).ToList();
             }
             else
             {
@@ -1387,7 +1484,7 @@ namespace Nemocnice.Controllers
                                                 {
                                                     Id = doctor.ICZ,
                                                     Name = user.getFullName()
-                                                }).ToList();
+                                                }).ToList().OrderBy(o => o.Name).ToList();
             }
             return new JsonResult(matchedDoctors);
         }
@@ -1543,6 +1640,59 @@ namespace Nemocnice.Controllers
             var test = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum).ToList().First();
             string result = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == mydate).Select(s => s.Description).ToList().First();
             result = String.Format("##########################{0}##########################\n==============================================\n{1}\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n", date, result);
+            return new JsonResult(result);
+        }
+
+        public JsonResult GetPictures(string patientNum)
+        {
+            
+            // Zíkání informací o doktorovi, který zprávu napsal.
+            // HACK - pokud nebude přihášený uživatl mít zíznam v tabulce UserT, dojde k erroru.
+            string userDoctor = User.Identity.Name;
+            var doctorId = db.UserT.Where(s => s.Login == userDoctor).Select(o => o.UserId).ToList().First();
+
+            // Získání obrázků z Žádostí (Ticketů)
+            List<PictureJsonModel> fromTickets = db.PictureOnTicketsT
+                                                   .Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+                                                               (o.Ticket.CreatedBy.UserId == doctorId ||
+                                                                    o.Ticket.ToDoctor.UserId == doctorId ||
+                                                                    User.IsInRole("Admin")))
+                                                   .Select(s => new PictureJsonModel
+                                                   {
+                                                       id = s.Picture.NameInt,
+                                                       name = s.Picture.Description,
+                                                       date = s.Picture.CreateDate.ToString()
+                                                   }).ToList();
+
+            // Získání obrázků ze Zpráv
+            List<PictureJsonModel> fromReports = db.PictureOnReportT
+                                                   .Where(o => o.Report.Patient.SocialSecurityNum == patientNum &&
+                                                               (o.Report.Owner.UserId == doctorId || User.IsInRole("Admin")))
+                                                   .Select(s => new PictureJsonModel
+                                                   {
+                                                       id = s.Picture.NameInt,
+                                                       name = s.Picture.Description,
+                                                       date = s.Picture.CreateDate.ToString()
+                                                   }).ToList();
+
+
+            List<PictureJsonModel> result = fromTickets;
+            foreach(PictureJsonModel picture in fromReports)
+            {
+                if (!result.Contains(picture))
+                {
+                    result.Add(picture);
+                }
+            }
+            
+            /*
+            List<PictureJsonModel> result = new List<PictureJsonModel>();
+            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(0).ToString(), id = 1, name = "test1" });
+            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(1).ToString(), id = 2, name = "test2" });
+            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(2).ToString(), id = 3, name = "test3" });
+            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(3).ToString(), id = 4, name = "test4" });
+            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(4).ToString(), id = 5, name = "test5" });
+            */
             return new JsonResult(result);
         }
     }

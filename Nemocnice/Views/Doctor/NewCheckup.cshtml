@@ -18,10 +18,80 @@
     }
 </style>
 
-<script src="~/lib/extern/jquery.js"></script>
-<script src="~/lib/extern/jquery-ui.js"></script>   
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
 
-<form method="post" asp-action="CreateNewCheckup" onsubmit="return TicketValidation()">
+
+    /* The Modal (background) */
+    .modalImage {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 9999; /* Sit on top */
+        padding-top: 50px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    }
+
+    /* Modal Content (image) */
+    .modal-contentImage {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+    }
+
+    /* Caption of Modal Image */
+    #caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+    }
+
+    /* Add Animation */
+    .modal-contentImage, #caption {
+        -webkit-animation-name: zoom;
+        -webkit-animation-duration: 0.6s;
+        animation-name: zoom;
+        animation-duration: 0.6s;
+    }
+
+    /* The Close Button */
+    .closeImage {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .closeImage:hover,
+        .closeImage:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+</style>
+
+<script src="~/lib/extern/jquery.js"></script>
+<script src="~/lib/extern/jquery-ui.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<form method="post" enctype="multipart/form-data" asp-action="CreateNewCheckup" onsubmit="return TicketValidation()">
     <div>
         Pacient: <b>@Model.FullName.getFullName() (@Model.SocialSecurityNum)</b>
         <input hidden name="patientNum" value="@Model.SocialSecurityNum" />
@@ -41,6 +111,23 @@
         <input type="text" id="Diagnosis3" name="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off">
         <input type="text" id="Diagnosis4" name="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off">
     </div>
+    <!-- ADD PICTURE-->
+    <div class="row">
+        <button id="addRowFile" type="button" class="btn btn-success">
+            Add-New
+        </button>
+        <button id="addRowExisting" type="button" class="btn btn-success">
+            Add-Exist
+        </button>
+    </div>
+
+    <!--Dynamic row-->
+    <div class="row">
+        <div class="col-6">
+            <div id="newRow"></div>
+        </div>
+    </div>
+    <!-- END ADD PICTURE-->
 
     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">Přiložit zprávu</button>
     <div class="modal fade" id="CopyReportModal" tabindex="-1" role="dialog" aria-labelledby="CopyReportModalLabel" aria-hidden="true">
@@ -82,6 +169,46 @@
     </div>
 </form>
 
+<!-- Modal For pictures -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Datum
+                            </th>
+                            <th>
+                                Název
+                            </th>
+                            <th>zobrazit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myTable"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal For picture DISPLAY-->
+<div id="myModal" class="modalImage">
+    <span onclick="closeModalPicture()" class="closeImage" id="close2">&times;</span>
+    <img class="modal-contentImage" id="img01">
+    <div id="caption"></div>
+</div>
+
 <script src="~/js/NewTicket.js"></script>
 <script>
     function selectedReport(report, patNum) {
@@ -101,4 +228,138 @@
             }
         }).responseJSON;
     }
+</script>
+
+<!-- SCRIPTS for MICTURE-->
+<script>
+    // add row2
+    $("#addRowExisting").click(function () {
+        var html = '';
+        html += '<div id="inputFormRowFile">';
+        html += '<div class="input-group mb-3">';
+        html += '<div class="custom-file">';
+        html += '<input value="" data-toggle="modal" data-target="#exampleModal" name="FileExist" type="text" class="custom-file-input" id="inputGroupFile02" aria-describedby="inputGroupFileAddon02">';
+        html += '<label class="custom-file-label" for="inputGroupFile02">Vyberte existující soubor</label>';
+        html += '</div>';
+        html += '<div class="input-group-append">';
+        html += '<button id="removeRowFile" type="button" class="btn btn-danger">&times;</button>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#newRow').append(html);
+    });
+</script>
+
+<script>
+    // add row
+    $("#addRowFile").click(function () {
+        var html = '';
+        html += '<div id="inputFormRowFile">';
+        html += '<div class="input-group mb-3">';
+        html += '<div class="custom-file">';
+        html += '<input onchange="changeIn(this)" name="FileOut" type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">';
+        html += '<label class="custom-file-label" for="inputGroupFile01">Vyberte soubor</label>';
+        html += '</div>';
+        html += '<div class="input-group-append">';
+        html += '<button id="removeRowFile" type="button" class="btn btn-danger">&times;</button>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#newRow').append(html);
+    });
+
+    // remove row
+    $(document).on('click', '#removeRowFile', function () {
+        $(this).closest('#inputFormRowFile').remove();
+    });
+</script>
+
+<script type="text/javascript">
+    // Add the following code if you want the name of the file appear on select
+    function changeIn(that) {
+        var fileName = $(that).val().split("\\").pop();
+        $(that).siblings(".custom-file-label").addClass("selected").html(fileName);
+    }
+</script>
+
+
+<script>
+    $(document).on('shown.bs.modal', '#exampleModal', function (event) {
+        var triggerElement = $(event.relatedTarget); // Button that triggered
+
+        var modal = document.getElementById("myTable");
+        if (modal.innerHTML == "") {
+            $.ajax({
+                url: '/Doctor/GetPictures',
+                dataType: "json",
+                data: {
+                    patientNum: @Model.SocialSecurityNum,
+                },
+                success: function (data) {
+                    if (modal.innerHTML == "") {
+                        jQuery.each(data, function (i, val) {
+                            var html = "<tr><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">" + val.name + "</td>";
+                            html += "<td><i onclick=\"viewImage('/images/" + val.id + ".jpg', '" + val.name + "')\" class=\"fa fa-picture-o\" style=\"font-size:24px\"></i></td>";
+                            html += "</tr>";
+                            modal.innerHTML += html;
+                        });
+                        for (var i = 0, row; row = modal.rows[i]; i++) {
+                            row.cells[0].onclick = null;
+                            row.cells[1].onclick = null;
+                            row.cells[0].onclick = function () {
+                                triggerElement.val(this.getElementsByTagName('input')[0].value);
+                                triggerElement.siblings(".custom-file-label").addClass("selected").html(this.parentElement.cells[1].innerHTML);
+                                alert(triggerElement.val());
+                            }
+                            row.cells[1].onclick = function () {
+                                alert(this.parentElement.cells[0].innerHTML);
+                                triggerElement.val(this.parentElement.cells[0].getElementsByTagName('input')[0].value);
+                                triggerElement.siblings(".custom-file-label").addClass("selected").html(this.innerHTML);
+                                alert(triggerElement.val());
+                            }
+                        }
+                    }
+                },
+                error: function () {
+                    alert("Nepodařilo se načíst obrázky.");
+                }
+            });
+        } else {
+            for (var i = 0, row; row = modal.rows[i]; i++) {
+                row.cells[0].onclick = null;
+                row.cells[1].onclick = null;
+                row.cells[0].onclick = function () {
+                    triggerElement.val(this.getElementsByTagName('input')[0].value);
+                    triggerElement.siblings(".custom-file-label").addClass("selected").html(this.parentElement.cells[1].innerHTML);
+                    alert(triggerElement.val());
+                }
+                row.cells[1].onclick = function () {
+                    alert(this.parentElement.cells[0].innerHTML);
+                    triggerElement.val(this.parentElement.cells[0].getElementsByTagName('input')[0].value);
+                    triggerElement.siblings(".custom-file-label").addClass("selected").html(this.innerHTML);
+                    alert(triggerElement.val());
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("caption");
+
+    function viewImage(source, name) {
+        modal.style.display = "block";
+        modalImg.src = source;
+        captionText.innerHTML = name;
+    };
+
+    // When the user clicks on <span> (x), close the modal
+    function closeModalPicture() {
+        modal.style.display = "none";
+    };
 </script>

@@ -27,11 +27,11 @@ namespace Nemocnice.Data
         {
             if (String.IsNullOrEmpty(Title))
             {
-                return Name + " " + Surname;
+                return Surname + " " + Name;
             }
             else
             {
-                return Name + " " + Surname + ", " + Title;
+                return Surname + " " + Name + ", " + Title;
             }
         }
 
