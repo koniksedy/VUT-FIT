@@ -120,10 +120,7 @@
                 Titul
             </th>
             <th>
-                @Html.ActionLink("Rodné číslo", "DoctorEdit", new { sortOrder = "byICZ", searchString = ViewData["Search"] })
-            </th>
-            <th>
-                Pojišťovna
+                @Html.ActionLink("IČZ", "DoctorEdit", new { sortOrder = "byICZ", searchString = ViewData["Search"] })
             </th>
             <th></th>
             <th></th>
@@ -170,9 +167,7 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Doctor.ICZ)
                     </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.User.Login)
-                    </td>
+
                     <td>
                         <button name="button" type="button" class="butt-payment" data-toggle="modal" data-target="@pom">Upravit</button>
                         <form asp-action="EditDb_Patient" method="post">
@@ -262,7 +257,7 @@
                         </form>
                     </td>
                     <td>
-                        <button name="button" class="butt-payment" onclick="redirectToAction('@Url.Action("Card", "Admin", new { ID_delete = item.Doctor.ICZ,  sortOrder = ViewData["CurrentSort"], p = ViewData["CurrentPage"], searchString = ViewData["Search"] })')">Odstranit</button>
+                        <button name="button" class="butt-payment" onclick="redirectToAction('@Url.Action("DoctorEdit", "Admin", new { ID_delete = item.Doctor.ICZ,  sortOrder = ViewData["CurrentSort"], p = ViewData["CurrentPage"], searchString = ViewData["Search"] })')">Odstranit</button>
                     </td>
                 </tr>
             }

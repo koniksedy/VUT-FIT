@@ -281,7 +281,7 @@ namespace Nemocnice.Controllers
         }
 
 
-        public IActionResult DoctorEdit(string sortOrder, string searchString, string ID_delete, DoctorEditModel model, int? p)
+        public async Task<IActionResult> DoctorEditAsync(string sortOrder, string searchString, string ID_delete, DoctorEditModel model, int? p)
         {
             // Uložení přávě vyhledávaného řetězce.
             // Při řazení výsledků budeme už vědět, o jaké výsledky se jedná.
@@ -292,16 +292,26 @@ namespace Nemocnice.Controllers
             //pokud je ID_delete různé od 0, víme, jakého doktora chceme odstranit
             if (ID_delete != null)
             {
-                try
-                {
-                    var userId = db.DoctorT.Where(x => x.ICZ == int.Parse(ID_delete)).Select(x => x.UserId).FirstOrDefault();
-                    db.Remove(db.DoctorT.Single(a => a.ICZ == int.Parse(ID_delete)));
-                    db.Remove(db.PatientT.Single(a => a.UserId == userId));
-                    db.SaveChanges();
-                } catch (Exception)
-                {
 
-                }
+
+                    var userId = db.DoctorT.Where(x => x.ICZ == int.Parse(ID_delete)).Select(x => x.UserId).FirstOrDefault();
+                    var userLogin = db.UserT.Where(x => x.UserId == userId).Select(x => x.Login).FirstOrDefault();
+                    var user = await _userManager.FindByNameAsync(userLogin);
+                    var kokotconechceodejit = db.DoctorT.Where(a => a.ICZ == int.Parse(ID_delete)).First();
+                    db.DoctorT.Remove(kokotconechceodejit);
+                    db.SaveChanges();
+                    db.UserT.Remove(db.UserT.Where(a => a.UserId == userId).First());
+                    db.SaveChanges();
+                    db.SaveChanges();
+                    db.SaveChanges();
+                    db.SaveChanges();
+                    db.SaveChanges();
+                    if (user != null)
+                    {
+                        await _userManager.DeleteAsync(user);
+                    }
+                    db.SaveChanges();
+
             }
 
             // Model - Seznam všech pacientů v databázi
@@ -359,6 +369,3 @@ namespace Nemocnice.Controllers
         }
     }
 }
-
-
-
