@@ -279,7 +279,55 @@ namespace Nemocnice.Controllers
             return RedirectToAction("Card", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
 
-        public IActionResult CardInsurance(string sortOrder, string searchString, string ID_delete, CardModel model, int? p)
+        [HttpPost]
+        public IActionResult EditDb_Insurance()
+        {
+
+            int edit_ID = int.Parse(Request.Form["edit_ID"]);
+            string edit_name = Request.Form["edit_name"];
+            string edit_surname = Request.Form["edit_surname"];
+            string edit_rc = Request.Form["edit_rc"];
+            string edit_tel = Request.Form["edit_tel"];
+            string edit_mail = Request.Form["edit_mail"];
+            string edit_title = Request.Form["edit_title"];
+            string edit_work = Request.Form["edit_work"];
+            string edit_position = Request.Form["edit_position"];
+            string edit_login = Request.Form["edit_login"];
+
+            var ID = db.InsureEmpT.Where(a => a.PersonalId == edit_ID).Select(s => s.UserId).FirstOrDefault();
+            var pom = db.UserT.First(a => a.UserId == ID);
+
+            pom.Name = edit_name;
+            pom.Surname = edit_surname;
+            pom.Title = edit_title;
+            pom.Phone = edit_tel;
+            pom.Email = edit_mail;
+
+            var work = db.UserT.Where(a => a.UserId == ID).Select(s => s.WorkAddress).FirstOrDefault();
+
+            if (work != null)
+            {
+                string edit_street = Request.Form["edit_street"];
+                int edit_cp = int.Parse(Request.Form["edit_cp"]);
+                string edit_town = Request.Form["edit_town"];
+                int edit_psc = int.Parse(Request.Form["edit_psc"]);
+
+                int pom2 = Convert.ToInt32(work.AddressId);
+                var pom3 = db.AddressT.First(a => a.AddressId == pom2);
+
+                pom3.StreetName = edit_street;
+                pom3.HouseNumber = edit_cp;
+                pom3.City = edit_town;
+                pom3.ZIP = edit_psc;
+            }
+
+
+            db.SaveChanges();
+
+            return RedirectToAction("Card", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
+        }
+
+        public IActionResult CardInsurance(string sortOrder, string searchString, int ID_delete, CardModel model, int? p)
         {
             // Uložení přávě vyhledávaného řetězce.
             // Při řazení výsledků budeme už vědět, o jaké výsledky se jedná.
@@ -290,9 +338,9 @@ namespace Nemocnice.Controllers
 
 
             //pokud je ID_delete různé od 0, víme, jakého pacienta chceme odstranit
-            if (ID_delete != null)
+            if (ID_delete != 0)
             {
-                db.Remove(db.PatientT.Single(a => a.SocialSecurityNum == ID_delete));
+                db.Remove(db.InsureEmpT.Single(a => a.PersonalId == ID_delete));
                 db.SaveChanges();
             }
 
@@ -381,7 +429,6 @@ namespace Nemocnice.Controllers
             string surname = Request.Form["NewSurname"];
             string login = Request.Form["NewLogin"];
             string title = Request.Form["NewTitle"];
-            int personalID = int.Parse(Request.Form["NewNum"]);
             string tel = Request.Form["NewTel"];
             string email = Request.Form["NewEmail"];
             string street = Request.Form["NewStreet"];
@@ -443,7 +490,6 @@ namespace Nemocnice.Controllers
             db.InsureEmpT.Add(new Data.InsureEmp
             {
                 UserId = db.UserT.Where(o => o.Login == user.Login).Select(s => s.UserId).ToList().First(),
-                PersonalId = personalID,
                 Possition = position,
                 WorkPhone = workphone
             }); ;
