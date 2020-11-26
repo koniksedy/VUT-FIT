@@ -49,6 +49,8 @@
     <Compile Remove="Migrations\20201120101102_Initialize.Designer.cs" />
     <Compile Remove="Migrations\20201120101625_Initialize.cs" />
     <Compile Remove="Migrations\20201120101625_Initialize.Designer.cs" />
+    <Compile Remove="Models\Class.cs" />
+    <Compile Remove="Models\InsuranceModel - Kopie.cs" />
   </ItemGroup>
 
   <ItemGroup>
