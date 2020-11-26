@@ -279,5 +279,103 @@ namespace Nemocnice.Controllers
             return RedirectToAction("Card", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
 
+
+        public IActionResult DoctorEdit(string sortOrder, string searchString, string ID_delete, DoctorEditModel model, int? p)
+        {
+            // Uložení přávě vyhledávaného řetězce.
+            // Při řazení výsledků budeme už vědět, o jaké výsledky se jedná.
+            ViewData["Search"] = searchString;
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["CurrentPage"] = p;
+
+            //pokud je ID_delete různé od 0, víme, jakého doktora chceme odstranit
+            if (ID_delete != null)
+            {
+                try
+                {
+                    var userId = db.DoctorT.Where(x => x.ICZ == int.Parse(ID_delete)).Select(x => x.UserId).FirstOrDefault();
+                    db.Remove(db.DoctorT.Single(a => a.ICZ == int.Parse(ID_delete)));
+                    db.Remove(db.PatientT.Single(a => a.UserId == userId));
+                    db.SaveChanges();
+                } catch (Exception)
+                {
+
+                }
+            }
+
+            // Model - Seznam všech pacientů v databázi
+            List<DoctorJoined> Doctors;
+
+            // Získání údajů ke každému pacientovi (Příjmení, Jméno, Titul, R.Č., pojišťovny).
+            // Informace jsou získávány ze spojení dvou tabulek: PatientT (R.Č., pojišťovna) a UserT (Příjmení, Jméno, Titul).
+            if (String.IsNullOrEmpty(searchString))
+            {
+                // Není použito vyhledávání (chceme všechny pacienty)
+                Doctors = db.DoctorT.Join(db.UserT.Include(x => x.WorkAddress), doctor => doctor.UserId, user => user.UserId,
+                (doctor, user) => new DoctorJoined
+                {
+                    Surname = user.Surname,
+                    Name = user.Name,
+                    Title = user.Title,
+                    UserId = user.UserId,
+                    ICZ = doctor.ICZ,
+                    Email = user.Email,
+                    Phone = doctor.WorkPhone,
+                    StreetName = user.WorkAddress.StreetName,
+                    City = user.WorkAddress.City,
+                    ZIP = user.WorkAddress.ZIP,
+                    HouseNumber = user.WorkAddress.HouseNumber
+                }).ToList();
+            }
+            else
+            {
+                // Je potřeba vyhledat konkrétní pacienty odpovídající hledanému výrazu.
+                // Hledání probíhá skrz položky (Jméno, Příjmení, R.Č.).
+                // Rodné číslo je převáděno na string. Hledání probíhá na základě metody StartsWith.
+                Doctors = db.DoctorT.Join(db.UserT.Include(x => x.WorkAddress), doctor => doctor.UserId, user => user.UserId,
+                            (doctor, user) => new DoctorJoined
+                            {
+                                Surname = user.Surname,
+                                Name = user.Name,
+                                Title = user.Title,
+                                UserId = user.UserId,
+                                ICZ = doctor.ICZ,
+                                Email = user.Email,
+                                Phone = doctor.WorkPhone,
+                                StreetName = user.WorkAddress.StreetName,
+                                City = user.WorkAddress.City,
+                                ZIP = user.WorkAddress.ZIP,
+                                HouseNumber = user.WorkAddress.HouseNumber
+                            }).Where(s => s.Title.Contains(searchString) ||
+                                             s.Surname.Contains(searchString) ||
+                                             s.Name.Contains(searchString)).ToList();
+            }
+            model.doctors = Doctors;
+
+            // Řazení dle jednotlivých kritérií nastaveních v sortOrder.
+            switch (sortOrder)
+            {
+                case "byName":
+                    model.doctors = model.doctors.OrderBy(o => o.Name).ToList();
+                    break;
+                case "byICZ":
+                    model.doctors = model.doctors.OrderBy(o => o.ICZ).ToList();
+                    break;
+                default:
+                    model.doctors = model.doctors.OrderBy(o => o.Surname).ToList();
+                    break;
+            }
+
+            //stránkování vybraných dat
+            model.PageNum = (p ?? 1);
+            int pageSize = 15;
+            IPagedList<DoctorJoined> lide = model.doctors.ToPagedList(model.PageNum, pageSize);
+            model.DoctorJoined = lide;
+
+            return View(model);
+        }
     }
 }
+
+
+
