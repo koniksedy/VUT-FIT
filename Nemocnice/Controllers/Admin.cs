@@ -47,7 +47,7 @@ namespace Nemocnice.Controllers
          * sortOrder - typ řazení (podle jnéma, příjmení, rodného čísla)
          * searchString - hledaný řetězec (v případě vyhledávání)
          */
-        public IActionResult Card(string sortOrder, string searchString, string ID_delete, CardModel model, int ? p)
+        public IActionResult Card(string sortOrder, string searchString, string ID_delete, Admin_patient model, int ? p)
         {
             // Uložení přávě vyhledávaného řetězce.
             // Při řazení výsledků budeme už vědět, o jaké výsledky se jedná.
@@ -65,7 +65,7 @@ namespace Nemocnice.Controllers
             }
 
             // Model - Seznam všech pacientů v databázi
-            List<CardModel> Patients;
+            List<Admin_patient> Patients;
 
             // Získání údajů ke každému pacientovi (Příjmení, Jméno, Titul, R.Č., pojišťovny).
             // Informace jsou získávány ze spojení dvou tabulek: PatientT (R.Č., pojišťovna) a UserT (Příjmení, Jméno, Titul).
@@ -75,7 +75,7 @@ namespace Nemocnice.Controllers
                 Patients = db.PatientT.Join(db.UserT,
                                 patient => patient.UserId,
                                 user => user.UserId,
-                                (patient, user) => new CardModel
+                                (patient, user) => new Admin_patient
                                 {
                                     PatientFullName = new NameModel
                                     {
@@ -97,7 +97,7 @@ namespace Nemocnice.Controllers
                 Patients = db.PatientT.Join(db.UserT,
                                 patient => patient.UserId,
                                 user => user.UserId,
-                                (patient, user) => new CardModel
+                                (patient, user) => new Admin_patient
                                 {
                                     PatientFullName = new NameModel
                                     {
@@ -131,7 +131,7 @@ namespace Nemocnice.Controllers
             //stránkování vybraných dat
             model.PageNum = (p ?? 1);
             int pageSize = 5;
-            IPagedList<CardModel> lide = model.patients.ToPagedList(model.PageNum, pageSize);
+            IPagedList<Admin_patient> lide = model.patients.ToPagedList(model.PageNum, pageSize);
             model.patientsPage = lide;
 
             return View(model);
@@ -324,10 +324,10 @@ namespace Nemocnice.Controllers
 
             db.SaveChanges();
 
-            return RedirectToAction("Card", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
+            return RedirectToAction("CardInsurance", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
 
-        public IActionResult CardInsurance(string sortOrder, string searchString, int ID_delete, CardModel model, int? p)
+        public IActionResult CardInsurance(string sortOrder, string searchString, int ID_delete, Admin_insurance model, int? p)
         {
             // Uložení přávě vyhledávaného řetězce.
             // Při řazení výsledků budeme už vědět, o jaké výsledky se jedná.
@@ -345,7 +345,7 @@ namespace Nemocnice.Controllers
             }
 
             // Model - Seznam všech pacientů v databázi
-            List<CardModel> Insurance;
+            List<Admin_insurance> Insurance;
 
             // Získání údajů ke každému pacientovi (Příjmení, Jméno, Titul, R.Č., pojišťovny).
             // Informace jsou získávány ze spojení dvou tabulek: PatientT (R.Č., pojišťovna) a UserT (Příjmení, Jméno, Titul).
@@ -355,7 +355,7 @@ namespace Nemocnice.Controllers
                 Insurance = db.InsureEmpT.Join(db.UserT,
                                 insurance => insurance.UserId,
                                 user => user.UserId,
-                                (insurance, user) => new CardModel
+                                (insurance, user) => new Admin_insurance
                                 {
                                     InsuranceFullName = new NameModel
                                     {
@@ -377,22 +377,22 @@ namespace Nemocnice.Controllers
                 // Hledání probíhá skrz položky (Jméno, Příjmení, R.Č.).
                 // Rodné číslo je převáděno na string. Hledání probíhá na základě metody StartsWith.
                 Insurance = db.InsureEmpT.Join(db.UserT,
-                                   insurance => insurance.UserId,
-                                   user => user.UserId,
-                                   (insurance, user) => new CardModel
-                                   {
-                                       InsuranceFullName = new NameModel
-                                       {
-                                           Surname = user.Surname,
-                                           Name = user.Name,
-                                           Title = user.Title
-                                       },
-                                       UserId = user.UserId,
-                                       Position = insurance.Possition,
-                                       PersonalID = insurance.PersonalId,
-                                       WorkPhone = insurance.WorkPhone,
-                                       Login = user.Login
-                                   }
+                                insurance => insurance.UserId,
+                                user => user.UserId,
+                                (insurance, user) => new Admin_insurance
+                                {
+                                    InsuranceFullName = new NameModel
+                                    {
+                                        Surname = user.Surname,
+                                        Name = user.Name,
+                                        Title = user.Title,
+                                    },
+                                    UserId = user.UserId,
+                                    Position = insurance.Possition,
+                                    PersonalID = insurance.PersonalId,
+                                    WorkPhone = insurance.WorkPhone,
+                                    Login = user.Login
+                                }
                                    ).Where(s => s.InsuranceFullName.Name.Contains(searchString) || s.InsuranceFullName.Surname.Contains(searchString)).ToList();
             }
             model.insurance = Insurance;
@@ -411,7 +411,7 @@ namespace Nemocnice.Controllers
             //stránkování vybraných dat
             model.PageNum1 = (p ?? 1);
             int pageSize = 5;
-            IPagedList<CardModel> lide1 = model.insurance.ToPagedList(model.PageNum1, pageSize);
+            IPagedList<Admin_insurance> lide1 = model.insurance.ToPagedList(model.PageNum1, pageSize);
             model.insurancePage = lide1;
 
             return View(model);
