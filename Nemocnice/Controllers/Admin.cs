@@ -60,7 +60,9 @@ namespace Nemocnice.Controllers
             //pokud je ID_delete různé od 0, víme, jakého pacienta chceme odstranit
             if (ID_delete != null)
             {
+                var ID = db.PatientT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.UserId).FirstOrDefault();
                 db.Remove(db.PatientT.Single(a => a.SocialSecurityNum == ID_delete));
+                db.Remove(db.UserT.Single(a => a.UserId == ID));
                 db.SaveChanges();
             }
 
@@ -340,7 +342,9 @@ namespace Nemocnice.Controllers
             //pokud je ID_delete různé od 0, víme, jakého pacienta chceme odstranit
             if (ID_delete != 0)
             {
+                var ID = db.InsureEmpT.Where(s => s.PersonalId == ID_delete).Select(s => s.UserId).FirstOrDefault();
                 db.Remove(db.InsureEmpT.Single(a => a.PersonalId == ID_delete));
+                db.Remove(db.UserT.Single(a => a.UserId == ID));
                 db.SaveChanges();
             }
 
