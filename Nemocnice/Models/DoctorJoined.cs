@@ -12,6 +12,10 @@ namespace Nemocnice.Models
         public string Phone { get; set; }
         public string Email { get; set; }
         public int ICZ { get; set; }
-        public Address WorkAddress { get; set; }
+        public string StreetName { get; set; }
+        public string City { get; set; }
+        public int ZIP { get; set; }
+        public int HouseNumber { get; set; }
+
     }
 }
