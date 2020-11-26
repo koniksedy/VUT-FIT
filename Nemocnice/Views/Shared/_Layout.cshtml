@@ -62,6 +62,10 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="InsuranceEmp" asp-action="PaymentDb">Databáze úhrad</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="InsuranceEmp" asp-action="Diagnosis">Databáze diagnóz</a>
+                            </li>
                         }
                         @if (User.IsInRole("Admin"))
                         {
@@ -81,7 +85,7 @@
                                 <div class="dropdown-menu" aria-labelledby="navbarDropdownInsurance">
                                     <a class="dropdown-item" asp-area="" asp-controller="InsuranceEmp" asp-action="InRequest">Žádosti k proplacení</a>
                                     <a class="dropdown-item" asp-area="" asp-controller="InsuranceEmp" asp-action="PaymentDb">Databáze výkonů</a>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="DiagnosisDb">Databáze diagnóz</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="InsuranceEmp" asp-action="Diagnosis">Databáze diagnóz</a>
                                 </div>
                             </li>
                             <li class="nav-item dropdown">

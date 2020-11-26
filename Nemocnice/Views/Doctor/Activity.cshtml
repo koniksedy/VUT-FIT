@@ -36,7 +36,7 @@
 else
 {
 
-<div class="table">
+<div class="table" style="overflow-x: scroll;">
     <table>
         <thead>
             <tr>
@@ -79,9 +79,9 @@ else
 
         </tbody>
     </table>
-
-    <br />
-    @(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("Activity", new { p = page, searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })).Classic())
-    <br /><br /><br />
 </div>
+
+<br /><br />
+@(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("Activity", new { p = page, searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })).Classic())
+<br /><br /><br />
 }

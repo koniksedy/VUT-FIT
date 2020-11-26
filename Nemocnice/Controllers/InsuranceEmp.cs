@@ -253,5 +253,61 @@ namespace Nemocnice.Controllers
              return View(model);
             
         }
+
+
+
+
+        [HttpPost]
+        public IActionResult EditDb_Dia()
+        {
+
+            int edit_ID = int.Parse(Request.Form["edit_ID"]);
+            string edit_name = Request.Form["edit_name"];
+
+            var pom = this.Context.DiagnosisT.First(a => a.DiagnosisId == edit_ID);
+            pom.Name = edit_name;
+            this.Context.SaveChanges();
+
+            return RedirectToAction("Diagnosis", new { p2 = Request.Form["p2"] });
+        }
+
+        [HttpPost]
+        public IActionResult NewDb_Dia()
+        {
+            string new_name = Request.Form["new_name"];
+
+            var diagnosis = new Diagnosis { Name = new_name };
+            this.Context.Add<Diagnosis>(diagnosis);
+            this.Context.SaveChanges();
+
+            return RedirectToAction("Diagnosis", new { p2 = Request.Form["p2"] });
+        }
+
+
+        public IActionResult Diagnosis(int ID_delete, InsuranceModel model, int? p2)
+        {
+
+            ViewData["CurrentPage"] = p2;
+
+            //pokud je ID_delete různé od 0, víme, jaký úkon s daným ID máme vymazat
+            if (ID_delete != 0)
+            {
+                this.Context.Remove(this.Context.DiagnosisT.Single(a => a.DiagnosisId == ID_delete));
+                this.Context.SaveChanges();
+            }
+
+            //nachystání celé tabulky se všemi úkony k vypsání
+            model.diagnosis = this.Context.DiagnosisT.OrderBy(o => o.Name).ToList();
+
+
+            //stránkování vybraných dat
+            model.PageNum2 = (p2 ?? 1);
+            int pageSize = 5;
+            IPagedList<Diagnosis> lide = model.diagnosis.ToPagedList(model.PageNum2, pageSize);
+            model.diagnosisPage = lide;
+
+            return View(model);
+
+        }
     }
 }
