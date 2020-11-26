@@ -28,5 +28,13 @@ namespace Nemocnice.Models
         public int PageNum { get; set; }
         public IPagedList<CardModel> patientsPage { get; set; }
         public List<CardModel> patients { get; set; }
+        public NameModel InsuranceFullName { get; set; }
+        public string Position { get; set; }
+        public int PageNum1 { get; set; }
+        public IPagedList<CardModel> insurancePage { get; set; }
+        public List<CardModel> insurance { get; set; }
+        public int PersonalID { get; set; }
+        public string WorkPhone { get; set; }
+        public string Login { get; set; }
     }
 }

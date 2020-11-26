@@ -51,6 +51,8 @@
     <Compile Remove="Migrations\20201120101625_Initialize.Designer.cs" />
     <Compile Remove="Models\Class.cs" />
     <Compile Remove="Models\InsuranceModel - Kopie.cs" />
+    <Compile Remove="Views\Admin\Card_Insurance.cs" />
+    <Compile Remove="Views\Admin\Class.cs" />
   </ItemGroup>
 
   <ItemGroup>

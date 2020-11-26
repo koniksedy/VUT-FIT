@@ -279,5 +279,186 @@ namespace Nemocnice.Controllers
             return RedirectToAction("Card", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
 
+        public IActionResult CardInsurance(string sortOrder, string searchString, string ID_delete, CardModel model, int? p)
+        {
+            // Uložení přávě vyhledávaného řetězce.
+            // Při řazení výsledků budeme už vědět, o jaké výsledky se jedná.
+            ViewData["Search"] = searchString;
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["CurrentPage"] = p;
+
+
+
+            //pokud je ID_delete různé od 0, víme, jakého pacienta chceme odstranit
+            if (ID_delete != null)
+            {
+                db.Remove(db.PatientT.Single(a => a.SocialSecurityNum == ID_delete));
+                db.SaveChanges();
+            }
+
+            // Model - Seznam všech pacientů v databázi
+            List<CardModel> Insurance;
+
+            // Získání údajů ke každému pacientovi (Příjmení, Jméno, Titul, R.Č., pojišťovny).
+            // Informace jsou získávány ze spojení dvou tabulek: PatientT (R.Č., pojišťovna) a UserT (Příjmení, Jméno, Titul).
+            if (String.IsNullOrEmpty(searchString))
+            {
+                // Není použito vyhledávání (chceme všechny pacienty)
+                Insurance = db.InsureEmpT.Join(db.UserT,
+                                insurance => insurance.UserId,
+                                user => user.UserId,
+                                (insurance, user) => new CardModel
+                                {
+                                    InsuranceFullName = new NameModel
+                                    {
+                                        Surname = user.Surname,
+                                        Name = user.Name,
+                                        Title = user.Title,
+                                    },
+                                    UserId = user.UserId,
+                                    Position = insurance.Possition,
+                                    PersonalID = insurance.PersonalId,
+                                    WorkPhone = insurance.WorkPhone,
+                                    Login = user.Login
+                                }
+                                ).ToList();
+            }
+            else
+            {
+                // Je potřeba vyhledat konkrétní pacienty odpovídající hledanému výrazu.
+                // Hledání probíhá skrz položky (Jméno, Příjmení, R.Č.).
+                // Rodné číslo je převáděno na string. Hledání probíhá na základě metody StartsWith.
+                Insurance = db.InsureEmpT.Join(db.UserT,
+                                   insurance => insurance.UserId,
+                                   user => user.UserId,
+                                   (insurance, user) => new CardModel
+                                   {
+                                       InsuranceFullName = new NameModel
+                                       {
+                                           Surname = user.Surname,
+                                           Name = user.Name,
+                                           Title = user.Title
+                                       },
+                                       UserId = user.UserId,
+                                       Position = insurance.Possition,
+                                       PersonalID = insurance.PersonalId,
+                                       WorkPhone = insurance.WorkPhone,
+                                       Login = user.Login
+                                   }
+                                   ).Where(s => s.InsuranceFullName.Name.Contains(searchString) || s.InsuranceFullName.Surname.Contains(searchString)).ToList();
+            }
+            model.insurance = Insurance;
+
+            // Řazení dle jednotlivých kritérií nastaveních v sortOrder.
+            switch (sortOrder)
+            {
+                case "byName":
+                    model.insurance = model.insurance.OrderBy(o => o.InsuranceFullName.Name).ToList();
+                    break;
+                default:
+                    model.insurance = model.insurance.OrderBy(o => o.InsuranceFullName.Surname).ToList();
+                    break;
+            }
+
+            //stránkování vybraných dat
+            model.PageNum1 = (p ?? 1);
+            int pageSize = 5;
+            IPagedList<CardModel> lide1 = model.insurance.ToPagedList(model.PageNum1, pageSize);
+            model.insurancePage = lide1;
+
+            return View(model);
+        }
+
+        /*
+         * Akce vytvoří nového pacienta v databázi.
+         * Zahrnuje vytvoření Adresy, Uživatele, Pacienta, Uživatele pro Identity FW a přidělení práv.
+         */
+        [HttpPost]
+        public async Task<IActionResult> CreateInsuranceAsync()
+        {
+            // Hodnoty pro nového pacienta získané přes POST
+            string name = Request.Form["NewName"];
+            string surname = Request.Form["NewSurname"];
+            string login = Request.Form["NewLogin"];
+            string title = Request.Form["NewTitle"];
+            int personalID = int.Parse(Request.Form["NewNum"]);
+            string tel = Request.Form["NewTel"];
+            string email = Request.Form["NewEmail"];
+            string street = Request.Form["NewStreet"];
+            // houseNum může být nezadáno, nejde převést prázdnou hodnotu na int, proto kontroluji.
+            int houseNum = int.Parse(String.IsNullOrEmpty(Request.Form["NewHouseNum"].ToString()) ? "0" : Request.Form["NewHouseNum"].ToString());
+            string city = Request.Form["NewCity"];
+            int zip = int.Parse(Request.Form["NewZip"].ToString().Replace(" ", ""));    // Může být ve tvaru "739 11"
+            string position = Request.Form["NewPosition"];
+            string workphone = Request.Form["NewWorkPhone"];
+
+            // Deklarace proměnných pro budoucí vložení do databáze
+            Address address;
+            User user;
+
+
+            // Vytváření jednotlivých tabulek pro nového pacienta
+            // Po každé vložené tabulce pro jistotu provedu SaveChanges,
+            // protože se hned v zápětí na tuto tabulku dotazuji. (Změny se musí uložit.)
+            // Vytvoření adresy
+            if (houseNum == 0)
+            {
+                address = new Address
+                {
+                    StreetName = street,
+                    City = city,
+                    ZIP = zip
+                };
+            }
+            else
+            {
+                address = new Address
+                {
+                    HouseNumber = houseNum,
+                    StreetName = street,
+                    City = city,
+                    ZIP = zip
+                };
+            }
+            db.AddressT.Add(address);
+            db.SaveChanges();
+
+            // Vytvoření uživatele (Jméno, Příjmení, Titul, ...)
+            // Uživatelským jménem pacientů je jejich rodné číslo.
+            user = new User
+            {
+                Login = login,
+                Name = name,
+                Surname = surname,
+                Title = title,
+                Phone = tel,
+                Email = email,
+                WorkAddress = null
+            };
+            db.UserT.Add(user);
+            db.SaveChanges();
+
+            // Vytvoření pracovníka.
+            // Napojení Address a User
+            db.InsureEmpT.Add(new Data.InsureEmp
+            {
+                UserId = db.UserT.Where(o => o.Login == user.Login).Select(s => s.UserId).ToList().First(),
+                PersonalId = personalID,
+                Possition = position,
+                WorkPhone = workphone
+            }); ;
+            db.SaveChanges();
+
+            // Vytvoření nového uživatele pro Identity Framework.
+            // Základní heslo je 1234567890, uživatelské jméno je shodné s rodným číslem.
+            // Udělení oprávnění Patient.
+            var userIdentity = new NemocniceUser { UserName = user.Login };
+            var result = await _userManager.CreateAsync(userIdentity, "1234567890");
+            await _userManager.AddToRoleAsync(userIdentity, "Insurance");
+
+            // Návrat zpět do kartotéky.
+            return RedirectToAction("CardInsurance", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
+        }
+
     }
 }
