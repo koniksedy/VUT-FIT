@@ -132,14 +132,14 @@
     <tbody>
         @foreach (var item in Model.DoctorJoined)
         {
-            string pom = "#exampleModal" + item.ICZ;
-            string pom2 = "exampleModal" + item.ICZ;
+            string pom = "#exampleModal" + item.Doctor.ICZ;
+            string pom2 = "exampleModal" + item.Doctor.ICZ;
 
             using (var db = new DatabaseContext())
             {
-                var tel = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.Phone).FirstOrDefault();
-                var mail = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.Email).FirstOrDefault();
-                var tmp = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.WorkAddress).FirstOrDefault();
+                var tel = db.UserT.Where(x => x.UserId == item.User.UserId).Select(s => s.Phone).FirstOrDefault();
+                var mail = db.UserT.Where(x => x.UserId == item.User.UserId).Select(s => s.Email).FirstOrDefault();
+                var tmp = db.UserT.Where(x => x.UserId == item.User.UserId).Select(s => s.WorkAddress).FirstOrDefault();
 
 
                 var address = db.AddressT.ToList().First();
@@ -159,19 +159,19 @@
 
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Surname)
+                        @Html.DisplayFor(modelItem => item.User.Surname)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Name)
+                        @Html.DisplayFor(modelItem => item.User.Name)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Title)
+                        @Html.DisplayFor(modelItem => item.User.Title)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.ICZ)
+                        @Html.DisplayFor(modelItem => item.Doctor.ICZ)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Login)
+                        @Html.DisplayFor(modelItem => item.User.Login)
                     </td>
                     <td>
                         <button name="button" type="button" class="butt-payment" data-toggle="modal" data-target="@pom">Upravit</button>
@@ -196,7 +196,7 @@
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label class="col-form-label">Jméno*</label>
-                                                        <input name="edit_name" type="text" required autocomplete="off" class="form-control" value="@item.Name" />
+                                                        <input name="edit_name" type="text" required autocomplete="off" class="form-control" value="@item.User.Name" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Rodné číslo*</label>
@@ -218,11 +218,11 @@
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label class="col-form-label">Příjmení*</label>
-                                                        <input name="edit_surname" type="text" required autocomplete="off" class="form-control" value="@item.Surname" />
+                                                        <input name="edit_surname" type="text" required autocomplete="off" class="form-control" value="@item.User.Surname" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Pojišťovna*</label>
-                                                        <input name="edit_insurance" type="text" required pattern="205|207|213|111|201|209|211" autocomplete="off" class="form-control" value="@item.Login" />
+                                                        <input name="edit_insurance" type="text" required pattern="205|207|213|111|201|209|211" autocomplete="off" class="form-control" value="@item.User.Login" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Email</label>
@@ -241,7 +241,7 @@
                                                 <div class="col-2">
                                                     <div class="form-group">
                                                         <label aclass="col-form-label">Titul</label>
-                                                        <input name="edit_tile" type="text" autocomplete="off" value="@item.Title" class="form-control" />
+                                                        <input name="edit_tile" type="text" autocomplete="off" value="@item.User.Title" class="form-control" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -249,7 +249,7 @@
 
                                         <div class="modal-footer">
                                             <!-- formatovani tlacitka odeslat -->
-                                            <input type="hidden" name="edit_ID" value="@item.ICZ" />
+                                            <input type="hidden" name="edit_ID" value="@item.Doctor.ICZ" />
                                             <input type="hidden" name="sortOrder" value="@ViewData["CurrentSort"]" />
                                             <input type="hidden" name="p" value="@ViewData["CurrentPage"]" />
                                             <input type="hidden" name="searchString" value="@ViewData["Search"]" />
@@ -262,7 +262,7 @@
                         </form>
                     </td>
                     <td>
-                        <button name="button" class="butt-payment" onclick="redirectToAction('@Url.Action("Card", "Admin", new { ID_delete = item.ICZ,  sortOrder = ViewData["CurrentSort"], p = ViewData["CurrentPage"], searchString = ViewData["Search"] })')">Odstranit</button>
+                        <button name="button" class="butt-payment" onclick="redirectToAction('@Url.Action("Card", "Admin", new { ID_delete = item.Doctor.ICZ,  sortOrder = ViewData["CurrentSort"], p = ViewData["CurrentPage"], searchString = ViewData["Search"] })')">Odstranit</button>
                     </td>
                 </tr>
             }
