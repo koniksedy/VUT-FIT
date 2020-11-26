@@ -32,42 +32,50 @@ namespace Nemocnice.Controllers
             return View();
         }
 
-        public IActionResult DoctorList(string sortOrder, DoctorListModel model, int? pageNumber)
+        public IActionResult DoctorList(string sortOrder, DoctorListModel model, int? pageNumber )
         {
             var db = new DatabaseContext();
             int pageSize = 10;
 
+
+            model.pageNumber = (pageNumber ?? 1);
+            var doktori = db.DoctorT.Join(db.UserT.Include(x => x.WorkAddress), doctor => doctor.UserId, user => user.UserId,
+            (doctor, user) => new DoctorJoined
+            {
+                Surname = user.Surname,
+                Name = user.Name,
+                Title = user.Title,
+                UserId = user.UserId,
+                ICZ = doctor.ICZ,
+                Email = user.Email,
+                Phone = doctor.WorkPhone,
+                StreetName = user.WorkAddress.StreetName,
+                City = user.WorkAddress.City,
+                ZIP = user.WorkAddress.ZIP,
+                HouseNumber = user.WorkAddress.HouseNumber                    
+            }).ToList();
             if (String.IsNullOrEmpty(sortOrder))
             {
-                model.pageNumber = (pageNumber ?? 1);
-                model.DoctorJoined = db.DoctorT.Join(db.UserT, doctor => doctor.UserId, user => user.UserId,
-                (doctor, user) => new DoctorJoined
-                {
-                    Surname = user.Surname,
-                    Name = user.Name,
-                    Title = user.Title,
-                    UserId = user.UserId,
-                    ICZ = doctor.ICZ,
-                    Email = user.Email,
-                    Phone = doctor.WorkPhone,
-                    WorkAddress = user.WorkAddress,
-                }).ToPagedList(model.pageNumber, pageSize);
+                model.DoctorJoined = doktori.ToPagedList(model.pageNumber, pageSize);
             }
             else
             {
                 switch (sortOrder)
                 {
                     case "byName":
-                        model.DoctorJoined = model.DoctorJoined.OrderBy(o => o.Name).ToPagedList(model.pageNumber, pageSize);
+                        model.DoctorJoined = doktori.OrderBy(o => o.Name).ToPagedList(model.pageNumber, pageSize);
+                        ViewData["SortOrder"] = "byName";
                         break;
                     case "bySurname":
-                        model.DoctorJoined = model.DoctorJoined.OrderBy(o => o.Surname).ToPagedList(model.pageNumber, pageSize);
+                        model.DoctorJoined = doktori.OrderBy(o => o.Surname).ToPagedList(model.pageNumber, pageSize);
+                        ViewData["SortOrder"] = "bySurname";
                         break;
                     case "byNumber":
-                        model.DoctorJoined = model.DoctorJoined.OrderBy(o => o.ICZ).ToPagedList(model.pageNumber, pageSize);
+                        ViewData["SortOrder"] = "byICZ";
+                        model.DoctorJoined = doktori.OrderBy(o => o.ICZ).ToPagedList(model.pageNumber, pageSize);
                         break;
                     default:
-                        model.DoctorJoined = model.DoctorJoined.ToPagedList(model.pageNumber, pageSize);
+                        model.DoctorJoined = doktori.ToPagedList(model.pageNumber, pageSize);
                         break;
                 }
             }

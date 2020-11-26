@@ -10,7 +10,7 @@ using Nemocnice.Data;
 namespace Nemocnice.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20201126201002_Initialize")]
+    [Migration("20201126225403_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -636,6 +636,10 @@ namespace Nemocnice.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("SocialSecurityNum")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

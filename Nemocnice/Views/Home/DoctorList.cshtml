@@ -32,6 +32,7 @@
             <tr>
                 <th>
                     @Html.ActionLink("Příjmení", "DoctorList", new { sortOrder = "bySurname", pageNumber = 1 })
+
                 </th>
                 <th>
                     @Html.ActionLink("Jméno", "DoctorList", new { sortOrder = "byName", pageNumber = 1 })
@@ -73,6 +74,6 @@
     </table>
     </b>
 
-    @(Html.Pager(Model.DoctorJoined).Url(page => Url.Action("DoctorList", new { sortOrder = "kokos", model = Model, pageNumber = page}))
+    @(Html.Pager(Model.DoctorJoined).Url(page => Url.Action("DoctorList", new { sortOrder = ViewData["SortOrder"], pageNumber = page}))
             .Classic())
 </div>

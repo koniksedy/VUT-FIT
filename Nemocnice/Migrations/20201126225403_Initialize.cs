@@ -161,6 +161,7 @@ namespace Nemocnice.Migrations
                     PictureId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NameInt = table.Column<int>(nullable: false),
+                    Type = table.Column<string>(nullable: false),
                     Description = table.Column<string>(nullable: false),
                     SocialSecurityNum = table.Column<string>(nullable: false),
                     CreateDate = table.Column<DateTime>(nullable: false)
