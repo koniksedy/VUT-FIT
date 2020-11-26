@@ -1,6 +1,10 @@
 ﻿@using Nemocnice.Data;
-@addTagHelper *, LazZiya.TagHelpers
 @model InsuranceModel
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
 
 
 <div class="pojistovna">
@@ -9,16 +13,16 @@
     <form asp-action="InRequest" method="get">
         <div class="search-doctor">
             <p id="left">
-                <label>Jméno lékaře:</label><input type="text" name="SearchString" id="search" autocomplete="off">
-                <input type="submit" value="Hledat" class="my_btn"> | <a asp-action="InRequest" class="my_btn">Zpět na všechny výpisy</a>
+                <label><strong>Jméno lékaře:</strong></label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
+                <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]" class="btn-insurance">Hledat</button> @Html.ActionLink("Zrušit hledání", "InRequest", new { SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-cancel" })
             </p>
             <p id="right">
-                <button name="buttonAll" class="all" value="schvalit-vse" asp-action="InRequest">Schválit vše</button> | <button name="buttonAll" class="all" value="zamitnout-vse" asp-action="InRequest">Zamítnout vše</button>
+                @Html.ActionLink("Schválit vše", "InRequest", new { buttonAll = "schvalit-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-accept" })  @Html.ActionLink("Zamítnout vše", "InRequest", new { buttonAll = "zamitnout-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-denied" })
             </p>
         </div>
     </form>
 
-    @if (Model.medicallBills.Count == 0)
+    @if (Model.medicallBillsPage.Count == 0)
     {
         <br /><br /><br />
         <hr /><p class="null_record">Nejsou zde žádné záznamy k zobrazení</p><hr />
@@ -26,21 +30,24 @@
     else
     {
 
-        <div class="table">
-            <table>
+        <div class="table" style="overflow-x: scroll;">
+            <table style="text-align:center;">
                 <thead>
                     <tr>
                         <th>
-                            Id žádosti
+                            ID
                         </th>
                         <th>
                             Doktor
                         </th>
                         <th>
-                            RČ pacienta
+                            Pacient
                         </th>
                         <th>
-                            @Html.ActionLink("Výkon (Kč)", "InRequest", new { SortOrder = "cena", searchString = ViewData["Search"] })
+                            @Html.ActionLink("Cena", "InRequest", new { SortOrder = "cena", searchString = ViewData["Search"] })
+                        </th>
+                        <th>
+                            @Html.ActionLink("Typ", "InRequest", new { SortOrder = "typ", searchString = ViewData["Search"] })
                         </th>
                         <th>
                             @Html.ActionLink("Diagnóza", "InRequest", new { SortOrder = "diagnoza", searchString = ViewData["Search"] })
@@ -54,7 +61,7 @@
                 </thead>
                 <tbody>
 
-                    @foreach (var medicalBill in Model.medicallBills)
+                    @foreach (var medicalBill in Model.medicallBillsPage)
                     {
                         using (var db = new DatabaseContext())
                         {
@@ -65,33 +72,28 @@
                                 <td>@Html.DisplayFor(modelItem => medicalBill.MedicallBillId)</td>
                                 <td>@Html.DisplayFor(modelItem => name) @Html.DisplayFor(modelItem => surname)</td>
                                 <td>@medicalBill.SocialSecurityNum</td>
-                                <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Amount)</td>
+                                <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Amount) Kč</td>
+                                <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Name)</td>
                                 <td>@medicalBill.Diagnosis.Name</td>
                                 <td>@medicalBill.CreateDate</td>
-                                <td>@medicalBill.State</td>
-                                <form>
-                                    <td><button name="button" class="my_btn" value="schvaleno @medicalBill.MedicallBillId" asp-action="InRequest">Schválit</button></td>
-                                    <td><button name="button" class="my_btn" value="zamitnuto @medicalBill.MedicallBillId" asp-action="InRequest">Zamítnout</button></td>
-                                </form>
+                                <td><button name="button" class="accept" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_accept = @medicalBill.MedicallBillId, p = ViewData["CurrentPage"], SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })')">Schválit</button></td>
+                                <td><button name="button" class="denied" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_reject = @medicalBill.MedicallBillId, p = ViewData["CurrentPage"], SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })')">Zamítnout</button></td>
                             </tr>
                         }
                     }
 
                 </tbody>
             </table>
-
-            <br />
-            <paging total-records="Model.Records"
-                    page-no="Model.PageNum"
-                    page-size="Model.PageSize"
-                    show-total-pages="false"
-                    show-total-records="false"
-                    show-page-size-nav="false">
-            </paging>
-
-
-
         </div>
+        <br /><br />
+        @(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("InRequest", new { p = page, SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
+        <br /><br /><br />
     }
 
 </div>
+
+<script>
+    function redirectToAction(hr) {
+        window.location.href = hr;
+    }
+</script>

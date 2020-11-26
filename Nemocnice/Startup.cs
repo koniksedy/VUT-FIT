@@ -10,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nemocnice.Data;
-using ReflectionIT.Mvc.Paging;
 
 
 /*
@@ -43,8 +42,10 @@ namespace Nemocnice
             });
 
             services.AddControllersWithViews().AddRazorRuntimeCompilation();
-            services.AddCloudscribePagination();
-            services.AddPaging();
+
+            //services.AddCloudscribePagination();
+            //services.AddPaging();
+
             services.AddRazorPages();
 
         }
