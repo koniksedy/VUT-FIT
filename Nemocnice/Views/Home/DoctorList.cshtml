@@ -1,0 +1,78 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
+@using Nemocnice.Data;
+
+@{
+    ViewData["Title"] = "Seznam Doktorů";
+}
+
+@model DoctorListModel
+
+<h1>Seznam Doktorů</h1>
+
+<!-- Vyhledávání pacienta podle zadaného výrazu. -->
+<!-- Zaměření na vyhledáné výsled je možné zrušit tlačítkem |Zrušit filtry|, které zobrazí zase všechny pacienty. -->
+<!--<form asp-action="Card" method="get">
+    <div class="form-actions no-color">
+        <p>
+            Najít: <input type="text" name="SearchString" value="zavinacViewData["Search"]" ) />
+            <input type="submit" class="btn btn-primary" value="Hledat" />
+            <a asp-action="Card">Zrušit filtry</a>
+        </p>
+    </div>
+</form>-->
+
+
+<div style=" overflow-x: scroll;">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.ActionLink("Příjmení", "DoctorList", new { sortOrder = "bySurname", pageNumber = 1 })
+                </th>
+                <th>
+                    @Html.ActionLink("Jméno", "DoctorList", new { sortOrder = "byName", pageNumber = 1 })
+                </th>
+                <th>
+                    Titul
+                </th>
+                <th>
+                    @Html.ActionLink("ICZ", "DoctorList", new { sortOrder = "byICZ", pageNumber = 1 })
+                </th>
+                <th>
+
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.DoctorJoined)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Surname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ICZ)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Detail", "DoctorDetail", item, null)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </b>
+
+    @(Html.Pager(Model.DoctorJoined).Url(page => Url.Action("DoctorList", new { sortOrder = "kokos", model = Model, pageNumber = page}))
+            .Classic())
+</div>
