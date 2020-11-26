@@ -1561,5 +1561,17 @@ namespace Nemocnice.Controllers
             result = String.Format("##########################{0}##########################\n==============================================\n{1}\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n", date, result);
             return new JsonResult(result);
         }
+
+        public JsonResult GetPictures()
+        {
+            List<PictureJsonModel> result = new List<PictureJsonModel>();
+            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(0).ToString(), id = 1, name = "test1" });
+            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(1).ToString(), id = 2, name = "test2" });
+            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(2).ToString(), id = 3, name = "test3" });
+            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(3).ToString(), id = 4, name = "test4" });
+            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(4).ToString(), id = 5, name = "test5" });
+
+            return new JsonResult(result);
+        }
     }
 }
