@@ -10,7 +10,7 @@ using Nemocnice.Data;
 namespace Nemocnice.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20201120103012_Initialize")]
+    [Migration("20201126201002_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -628,30 +628,64 @@ namespace Nemocnice.Migrations
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<byte[]>("CurrentPicture")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NameInt")
+                        .HasColumnType("int");
 
                     b.Property<string>("SocialSecurityNum")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ToCheckupTicketCheckupTicketId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ToMedicalReportMedicallReportId")
-                        .HasColumnType("int");
-
                     b.HasKey("PictureId");
 
-                    b.HasIndex("ToCheckupTicketCheckupTicketId");
-
-                    b.HasIndex("ToMedicalReportMedicallReportId");
-
                     b.ToTable("PictureT");
+                });
+
+            modelBuilder.Entity("Nemocnice.Data.PictureOnReport", b =>
+                {
+                    b.Property<int>("PictureOnReportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("PictureId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReportMedicallReportId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PictureOnReportId");
+
+                    b.HasIndex("PictureId");
+
+                    b.HasIndex("ReportMedicallReportId");
+
+                    b.ToTable("PictureOnReportT");
+                });
+
+            modelBuilder.Entity("Nemocnice.Data.PictureOnTicket", b =>
+                {
+                    b.Property<int>("PictureOnTicketId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("PictureId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TicketCheckupTicketId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PictureOnTicketId");
+
+                    b.HasIndex("PictureId");
+
+                    b.HasIndex("TicketCheckupTicketId");
+
+                    b.ToTable("PictureOnTicketsT");
                 });
 
             modelBuilder.Entity("Nemocnice.Data.TicketPerDiagnosis", b =>
@@ -890,15 +924,34 @@ namespace Nemocnice.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Nemocnice.Data.Picture", b =>
+            modelBuilder.Entity("Nemocnice.Data.PictureOnReport", b =>
                 {
-                    b.HasOne("Nemocnice.Data.CheckupTicket", "ToCheckupTicket")
+                    b.HasOne("Nemocnice.Data.Picture", "Picture")
                         .WithMany()
-                        .HasForeignKey("ToCheckupTicketCheckupTicketId");
+                        .HasForeignKey("PictureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("Nemocnice.Data.MedicallReport", "ToMedicalReport")
+                    b.HasOne("Nemocnice.Data.MedicallReport", "Report")
                         .WithMany()
-                        .HasForeignKey("ToMedicalReportMedicallReportId");
+                        .HasForeignKey("ReportMedicallReportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Nemocnice.Data.PictureOnTicket", b =>
+                {
+                    b.HasOne("Nemocnice.Data.Picture", "Picture")
+                        .WithMany()
+                        .HasForeignKey("PictureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Nemocnice.Data.CheckupTicket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketCheckupTicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Nemocnice.Data.TicketPerDiagnosis", b =>

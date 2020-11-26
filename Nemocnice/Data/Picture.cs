@@ -10,12 +10,11 @@ namespace Nemocnice.Data
         [Required]
         public int PictureId { get; set; }
         [Required]
-        public string SocialSecurityNum { get; set; }
+        public int NameInt { get; set; }
         [Required]
-        public byte[] CurrentPicture { get; set; }
         public string Description { get; set; }
-        public MedicallReport ToMedicalReport { get; set; }
-        public CheckupTicket ToCheckupTicket { get; set; }
+        [Required]
+        public string SocialSecurityNum { get; set; }
         [Required]
         public DateTime CreateDate { get; set; }
     }

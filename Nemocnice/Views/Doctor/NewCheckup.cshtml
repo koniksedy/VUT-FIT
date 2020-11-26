@@ -91,7 +91,7 @@
 <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<form method="post" asp-action="CreateNewCheckup" onsubmit="return TicketValidation()">
+<form method="post" enctype="multipart/form-data" asp-action="CreateNewCheckup" onsubmit="return TicketValidation()">
     <div>
         Pacient: <b>@Model.FullName.getFullName() (@Model.SocialSecurityNum)</b>
         <input hidden name="patientNum" value="@Model.SocialSecurityNum" />
@@ -294,15 +294,14 @@
             $.ajax({
                 url: '/Doctor/GetPictures',
                 dataType: "json",
-                //data: {
-                //    patientNum: patNum,
-                //    date: report,
-                //},
+                data: {
+                    patientNum: @Model.SocialSecurityNum,
+                },
                 success: function (data) {
                     if (modal.innerHTML == "") {
                         jQuery.each(data, function (i, val) {
                             var html = "<tr><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">" + val.name + "</td>";
-                            html += "<td><i onclick=\"viewImage('https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__340.jpg', 'Strom')\" class=\"fa fa-picture-o\" style=\"font-size:24px\"></i></td>";
+                            html += "<td><i onclick=\"viewImage('/images/" + val.id + ".jpg', '" + val.name + "')\" class=\"fa fa-picture-o\" style=\"font-size:24px\"></i></td>";
                             html += "</tr>";
                             modal.innerHTML += html;
                         });
