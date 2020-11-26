@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -20,7 +21,8 @@ namespace Nemocnice.Data
         [EmailAddress]
         public string Email { get; set; }
         public Address WorkAddress { get; set; }
-
+        [DefaultValue(false)]
+        public bool Deactivated { get; set; }
         public string getFullName()
         {
             if (String.IsNullOrEmpty(Title))
