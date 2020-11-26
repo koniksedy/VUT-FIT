@@ -1,0 +1,74 @@
+﻿div .first_row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+div .first_row_first_item {
+    padding-top: 30px;
+    min-width: 360px;
+    max-width: 390px;
+}
+div .first_row_second_item {
+    padding-top: 30px;
+    min-width: 360px;
+    max-width: 390px;
+    padding-left: 15px;
+}
+div .second_row_first_item {
+    padding-top:30px;
+    position: relative;
+    text-align: center;
+    max-width: 390px;
+}
+div .second_row_second_item {
+    padding-left: 55px;
+    min-width: 360px;
+    max-width: 390px;
+    padding-top: 30px;
+}
+
+
+.nadpis_padding{
+    padding-bottom: 40px;
+}
+
+.card-subtitle{
+    padding-bottom: 60px;
+}
+
+
+div .second_row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    
+}
+
+img {
+    border-radius: 5%;
+    cursor: pointer;
+}
+
+img:hover {
+    -ms-transform: scale(1.04); /* IE 9 */
+    -webkit-transform: scale(1.04); /* Safari 3-8 */
+    transform: scale(1.04);
+    filter: grayscale(40%);
+}
+
+.Doctor:hover {
+    -ms-transform: scale(1.04); /* IE 9 */
+    -webkit-transform: scale(1.04); /* Safari 3-8 */
+    transform: scale(1.04);
+    filter: grayscale(40%);
+    filter: blur(1px);
+}
+
+.second_second{
+    padding-top: 40px;
+}
+
+.first_second {
+    padding-bottom: 40px;
+}

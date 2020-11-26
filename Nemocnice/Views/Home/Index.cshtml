@@ -1,65 +1,137 @@
 ﻿@{
     ViewData["Title"] = "Titulní stránka";
 }
+<link rel="stylesheet" href="~/css/MainPage.css" />
 
 <style>
     a.test {
         background-image: url("Img/Shared/corona.jpg");
         display: inline-block;
         height: 200px !important;
-        width: 350px;
-        
+        width: 250px;
     }
-    .test-text {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-top: -1em;
-        margin-left: -50%;
-        width: 100%;
-        height: 2em;
+    body {
+        background-image: url("../Img/Shared/DoctorHands.jpg") !important;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        height: 100vh;
+    }
+    main {
+        background-color: #e6f7ff;
     }
 
+    .test-text {
+        position: absolute;
+        text-align: left;
+        opacity: 1;
+        margin-top: -2.6em;
+        margin-left: 20px;
+        width: 100%;
+        height: 2em;
+        pointer-events: none;
+        cursor: default;
+        text-decoration: none;
+        font-size: 28px;
+        color: #333333;
+    }
     .mouseover {
         position: relative;
+
         height: 100%;
         width: 100%;
         background-image: url("Img/Shared/btn-image-active.png");
     }
-
-
 </style>
 
-<div class="row">
-    <div class="col-6">
-        <h1>
-            Zdaravotní informace<br />
-            <strong>na jednom místě</strong>
-        </h1>
-        <p class="card-subtitle">
-            Mějte své lékařské zprávy neustále pod hodledem.<br />
-            Ať už z role lékaře, nebo pacienta.
-        </p>
-       
-    </div>
-    <div class="col-6">
-        <div class="row">
-            <div onmouseover="addgreen()" onmouseout="delgreen()" onmouseup="delgreen()" class="col12" style="width:350px;height:200px">
-                <a class="test" href="/Home/Corona">
-                    <div id="corona" >
-                        <div class="test-text">Corona-19</div>
-                    </div>   
-                </a>               
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div style="height: 100vh;">
+    <div class="first_row">
+        <div class="first_row_first_item">
+            <h1 class="nadpis_padding">
+                Zdravotní informace<br />
+                <strong>na jednom místě</strong>
+            </h1>
+            <p class="card-subtitle">
+                Mějte své lékařské zprávy neustále pod hodledem.<br />
+                Ať už z role lékaře, nebo pacienta.
+            </p>
+        </div>
+        <div class="first_row_second_item">
+            <div class="row">
+
+                <img class="Doctor" alt="Corona" height="240" width="340" src="~/Img/Shared/corona.jpg" onclick="ImgClicked()" />
             </div>
+        </div>
+    </div>
+
+    <div class="second_row">
+        <div class="second_row_first_item">
+            <div class="first_second">
+
+
+                <img class="Doctor" alt="Doctor" height="240" width="330" src="~/Img/Shared/doctors.jpg" onclick="ImgClicked()" />
+                <div class="test-text"><a class="test-text" href="Home/Privacy">DOKTOŘI</a></div>
+
+
+            </div>
+            <div class="second_second">
+                <h2 style="padding-bottom: 20px">O elektronické knížce</h2>
+                <a>Výhody elektronické knížky jsou...... Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum</a>
+            </div>
+        </div>
+        <div class="second_row_second_item">
+            <h2><strong>Aktuality</strong></h2>
+            <h5>Oznámení</h5>
+            <a href="https://data.brno.cz/covid-19/">Statistiky COVID-19 Brno</a></br>
+            <a href="http://www.promareha.cz/vyrobky/">Nové zdravotnické vybavení</a></br>
+            <a href="https://www.krematorium.cz/?gclid=CjwKCAiA2O39BRBjEiwApB2IkhmPmRS8TNptZKLt_xwD3B7j58nt-Zw9woJ5l0rUhqk6o6DTnL1JwBoCrX8QAvD_BwE">Když už nejde pomoci</a>
+            <h5 style="padding-top:20px">Upozornění</h5>
+            <a style="color:red" href="https://koronavirus.mzcr.cz/">COVID-19 Opratření</a></br>
+            <a style="color:red" href="https://www.albert.cz/nase-prodejny/mapa-prodejen">Změna ordinační doby</a></br>
+            <a style="color:red" href="https://www.prace.cz/">Hledáme kolegy</a>
+            <h5 style="padding-top:20px; padding-bottom:20px">Důlěžitá COVID opatření</h5>
+            <a style="color:red"><strong>-Myjte si ruce</strong></a></br>
+            <a style="color:red"><strong>-Dodržujte rozestupy</strong></a></br>
+            <a style="color:red"><strong>-Zůstaňte doma</strong></a></br>
+            <a style="color:red"><strong>-Noste roušky</strong></a></br>
+            <a style="color:red"><strong>-Při příznacích zůstaňtě doma</strong></a></br>
+            <h5 style="padding-top:20px; padding-bottom:10px">Příznaky</h5>
+            <a><strong>Zvýšená teplota</strong></a></br>
+            <a><strong>Kašel</strong><a></br>
+            <a><strong>Ztráta chuti a čichu</strong><a></br>
         </div>
     </div>
 </div>
 
-<script>
-    function addgreen() {
-        document.getElementById("corona").classList.add("mouseover");
-    }
-    function delgreen() {
-        document.getElementById("corona").classList.remove("mouseover");
-    }
-</script>
+    <script>
+        function ImgClicked() {
+            window.location.href = "Home/Privacy";
+        }
+        function addgreen() {
+            document.getElementById("corona").classList.add("mouseover");
+        }
+        function delgreen() {
+            document.getElementById("corona").classList.remove("mouseover");
+        }
+    </script>
