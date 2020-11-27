@@ -55,7 +55,6 @@
     <Compile Remove="Migrations\20201126201002_Initialize.Designer.cs" />
     <Compile Remove="Migrations\20201126225403_Initialize.cs" />
     <Compile Remove="Migrations\20201126225403_Initialize.Designer.cs" />
-
   </ItemGroup>
 
   <ItemGroup>
