@@ -333,8 +333,18 @@ namespace Nemocnice.Controllers
                                                        {
                                                            id = s.Picture.NameInt,
                                                            name = s.Picture.Description,
-                                                           date = s.Picture.CreateDate.ToString()
+                                                           date = s.Picture.CreateDate.ToString(),
+                                                           type = s.Picture.Type
                                                        }).ToList();
+
+            // Přidání zpráv z vyšetření
+            if(date == default)
+            {
+                reportsModel.AllTickets = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patient.SocialSecurityNum &&
+                                                                       (o.CreatedBy.UserId == doctorId || User.IsInRole("Admin")) &&
+                                                                       o.FinishDate != default)
+                                                            .Select(s => s.FinishDate).ToList();
+            }
 
             return View(reportsModel);
         }
@@ -513,6 +523,52 @@ namespace Nemocnice.Controllers
             }
             patient.HealthCondition.LastCheckupDate = reportDate;
             db.SaveChanges();
+
+
+            // Přilinkování obrázků
+            // Existujících
+            if (Request.Form.Keys.Contains("FileExist"))
+            {
+                foreach (int name in new List<int> { int.Parse(Request.Form["FileExist"]) })
+                {
+                    Picture pic = db.PictureT.Where(o => o.NameInt == name).ToList().First();
+                    db.PictureOnReportT.Add(new PictureOnReport
+                    {
+                        Picture = pic,
+                        Report = report
+                    });
+                }
+                db.SaveChanges();
+            }
+
+            // Nových
+            int maxName = 0;
+            if (db.PictureT.Any())
+            {
+                maxName = db.PictureT.Max(m => m.PictureId);
+            }
+            foreach (IFormFile image in Request.Form.Files)
+            {
+                UploadImage(image, webHostEnvironment, maxName);
+                Picture pic = new Picture
+                {
+                    NameInt = maxName,
+                    Description = image.FileName,
+                    SocialSecurityNum = patientNum,
+                    CreateDate = TimeNowTruncateToSec(),
+                    Type = image.FileName.Substring(image.FileName.IndexOf("."))
+                };
+                db.PictureT.Add(pic);
+                db.SaveChanges();
+                db.PictureOnReportT.Add(new PictureOnReport
+                {
+                    Picture = pic,
+                    Report = report
+                });
+                db.SaveChanges();
+                maxName++;
+            }
+
 
             return RedirectToAction("Card");
         }
@@ -821,6 +877,17 @@ namespace Nemocnice.Controllers
                 AllReports = reports
             };
 
+            // Získání obrázků
+            model.Pictures = db.PictureOnTicketsT.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+                                                               o.Ticket.CreateDate == model.CreateDate)
+                                                 .Select(s => new PictureJsonModel
+                                                 {
+                                                     id = s.Picture.NameInt,
+                                                     name = s.Picture.Description,
+                                                     date = s.Picture.CreateDate.ToString(),
+                                                     type = s.Picture.Type
+                                                 }).ToList();
+
             return View(model);
         }
 
@@ -861,6 +928,50 @@ namespace Nemocnice.Controllers
             checkupTicket.State = "dokončeno";
             checkupTicket.Result = reportText;
             db.SaveChanges();
+
+            // Přilinkování obrázků
+            // Existujících
+            if (Request.Form.Keys.Contains("FileExist"))
+            {
+                foreach (int name in new List<int> { int.Parse(Request.Form["FileExist"]) })
+                {
+                    Picture pic = db.PictureT.Where(o => o.NameInt == name).ToList().First();
+                    db.PictureOnTicketsT.Add(new PictureOnTicket
+                    {
+                        Picture = pic,
+                        Ticket = checkupTicket
+                    });
+                }
+                db.SaveChanges();
+            }
+
+            // Nových
+            int maxName = 0;
+            if (db.PictureT.Any())
+            {
+                maxName = db.PictureT.Max(m => m.PictureId);
+            }
+            foreach (IFormFile image in Request.Form.Files)
+            {
+                UploadImage(image, webHostEnvironment, maxName);
+                Picture pic = new Picture
+                {
+                    NameInt = maxName,
+                    Description = image.FileName,
+                    SocialSecurityNum = patientNumber,
+                    CreateDate = TimeNowTruncateToSec(),
+                    Type = image.FileName.Substring(image.FileName.IndexOf("."))
+                };
+                db.PictureT.Add(pic);
+                db.SaveChanges();
+                db.PictureOnTicketsT.Add(new PictureOnTicket
+                {
+                    Picture = pic,
+                    Ticket = checkupTicket
+                });
+                db.SaveChanges();
+                maxName++;
+            }
 
             // Přesměrování zpět na kartu pacienta.
             return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
@@ -905,6 +1016,16 @@ namespace Nemocnice.Controllers
                 RequestText = checkupTicket.Description,
                 ReportText = checkupTicket.Result
             };
+            // Získání obrázků
+            model.Pictures = db.PictureOnTicketsT.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+                                                               o.Ticket.CreateDate == model.CreateDate)
+                                                 .Select(s => new PictureJsonModel 
+                                                 {
+                                                     id = s.Picture.NameInt,
+                                                     name = s.Picture.Description,
+                                                     date = s.Picture.CreateDate.ToString(),
+                                                     type = s.Picture.Type
+                                                 }).ToList();
 
             return View(model);
         }
@@ -1055,7 +1176,8 @@ namespace Nemocnice.Controllers
                     NameInt = maxName,
                     Description = image.FileName,
                     SocialSecurityNum = patientNumber,
-                    CreateDate = TimeNowTruncateToSec()
+                    CreateDate = TimeNowTruncateToSec(),
+                    Type = image.FileName.Substring(image.FileName.IndexOf("."))
                 };
                 db.PictureT.Add(pic);
                 db.SaveChanges();
@@ -1065,6 +1187,7 @@ namespace Nemocnice.Controllers
                     Ticket = ticket
                 });
                 db.SaveChanges();
+                maxName++;
             }
 
             // Přesměrování na kartu pacietna.
@@ -1082,7 +1205,8 @@ namespace Nemocnice.Controllers
         static private void UploadImage(IFormFile image, IWebHostEnvironment webHostEnv, int newName)
         {
             string uploadsFolder = Path.Combine(webHostEnv.WebRootPath, "images");
-            string filePath = Path.Combine(uploadsFolder, newName.ToString() + ".jpg");
+            string type = image.FileName.Substring(image.FileName.IndexOf("."));
+            string filePath = Path.Combine(uploadsFolder, newName.ToString() + type);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
                 image.CopyTo(fileStream);
@@ -1639,7 +1763,21 @@ namespace Nemocnice.Controllers
             DateTime mydate = DateTime.ParseExact(date, "d.M.yyyy H:m:s", null);
             var test = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum).ToList().First();
             string result = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == mydate).Select(s => s.Description).ToList().First();
-            result = String.Format("##########################{0}##########################\n==============================================\n{1}\n^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n", date, result);
+            result = String.Format("##########################{0}##########################n{1}\n#######################################################################n", date, result);
+            return new JsonResult(result);
+        }
+
+        public JsonResult GetResult(string patientNum, string date)
+        {
+
+            // Získání informaci o lékaři, který si pacienta zobrazuje.
+            // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
+            var doctor = db.UserT.Where(s => s.Login == User.Identity.Name).ToList().First();
+            DateTime mydate = DateTime.ParseExact(date, "d.M.yyyy H:m:s", null);
+            string result = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum &&
+                                                         o.FinishDate == mydate)
+                                             .Select(s => s.Result).ToList().First();
+            result = String.Format("##########################{0}##########################\nAutor: {1}\n#######################################################################n{2}\n", date, doctor.getFullName() ,result);
             return new JsonResult(result);
         }
 
@@ -1661,7 +1799,8 @@ namespace Nemocnice.Controllers
                                                    {
                                                        id = s.Picture.NameInt,
                                                        name = s.Picture.Description,
-                                                       date = s.Picture.CreateDate.ToString()
+                                                       date = s.Picture.CreateDate.ToString(),
+                                                       type = s.Picture.Type
                                                    }).ToList();
 
             // Získání obrázků ze Zpráv
@@ -1672,7 +1811,8 @@ namespace Nemocnice.Controllers
                                                    {
                                                        id = s.Picture.NameInt,
                                                        name = s.Picture.Description,
-                                                       date = s.Picture.CreateDate.ToString()
+                                                       date = s.Picture.CreateDate.ToString(),
+                                                       type = s.Picture.Type
                                                    }).ToList();
 
 
