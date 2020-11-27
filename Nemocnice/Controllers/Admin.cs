@@ -281,6 +281,7 @@ namespace Nemocnice.Controllers
             return RedirectToAction("Card", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
 
+        
 
         public async Task<IActionResult> DoctorEditAsync(string sortOrder, string searchString, string ID_delete, DoctorEditModel model, int? p)
         {
@@ -414,9 +415,8 @@ namespace Nemocnice.Controllers
 
             string loginsurname = "";
             if(surname.Length > 7)
-            {
                 loginsurname = surname.Substring(0, 7);
-            }else
+            else
                 loginsurname = surname;
             
             loginsurname = Regex.Replace(loginsurname, "[éèëêð]", "e");
@@ -507,6 +507,53 @@ namespace Nemocnice.Controllers
             await _userManager.AddToRoleAsync(userIdentity, "Doctor");
             db.SaveChanges();
             // Návrat zpět do kartotéky.
+            return RedirectToAction("DoctorEdit", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
+        }
+
+        [HttpPost]
+        public IActionResult EditDb_Doctor()
+        {
+
+            string edit_ID = Request.Form["edit_ID"];
+            string edit_name = Request.Form["edit_name"];
+            string edit_surname = Request.Form["edit_surname"];
+            int edit_ICZ = int.Parse(Request.Form["edit_icz"]);
+            string edit_tel = Request.Form["edit_tel"];
+            string edit_mail = Request.Form["edit_mail"];
+            string edit_title = Request.Form["edit_title"];
+
+            var pom = db.UserT.Include(x => x.WorkAddress).First(a => a.Login == edit_ID);
+            pom.Name = edit_name;
+            pom.Surname = edit_surname;
+            pom.Title = edit_title;
+            pom.Phone = edit_tel;
+            pom.Email = edit_mail;
+
+            var DoctorInfo = db.DoctorT.Where(x => x.UserId == pom.UserId).First();
+            DoctorInfo.ICZ = edit_ICZ;
+            DoctorInfo.WorkPhone = edit_tel;
+
+            var work = db.UserT.Include(x => x.WorkAddress).Where(a => a.Login == edit_ID).Select(s => s.WorkAddress).FirstOrDefault();
+
+            if (work != null)
+            {
+                string edit_street = Request.Form["edit_street"];
+                int edit_cp = int.Parse(Request.Form["edit_cp"]);
+                string edit_town = Request.Form["edit_town"];
+                int edit_psc = int.Parse(Request.Form["edit_psc"]);
+
+                int pom2 = Convert.ToInt32(work.AddressId);
+                var pom3 = db.AddressT.First(a => a.AddressId == pom2);
+
+                pom3.StreetName = edit_street;
+                pom3.HouseNumber = edit_cp;
+                pom3.City = edit_town;
+                pom3.ZIP = edit_psc;
+            }
+
+
+            db.SaveChanges();
+
             return RedirectToAction("DoctorEdit", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
     }
