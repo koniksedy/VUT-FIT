@@ -24,6 +24,7 @@ namespace Nemocnice.Models
         public DateTime PreviousReportDate { get; set; }
         public string ActualReport { get; set; }
         public DateTime ActualReportDate { get; set; }
+        public List<DateTime> AllTickets { get; set; } = new List<DateTime>();
         public List<DateTime> AllReports {get; set;} = new List<DateTime>();
         public List<PictureJsonModel> Pictures { get; set; } = new List<PictureJsonModel>();
     }
