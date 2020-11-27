@@ -1,4 +1,9 @@
-﻿@using Nemocnice.Data;
+﻿@{
+    ViewData["Title"] = "Žádosti k proplacení";
+}
+
+
+@using Nemocnice.Data;
 @model InsuranceModel
 @using X.PagedList
 @using X.PagedList.Mvc
@@ -19,6 +24,8 @@
             <p id="right">
                 @Html.ActionLink("Schválit vše", "InRequest", new { buttonAll = "schvalit-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-accept" })  @Html.ActionLink("Zamítnout vše", "InRequest", new { buttonAll = "zamitnout-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-denied" })
             </p>
+
+           
         </div>
     </form>
 

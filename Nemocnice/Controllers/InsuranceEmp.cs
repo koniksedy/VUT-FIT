@@ -59,6 +59,50 @@ namespace Nemocnice.Controllers
 
             ViewData["CurrentPage"] = p;
 
+
+            //pokud je string naplněný, schválí/zamítne se vše na dané stránce
+            if (!String.IsNullOrEmpty(buttonAll))
+            {
+                //searchString je prázdný, pracujeme se vším
+                if (String.IsNullOrEmpty(searchString))
+                {
+                    searchString = "";
+                }
+                //searchString něco obsahujeme, pracujeme jen s tím, co bylo vyhledáno
+                else
+                {
+                    searchString = (searchString.Split(' ').Last() ?? "");
+                }
+                var users = this.Context.UserT.Where(s => s.Name.Contains(searchString) || s.Surname.Contains(searchString)).Select(x => x.UserId).ToList();
+
+                //zde se vyberou a uloží vybrané položky (ve vyhledávacím řetězci) databáze
+                List<MedicallBill> state = new List<MedicallBill>();
+                foreach (var user in users)
+                {
+                    List<MedicallBill> temp;
+                    temp = this.Context.MedicallBillT.Where(a => a.State == null && a.Doctor.UserId == user).ToList();
+                    state.AddRange(temp);
+                }
+
+                //pokud je string "schvalit-vse" schvalujeme vše
+                if (buttonAll == "schvalit-vse")
+                {
+                    state.ForEach(a => { a.State = "schváleno"; });
+                    List<MedicallBill> date = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
+                    date.ForEach(a => { a.DecisionDate = DateTime.Now; ; });
+                    this.Context.SaveChanges();
+                }
+
+                //pokud je string "zamitnnout-vse" zamítneme vše
+                if (buttonAll == "zamitnout-vse")
+                {
+                    state.ForEach(a => { a.State = "zamítnuto"; });
+                    List<MedicallBill> date = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
+                    date.ForEach(a => { a.DecisionDate = DateTime.Now; ; });
+                    this.Context.SaveChanges();
+                }
+            }
+
             //pokud je různé od 0, byla schválena žádost s daným ID a tu d datbázi změníme z null na "schváleno"
             if (ID_accept != 0)
             {
@@ -127,49 +171,6 @@ namespace Nemocnice.Controllers
             IPagedList<MedicallBill> lide = model.medicallBills.ToPagedList(model.PageNum, pageSize);
             model.medicallBillsPage = lide;
 
-            //pokud je string naplněný, schválí/zamítne se vše na dané stránce
-            if (!String.IsNullOrEmpty(buttonAll))
-            {
-                //searchString je prázdný, pracujeme se vším
-                if (String.IsNullOrEmpty(searchString))
-                {
-                    searchString = "";
-                }
-                //searchString něco obsahujeme, pracujeme jen s tím, co bylo vyhledáno
-                else
-                {
-                    searchString = (searchString.Split(' ').Last() ?? "");
-                }
-                var users = this.Context.UserT.Where(s => s.Name.Contains(searchString) || s.Surname.Contains(searchString)).Select(x => x.UserId).ToList();
-                
-                //zde se vyberou a uloží vybrané položky (ve vyhledávacím řetězci) databáze
-                List<MedicallBill> state = new List<MedicallBill>();
-                foreach (var user in users)
-                {
-                    List<MedicallBill> temp;
-                    temp = this.Context.MedicallBillT.Where(a => a.State == null && a.Doctor.UserId == user).ToList();
-                    state.AddRange(temp);
-                }
-
-                //pokud je string "schvalit-vse" schvalujeme vše
-                if (buttonAll == "schvalit-vse")
-                {
-                    state.ForEach(a => { a.State = "schváleno"; });
-                    List<MedicallBill> date = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
-                    date.ForEach(a => { a.DecisionDate = DateTime.Now; ; });
-                    this.Context.SaveChanges();
-                }
-
-                //pokud je string "zamitnnout-vse" zamítneme vše
-                if (buttonAll == "zamitnout-vse")
-                {
-                    state.ForEach(a => { a.State = "zamítnuto"; });
-                    List<MedicallBill> date = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
-                    date.ForEach(a => { a.DecisionDate = DateTime.Now; ; });
-                    this.Context.SaveChanges();
-                }
-            }
-
 
 
             return View(model);
@@ -189,7 +190,7 @@ namespace Nemocnice.Controllers
             pom.Amount = edit_amount;
             this.Context.SaveChanges();
 
-            return RedirectToAction("PaymentDb", new { SortOrder = Request.Form["SortOrder"], p1 = Request.Form["p1"] });
+            return RedirectToAction("PaymentDb", new { SortOrder = Request.Form["SortOrder"], p1 = Request.Form["p1"], searchString = Request.Form["searchString"] });
         }
 
         [HttpPost]
@@ -202,7 +203,7 @@ namespace Nemocnice.Controllers
             this.Context.Add<MedicallActivityPrice>(activityPrice);
             this.Context.SaveChanges();
 
-            return RedirectToAction("PaymentDb", new { SortOrder = Request.Form["SortOrder"], p1 = Request.Form["p1"] });
+            return RedirectToAction("PaymentDb", new { SortOrder = Request.Form["SortOrder"], p1 = Request.Form["p1"], searchString = Request.Form["searchString"] });
         }
 
 
@@ -216,12 +217,14 @@ namespace Nemocnice.Controllers
         * model - model pro uložení vybraných dat
         * p - proměnná pro stránkování
         */
-        public IActionResult PaymentDb(int ID_delete, string SortOrder, InsuranceModel model, int ? p1)
+        public IActionResult PaymentDb(int ID_delete, string SortOrder, string searchString, InsuranceModel model, int ? p1)
         {
 
             ViewData["CurrentSort"] = SortOrder;
 
             ViewData["CurrentPage"] = p1;
+
+            ViewData["Search"] = searchString;
 
             //pokud je ID_delete různé od 0, víme, jaký úkon s daným ID máme vymazat
             if (ID_delete != 0)
@@ -230,8 +233,15 @@ namespace Nemocnice.Controllers
                 this.Context.SaveChanges();
             }
 
-            //nachystání celé tabulky se všemi úkony k vypsání
-            model.medicallActivityPrice = this.Context.MedicallActivityPriceT.OrderBy(o => o.Name).ToList();
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                model.medicallActivityPrice = this.Context.MedicallActivityPriceT.Where(s => s.Name.Contains(searchString)).OrderBy(o => o.Name).ToList();
+            }
+            else
+            {   
+                //nachystání celé tabulky se všemi úkony k vypsání
+                model.medicallActivityPrice = this.Context.MedicallActivityPriceT.OrderBy(o => o.Name).ToList();
+            }
 
             //řazení dle následujících kritériíí
             switch (SortOrder)

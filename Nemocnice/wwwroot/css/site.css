@@ -101,6 +101,10 @@ table{
     width: 100%;
 }
 
+tr:hover {
+    background-color: #e6f7ff;
+}
+
 /* Pojistovna
 -------------------------------------------------- */
 .pojistovna-nadpis {
