@@ -49,7 +49,7 @@ namespace Nemocnice.Controllers
          * sortOrder - typ řazení (podle jnéma, příjmení, rodného čísla)
          * searchString - hledaný řetězec (v případě vyhledávání)
          */
-        public IActionResult Card(string sortOrder, string searchString, string ID_delete, Admin_patient model, int ? p)
+        public async Task<IActionResult> Card(string sortOrder, string searchString, string ID_delete, Admin_patient model, int ? p)
         {
             // Uložení přávě vyhledávaného řetězce.
             // Při řazení výsledků budeme už vědět, o jaké výsledky se jedná.
@@ -62,9 +62,65 @@ namespace Nemocnice.Controllers
             //pokud je ID_delete různé od 0, víme, jakého pacienta chceme odstranit
             if (ID_delete != null)
             {
+                var PatientId = db.PatientT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.PatientID).FirstOrDefault();
+
+                List<CheckupTicket> tmp = new List<CheckupTicket>();
+                tmp = db.CheckupTicketT.Where(a => a.Patient.PatientID == PatientId).ToList();
+                foreach (var a in tmp) {
+                    db.Remove(db.CheckupTicketT.Single(a => a.Patient.PatientID == PatientId));
+                }
+
+                List<MedicallReport> tmp1 = new List<MedicallReport>();
+                tmp1 = db.MedicallReportT.Where(a => a.Patient.PatientID == PatientId).ToList();
+                foreach (var a in tmp1)
+                {
+                    db.Remove(db.MedicallReportT.Single(a => a.Patient.PatientID == PatientId));
+                }
+
+                List<PatientTreatmentLog> tmp2 = new List<PatientTreatmentLog>();
+                tmp2 = db.PatientTreatmentLogT.Where(a => a.Patient.PatientID == PatientId).ToList();
+                foreach (var a in tmp2)
+                {
+                    db.Remove(db.PatientTreatmentLogT.Single(a => a.Patient.PatientID == PatientId));
+                }
+               
+                var PictureId = db.PictureT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.PictureId).FirstOrDefault();
+                List<PictureOnReport> tmp3 = new List<PictureOnReport>();
+                tmp3 = db.PictureOnReportT.Where(a => a.Picture.PictureId == PictureId).ToList();
+                foreach (var a in tmp3)
+                {
+                    db.Remove(db.PictureOnReportT.Single(a => a.Picture.PictureId == PictureId));
+                }
+
+                List<PictureOnTicket> tmp4 = new List<PictureOnTicket>();
+                tmp4 = db.PictureOnTicketsT.Where(a => a.Picture.PictureId == PictureId).ToList();
+                foreach (var a in tmp4)
+                {
+                    db.Remove(db.PictureOnTicketsT.Single(a => a.Picture.PictureId == PictureId));
+                }
+
+                List<Picture> tmp5 = new List<Picture>();
+                tmp5 = db.PictureT.Where(a => a.PictureId == PictureId).ToList();
+                foreach (var a in tmp5)
+                {
+                    db.Remove(db.PictureT.Single(a => a.SocialSecurityNum == ID_delete));
+                }
+
                 var ID = db.PatientT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.UserId).FirstOrDefault();
                 db.Remove(db.PatientT.Single(a => a.SocialSecurityNum == ID_delete));
+
                 db.Remove(db.UserT.Single(a => a.UserId == ID));
+
+                var health = db.HealthConditionT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.HealthConditionId).FirstOrDefault();
+                db.Remove(db.HealthConditionT.Single(a => a.HealthConditionId == health));
+
+                var Patient = db.PatientT.Where(x => x.SocialSecurityNum == ID_delete).Select(s => s.UserId).First();
+                var userLogin = db.UserT.Where(x => x.UserId == Patient).Select(x => x.Login).FirstOrDefault();
+                var user = await _userManager.FindByNameAsync(userLogin);
+                if (user != null)
+                {
+                    await _userManager.DeleteAsync(user);
+                }
                 db.SaveChanges();
             }
 
@@ -331,8 +387,8 @@ namespace Nemocnice.Controllers
 
             return RedirectToAction("CardInsurance", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
-
-        public IActionResult CardInsurance(string sortOrder, string searchString, int ID_delete, Admin_insurance model, int? p)
+    
+        public async Task<IActionResult> CardInsurance(string sortOrder, string searchString, int ID_delete, Admin_insurance model, int? p)
         {
             // Uložení přávě vyhledávaného řetězce.
             // Při řazení výsledků budeme už vědět, o jaké výsledky se jedná.
@@ -348,6 +404,13 @@ namespace Nemocnice.Controllers
                 var ID = db.InsureEmpT.Where(s => s.PersonalId == ID_delete).Select(s => s.UserId).FirstOrDefault();
                 db.Remove(db.InsureEmpT.Single(a => a.PersonalId == ID_delete));
                 db.Remove(db.UserT.Single(a => a.UserId == ID));
+
+                var userLogin = db.UserT.Where(x => x.UserId == ID).Select(x => x.Login).FirstOrDefault();
+                var user = await _userManager.FindByNameAsync(userLogin);
+                if (user != null)
+                {
+                    await _userManager.DeleteAsync(user);
+                }
                 db.SaveChanges();
             }
 
@@ -477,17 +540,80 @@ namespace Nemocnice.Controllers
             db.AddressT.Add(address);
             db.SaveChanges();
 
+            string loginsurname = "";
+            if (surname.Length > 7)
+            {
+                loginsurname = surname.Substring(0, 7);
+            }
+            else
+                loginsurname = surname;
+
+            loginsurname = Regex.Replace(loginsurname, "[éèëêð]", "e");
+            loginsurname = Regex.Replace(loginsurname, "[ÉÈËÊ]", "E");
+            loginsurname = Regex.Replace(loginsurname, "[àâä]", "a");
+            loginsurname = Regex.Replace(loginsurname, "[ÀÁÂÃÄÅ]", "A");
+            loginsurname = Regex.Replace(loginsurname, "[àáâãäå]", "a");
+            loginsurname = Regex.Replace(loginsurname, "[ÙÚÛÜ]", "U");
+            loginsurname = Regex.Replace(loginsurname, "[ùúûüµ]", "u");
+            loginsurname = Regex.Replace(loginsurname, "[òóôõöø]", "o");
+            loginsurname = Regex.Replace(loginsurname, "[ÒÓÔÕÖØ]", "O");
+            loginsurname = Regex.Replace(loginsurname, "[ìíîï]", "i");
+            loginsurname = Regex.Replace(loginsurname, "[ÌÍÎÏ]", "I");
+            loginsurname = Regex.Replace(loginsurname, "[č]", "c");
+            loginsurname = Regex.Replace(loginsurname, "[ř]", "r");
+            loginsurname = Regex.Replace(loginsurname, "[ž]", "z");
+            loginsurname = Regex.Replace(loginsurname, "[ý]", "y");
+            loginsurname = Regex.Replace(loginsurname, "[í]", "i");
+            loginsurname = Regex.Replace(loginsurname, "[ů]", "u");
+            loginsurname = Regex.Replace(loginsurname, "[ú]", "u");
+            loginsurname = Regex.Replace(loginsurname, "[ě]", "e");
+            loginsurname = Regex.Replace(loginsurname, "[ť]", "t");
+            loginsurname = Regex.Replace(loginsurname, "[ň]", "n");
+            loginsurname = Regex.Replace(loginsurname, "[ď]", "d");
+            loginsurname = Regex.Replace(loginsurname, "[š]", "s");
+            loginsurname = Regex.Replace(loginsurname, "[Š]", "S");
+            loginsurname = Regex.Replace(loginsurname, "[ñ]", "n");
+            loginsurname = Regex.Replace(loginsurname, "[Ñ]", "N");
+            loginsurname = Regex.Replace(loginsurname, "[ç]", "c");
+            loginsurname = Regex.Replace(loginsurname, "[Ç]", "C");
+            loginsurname = Regex.Replace(loginsurname, "[ÿý]", "y");
+            loginsurname = Regex.Replace(loginsurname, "[Ÿ]", "Y");
+            loginsurname = Regex.Replace(loginsurname, "[ž]", "z");
+            loginsurname = Regex.Replace(loginsurname, "[Ž]", "Z");
+            loginsurname = Regex.Replace(loginsurname, "[Ð]", "D");
+            loginsurname = Regex.Replace(loginsurname, "[œ]", "oe");
+            loginsurname = Regex.Replace(loginsurname, "[Œ]", "Oe");
+            loginsurname = Regex.Replace(loginsurname, "[«»\u201C\u201D\u201E\u201F\u2033\u2036]", "\"");
+            loginsurname = Regex.Replace(loginsurname, "[\u2026]", "...");
+            loginsurname = loginsurname.ToLower();
+            int suffix = 0;
+
+            string loginCreator = "x" + loginsurname + String.Format("{0:D2}", suffix);
+
+            List<string> logins = db.UserT.Select(x => x.Login).ToList();
+            if (logins.Contains(loginCreator) == true)
+            {
+                suffix++;
+                loginCreator = "x" + surname + String.Format("{0:D2}", suffix);
+            }
+
             // Vytvoření uživatele (Jméno, Příjmení, Titul, ...)
             // Uživatelským jménem pacientů je jejich rodné číslo.
             user = new User
             {
-                Login = login,
+                Login = loginCreator,
                 Name = name,
                 Surname = surname,
                 Title = title,
                 Phone = tel,
                 Email = email,
-                WorkAddress = null
+                WorkAddress = new Address
+                {
+                    City = city,
+                    StreetName = street,
+                    HouseNumber = houseNum,
+                    ZIP = zip
+                }
             };
             db.UserT.Add(user);
             db.SaveChanges();

@@ -146,8 +146,8 @@
             {
                 var tel = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.Phone).FirstOrDefault();
                 var mail = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.Email).FirstOrDefault();
-                var tmp = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.WorkAddress).FirstOrDefault();
-
+                var tmp = db.PatientT.Where(x => x.UserId == item.UserId).Select(s => s.HomeAddress).FirstOrDefault();
+               
 
                 var address = db.AddressT.ToList().First();
                 if (tmp != null)
@@ -248,7 +248,7 @@
                                                 <div class="col-2">
                                                     <div class="form-group">
                                                         <label aclass="col-form-label">Titul</label>
-                                                        <input name="edit_tile" type="text" autocomplete="off" value="@item.PatientFullName.Title" class="form-control" />
+                                                        <input name="edit_title" type="text" autocomplete="off" value="@item.PatientFullName.Title" class="form-control" />
                                                     </div>
                                                 </div>
                                             </div>
