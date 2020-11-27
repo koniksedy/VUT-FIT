@@ -48,7 +48,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             var db = new DatabaseContext();
             var uzivatel = db.UserT.Where(x => x.Login == userName).First();
             uzivatel.Phone = phoneNumber;
-
+            db.SaveChanges();
             Input = new InputModel
             {
                 PhoneNumber = uzivatel.Phone
@@ -81,8 +81,9 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
-
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var db = new DatabaseContext();
+            var uzivatel = db.UserT.Where(x => x.Login == user.UserName).First();
+            var phoneNumber = uzivatel.Phone;
             if (Input.PhoneNumber != phoneNumber)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
@@ -92,8 +93,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
-            var db = new DatabaseContext();
-            var uzivatel = db.UserT.Where(x => x.Login == user.UserName).First();
+
             uzivatel.Phone = phoneNumber;
             db.SaveChanges();
 
