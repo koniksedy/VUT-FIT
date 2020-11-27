@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Příchozí žádost";
+}
+
+@model CheckupTicketModel
+
+<div>
+    Patient: <b>@Model.PatientFullName.getFullName() (@Model.SocialSecurityNumber)</b><br />
+    Doctor:  <b>@Model.DoctorFullName.getFullName()</b><br />
+    Stav: @Model.State
+</div>
+
+<div>
+    <label>
+        Žádost [@Model.CreateDate]
+    </label>
+    <textarea cols="100" rows="10" readonly>@Model.RequestText</textarea>
+</div>
+
+<div>
+    <label>
+        Zpráva z vyšetření @((Model.State == "dokončeno") ? "[" + Model.FinishDate + "]" : "")
+    </label>
+    <textarea cols="100" rows="10" readonly>@Model.ReportText</textarea>
+</div>

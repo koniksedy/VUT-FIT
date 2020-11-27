@@ -1,0 +1,39 @@
+﻿using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Nemocnice.Data
+{
+    public class User
+    {
+        [Required]
+        public int UserId { get; set; }
+        [Required]
+        public string Login { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public string Surname { get; set; }
+        public string Title { get; set; }
+        [Required]
+        public string Phone { get; set; }
+        [EmailAddress]
+        public string Email { get; set; }
+        public Address WorkAddress { get; set; }
+        [DefaultValue(false)]
+        public bool Deactivated { get; set; }
+        public string getFullName()
+        {
+            if (String.IsNullOrEmpty(Title))
+            {
+                return Surname + " " + Name;
+            }
+            else
+            {
+                return Surname + " " + Name + ", " + Title;
+            }
+        }
+
+    }
+}
