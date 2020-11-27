@@ -81,6 +81,8 @@ namespace Nemocnice.Data
         public DbSet<MedicallReport> MedicallReportT { get; set; }
         public DbSet<CureProgress> CureProgressT { get; set; }
         public DbSet<Picture> PictureT { get; set; }      
+        public DbSet<PictureOnReport> PictureOnReportT { get; set; }
+        public DbSet<PictureOnTicket> PictureOnTicketsT { get; set; }
         public DbSet<ActivityPricingPerDiagnosis> ActivityPricingPerDiagnosisT { get; set; }
 
         public DbSet<NemocniceUser> NemocniceUser { get; set; }

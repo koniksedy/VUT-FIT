@@ -106,53 +106,55 @@
 
 <!-- Halvní tabulka kartotéky. Vybrané sloupce je mořné řadit (řazení je vždy sestupné). -->
 <!-- Řazení neovlivní výsledky vyhledávání. Provede pouze jejich seřazení. -->
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.ActionLink("Příjmení", "Card", new { sortOrder = "bySurname", searchString = ViewData["Search"] })
-            </th>
-            <th>
-                @Html.ActionLink("Jméno", "Card", new { sortOrder = "byName", searchString = ViewData["Search"] })
-            </th>
-            <th>
-                Titul
-            </th>
-            <th>
-                @Html.ActionLink("Rodné číslo", "Card", new { sortOrder = "byNumber", searchString = ViewData["Search"] })
-            </th>
-            <th>
-                Pojišťovna
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.PatientFullName.Surname)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PatientFullName.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PatientFullName.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SocialSecurityNum)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Insurance)
-            </td>
-            <td>
-                <!-- Zobrací celkový přehled pacienta se všemi jeho funkcemi. -->
-                @Html.ActionLink("Pacient", "PatientProfile", new { patientNum = item.SocialSecurityNum }) |
-                <!-- Vytvoření nové zprávy k danému pacientovi. -->
-                @Html.ActionLink("Zpráva", "Report", new { socialNum = item.SocialSecurityNum })
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
+<div style="        overflow-x: scroll;">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.ActionLink("Příjmení", "Card", new { sortOrder = "bySurname", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Jméno", "Card", new { sortOrder = "byName", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    Titul
+                </th>
+                <th>
+                    @Html.ActionLink("Rodné číslo", "Card", new { sortOrder = "byNumber", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    Pojišťovna
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientFullName.Surname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientFullName.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientFullName.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SocialSecurityNum)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Insurance)
+                    </td>
+                    <td>
+                        <!-- Zobrací celkový přehled pacienta se všemi jeho funkcemi. -->
+                        @Html.ActionLink("Pacient", "PatientProfile", new { patientNum = item.SocialSecurityNum }) |
+                        <!-- Vytvoření nové zprávy k danému pacientovi. -->
+                        @Html.ActionLink("Zpráva", "Report", new { socialNum = item.SocialSecurityNum })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

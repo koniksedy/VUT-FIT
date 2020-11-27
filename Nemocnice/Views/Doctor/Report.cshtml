@@ -53,87 +53,117 @@
     </tbody>
 </table>
 
-<!-- Pokud předchozí zpráva neexistuje, nepíše se datu ani čas. -->
-@if (!String.IsNullOrEmpty(Model.PreviousReport))
-{
-    <h4>[@Model.PreviousReportDate]</h4>
+@if (Model.AllReports.Any() && DateTime.Compare(Model.AllReports.First(), Model.ActualReportDate) >= 0)
+{   
+    <label></label>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Datum
+                </th>
+                <th>
+                    Název
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model.Pictures)
+            {
+                <tr>
+                    <td>
+                        @item.date
+                    </td>
+                    <td>
+                        @item.name
+                    </td>
+                </tr>
+            }
+        </tbody>
+      </table>
 }
-<!-- Text starší zprávy se nedá přepsat.-->
+
+    <!-- Pokud předchozí zpráva neexistuje, nepíše se datu ani čas. -->
+    @if (!String.IsNullOrEmpty(Model.PreviousReport))
+    {
+        <h4>[@Model.PreviousReportDate]</h4>
+    }
+    <!-- Text starší zprávy se nedá přepsat.-->
 <textarea readonly disabled cols="100" rows="5">@Model.PreviousReport</textarea>
 
-<!-- Čas nové/upravované zprávy -->
-<h4>[@Model.ActualReportDate]</h4>
-<!-- Úprave, nebo vytvoření zprávy. -->
-@if (Model.AllReports.Any() && DateTime.Compare(Model.AllReports.First(), Model.ActualReportDate) >= 0)
-{
-    <!-- Pacient má zápisy a jedná se o zobrazení/úpravu staré zprávy.-->
-    <form method="post" asp-action="UpdateReport">
-        <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
-        <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
-        <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
-        <!-- Primárně je text staré zprávy zavčen. Odemče se až po stisknutí tlačítka Upravit. -->
-        <textarea readonly disabled id="ReportText" name="ReportText" cols="100" rows="10">@Model.ActualReport</textarea>
-        <div id="lockbtn">
-            <button class="btn btn-primary" type="button" onclick="upravitBtnFunction()">Upravit</button>
-            <!-- Uložit, blokováno, dokud se nezmáčkne tlačítko Upravit-->
-            <input class="btn btn-primary" type="submit" id="RepareReportSaveBtn" disabled value="Uložit" />
-        </div>
-    </form>
-}
-else
-{
-    <!-- Vytvoření nové zprávy. -->
-    <form method="post" asp-action="CreateReport" onsubmit="return ReportValidation()">
-        <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
-        <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
-        <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
-        <textarea cols="100" rows="10" id="ReportText" name="ReportText">@Model.ActualReport</textarea>
-        <!-- Dynamicky přidávatelné řádky pro Diagnozu a Výkon. -->
-        <div class="row">
-            <input type="text" name="Diagnosis1" id="Diagnosis1" placeholder="Hlavní diagnoza*" autocomplete="off" />
-            <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured1')">Vyléčeno</button>
-            <input hidden name="Cured1" id="Cured1" value="noncured" />
-        </div>
-        <div class="row">
-            <input type="text" name="Diagnosis2" id="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off" />
-            <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured2')">Vyléčeno</button>
-            <input hidden name="Cured2" id="Cured2" value="noncured" />
-        </div>
-
-        <div class="row">
-            <input type="text" name="Diagnosis3" id="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off" />
-            <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured3')">Vyléčeno</button>
-            <input hidden name="Cured3" id="Cured3" value="noncured" />
-        </div>
-
-        <div class="row">
-            <input type="text" name="Diagnosis4" id="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off" />
-            <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured4')">Vyléčeno</button>
-            <input hidden name="Cured4" id="Cured4" value="noncured" />
-        </div>
-
-
-
-        <!-- TODO autocomplete-->
-        <div class="row">
-            <div class="col-lg-12">
-
-                <!-- Pole pro Výkon. (pouze jeden) -->
-                <input type="text" id="Bill" name="Bill" placeholder="Výkon*" autocomplete="off">
+    <!-- Čas nové/upravované zprávy -->
+    <h4>[@Model.ActualReportDate]</h4>
+    <!-- Úprave, nebo vytvoření zprávy. -->
+    @if (Model.AllReports.Any() && DateTime.Compare(Model.AllReports.First(), Model.ActualReportDate) >= 0)
+    {
+        <!-- Pacient má zápisy a jedná se o zobrazení/úpravu staré zprávy.-->
+        <form method="post" asp-action="UpdateReport">
+            <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
+            <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
+            <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
+            <!-- Primárně je text staré zprávy zavčen. Odemče se až po stisknutí tlačítka Upravit. -->
+            <textarea readonly disabled id="ReportText" name="ReportText" cols="100" rows="10">@Model.ActualReport</textarea>
+            <div id="lockbtn">
+                <button class="btn btn-primary" type="button" onclick="upravitBtnFunction()">Upravit</button>
+                <!-- Uložit, blokováno, dokud se nezmáčkne tlačítko Upravit-->
+                <input class="btn btn-primary" type="submit" id="RepareReportSaveBtn" disabled value="Uložit" />
             </div>
+        </form>
+    }
+    else
+    {
+        <!-- Vytvoření nové zprávy. -->
+        <form method="post" asp-action="CreateReport" onsubmit="return ReportValidation()">
+            <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
+            <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
+            <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
+            <textarea cols="100" rows="10" id="ReportText" name="ReportText">@Model.ActualReport</textarea>
+            <!-- Dynamicky přidávatelné řádky pro Diagnozu a Výkon. -->
+            <div class="row">
+                <input type="text" name="Diagnosis1" id="Diagnosis1" placeholder="Hlavní diagnoza*" autocomplete="off" />
+                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured1')">Vyléčeno</button>
+                <input hidden name="Cured1" id="Cured1" value="noncured" />
+            </div>
+            <div class="row">
+                <input type="text" name="Diagnosis2" id="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off" />
+                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured2')">Vyléčeno</button>
+                <input hidden name="Cured2" id="Cured2" value="noncured" />
+            </div>
+
+            <div class="row">
+                <input type="text" name="Diagnosis3" id="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off" />
+                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured3')">Vyléčeno</button>
+                <input hidden name="Cured3" id="Cured3" value="noncured" />
+            </div>
+
+            <div class="row">
+                <input type="text" name="Diagnosis4" id="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off" />
+                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured4')">Vyléčeno</button>
+                <input hidden name="Cured4" id="Cured4" value="noncured" />
+            </div>
+
+
+
+            <!-- TODO autocomplete-->
+            <div class="row">
+                <div class="col-lg-12">
+
+                    <!-- Pole pro Výkon. (pouze jeden) -->
+                    <input type="text" id="Bill" name="Bill" placeholder="Výkon*" autocomplete="off">
+                </div>
+            </div>
+            <!-- Uložit -->
+            <input class="btn btn-primary" type="submit" value="Uložit">
+        </form>
+    }
+
+    <!-- Návrat do kartotéky. -->
+    <form asp-action="Card">
+        <div>
+            <button class="btn btn-primary">Zpět</button>
         </div>
-        <!-- Uložit -->
-        <input class="btn btn-primary" type="submit" value="Uložit">
     </form>
-}
-
-<!-- Návrat do kartotéky. -->
-<form asp-action="Card">
-    <div>
-        <button class="btn btn-primary">Zpět</button>
-    </div>
-</form>
 
 
-<script src="~/js/Report.js"></script>
-<script src="~/js/site.js"></script>
+    <script src="~/js/Report.js"></script>
+    <script src="~/js/site.js"></script>

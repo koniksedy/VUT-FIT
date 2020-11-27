@@ -5,6 +5,23 @@
     ViewData["Title"] = Model.PatientFullName.Surname + " " + Model.PatientFullName.Name;
 }
 
+<style>
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    /* IE 6 doesn't support max-height
+    * we use height instead, but this forces the menu to always be this tall
+    */
+    * html .ui-autocomplete {
+        height: 100px;
+    }
+</style>
+
+<script src="~/lib/extern/jquery.js"></script>
+<script src="~/lib/extern/jquery-ui.js"></script>
+
 <div>
     <b>@Model.PatientFullName.getFullName() </b> <br />
     R.Č.: <b>@Model.SocialSecurityNumber</b><br />
@@ -41,31 +58,31 @@
                         </div>
                         <div class="form-group">
                             <label class="col-form-label">Pojišťovna</label>
-                            <input name="UpdateInsurance" id="UpdateInsurance" type="text" required  disabled readonly pattern="205|207|213|111|201|209|211" autocomplete="off" class="form-control" value="@Model.InsuranceCompany" />
+                            <input name="UpdateInsurance" id="UpdateInsurance" type="text" required disabled readonly pattern="205|207|213|111|201|209|211" autocomplete="off" class="form-control" value="@Model.InsuranceCompany" />
                         </div>
                         <div class="form-group">
                             <label class="col-form-label">Telefon</label>
-                            <input name="UpdateTel" id="UpdateTel" type="text" required autocomplete="off"  disabled readonly class="form-control" value="@Model.Tel" />
+                            <input name="UpdateTel" id="UpdateTel" type="text" required autocomplete="off" disabled readonly class="form-control" value="@Model.Tel" />
                         </div>
                         <div class="form-group">
                             <label class="col-form-label">Email</label>
-                            <input name="UpdateEmail" id="UpdateEmail" type="email" autocomplete="off" disabled readonly  class="form-control" value="@Model.Email" />
+                            <input name="UpdateEmail" id="UpdateEmail" type="email" autocomplete="off" disabled readonly class="form-control" value="@Model.Email" />
                         </div>
                         <div class="form-group">
                             <label class="col-form-label">Ulice</label>
-                            <input name="UpdateStreet" id="UpdateStreet" autocomplete="off" disabled readonly  class="form-control" value="@Model.Address.StreetName" />
+                            <input name="UpdateStreet" id="UpdateStreet" autocomplete="off" disabled readonly class="form-control" value="@Model.Address.StreetName" />
                         </div>
                         <div class="form-group">
                             <label class="col-form-label">Číslo popisné</label>
-                            <input name="UpdateHouseNum" id="UpdateHouseNum" type="text" disabled readonly  pattern="[0-9]+" autocomplete="off" class="form-control" value="@Model.Address.HouseNumber" />
+                            <input name="UpdateHouseNum" id="UpdateHouseNum" type="text" disabled readonly pattern="[0-9]+" autocomplete="off" class="form-control" value="@Model.Address.HouseNumber" />
                         </div>
                         <div class="form-group">
                             <label class="col-form-label">Město</label>
-                            <input name="UpdateCity" id="UpdateCity" required disabled readonly  autocomplete="off" class="form-control" value="@Model.Address.City" />
+                            <input name="UpdateCity" id="UpdateCity" required disabled readonly autocomplete="off" class="form-control" value="@Model.Address.City" />
                         </div>
                         <div class="form-group">
                             <label class="col-form-label">Směrovací číslo</label>
-                            <input name="UpdateZip" id="UpdateZip" type="text" disabled readonly  required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" value="@Model.Address.ZIP" />
+                            <input name="UpdateZip" id="UpdateZip" type="text" disabled readonly required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" value="@Model.Address.ZIP" />
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -91,7 +108,7 @@
     }
     else
     {
-        
+
         <div>
             Alergie: <b class="text-danger">@Model.Allergys.Substring(0, 25)</b>  <button class="btn btn-info" data-toggle="modal" data-target="#AllergysModal">...</button>
             <div class="modal fade" id="AllergysModal" tabindex="-1" role="dialog" aria-labelledby="AllergysModalLabel" aria-hidden="true">
@@ -153,8 +170,10 @@
 
 <div>
     <h2>Dekurzy</h2>
-    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#ChangeOwnerModal">Upravit</button>
-    <form asp-action="ChangeOwner" method="post">
+    <button onclick="generateSelect()" type="button" class="btn btn-info" data-toggle="modal" data-target="#ChangeOwnerModal">Upravit</button>
+    <form asp-action="ChangeOwner" method="post" onsubmit="return checkNewOwner()">
+        <input hidden id="doctorICZ" name="doctorICZ" value="" />
+        <input hidden name="patientNumber" value="@Model.SocialSecurityNumber" />
         <div class="modal fade" id="ChangeOwnerModal" tabindex="-1" role="dialog" aria-labelledby="ChangeOwnerLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -166,9 +185,19 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label class="col-form-label">Výška</label>
-                            <input name="UpdateHeight" type="text" required autocomplete="off" class="form-control" value="Lékař" />
+                            <label class="col-form-label">Lékař</label>
+                            <select id="NewOwnerSelect" class="browser-default custom-select">
+                                <option selected onclick="document.getElementById('doctorICZ').value = ''">Vyberte lékaře</option>
+                            </select>
                         </div>
+                        @foreach (var item in Model.AllReports)
+                        {
+                            <div class="custom-control custom-checkbox">
+                                <input value="off" onclick="checkboxClicked(this)" type="checkbox" class="custom-control-input" id="@item">
+                                <input hidden type="text" name="Checkbox[]" value="off" />
+                                <label class="custom-control-label" for="@item">@item</label>
+                            </div>
+                        }
                     </div>
                     <div class="modal-footer">
                         <input class="btn btn-primary" id="UpdateButton" type="submit" value="Předat" />
@@ -289,3 +318,48 @@
     </table>
     @Html.ActionLink("Nový poukaz na vyšetření", "NewCheckup", new { patientNum = Model.SocialSecurityNumber, reports = Model.AllReports })
 </div>
+
+<script>
+    function generateSelect() {
+        var result = $.ajax({
+            url: '/Doctor/GetAllDoctors',
+            dataType: "json",
+            async: false,
+            data: {
+                search: "?"
+            },
+            success: function (data) {
+                    return data;
+            },
+            error: function () {
+                alert("Nepodařilo se získat doktory.");
+            }
+        }).responseJSON;
+
+        jQuery.each(result, function (i, val) {
+            $("#NewOwnerSelect").append("\"<option value=\"" + i + "\" onclick=\"document.getElementById(\'doctorICZ\').value = \'" + val.id + "\'\">" + val.name + "</option>");
+
+        });
+    }
+
+    function checkNewOwner() {
+        if (document.getElementById("doctorICZ").value == "") {
+            alert("Lékař musí být zadán.");
+            return false;
+        }
+        return true;
+    }
+
+    function checkboxClicked(checkbox) {
+        if (checkbox.value == "off") {
+            checkbox.value = "on";
+            checkbox.nextElementSibling.value = "on";
+        } else {
+            checkbox.value = "off";
+            checkbox.nextElementSibling.value = "off";
+        }
+    }
+</script>
+
+
+

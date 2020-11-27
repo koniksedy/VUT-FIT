@@ -13,6 +13,8 @@ using Nemocnice.DatabaseDataCreator;
 using Nemocnice.Models;
 using X.PagedList.Mvc.Core;
 using X.PagedList;
+using Microsoft.EntityFrameworkCore.Internal;
+using System.Text.RegularExpressions;
 
 namespace Nemocnice.Controllers
 {
@@ -281,6 +283,7 @@ namespace Nemocnice.Controllers
             return RedirectToAction("Card", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
 
+
         [HttpPost]
         public IActionResult EditDb_Insurance()
         {
@@ -547,7 +550,7 @@ namespace Nemocnice.Controllers
                             (user, doctor) => new DoctorJoined1
                             {
                                 Doctor = doctor,
-                                User = user
+                                User = user      
                             }).ToList();
             }
             else
@@ -643,11 +646,12 @@ namespace Nemocnice.Controllers
             db.SaveChanges();
 
             string loginsurname = "";
-            if (surname.Length > 7)
+            if(surname.Length > 7)
+            {
                 loginsurname = surname.Substring(0, 7);
-            else
+            }else
                 loginsurname = surname;
-
+            
             loginsurname = Regex.Replace(loginsurname, "[éèëêð]", "e");
             loginsurname = Regex.Replace(loginsurname, "[ÉÈËÊ]", "E");
             loginsurname = Regex.Replace(loginsurname, "[àâä]", "a");
@@ -687,7 +691,9 @@ namespace Nemocnice.Controllers
             loginsurname = Regex.Replace(loginsurname, "[\u2026]", "...");
             loginsurname = loginsurname.ToLower();
             int suffix = 0;
-            string loginCreator = "x" + loginsurname + String.Format("{0:D2}", suffix);
+
+            string loginCreator = "x" + loginsurname + String.Format("{0:D2}",suffix);
+
             List<string> logins = db.UserT.Select(x => x.Login).ToList();
             if (logins.Contains(loginCreator) == true)
             {
@@ -739,7 +745,5 @@ namespace Nemocnice.Controllers
             return RedirectToAction("DoctorEdit", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
     }
-
-
 }
 
