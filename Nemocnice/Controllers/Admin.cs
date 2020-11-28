@@ -308,13 +308,6 @@ namespace Nemocnice.Controllers
             string edit_mail = Request.Form["edit_mail"];
             string edit_title = Request.Form["edit_title"];
 
-            var pom = db.UserT.First(a => a.Login == edit_ID);
-            pom.Name = edit_name;
-            pom.Surname = edit_surname;
-            pom.Title = edit_title;
-            pom.Phone = edit_tel;
-            pom.Email = edit_mail;
-
             var work = db.UserT.Where(a => a.Login == edit_ID).Select(s => s.WorkAddress).FirstOrDefault();
 
             if (work != null)
@@ -333,7 +326,23 @@ namespace Nemocnice.Controllers
                 pom3.ZIP = edit_psc;
             }
 
-       
+            var pom = db.UserT.First(a => a.Login == edit_ID);
+            pom.Name = edit_name;
+            pom.Surname = edit_surname;
+            pom.Title = edit_title;
+            pom.Phone = edit_tel;
+            pom.Email = edit_mail;
+            pom.Login = edit_rc;
+
+            var pat = db.PatientT.First(a => a.SocialSecurityNum == edit_ID);
+            pat.SocialSecurityNum = edit_rc;
+            pat.InsuranceCompany = edit_insurance;
+
+            var user = db.Users.First(s => s.UserName == edit_ID);
+            user.UserName = edit_rc;
+            user.NormalizedUserName = edit_rc;
+
+
             db.SaveChanges();
 
             return RedirectToAction("Card", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
@@ -355,6 +364,7 @@ namespace Nemocnice.Controllers
             string edit_work = Request.Form["edit_work"];
             string edit_position = Request.Form["edit_position"];
             string edit_login = Request.Form["edit_login"];
+            string old = Request.Form["old"];
 
             var ID = db.InsureEmpT.Where(a => a.PersonalId == edit_ID).Select(s => s.UserId).FirstOrDefault();
             var pom = db.UserT.First(a => a.UserId == ID);
@@ -364,6 +374,17 @@ namespace Nemocnice.Controllers
             pom.Title = edit_title;
             pom.Phone = edit_tel;
             pom.Email = edit_mail;
+            pom.Login = edit_login;
+
+            var ins = db.InsureEmpT.First(s => s.UserId == ID);
+            ins.Possition = edit_position;
+            ins.WorkPhone = edit_work;
+
+            var user = db.Users.First(s => s.UserName == old);
+            user.UserName = edit_login;
+            user.NormalizedUserName = edit_login;
+
+
 
             var work = db.UserT.Where(a => a.UserId == ID).Select(s => s.WorkAddress).FirstOrDefault();
 

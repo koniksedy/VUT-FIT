@@ -247,6 +247,7 @@
                                         <div class="modal-footer">
                                             <!-- formatovani tlacitka odeslat -->
                                             <input type="hidden" name="edit_ID" value="@item.PersonalID" />
+                                            <input type="hidden" name="old" value="@item.Login" />
                                             <input type="hidden" name="sortOrder" value="@ViewData["CurrentSort"]" />
                                             <input type="hidden" name="p" value="@ViewData["CurrentPage"]" />
                                             <input type="hidden" name="searchString" value="@ViewData["Search"]" />
