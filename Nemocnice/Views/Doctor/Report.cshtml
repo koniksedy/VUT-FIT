@@ -60,7 +60,7 @@
         width: 60%;
     }
 
-        .modal-contentImage image:hover{
+        .modal-contentImage img:hover{
             transform: scale(1);
         }
 
@@ -116,7 +116,6 @@
 
     .moje-tabulka {
         border: 2px solid #d0d0d0 !important;
-        min-width: 50px;
         max-width: 200px;
     }
 
@@ -400,11 +399,11 @@
         {
             <h4 style="margin-top:25px">Obrázky</h4>
             <div>
-                <table class="table-striped table-responsive moje-tabulka">
+                <table class="table-striped moje-tabulka">
                     <tbody>
                         @foreach (var item in Model.Pictures)
                         {
-                            <tr onclick="viewImage('/images/' + '@item.id' + '@item.type', '@item.name')">
+                            <tr class="kurzor" onclick="viewImage('/images/' + '@item.id' + '@item.type', '@item.name')">
                                 <td>
                                     @if (item.name.Length > 25)
                                     {
