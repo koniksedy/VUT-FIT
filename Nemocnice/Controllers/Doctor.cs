@@ -570,7 +570,7 @@ namespace Nemocnice.Controllers
             }
 
 
-            return RedirectToAction("Card");
+            return RedirectToAction("PatientProfile", new { patientNum = patientNum});
         }
 
         /*

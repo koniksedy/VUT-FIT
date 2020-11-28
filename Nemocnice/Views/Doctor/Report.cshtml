@@ -1,6 +1,5 @@
 ﻿<!-- Zobrazení zprávy pacienta. -->
 <!-- Autor: Michal Šedý (xsedym02) -->
-<!-- Poslední úprava: 13.11.2020 -->
 
 @{
     ViewData["Title"] = "Zpráva";
@@ -8,7 +7,7 @@
 
 <!-- Knihovna pro dynamicky přidávatelné řádky. -->
 <!--<script src="~/lib/jquery/dist/jquery.min.js"></script>-->
-
+<!-- styp potřebný pro autocomplete -->
 <style>
     .ui-autocomplete {
         max-height: 100px;
@@ -23,11 +22,16 @@
     }
 </style>
 
+<!-- Knihovny pro autocomplete -->
 <script src="~/lib/extern/jquery.js"></script>
 <script src="~/lib/extern/jquery-ui.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<!-- <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script> bylo smazáno
+     z důvodu nefunkčního dropdown, pokud by vznikla nová chyba, bude potřeba
+     zhodnotit, jak tuto knihovnu vrátit. 
+-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
+<!-- Styly pro zobrazení obrázku -->
 <style>
     body {
         font-family: Arial, Helvetica, sans-serif;
@@ -96,6 +100,121 @@
         }
 </style>
 
+<style>
+    .zpravy {
+        min-width: 350px;
+    }
+
+    .text-zprav {
+        width: 100%;
+    }
+
+
+    .moje-tabulka {
+        border: 2px solid #d0d0d0 !important;
+        min-width: 50px;
+        max-width: 170px;
+    }
+
+        .moje-tabulka td {
+            max-height: 27px;
+        }
+
+        .moje-tabulka tbody tr:hover {
+            background-color: lightblue;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .moje-tabulka thead {
+            border-bottom: 4px solid #d0d0d0 !important;
+        }
+
+    .vypnout {
+        background-color: white !important;
+    }
+
+        .vypnout td:hover {
+            background-color: white;
+            cursor: default;
+        }
+
+    .hlavni-diagnoza {
+        max-width: 148px;
+        margin-right: 5px;
+    }
+
+        .hlavni-diagnoza div {
+            max-width: 148px;
+        }
+
+        .hlavni-diagnoza input {
+            border-radius: 0.25rem;
+            color: black;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            max-width: 148px;
+        }
+
+        .hlavni-diagnoza button {
+            width: 148px;
+            width: 148px;
+        }
+
+    .diagnoza {
+        max-width: 107px;
+        margin-right: 5px;
+    }
+
+        .diagnoza div {
+            max-width: 107px;
+        }
+
+        .diagnoza input {
+            border-radius: 0.25rem;
+            color: #495050;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            max-width: 107px;
+        }
+
+        .diagnoza button {
+            width: 107px;
+            max-width: 107px;
+        }
+
+    .vykon {
+        width: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+        .vykon input {
+            border-radius: 0.25rem;
+            color: black;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            width: 77px;
+            max-width: 77px;
+        }
+
+    .input-image {
+        max-width: 383px;
+        margin-bottom: 15px;
+    }
+
+        .input-image .btn {
+            z-index: 1;
+        }
+
+    .ulozit-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+</style>
+
 
 <!-- The Modal For picture DISPLAY-->
 <div id="myModal" class="modalImage">
@@ -108,187 +227,187 @@
 <!-- Model obsahující informace o pacientovi, všech zprávách a předchozí a aktuální zprávě. -->
 @model Nemocnice.Models.PatientReportsModel
 <!-- Základní informace o pacientovi -->
-<h2>@Model.PatientFullName.getFullName() (r.č: @Model.SocialSecurityNumber, poj: @Model.Insurance)</h2>
+<h2 style="margin-bottom:0px;margin-top:8px;">@Model.PatientFullName.getFullName() (r.č: @Model.SocialSecurityNumber, poj: @Model.Insurance)</h2>
 
-<!-- Tabulka všech zpráv pacienta. -->
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                Datum
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.AllReports)
-        {
-            <tr onmousedown="redirectToAction('@Url.Action("Report", "Doctor", new { socialNum = Model.SocialSecurityNumber, date = item })')">
-                <td>
-                    @Html.DisplayFor(modelItem => item)
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-@if (Model.AllReports.Any() && DateTime.Compare(Model.AllReports.First(), Model.ActualReportDate) >= 0)
-{
-    <label></label>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Datum
-                </th>
-                <th>
-                    Název
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Pictures)
+<div style="margin-top:20px" class="row flex-row flex-wrap-reverse">
+    <div class="col-9 zpravy">
+        <div>
+            <!-- Pokud předchozí zpráva neexistuje, nepíše se datu ani čas. -->
+            @if (!String.IsNullOrEmpty(Model.PreviousReport))
             {
-                <tr>
-                    <td>
-                        @item.date
-                    </td>
-                    <td>
-                        @item.name
-                    </td>
-                </tr>
+                <h4>[@Model.PreviousReportDate]</h4>
             }
-        </tbody>
-    </table>
-}
+            else
+            {
+                <h4 style="margin-top:37px"></h4>
+            }
 
-<!-- Pokud předchozí zpráva neexistuje, nepíše se datu ani čas. -->
-@if (!String.IsNullOrEmpty(Model.PreviousReport))
-{
-    <h4>[@Model.PreviousReportDate]</h4>
-}
-<!-- Text starší zprávy se nedá přepsat.-->
-<textarea readonly disabled cols="100" rows="5">@Model.PreviousReport</textarea>
-
-<!-- Čas nové/upravované zprávy -->
-<h4>[@Model.ActualReportDate]</h4>
-<!-- Úprave, nebo vytvoření zprávy. -->
-@if (Model.AllReports.Any() && DateTime.Compare(Model.AllReports.First(), Model.ActualReportDate) >= 0)
-{
-    <!-- Pacient má zápisy a jedná se o zobrazení/úpravu staré zprávy.-->
-    <form method="post" asp-action="UpdateReport">
-        <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
-        <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
-        <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
-        <!-- Primárně je text staré zprávy zavčen. Odemče se až po stisknutí tlačítka Upravit. -->
-        <textarea readonly disabled id="ReportText" name="ReportText" cols="100" rows="10">@Model.ActualReport</textarea>
-        <div id="lockbtn">
-            <button class="btn btn-primary" type="button" onclick="upravitBtnFunction()">Upravit</button>
-            <!-- Uložit, blokováno, dokud se nezmáčkne tlačítko Upravit-->
-            <input class="btn btn-primary" type="submit" id="RepareReportSaveBtn" disabled value="Uložit" />
+            <!-- Text starší zprávy se nedá přepsat.-->
+            <textarea class="text-zprav" readonly disabled rows="5">@Model.PreviousReport</textarea>
         </div>
-    </form>
-}
-else
-{
-    <!-- Vytvoření nové zprávy. -->
-<form method="post" enctype="multipart/form-data" asp-action="CreateReport" onsubmit="return ReportValidation()">
-    <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
-    <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
-    <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
-    <textarea cols="100" rows="10" id="ReportText" name="ReportText">@Model.ActualReport</textarea>
+        <div>
+            <!-- Čas nové/upravované zprávy -->
+            <h4 style="margin-top:15px">[@Model.ActualReportDate]</h4>
+            <!-- Úprave, nebo vytvoření zprávy. -->
+            @if (Model.AllReports.Any() && DateTime.Compare(Model.AllReports.First(), Model.ActualReportDate) >= 0)
+            {
+                <!-- Pacient má zápisy a jedná se o zobrazení/úpravu staré zprávy.-->
+                <form method="post" asp-action="UpdateReport">
+                    <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
+                    <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
+                    <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
+                    <!-- Primárně je text staré zprávy zavčen. Odemče se až po stisknutí tlačítka Upravit. -->
+                    <textarea class="text-zprav" readonly disabled id="ReportText" name="ReportText" rows="10">@Model.ActualReport</textarea>
+                    <div id="lockbtn">
+                        <button class="btn btn-primary" type="button" onclick="upravitBtnFunction()">Upravit</button>
+                        <!-- Uložit, blokováno, dokud se nezmáčkne tlačítko Upravit-->
+                        <input class="btn btn-primary" type="submit" id="RepareReportSaveBtn" disabled value="Uložit" />
+                    </div>
+                </form>
+            }
+            else
+            {
+                <!-- Vytvoření nové zprávy. -->
+                <form method="post" enctype="multipart/form-data" asp-action="CreateReport" onsubmit="return ReportValidation()">
+                    <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
+                    <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
+                    <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
+                    <textarea class="text-zprav" rows="10" id="ReportText" name="ReportText">@Model.ActualReport</textarea>
 
-    <!-- ADD PICTURE-->
-    <div class="row">
-        <button id="addRowFile" type="button" class="btn btn-success">
-            Add-New
-        </button>
-        <button id="addRowExisting" type="button" class="btn btn-success">
-            Add-Exist
-        </button>
-    </div>
+                    <!-- Diagnozy a výkony -->
+                    <div class="row">
+                        <div class="col hlavni-diagnoza">
+                            <div>
+                                <input type="text" name="Diagnosis1" id="Diagnosis1" placeholder="Hlavní diagnoza*" autocomplete="off" />
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured1')">Vyléčeno</button>
+                            </div>
+                            <input hidden name="Cured1" id="Cured1" value="noncured" />
+                        </div>
+                        <div class="col diagnoza">
+                            <div>
+                                <input type="text" name="Diagnosis2" id="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off" />
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured2')">Vyléčeno</button>
+                            </div>
+                            <input hidden name="Cured2" id="Cured2" value="noncured" />
+                        </div>
 
-    <!--Dynamic row-->
-    <div class="row">
-        <div class="col-6">
-            <div id="newRow"></div>
-        </div>
-    </div>
-    <!-- END ADD PICTURE-->
-    <!-- Dynamicky přidávatelné řádky pro Diagnozu a Výkon. -->
-    <div class="row">
-        <input type="text" name="Diagnosis1" id="Diagnosis1" placeholder="Hlavní diagnoza*" autocomplete="off" />
-        <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured1')">Vyléčeno</button>
-        <input hidden name="Cured1" id="Cured1" value="noncured" />
-    </div>
-    <div class="row">
-        <input type="text" name="Diagnosis2" id="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off" />
-        <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured2')">Vyléčeno</button>
-        <input hidden name="Cured2" id="Cured2" value="noncured" />
-    </div>
+                        <div class="col diagnoza">
+                            <div>
+                                <input type="text" name="Diagnosis3" id="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off" />
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured3')">Vyléčeno</button>
+                            </div>
+                            <input hidden name="Cured3" id="Cured3" value="noncured" />
+                        </div>
 
-    <div class="row">
-        <input type="text" name="Diagnosis3" id="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off" />
-        <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured3')">Vyléčeno</button>
-        <input hidden name="Cured3" id="Cured3" value="noncured" />
-    </div>
+                        <div class="col diagnoza">
+                            <div>
+                                <input type="text" name="Diagnosis4" id="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off" />
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured4')">Vyléčeno</button>
+                            </div>
+                            <input hidden name="Cured4" id="Cured4" value="noncured" />
+                        </div>
+                        <div class="col vykon">
+                            <!-- Pole pro Výkon. (pouze jeden) -->
+                            <input type="text" id="Bill" name="Bill" placeholder="Výkon*" autocomplete="off">
+                        </div>
+                    </div>
 
-    <div class="row">
-        <input type="text" name="Diagnosis4" id="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off" />
-        <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured4')">Vyléčeno</button>
-        <input hidden name="Cured4" id="Cured4" value="noncured" />
-    </div>
+                    <!-- Přikládání obrázků a výsledků vyšetření -->
+                    <!-- ADD PICTURE/RESULT-->
+                    <div style="margin-top:15px;margin-bottom:15px" class="row">
+                        <div style="margin-right:5px" class="col">
+                            <h4>Přiložit obrázky.</h4>
+                            <div>
+                                <button id="addRowFile" type="button" class="btn btn-success">Add-New</button>
+                                <button id="addRowExisting" type="button" class="btn btn-success"> Add-Exist </button>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h4>Přiložit výsledky vyšetření.</h4>
+                            <div>
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">Výsledek vyšetření</button>
+                            </div>
+                        </div>
 
+                    </div>
 
+                    <!--Dynamic row-->
+                    <div class="row">
+                        <div class="col input-image">
+                            <div id="newRow"></div>
+                        </div>
+                    </div>
 
-    <!-- TODO autocomplete-->
-    <div class="row">
-        <div class="col-lg-12">
-
-            <!-- Pole pro Výkon. (pouze jeden) -->
-            <input type="text" id="Bill" name="Bill" placeholder="Výkon*" autocomplete="off">
-        </div>
-    </div>
-    <!-- Uložit -->
-    <input class="btn btn-primary" type="submit" value="Uložit">
-
-
-
-    <!-- PŘILOŽIT VÝSLEDEK ŽÁDOSTI-->
-    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">Přiložit vyšetření</button>
-    <div class="modal fade" id="CopyReportModal" tabindex="-1" role="dialog" aria-labelledby="CopyReportModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="CopyReportModalLabel">Přiložit výsledek vyšetření</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table-responsive-md">
-                        @foreach (var item in Model.AllTickets)
-                        {
-                            <tr>
-                                <td data-dismiss="modal" onclick="selectedResult('@item', '@Model.SocialSecurityNumber')">
-                                    @item
-                                </td>
-                            </tr>
-                        }
-                    </table>
-
-                </div>
-            </div>
+                    <div class="row">
+                        <div class="col">
+                            <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
+                        </div>
+                        <div class="col ulozit-btn">
+                            <input class="btn btn-primary" type="submit" value="Uložit">
+                        </div>
+                    </div>
+                </form>
+            }
         </div>
     </div>
-</form>
-}
+    <div class="col-3">
+        <div>
+            <h4>Zprávy</h4>
+            <!-- Tabulka všech zpráv pacienta. -->
+            <table class="table-striped moje-tabulka">
+                <tbody>
+                    @foreach (var item in Model.AllReports)
+                    {
+                        <tr class="kurzor" onmousedown="redirectToAction('@Url.Action("Report", "Doctor", new { socialNum = Model.SocialSecurityNumber, date = item })')">
+                            <td>
+                                @Html.DisplayFor(modelItem => item)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
 
-<!-- Návrat do kartotéky. -->
-<form asp-action="Card">
-    <div>
-        <button class="btn btn-primary">Zpět</button>
+        @if (Model.AllReports.Any() && DateTime.Compare(Model.AllReports.First(), Model.ActualReportDate) >= 0)
+        {
+            <h4 style="margin-top:25px">Obrázky</h4>
+            <table class="table-striped moje-tabulka">
+                <tbody>
+                    @foreach (var item in Model.Pictures)
+                    {
+                        <tr onclick="redirectToAction('/images/' + '@item.id' + '@item.type')">
+                            <td>
+                                @if (item.name.Length > 25)
+                                {
+                                    @item.name.Substring(0, 24)
+                                    
+                                }
+                                else
+                                {
+                                    @item.name
+
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.Pictures.Count == 0)
+                    {
+                        <tr class="vypnout"><td>Žádné obrázky</td></tr>
+                    }
+                </tbody>
+            </table>
+        }
     </div>
-</form>
+</div>
+
 
 <!-- Modal For pictures -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -324,6 +443,31 @@ else
 </div>
 
 
+<!-- Modal for results of checkup tickets -->
+<div class="modal fade" id="CopyReportModal" tabindex="-1" role="dialog" aria-labelledby="CopyReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CopyReportModalLabel">Přiložit výsledek vyšetření</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table-responsive-md">
+                    @foreach (var item in Model.AllTickets)
+                    {
+                        <tr>
+                            <td data-dismiss="modal" onclick="selectedResult('@item', '@Model.SocialSecurityNumber')">
+                                @item
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- SCRIPTS for MICTURE-->
 <script>
@@ -334,7 +478,7 @@ else
         html += '<div class="input-group mb-3">';
         html += '<div class="custom-file">';
         html += '<input value="" data-toggle="modal" data-target="#exampleModal" name="FileExist" type="text" class="custom-file-input" id="inputGroupFile02" aria-describedby="inputGroupFileAddon02">';
-        html += '<label class="custom-file-label" for="inputGroupFile02">Vyberte existující soubor</label>';
+        html += '<label class="custom-file-label text-truncate" for="inputGroupFile02">Vyberte existující soubor</label>';
         html += '</div>';
         html += '<div class="input-group-append">';
         html += '<button id="removeRowFile" type="button" class="btn btn-danger">&times;</button>';
@@ -354,7 +498,7 @@ else
         html += '<div class="input-group mb-3">';
         html += '<div class="custom-file">';
         html += '<input onchange="changeIn(this)" name="FileOut" type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">';
-        html += '<label class="custom-file-label" for="inputGroupFile01">Vyberte soubor</label>';
+        html += '<label class="custom-file-label text-truncate" for="inputGroupFile01">Vyberte soubor</label>';
         html += '</div>';
         html += '<div class="input-group-append">';
         html += '<button id="removeRowFile" type="button" class="btn btn-danger">&times;</button>';
