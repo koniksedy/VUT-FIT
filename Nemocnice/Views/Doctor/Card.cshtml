@@ -7,9 +7,14 @@
 }
 
 <!-- Model obsahující seznam základních informací o pacientech pro kartotéku. -->
-@model List<Nemocnice.Models.CardModel>
+@model CardModel
 
-
+@using Nemocnice.Data;
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
 
 <h1>Kartotéka</h1>
 
@@ -20,7 +25,7 @@
 <!-- TODO Rozdělit okno do dvou sloupců. -->
 <form asp-action="CreatePatient" method="post" onsubmit="return testRC('RC')">
     <div class="modal fade" id="newPatientModal" tabindex="-1" role="dialog" aria-labelledby="newPatientModalLabel" aria-hidden="true">
-        <div class="modal-dialog"  style="max-width:60%" role="document">
+        <div class="modal-dialog" style="max-width:60%" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="newPatientModalLabel">Nový pacient</h5>
@@ -97,30 +102,29 @@
 <form asp-action="Card" method="get">
     <div class="form-actions no-color">
         <p>
-            Najít: <input type="text" name="SearchString" value="@ViewData["Search"]")/>
-            <input type="submit" class="btn btn-primary" value="Hledat"/>
-            <a asp-action="Card">Zrušit filtry</a>
+            <label><strong>Najít:</strong></label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
+            <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]" class="btn-insurance">Hledat</button> @Html.ActionLink("Zrušit hledání", "Card", new { SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-cancel" })
         </p>
     </div>
 </form>
 
 <!-- Halvní tabulka kartotéky. Vybrané sloupce je mořné řadit (řazení je vždy sestupné). -->
 <!-- Řazení neovlivní výsledky vyhledávání. Provede pouze jejich seřazení. -->
-<div style="        overflow-x: scroll;">
+<div style="overflow-x: scroll;">
     <table class="table">
         <thead>
             <tr>
                 <th>
-                    @Html.ActionLink("Příjmení", "Card", new { sortOrder = "bySurname", searchString = ViewData["Search"] })
+                    @Html.ActionLink("Příjmení", "Card", new { sortOrder = "bySurname", searchString = ViewData["Search"], p = ViewData["CurrentPage"] })
                 </th>
                 <th>
-                    @Html.ActionLink("Jméno", "Card", new { sortOrder = "byName", searchString = ViewData["Search"] })
+                    @Html.ActionLink("Jméno", "Card", new { sortOrder = "byName", searchString = ViewData["Search"], p = ViewData["CurrentPage"] })
                 </th>
                 <th>
                     Titul
                 </th>
                 <th>
-                    @Html.ActionLink("Rodné číslo", "Card", new { sortOrder = "byNumber", searchString = ViewData["Search"] })
+                    @Html.ActionLink("Rodné číslo", "Card", new { sortOrder = "byNumber", searchString = ViewData["Search"], p = ViewData["CurrentPage"] })
                 </th>
                 <th>
                     Pojišťovna
@@ -129,7 +133,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.patientsPage)
             {
                 <tr>
                     <td>
@@ -149,12 +153,15 @@
                     </td>
                     <td>
                         <!-- Zobrací celkový přehled pacienta se všemi jeho funkcemi. -->
-                        @Html.ActionLink("Pacient", "PatientProfile", new { patientNum = item.SocialSecurityNum }) |
+                        @Html.ActionLink("Pacient", "PatientProfile", new { patientNum = item.SocialSecurityNum, p = ViewData["CurrentPage"], sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] }) |
                         <!-- Vytvoření nové zprávy k danému pacientovi. -->
-                        @Html.ActionLink("Zpráva", "Report", new { socialNum = item.SocialSecurityNum })
+                        @Html.ActionLink("Zpráva", "Report", new { socialNum = item.SocialSecurityNum, p = ViewData["CurrentPage"], sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+<br /><br />
+@(Html.Pager(Model.patientsPage).Url(page => Url.Action("Card", new { p = page, sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())

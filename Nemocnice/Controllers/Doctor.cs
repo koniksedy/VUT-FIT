@@ -62,11 +62,13 @@ namespace Nemocnice.Controllers
          * sortOrder - typ řazení (podle jnéma, příjmení, rodného čísla)
          * searchString - hledaný řetězec (v případě vyhledávání)
          */
-        public IActionResult Card(string sortOrder, string searchString)
+        public IActionResult Card(string sortOrder, string searchString, CardModel model, int ? p)
         {
             // Uložení přávě vyhledávaného řetězce.
             // Při řazení výsledků budeme už vědět, o jaké výsledky se jedná.
             ViewData["Search"] = searchString;
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["CurrentPage"] = p;
 
             // Model - Seznam všech pacientů v databázi
             List<CardModel> Patients;
@@ -116,21 +118,29 @@ namespace Nemocnice.Controllers
                                              s.PatientFullName.Surname.StartsWith(searchString)).ToList();
             }
 
+            model.patients = Patients;
+
             // Řazení dle jednotlivých krytérií nastaveních v sortOrder.
             switch (sortOrder)
             {
                 case "byName":
-                    Patients = Patients.OrderBy(o => o.PatientFullName.Name).ToList();
+                    model.patients = model.patients.OrderBy(o => o.PatientFullName.Name).ToList();
                     break;
                 case "byNumber":
-                    Patients = Patients.OrderBy(o => o.SocialSecurityNum).ToList();
+                    model.patients = model.patients.OrderBy(o => o.SocialSecurityNum).ToList();
                     break;
                 default:
-                    Patients = Patients.OrderBy(o => o.PatientFullName.Surname).ToList();
+                    model.patients = model.patients.OrderBy(o => o.PatientFullName.Surname).ToList();
                     break;
             }
-            
-            return View(Patients);
+
+            //stránkování vybraných dat
+            model.PageNum = (p ?? 1);
+            int pageSize = 5;
+            IPagedList<CardModel> lide = model.patients.ToPagedList(model.PageNum, pageSize);
+            model.patientsPage = lide;
+
+            return View(model);
         }
 
 

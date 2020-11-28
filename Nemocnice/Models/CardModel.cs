@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using X.PagedList;
 
 namespace Nemocnice.Models
 {
@@ -18,5 +19,8 @@ namespace Nemocnice.Models
         public NameModel PatientFullName { get; set; }
         public string SocialSecurityNum { get; set; }
         public int Insurance { get; set; }
+        public int PageNum { get; set; }
+        public IPagedList<CardModel> patientsPage { get; set; }
+        public List<CardModel> patients { get; set; }
     }
 }
