@@ -15,55 +15,58 @@
         </p>
     </div>
 </form>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.ActionLink("Příjmení", "OutRequest", new { sortOrder = "bySurname", searchString = ViewData["Search"] })
-            </th>
-            <th>
-                @Html.ActionLink("Jméno", "OutRequest", new { sortOrder = "byName", searchString = ViewData["Search"] })
-            </th>
-            <th>
-                @Html.ActionLink("Rodné číslo", "OutRequest", new { sortOrder = "byNumber", searchString = ViewData["Search"] })
-            </th>
-            <th>
-                @Html.ActionLink("Lékař", "OutRequest", new { sortOrder = "byDoctor", searchString = ViewData["Search"] })
-            </th>
-            <th>
-                @Html.ActionLink("Datum vytvoření", "OutRequest", new { sortOrder = "byDate", searchString = ViewData["Search"] })
-            </th>
-            <th>
-                @Html.ActionLink("Dokončeno", "OutRequest", new { sortOrder = "byState", searchString = ViewData["Search"] })
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.PatientSurname)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PatientName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SocialSecurityNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ToDoctor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreationDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.State)
-            </td>
-            <td>
-                @Html.ActionLink("Zobrazit", "Edit", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div style="overflow-x: auto">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.ActionLink("Příjmení", "OutRequest", new { sortOrder = "bySurname", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Jméno", "OutRequest", new { sortOrder = "byName", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Rodné číslo", "OutRequest", new { sortOrder = "byNumber", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Lékař", "OutRequest", new { sortOrder = "byDoctor", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Datum vytvoření", "OutRequest", new { sortOrder = "byDate", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Dokončeno", "OutRequest", new { sortOrder = "byState", searchString = ViewData["Search"] })
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientSurname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SocialSecurityNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ToDoctor)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreationDate)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.State)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Zobrazit", "Edit", new { /* id=item.PrimaryKey */ })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

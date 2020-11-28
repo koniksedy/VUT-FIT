@@ -56,6 +56,10 @@ namespace Nemocnice.Controllers
             webHostEnvironment = hostEnvironment;
         }
 
+        public IActionResult FreeCardFilters()
+        {
+            return RedirectToAction("Card", new { searchString = "" });
+        }
 
         /*
          * Akce karotéky. Vypíše všechny pacienty uložené v databázi.

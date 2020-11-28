@@ -49,7 +49,7 @@
                             <input name="UpdateSurname" id="UpdateSurname" type="text" required disabled readonly autocomplete="off" class="form-control" value="@Model.PatientFullName.Surname" />
                         </div>
                         <div class="form-group">
-                            <label aclass="col-form-label">Titul</label>
+                            <label class="col-form-label">Titul</label>
                             <input name="UpdateTitle" id="UpdateTitle" type="text" disabled readonly autocomplete="off" class="form-control" value="@Model.PatientFullName.Title" />
                         </div>
                         <div class="form-group">
@@ -206,7 +206,7 @@
             </div>
         </div>
     </form>
-    <table class="table">
+    <table class="table table-striped">
         <tbody>
             @if (Model.AllReports.Any())
             {
@@ -234,88 +234,92 @@
 
 <div>
     <h2>Příchozí žádosti na vyšetření</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Vytvořeno
-                </th>
-                <th>
-                    Lékař
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.CheckupToMe.Any())
-            {
-                @foreach (var item in Model.CheckupToMe)
+    <div  style="overflow-x: auto">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořeno
+                    </th>
+                    <th>
+                        Lékař
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.CheckupToMe.Any())
+                {
+                    @foreach (var item in Model.CheckupToMe)
+                    {
+                        <tr>
+                            <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate, reports = Model.AllReports })')">
+                                @Html.DisplayFor(modelItem => item.CreateDate)
+                            </td>
+                            <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                                @Html.DisplayFor(modeItem => item.FromDoctor)
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate, reports = Model.AllReports })')">
-                            @Html.DisplayFor(modelItem => item.CreateDate)
-                        </td>
-                        <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
-                            @Html.DisplayFor(modeItem => item.FromDoctor)
+                        <td>
+                            Žádné příchozí řádosti o vyšetření.
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td>
-                        Žádné příchozí řádosti o vyšetření.
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <div>
     <h2>Moje žádosti na vyšetření</h2>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>
-                    Vytvořeno
-                </th>
-                <th>
-                    Lékař
-                </th>
-                <th>
-                    Stav
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model.CheckupToOther.Any())
-            {
-                @foreach (var item in Model.CheckupToOther)
+    <div style="overflow-x: auto">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořeno
+                    </th>
+                    <th>
+                        Lékař
+                    </th>
+                    <th>
+                        Stav
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.CheckupToOther.Any())
+                {
+                    @foreach (var item in Model.CheckupToOther)
+                    {
+                        <tr>
+                            <td onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                                @Html.DisplayFor(modelItem => item.CreateDate)
+                            </td>
+                            <td onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                                @Html.DisplayFor(modeItem => item.ToDoctor)
+                            </td>
+                            <td onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                                @Html.DisplayFor(modeItem => item.State)
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
-                            @Html.DisplayFor(modelItem => item.CreateDate)
-                        </td>
-                        <td onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
-                            @Html.DisplayFor(modeItem => item.ToDoctor)
-                        </td>
-                        <td onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
-                            @Html.DisplayFor(modeItem => item.State)
+                        <td>
+                            Žádné poukazy na vyšetření.
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr>
-                    <td>
-                        Žádné poukazy na vyšetření.
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
     @Html.ActionLink("Nový poukaz na vyšetření", "NewCheckup", new { patientNum = Model.SocialSecurityNumber, reports = Model.AllReports })
 </div>
 
