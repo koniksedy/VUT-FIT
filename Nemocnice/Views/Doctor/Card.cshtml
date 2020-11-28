@@ -21,6 +21,17 @@
 
     }
 
+    .new-report {
+        color: #028520;
+        font-weight: 700;
+        background-color: transparent;
+        border: none;
+    }
+
+        .new-report:hover {
+            color: #024311;
+        }
+
     @@media only screen and (min-width:501px) {
         .to-end {
         display: flex;
@@ -44,7 +55,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 
-<h1>Kartotéka</h1>
+<h1 style="margin-bottom:30px">Kartotéka</h1>
 
 
 <!-- Vyskakovací okno (modální dialog), k zadání údajů pro vytvoření nového pacienta. -->
@@ -175,6 +186,7 @@
                     Pojišťovna
                 </th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -198,9 +210,11 @@
                     </td>
                     <td>
                         <!-- Zobrací celkový přehled pacienta se všemi jeho funkcemi. -->
-                        @Html.ActionLink("Pacient", "PatientProfile", new { patientNum = item.SocialSecurityNum }) |
+                        <a class="detail" href="@Url.Action("PatientProfile", "Doctor", new { patientNum = item.SocialSecurityNum })">Detail</a>
+                     </td>   
+                     <td>
                         <!-- Vytvoření nové zprávy k danému pacientovi. -->
-                        @Html.ActionLink("Zpráva", "Report", new { socialNum = item.SocialSecurityNum })
+                        <a class="new-report" href="@Url.Action("Report", "Doctor", new { socialNum = item.SocialSecurityNum })">Nová zpráva</a>
                     </td>
                 </tr>
             }

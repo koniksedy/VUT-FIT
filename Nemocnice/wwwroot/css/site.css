@@ -80,14 +80,25 @@ body {
     /*height:100vh;*/
 }
 
-
-img:hover {
-    -ms-transform: scale(1.04); /* IE 9 */
-    -webkit-transform: scale(1.04); /* Safari 3-8 */
-    transform: scale(1.04);
-    filter: grayscale(40%);
+.vypnout {
+    background-color: white !important;
 }
 
+    .vypnout td:hover {
+        background-color: white;
+        cursor: default;
+    }
+
+.detail {
+    color: #008CD2;
+    font-weight: 700;
+    background-color: transparent;
+    border: none;
+}
+
+    .detail:hover {
+        color: #035464;
+    }
 
 .footer {
     position: fixed;
@@ -100,6 +111,7 @@ img:hover {
 table{
     width: 100%;
 }
+
 
 /* Pojistovna
 -------------------------------------------------- */
@@ -279,8 +291,8 @@ a:hover {
 
 
     /*-------------------  DOCTOR -----------------------------*/
-    tr: hover {
-    background-color: lightblue;
+tbody tr:hover {
+    background-color: lightblue !important;
 }
 
 .null_record {
