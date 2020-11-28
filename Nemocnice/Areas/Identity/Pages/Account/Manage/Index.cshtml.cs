@@ -47,7 +47,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
 
             var db = new DatabaseContext();
             var uzivatel = db.UserT.Where(x => x.Login == userName).First();
-            uzivatel.Phone = phoneNumber;
+            //uzivatel.Phone = phoneNumber;
             db.SaveChanges();
             Input = new InputModel
             {
@@ -94,7 +94,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            uzivatel.Phone = phoneNumber;
+            uzivatel.Phone = Input.PhoneNumber;
             db.SaveChanges();
 
             await _signInManager.RefreshSignInAsync(user);
