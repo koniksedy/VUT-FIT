@@ -24,11 +24,15 @@
 
 <!-- Knihovny pro autocomplete -->
 <script src="~/lib/extern/jquery.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 <script src="~/lib/extern/jquery-ui.js"></script>
-<!-- <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script> bylo smazáno
-     z důvodu nefunkčního dropdown, pokud by vznikla nová chyba, bude potřeba
-     zhodnotit, jak tuto knihovnu vrátit. 
--->
+<!-- Bez následujícího skriptu nebude fungovat drobdown menu.-->
+<script>
+    $(document).ready(function () {
+        $('.dropdown-toggle').dropdown();
+    });
+</script>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <!-- Styly pro zobrazení obrázku -->
@@ -60,21 +64,21 @@
         width: 60%;
     }
 
-        .modal-contentImage img:hover{
+        .modal-contentImage img:hover {
             transform: scale(1);
         }
 
-        /* Caption of Modal Image */
-        #caption {
-            margin: auto;
-            display: block;
-            width: 80%;
-            max-width: 700px;
-            text-align: center;
-            color: #ccc;
-            padding: 10px 0;
-            height: 150px;
-        }
+    /* Caption of Modal Image */
+    #caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+    }
 
     /* Add Animation */
     .modal-contentImage, #caption {
@@ -101,7 +105,6 @@
             text-decoration: none;
             cursor: pointer;
         }
-
 </style>
 
 <style>
@@ -112,28 +115,6 @@
     .text-zprav {
         width: 100%;
     }
-
-
-    .moje-tabulka {
-        border: 2px solid #d0d0d0 !important;
-        max-width: 200px;
-    }
-
-        .moje-tabulka td {
-            max-height: 27px;
-        }
-
-        .moje-tabulka tbody tr:hover {
-            background-color: lightblue;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .moje-tabulka thead {
-            border-bottom: 4px solid #d0d0d0 !important;
-        }
-
-
 
     .hlavni-diagnoza {
         max-width: 148px;
@@ -190,20 +171,22 @@
             align-items: flex-end;
         }
     }
+
     @@media only screen and (max-width:999px) {
         .vykon {
             margin-top: 12px;
             width: 150px;
         }
     }
-        .vykon input {
-            border-radius: 0.25rem;
-            color: black;
-            padding: 0.375rem 0.75rem;
-            border: 1px solid #ced4da;
-            width: 77px;
-            max-width: 77px;
-        }
+
+    .vykon input {
+        border-radius: 0.25rem;
+        color: black;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+        width: 77px;
+        max-width: 77px;
+    }
 
     .input-image {
         max-width: 383px;
@@ -233,7 +216,11 @@
 <!-- Model obsahující informace o pacientovi, všech zprávách a předchozí a aktuální zprávě. -->
 @model Nemocnice.Models.PatientReportsModel
 <!-- Základní informace o pacientovi -->
-<h2 style="margin-bottom:0px;margin-top:8px;">@Model.PatientFullName.getFullName() (r.č: @Model.SocialSecurityNumber, poj: @Model.Insurance)</h2>
+<h2 style="margin-bottom:0px;margin-top:8px;">
+    @Model.PatientFullName.getFullName() (r.č: @Model.SocialSecurityNumber, poj: @Model.Insurance)
+    <i onclick="redirectToAction('@Url.Action("PatientProfile", "Doctor", new { patientNum = Model.SocialSecurityNumber})')" class="fa fa-external-link icons" aria-hidden="true"></i>
+
+</h2>
 
 <div style="margin-top:20px" class="row flex-row flex-wrap-reverse">
     <div class="col-9 zpravy">
@@ -267,13 +254,21 @@
                     <div id="lockbtn">
                         <div style="margin-top:12px" class="row">
                             <div class="col">
-                                <button class="btn btn-primary" type="button" onclick="upravitBtnFunction()">Upravit</button>
+                                <button class="btn btn-primary" type="button" onclick="upravitBtnFunction()">
+                                    <i class=" fa fa-pencil" aria-hidden="true"></i>
+                                    Upravit
+                                </button>
                             </div>
                             <div class="col float-right ulozit-btn">
                                 <!-- Uložit, blokováno, dokud se nezmáčkne tlačítko Upravit-->
-                                <input class="btn btn-primary" type="submit" id="RepareReportSaveBtn" disabled value="Uložit" />
+                                <button onclick="loading_spinner()" class="btn btn-primary" type="submit" id="RepareReportSaveBtn" disabled>
+                                    <span id="saveButton">
+                                        <i style="margin-right:3px" class="fa fa-floppy-o" aria-hidden="true"></i>
+                                    </span>
+                                    Uložit
+                                </button>
                             </div>
-                        </div>  
+                        </div>
                     </div>
                 </form>
             }
@@ -338,8 +333,14 @@
                         <div style="margin-right:5px" class="col">
                             <h4>Přiložit obrázky.</h4>
                             <div>
-                                <button id="addRowFile" type="button" class="btn btn-success">Nový</button>
-                                <button id="addRowExisting" type="button" class="btn btn-success existujici-top">Existující</button>
+                                <button id="addRowFile" type="button" class="btn btn-success">
+                                    <i style="margin-right:5px" class="fa fa-upload" aria-hidden="true"></i>
+                                    Nový
+                                </button>
+                                <button id="addRowExisting" type="button" class="btn btn-success existujici-top">
+                                    <i style="margin-right:5px" class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                    Existující
+                                </button>
                             </div>
                         </div>
                         <div class="col-6">
@@ -363,7 +364,12 @@
                             <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
                         </div>
                         <div class="col ulozit-btn">
-                            <input class="btn btn-primary" type="submit" value="Uložit">
+                            <button onclick="loading_spinner()" class="btn btn-primary" type="submit">
+                                <span id="saveButton">
+                                    <i style="margin-right:3px" class="fa fa-floppy-o" aria-hidden="true"></i>
+                                </span>
+                                Uložit
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -401,7 +407,7 @@
                                     @if (item.name.Length > 25)
                                     {
                                         @((item.name.Substring(0, 20)) + "...")
-                                    
+
                                     }
                                     else
                                     {
@@ -428,7 +434,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Vyberte obrázek</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -443,7 +449,7 @@
                             <th>
                                 Název
                             </th>
-                            <th>zobrazit</th>
+                            <th>Zobrazit</th>
                         </tr>
                     </thead>
                     <tbody id="myTable"></tbody>
@@ -483,7 +489,16 @@
     </div>
 </div>
 
-<!-- SCRIPTS for MICTURE-->
+<!--Script for spinner on save-->
+<script>
+    function loading_spinner() {
+        document.getElementById("saveButton").innerHTML = "<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>";
+    }
+</script>
+
+
+
+<!-- SCRIPTS for PICTURE-->
 <script>
     // add row2
     $("#addRowExisting").click(function () {
@@ -495,7 +510,7 @@
         html += '<label class="custom-file-label text-truncate" for="inputGroupFile02">Vyberte existující soubor</label>';
         html += '</div>';
         html += '<div class="input-group-append">';
-        html += '<button id="removeRowFile" type="button" class="btn btn-danger">&times;</button>';
+        html += '<button id="removeRowFile" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>';
         html += '</div>';
         html += '</div>';
         html += '</div>';
@@ -553,7 +568,15 @@
                 success: function (data) {
                     if (modal.innerHTML == "") {
                         jQuery.each(data, function (i, val) {
-                            var html = "<tr><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">" + val.name + "</td>";
+                            var html = "<tr><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">";
+                            if (val.name.length > 25) {
+                                html += val.name.substring(0, 23) + "...";
+                            }
+                            else {
+                                html += val.name;
+                            }
+
+                            html += "</td>";
                             html += "<td><i onclick=\"viewImage('/images/" + val.id + val.type + "', '" + val.name + "')\" class=\"fa fa-picture-o\" style=\"font-size:24px\"></i></td>";
                             html += "</tr>";
                             modal.innerHTML += html;
@@ -637,5 +660,7 @@
     }
 </script>
 
-<script src="~/js/Report.js"></script>
+
+
+<script src="~/js/Report.js?v=2"></script>
 <script src="~/js/site.js"></script>

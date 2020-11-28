@@ -54,24 +54,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <div style="height: 100vh;">
     <div class="first_row">
         <div class="first_row_first_item">
@@ -87,7 +69,7 @@
         <div class="first_row_second_item">
             <div class="row">
 
-                <img class="Doctor" alt="Corona" height="240" width="340" src="~/Img/Shared/corona.jpg" onclick="ImgClicked()" />
+                <img class="Doctor" alt="Corona" height="240" width="340" src="~/Img/Shared/corona.jpg" onclick="CoronaClicked()" />
             </div>
         </div>
     </div>
@@ -97,7 +79,7 @@
             <div class="first_second">
 
 
-                <img class="Doctor" alt="Doctor" height="240" width="330" src="~/Img/Shared/doctors.jpg" onclick="ImgClicked()" />
+                <img class="Doctor" alt="Doctor" height="240" width="330" src="~/Img/Shared/doctors.jpg" onclick="DoctorClicked()" />
                 <div class="test-text"><a class="test-text" href="Home/Privacy">DOKTOŘI</a></div>
 
 
@@ -132,8 +114,11 @@
 </div>
 
     <script>
-        function ImgClicked() {
+        function DoctorClicked() {
             window.location.href = "Home/DoctorList";
+        }
+        function CoronaClicked() {
+            window.location.href = "https://www.worldometers.info/coronavirus/";
         }
         function addgreen() {
             document.getElementById("corona").classList.add("mouseover");

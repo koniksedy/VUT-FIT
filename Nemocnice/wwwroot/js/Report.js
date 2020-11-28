@@ -147,16 +147,19 @@ function ReportValidation() {
 
     if (Text == "") {
         if (!confirm("Jste si jistí, že chcete uložit prázdnou zprávu?")) {
+            stop_spinner();
             return false;
         }
     }
 
     if (Diag1 == "") {
         alert("Hlavní diagnóza musí být zadaná.");
+        stop_spinner();
         return false;
     }
     if (Bill == "") {
         alert("Výkon musí být zadán.");
+        stop_spinner();
         return false;
     }
 
@@ -200,8 +203,13 @@ function ReportValidation() {
     }
 
     if (result != 0) {
+        stop_spinner();
         return false;
     }
 
     return true;
+}
+
+function stop_spinner() {
+    document.getElementById("saveButton").innerHTML = '<i style="margin-right: 3px" class="fa fa-floppy-o" aria-hidden="true"></i>';
 }

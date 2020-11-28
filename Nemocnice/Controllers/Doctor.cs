@@ -56,11 +56,6 @@ namespace Nemocnice.Controllers
             webHostEnvironment = hostEnvironment;
         }
 
-        public IActionResult FreeCardFilters()
-        {
-            return RedirectToAction("Card", new { searchString = "" });
-        }
-
         /*
          * Akce karotéky. Vypíše všechny pacienty uložené v databázi.
          * sortOrder - typ řazení (podle jnéma, příjmení, rodného čísla)
@@ -722,7 +717,11 @@ namespace Nemocnice.Controllers
             // Pokud de přihlášen administrátor, vidí všechny zprávy.
             patientProfileModel.AllReports = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum &&
                                                                            (User.IsInRole("Admin") || o.Owner.UserId == doctorId))
-                                                                .Select(s => s.CreateDate).ToList().OrderByDescending(o => o).ToList();
+                                                                .Select(s => new ReportsModel
+                                                                {
+                                                                    Date = s.CreateDate,
+                                                                    Text = (s.Description.Length < 40) ? s.Description : (s.Description.Substring(0, 40) + "...")
+                                                                }).ToList().OrderByDescending(o => o.Date).ToList();
 
             // Získání příchozích žádostí o vyšetření, které čekají na vyřízení.
             // Pokud je přihlášený administrátor, uvidí žádosti určené všem doktorům.
@@ -1803,7 +1802,7 @@ namespace Nemocnice.Controllers
                                                    {
                                                        id = s.Picture.NameInt,
                                                        name = s.Picture.Description,
-                                                       date = s.Picture.CreateDate.ToString(),
+                                                       date = s.Picture.CreateDate.ToShortDateString(),
                                                        type = s.Picture.Type
                                                    }).ToList();
 
@@ -1815,7 +1814,7 @@ namespace Nemocnice.Controllers
                                                    {
                                                        id = s.Picture.NameInt,
                                                        name = s.Picture.Description,
-                                                       date = s.Picture.CreateDate.ToString(),
+                                                       date = s.Picture.CreateDate.ToShortDateString(),
                                                        type = s.Picture.Type
                                                    }).ToList();
 

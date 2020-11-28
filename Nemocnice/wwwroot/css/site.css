@@ -303,3 +303,32 @@ tbody tr:hover {
 .menu .login {
     padding-top: 150px;
 }
+
+
+
+.icons:hover {
+    -ms-transform: scale(1.04); /* IE 9 */
+    -webkit-transform: scale(1.04); /* Safari 3-8 */
+    transform: scale(1.04);
+    filter: grayscale(40%);
+    cursor: pointer;
+}
+
+.moje-tabulka {
+    border: 2px solid #d0d0d0 !important;
+    max-width: 200px;
+}
+
+    .moje-tabulka td {
+        max-height: 27px;
+    }
+
+    .moje-tabulka tbody tr:hover {
+        background-color: lightblue;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .moje-tabulka thead {
+        border-bottom: 4px solid #d0d0d0 !important;
+    }

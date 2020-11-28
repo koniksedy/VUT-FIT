@@ -16,7 +16,7 @@ namespace Nemocnice.Models
         public Data.Address Address { get; set; } = new Data.Address();
         public Data.HealthCondition HealthCondition { get; set; } = new Data.HealthCondition();
         public string Allergys { get; set; }
-        public List<DateTime> AllReports { get; set; } = new List<DateTime>();
+        public List<ReportsModel> AllReports { get; set; } = new List<ReportsModel>();
         public List<CheckupToMeLightModel> CheckupToMe { get; set; } = new List<CheckupToMeLightModel>();
         public List<CheckupToOtherLightModle> CheckupToOther { get; set; } = new List<CheckupToOtherLightModle>();
 
