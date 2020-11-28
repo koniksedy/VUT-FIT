@@ -346,7 +346,10 @@
                         <div class="col-6">
                             <h4>Přiložit výsledky vyšetření.</h4>
                             <div>
-                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">Výsledek vyšetření</button>
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">
+                                    <i style="margin-right:5px" class="fa fa-file-text" aria-hidden="true"></i>
+                                    Výsledek vyšetření
+                                </button>
                             </div>
                         </div>
 
@@ -456,7 +459,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
             </div>
         </div>
     </div>
@@ -530,7 +533,7 @@
         html += '<label class="custom-file-label text-truncate" for="inputGroupFile01">Vyberte soubor</label>';
         html += '</div>';
         html += '<div class="input-group-append">';
-        html += '<button id="removeRowFile" type="button" class="btn btn-danger">&times;</button>';
+        html += '<button id="removeRowFile" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>';
         html += '</div>';
         html += '</div>';
         html += '</div>';

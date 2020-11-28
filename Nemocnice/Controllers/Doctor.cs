@@ -822,10 +822,12 @@ namespace Nemocnice.Controllers
         [HttpPost]
         public IActionResult UpdateHealthInfo()
         {
+            
             // Získání dat o pacientovi a zdravotním stavu z metody POST
             string patientNumber = Request.Form["PatientNum"];
-            int patientHeight = int.Parse(Request.Form["UpdateHeight"]);
-            int patientWeight = int.Parse(Request.Form["UpdateWeight"]);
+            /*
+            int patientHeight = int.Parse(String.IsNullOrEmpty(Request.Form["UpdateHeight"]) ? "0" : Request.Form["UpdateHeight"].ToString());
+            int patientWeight = int.Parse(String.IsNullOrEmpty(Request.Form["UpdateWeight"]) ? "0" : Request.Form["UpdateHeight"].ToString());
             string patientBlodType = Request.Form["UpdateBlodType"];
             string patientAlergys = Request.Form["UpdateAllergys"];
 
@@ -836,7 +838,7 @@ namespace Nemocnice.Controllers
             healthCondition.BloodType = patientBlodType;
             healthCondition.Allergys = patientAlergys;
             db.SaveChanges();
-
+            */
             // Přesměrování na kartu pacienta s upravenými údaji.
             return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
         }
