@@ -37,7 +37,7 @@
 <!-- Vyskakovací okno (modální dialog), k zadání údajů pro vytvoření nového pacienta. -->
 <form asp-action="CreateInsurance" method="post" onsubmit="return testRC('RC')">
     <div class="modal fade" id="newPatientModal" tabindex="-1" role="dialog" aria-labelledby="newPatientModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width:60%" role="document">
+        <div class="modal-dialog" style="max-width:80%" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="newPatientModalLabel">Nový pracovník</h5>
@@ -87,13 +87,13 @@
                                 <input name="NewZip" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" />
                             </div>
                             <div class="form-group">
-                                <label aclass="col-form-label">Titul</label>
+                                <label class="col-form-label">Titul</label>
                                 <input name="NewTitle" type="text" autocomplete="off" value="" class="form-control" />
                             </div>
                         </div>
                         <div class="col-2">
                             <div class="form-group">
-                                <label aclass="col-form-label">Telefon do práce</label>
+                                <label class="col-form-label">Telefon do práce</label>
                                 <input name="NewWorkPhone" type="text" autocomplete="off" value="" class="form-control" />
                             </div>
                         </div>
@@ -173,7 +173,7 @@
 
                             <div class="modal fade" id="@pom2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
-                                <div class="modal-dialog" role="document">
+                                <div class="modal-dialog" style="max-width: 80%" role="document">
                                     <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
                                     <div class="modal-content">
                                         <!-- pozadi ve vyskakovacim oknu -->
@@ -189,55 +189,55 @@
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label class="col-form-label">Jméno*</label>
-                                                        <input name="edit_name" type="text" required autocomplete="off" class="form-control" value="@item.InsuranceFullName.Name"/>
+                                                        <input name="edit_name" type="text" required autocomplete="off" class="form-control" value="@item.InsuranceFullName.Name" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Telefon*</label>
-                                                        <input name="edit_tel" type="text" required autocomplete="off" class="form-control" value="@tel"/>
+                                                        <input name="edit_tel" type="text" required autocomplete="off" class="form-control" value="@tel" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Ulice</label>
-                                                        <input name="edit_street" autocomplete="off" class="form-control" value="@address.StreetName"/>
+                                                        <input name="edit_street" autocomplete="off" class="form-control" value="@address.StreetName" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Město*</label>
-                                                        <input name="edit_town" required autocomplete="off" class="form-control" value="@address.City"/>
+                                                        <input name="edit_town" required autocomplete="off" class="form-control" value="@address.City" />
                                                     </div>
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-group">
                                                         <label class="col-form-label">Příjmení*</label>
-                                                        <input name="edit_surname" type="text" required autocomplete="off" class="form-control" value="@item.InsuranceFullName.Surname"/>
+                                                        <input name="edit_surname" type="text" required autocomplete="off" class="form-control" value="@item.InsuranceFullName.Surname" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Email</label>
-                                                        <input name="edit_mail" type="email" autocomplete="off" class="form-control" value="@mail"/>
+                                                        <input name="edit_mail" type="email" autocomplete="off" class="form-control" value="@mail" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Číslo popisné</label>
-                                                        <input name="edit_cp" type="text" pattern="[0-9]+" autocomplete="off" class="form-control" value="@(address.HouseNumber == 0 ? "" : address.HouseNumber.ToString())"/>
+                                                        <input name="edit_cp" type="text" pattern="[0-9]+" autocomplete="off" class="form-control" value="@(address.HouseNumber == 0 ? "" : address.HouseNumber.ToString())" />
                                                     </div>
 
                                                     <div class="form-group">
                                                         <label class="col-form-label">Směrovací číslo*</label>
-                                                        <input name="edit_psc" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" value="@(address.ZIP == 0 ? "" : address.ZIP.ToString())"/>
+                                                        <input name="edit_psc" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" value="@(address.ZIP == 0 ? "" : address.ZIP.ToString())" />
                                                     </div>
                                                 </div>
-                                                <div class="col-2">
+                                                <div class="col">
                                                     <div class="form-group">
-                                                        <label aclass="col-form-label">Titul</label>
+                                                        <label class="col-form-label">Titul</label>
                                                         <input name="edit_title" type="text" autocomplete="off" value="@title" class="form-control" />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label aclass="col-form-label">Telefon do práce</label>
+                                                        <label class="col-form-label">Telefon do práce</label>
                                                         <input name="edit_work" type="text" autocomplete="off" value="@item.WorkPhone" class="form-control" />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label aclass="col-form-label">Pozice*</label>
-                                                        <input name="edit_position" type="text" required autocomplete="off" class="form-control" value="@item.Position"/>
+                                                        <label class="col-form-label">Pozice*</label>
+                                                        <input name="edit_position" type="text" required autocomplete="off" class="form-control" value="@item.Position" />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label aclass="col-form-label">Login*</label>
+                                                        <label class="col-form-label">Login*</label>
                                                         <input name="edit_login" type="text" required autocomplete="off" value="@item.Login" class="form-control" />
                                                     </div>
                                                 </div>
