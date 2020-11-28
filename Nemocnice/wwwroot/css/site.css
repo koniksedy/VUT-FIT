@@ -101,9 +101,6 @@ table{
     width: 100%;
 }
 
-tr:hover {
-    background-color: #e6f7ff;
-}
 
 /* Pojistovna
 -------------------------------------------------- */
@@ -283,8 +280,8 @@ a:hover {
 
 
     /*-------------------  DOCTOR -----------------------------*/
-    tr: hover {
-    background-color: lightblue;
+tbody tr:hover {
+    background-color: #e6f7ff;
 }
 
 .null_record {
