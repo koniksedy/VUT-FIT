@@ -139,14 +139,24 @@
         flex-direction: column;
         align-items: flex-end;
     }
+
+    .input-image {
+        max-width: 383px;
+        margin-bottom: 15px;
+    }
+
+        .input-image .btn {
+            z-index: 1;
+        }
 </style>
 
 <script src="~/lib/extern/jquery.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
 <script src="~/lib/extern/jquery-ui.js"></script>
 <!-- Bez následujícího skriptu nebude fungovat drobdown menu.-->
 <script>
     $(document).ready(function () {
-        $('.dropdown-toggle').dropdown();
+        $('.dropdown').dropdown();
     });
 </script>
 
@@ -158,22 +168,22 @@
 <div>
     <form method="post" enctype="multipart/form-data" asp-action="CreateNewCheckup" onsubmit="return TicketValidation()">
         <div style="margin-bottom:20px">
-            <h4>@Model.FullName.getFullName() (@Model.SocialSecurityNum)</h4>
+            <h4>@Model.FullName.getFullName() (r.č.:&nbsp;@Model.SocialSecurityNum)</h4>
             <input hidden name="patientNum" value="@Model.SocialSecurityNum" />
         </div>
         <div class="flex-row row">
             <div class="col-4" style="margin-bottom:20px">
-                <h4>Lékař</h4>
+                <h4>Lékař<a style="color:red">*</a></h4>
                 <div class=" align-self-end">
                     <input class="hledat-lekar" type="text" id="doctorName" name="doctorName" placeholder="Vyhledat lékaře (? - všichni)" />
                     <input hidden id="doctorICZ" name="doctorICZ" value="" />
                 </div>
             </div>
             <div class="col">
-                <h4 style="margin-bottom:-5px;">Diagnozy</h4>
+                <h4 style="margin-bottom:-5px;">Diagnozy<a style="color:red">*</a></h4>
                 <div class="flex-row row">
                     <div class="col hlavni-diagnoza">
-                        <input type="text" id="Diagnosis1" name="Diagnosis1" placeholder="Halvní diagnoza" autocomplete="off">
+                        <input type="text" id="Diagnosis1" name="Diagnosis1" placeholder="Halvní diagnoza*" autocomplete="off">
                     </div>
                     <div class="col diagnoza">
                         <input type="text" id="Diagnosis2" name="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off">
@@ -205,11 +215,11 @@
                 </div>
             </div>
             <div class="col-6">
-                <h4>Přiložit zprávu.</h4>
+                <h4>Přiložit text zprávy.</h4>
                 <div>
                     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">
                         <i style="margin-right:5px" class="fa fa-file-text" aria-hidden="true"></i>
-                        Výsledek vyšetření
+                        Vybrat zprávu
                     </button>
                 </div>
             </div>
@@ -219,7 +229,7 @@
 
         <!--Dynamic row-->
         <div class="row">
-            <div class="col-4">
+            <div class="col" style="max-width:394px">
                 <div id="newRow"></div>
             </div>
         </div>
@@ -228,8 +238,8 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="CopyReportModalLabel">Přiložit zprávu</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <h5 class="modal-title" id="CopyReportModalLabel">Vyberte zprávu</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Zavřít">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
@@ -254,15 +264,21 @@
             <div>
                 <textarea style="width:100%" rows="10" id="checkupText" name="checkupText"></textarea>
             </div>
-            <div style="margin-top:10px" class="ulozit-btn">
-                <!-- Uložit, blokováno, dokud se nezmáčkne tlačítko Upravit-->
-                <button onclick="loading_spinner()" class="btn btn-primary" type="submit" id="RepareReportSaveBtn">
-                    <span id="saveButton">
-                        <i style="margin-right:3px" class="fa fa-floppy-o" aria-hidden="true"></i>
-                    </span>
-                    Uložit
-                </button>
+            <div class="row">
+                <div class="col">
+                    <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
+                </div>
+                <div class="col ulozit-btn">
+                    <!-- Uložit, blokováno, dokud se nezmáčkne tlačítko Upravit-->
+                    <button onclick="loading_spinner()" class="btn btn-primary" type="submit" id="RepareReportSaveBtn">
+                        <span id="saveButton">
+                            <i style="margin-right:3px" class="fa fa-floppy-o" aria-hidden="true"></i>
+                        </span>
+                        Uložit
+                    </button>
+                </div>
             </div>
+            
         </div>     
     </form>
 </div>
@@ -272,7 +288,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Vyberte Obrázek</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -294,7 +310,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
             </div>
         </div>
     </div>
@@ -344,7 +360,7 @@
         html += '<div id="inputFormRowFile">';
         html += '<div class="input-group mb-3">';
         html += '<div class="custom-file">';
-        html += '<input value="" data-toggle="modal" data-target="#exampleModal" name="FileExist" type="text" class="custom-file-input" id="inputGroupFile02" aria-describedby="inputGroupFileAddon02">';
+        html += '<input autocomplete="off" value="" data-toggle="modal" data-target="#exampleModal" name="FileExist" type="text" class="custom-file-input" id="inputGroupFile02" aria-describedby="inputGroupFileAddon02">';
         html += '<label class="custom-file-label" for="inputGroupFile02">Vyberte existující soubor</label>';
         html += '</div>';
         html += '<div class="input-group-append">';
@@ -365,7 +381,7 @@
         html += '<div class="input-group mb-3">';
         html += '<div class="custom-file">';
         html += '<input onchange="changeIn(this)" name="FileOut" type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">';
-        html += '<label class="custom-file-label" for="inputGroupFile01">Vyberte soubor</label>';
+        html += '<label class="custom-file-label text-truncate" for="inputGroupFile01">Vyberte soubor</label>';
         html += '</div>';
         html += '<div class="input-group-append">';
         html += '<button id="removeRowFile" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>';
@@ -406,7 +422,15 @@
                 success: function (data) {
                     if (modal.innerHTML == "") {
                         jQuery.each(data, function (i, val) {
-                            var html = "<tr><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">" + val.name + "</td>";
+                            var html = "<tr><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">";
+                            if (val.name.length > 25) {
+                                html += val.name.substring(0, 23) + "...";
+                            }
+                            else {
+                                html += val.name;
+                            }
+
+                            html += "</td>";
                             html += "<td><i onclick=\"viewImage('/images/" + val.id + val.type + "', '" + val.name + "')\" class=\"fa fa-picture-o\" style=\"font-size:24px\"></i></td>";
                             html += "</tr>";
                             modal.innerHTML += html;
@@ -417,13 +441,10 @@
                             row.cells[0].onclick = function () {
                                 triggerElement.val(this.getElementsByTagName('input')[0].value);
                                 triggerElement.siblings(".custom-file-label").addClass("selected").html(this.parentElement.cells[1].innerHTML);
-                                alert(triggerElement.val());
                             }
                             row.cells[1].onclick = function () {
-                                alert(this.parentElement.cells[0].innerHTML);
                                 triggerElement.val(this.parentElement.cells[0].getElementsByTagName('input')[0].value);
                                 triggerElement.siblings(".custom-file-label").addClass("selected").html(this.innerHTML);
-                                alert(triggerElement.val());
                             }
                         }
                     }
@@ -439,13 +460,10 @@
                 row.cells[0].onclick = function () {
                     triggerElement.val(this.getElementsByTagName('input')[0].value);
                     triggerElement.siblings(".custom-file-label").addClass("selected").html(this.parentElement.cells[1].innerHTML);
-                    alert(triggerElement.val());
                 }
                 row.cells[1].onclick = function () {
-                    alert(this.parentElement.cells[0].innerHTML);
                     triggerElement.val(this.parentElement.cells[0].getElementsByTagName('input')[0].value);
                     triggerElement.siblings(".custom-file-label").addClass("selected").html(this.innerHTML);
-                    alert(triggerElement.val());
                 }
             }
         }

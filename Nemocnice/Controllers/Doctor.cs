@@ -725,7 +725,7 @@ namespace Nemocnice.Controllers
 
             // Získání příchozích žádostí o vyšetření, které čekají na vyřízení.
             // Pokud je přihlášený administrátor, uvidí žádosti určené všem doktorům.
-            patientProfileModel.CheckupToMe = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && 
+            patientProfileModel.CheckupToMe = db.CheckupTicketT.Include(i => i.CreatedBy).Where(o => o.Patient.SocialSecurityNum == patientNum && 
                                                                            o.State != "dokončeno" &&
                                                                            (User.IsInRole("Admin") || o.ToDoctor.UserId == doctorId))
                                                                .Join(db.UserT,
@@ -734,7 +734,7 @@ namespace Nemocnice.Controllers
                                                                      (checkup, user) => new CheckupToMeLightModel
                                                                      {
                                                                          CreateDate = checkup.CreateDate,
-                                                                         FromDoctor = user.Surname + " " + user.Name + ", " + user.Title
+                                                                         FromDoctor = user.getFullName()
                                                                      }).ToList().OrderByDescending(o => o.CreateDate).ToList();
 
             // Získání všech vytvořených žádostí pro ostatní lékaře.
@@ -747,7 +747,7 @@ namespace Nemocnice.Controllers
                                                                         (checkup, user) => new CheckupToOtherLightModle
                                                                         {
                                                                             CreateDate = checkup.CreateDate,
-                                                                            ToDoctor = user.Surname + " " + user.Name + ", " + user.Title,
+                                                                            ToDoctor = user.getFullName(),
                                                                             State = checkup.State
                                                                         }).ToList().OrderByDescending(o => o.CreateDate).ToList();
 

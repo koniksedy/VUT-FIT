@@ -1,25 +1,39 @@
 ﻿@{
-    ViewData["Title"] = "Příchozí žádost";
+    ViewData["Title"] = "Výsledek vyšetření";
 }
 
 @model CheckupTicketModel
 
-<div>
-    Patient: <b>@Model.PatientFullName.getFullName() (@Model.SocialSecurityNumber)</b><br />
-    Doctor:  <b>@Model.DoctorFullName.getFullName()</b><br />
-    Stav: @Model.State
-</div>
+<h2 style="margin-bottom:20px">@Model.PatientFullName.getFullName() (ř.č.:&nbsp;@Model.SocialSecurityNumber)</h2>
 
 <div>
-    <label>
+    <b>Lékař:  </b>@Model.DoctorFullName.getFullName()<br />
+    <b>Stav: </b>
+    @if (Model.State != "dokončeno")
+    {
+        <b class="text-danger">@Model.State</b>
+    }
+    else
+    {
+        <b class="text-success">@Model.State</b>
+    }
+</div>
+
+
+<div>
+    <h4 style="margin-top:20px">
         Žádost [@Model.CreateDate]
-    </label>
-    <textarea cols="100" rows="10" readonly>@Model.RequestText</textarea>
+    </h4>
+    <textarea style="width:100%;max-width:909px" rows="10" readonly>@Model.RequestText</textarea>
 </div>
 
 <div>
-    <label>
+    <h4 style="margin-top:20px">
         Zpráva z vyšetření @((Model.State == "dokončeno") ? "[" + Model.FinishDate + "]" : "")
-    </label>
-    <textarea cols="100" rows="10" readonly>@Model.ReportText</textarea>
+    </h4>
+    <textarea style="width:100%;max-width:909px" rows="10" readonly>@Model.ReportText</textarea>
+</div>
+
+<div>
+    <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
 </div>

@@ -29,7 +29,7 @@
 <!-- Bez následujícího skriptu nebude fungovat drobdown menu.-->
 <script>
     $(document).ready(function () {
-        $('.dropdown-toggle').dropdown();
+        $('.dropdown').dropdown();
     });
 </script>
 
@@ -217,7 +217,7 @@
 @model Nemocnice.Models.PatientReportsModel
 <!-- Základní informace o pacientovi -->
 <h2 style="margin-bottom:0px;margin-top:8px;">
-    @Model.PatientFullName.getFullName() (r.č: @Model.SocialSecurityNumber, poj: @Model.Insurance)
+    @Model.PatientFullName.getFullName() (r.č:&nbsp;@Model.SocialSecurityNumber, poj:&nbsp;@Model.Insurance)
     <i onclick="redirectToAction('@Url.Action("PatientProfile", "Doctor", new { patientNum = Model.SocialSecurityNumber})')" class="fa fa-external-link icons" aria-hidden="true"></i>
 
 </h2>
@@ -509,7 +509,7 @@
         html += '<div id="inputFormRowFile">';
         html += '<div class="input-group mb-3">';
         html += '<div class="custom-file">';
-        html += '<input value="" data-toggle="modal" data-target="#exampleModal" name="FileExist" type="text" class="custom-file-input" id="inputGroupFile02" aria-describedby="inputGroupFileAddon02">';
+        html += '<input autocomplete="off" value="" data-toggle="modal" data-target="#exampleModal" name="FileExist" type="text" class="custom-file-input" id="inputGroupFile02" aria-describedby="inputGroupFileAddon02">';
         html += '<label class="custom-file-label text-truncate" for="inputGroupFile02">Vyberte existující soubor</label>';
         html += '</div>';
         html += '<div class="input-group-append">';
@@ -590,13 +590,10 @@
                             row.cells[0].onclick = function () {
                                 triggerElement.val(this.getElementsByTagName('input')[0].value);
                                 triggerElement.siblings(".custom-file-label").addClass("selected").html(this.parentElement.cells[1].innerHTML);
-                                alert(triggerElement.val());
                             }
                             row.cells[1].onclick = function () {
-                                alert(this.parentElement.cells[0].innerHTML);
                                 triggerElement.val(this.parentElement.cells[0].getElementsByTagName('input')[0].value);
                                 triggerElement.siblings(".custom-file-label").addClass("selected").html(this.innerHTML);
-                                alert(triggerElement.val());
                             }
                         }
                     }
@@ -612,13 +609,10 @@
                 row.cells[0].onclick = function () {
                     triggerElement.val(this.getElementsByTagName('input')[0].value);
                     triggerElement.siblings(".custom-file-label").addClass("selected").html(this.parentElement.cells[1].innerHTML);
-                    alert(triggerElement.val());
                 }
                 row.cells[1].onclick = function () {
-                    alert(this.parentElement.cells[0].innerHTML);
                     triggerElement.val(this.parentElement.cells[0].getElementsByTagName('input')[0].value);
                     triggerElement.siblings(".custom-file-label").addClass("selected").html(this.innerHTML);
-                    alert(triggerElement.val());
                 }
             }
         }

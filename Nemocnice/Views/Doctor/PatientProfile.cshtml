@@ -34,6 +34,12 @@
         top: 0;
     }
 
+    .button-on-end {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
 </style>
 
 <script src="~/lib/extern/jquery.js"></script>
@@ -42,7 +48,17 @@
 
 
 <div style="margin-bottom:30px">
-    <h2 style="margin-top:20px;margin-bottom:20px">@Model.PatientFullName.getFullName() </h2>
+    <div class="flex-row row">
+        <h2 class="col" style="margin-top:20px;margin-bottom:20px">@Model.PatientFullName.getFullName() </h2>
+        <div class="col button-on-end" style="margin-top:20px;margin-bottom:20px">
+            <form asp-action="Card">
+                <button type="submit" class="btn btn-secondary">
+                    <i style="margin-right:3px" class="fa fa-folder-open" aria-hidden="true"></i>
+                    Kartotéka
+                </button>
+            </form>
+        </div>
+    </div>
     <div class="row flex-row" style="margin-bottom:30px">
         <div style="margin-right:50px;min-width:175px" class="col-4">
             <div style="margin-bottom:50px">
@@ -318,11 +334,11 @@
                 {
                     @foreach (var item in Model.CheckupToMe)
                     {
-                        <tr>
-                            <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate, reports = Model.AllReports.Select(s => s.Date).ToList() })')">
+                        <tr onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate, reports = Model.AllReports.Select(s => s.Date).ToList() })')">
+                            <td>
                                 @Html.DisplayFor(modelItem => item.CreateDate)
                             </td>
-                            <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                            <td>
                                 @Html.DisplayFor(modeItem => item.FromDoctor)
                             </td>
                         </tr>
@@ -363,14 +379,14 @@
                 {
                     @foreach (var item in Model.CheckupToOther)
                     {
-                        <tr>
-                            <td onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                        <tr onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                            <td>
                                 @Html.DisplayFor(modelItem => item.CreateDate)
                             </td>
-                            <td onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                            <td>
                                 @Html.DisplayFor(modeItem => item.ToDoctor)
                             </td>
-                            <td onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                            <td>
                                 @Html.DisplayFor(modeItem => item.State)
                             </td>
                         </tr>
