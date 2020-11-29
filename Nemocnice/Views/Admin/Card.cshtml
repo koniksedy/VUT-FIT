@@ -38,7 +38,7 @@
 <!-- Vyskakovací okno (modální dialog), k zadání údajů pro vytvoření nového pacienta. -->
 <form asp-action="CreatePatient" method="post" onsubmit="return testRC('RC')">
     <div class="modal fade" id="newPatientModal" tabindex="-1" role="dialog" aria-labelledby="newPatientModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width:60%" role="document">
+        <div class="modal-dialog" style="max-width:80%" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="newPatientModalLabel">Nový pacient</h5>
@@ -114,7 +114,7 @@
 
 <!-- Halvní tabulka kartotéky. Vybrané sloupce je mořné řadit (řazení je vždy sestupné). -->
 <!-- Řazení neovlivní výsledky vyhledávání. Provede pouze jejich seřazení. -->
-<table class="table table-striped">
+<table class="table-striped" style="overflow-x: auto;">
     <thead>
         <tr>
             <th>
@@ -186,7 +186,7 @@
 
                             <div class="modal fade" id="@pom2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
-                                <div class="modal-dialog" role="document">
+                                <div class="modal-dialog" style="max-width:80%" role="document">
                                     <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
                                     <div class="modal-content">
                                         <!-- pozadi ve vyskakovacim oknu -->

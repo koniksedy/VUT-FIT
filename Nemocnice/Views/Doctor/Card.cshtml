@@ -7,8 +7,14 @@
 }
 
 <!-- Model obsahující seznam základních informací o pacientech pro kartotéku. -->
-@model List<Nemocnice.Models.CardModel>
+@model CardModel
 
+@using Nemocnice.Data;
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
 <style>
     .hledat-text {
         border-radius: 0.25rem;
@@ -17,9 +23,8 @@
         border: 1px solid #ced4da;
     }
 
-    .hledat {
 
-    }
+<h1>Kartotéka</h1>
 
     .new-report {
         color: #028520;
@@ -171,16 +176,16 @@
         <thead>
             <tr>
                 <th>
-                    @Html.ActionLink("Příjmení", "Card", new { sortOrder = "bySurname", searchString = ViewData["Search"] })
+                    @Html.ActionLink("Příjmení", "Card", new { sortOrder = "bySurname", searchString = ViewData["Search"], p = ViewData["CurrentPage"] })
                 </th>
                 <th>
-                    @Html.ActionLink("Jméno", "Card", new { sortOrder = "byName", searchString = ViewData["Search"] })
+                    @Html.ActionLink("Jméno", "Card", new { sortOrder = "byName", searchString = ViewData["Search"], p = ViewData["CurrentPage"] })
                 </th>
                 <th>
                     Titul
                 </th>
                 <th>
-                    @Html.ActionLink("Rodné číslo", "Card", new { sortOrder = "byNumber", searchString = ViewData["Search"] })
+                    @Html.ActionLink("Rodné číslo", "Card", new { sortOrder = "byNumber", searchString = ViewData["Search"], p = ViewData["CurrentPage"] })
                 </th>
                 <th>
                     Pojišťovna
@@ -190,7 +195,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.patientsPage)
             {
                 <tr>
                     <td>
@@ -221,3 +226,6 @@
         </tbody>
     </table>
 </div>
+
+<br /><br />
+@(Html.Pager(Model.patientsPage).Url(page => Url.Action("Card", new { p = page, sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
