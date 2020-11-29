@@ -16,12 +16,12 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<NemocniceUser> _userManager;
         private readonly SignInManager<NemocniceUser> _signInManager;
-        private readonly ILogger<ChangePasswordModel> _logger;
+        private readonly ILogger<ChangeAddressModel> _logger;
 
         public ChangeAddressModel(
             UserManager<NemocniceUser> userManager,
             SignInManager<NemocniceUser> signInManager,
-            ILogger<ChangePasswordModel> logger)
+            ILogger<ChangeAddressModel> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -38,23 +38,22 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
         public class InputModel
         {
             
-            [Required]
-
-            [StringLength(100, ErrorMessage = "Povinné pole čísla domu")]
-            [Display(Name = "Current password")]
+            [Required(ErrorMessage = "Není platné číslo domu")]
             public int HouseNumber { get; set; }
 
             [Required]
-            [Display(Name = "New password")]
+            [Display(Name = "Název ulice")]
             [StringLength(100, ErrorMessage = "Povinné pole ulice")]
             public string StreetName { get; set; }
 
-            [Display(Name = "Confirm new password")]
+            [Required]
+            [Display(Name = "Město")]
             [StringLength(100, ErrorMessage = "Povinné pole města domu")]
             public string City { get; set; }
 
-            [Display(Name = "Confirm new password")]
-            [StringLength(100, ErrorMessage = "Povinné pole PSČ")]
+            [Required]
+            [Display(Name = "PSČ")]
+            
             public int ZIP { get; set; }
         }
 
@@ -112,7 +111,10 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
 
 
 
-
+            if(uzivatel.WorkAddress == null)
+            {
+                uzivatel.WorkAddress = new Address();
+            }
             if ( Input.HouseNumber > 0 && Input.ZIP > 0 ) { 
                 uzivatel.WorkAddress.HouseNumber = Input.HouseNumber;
                 uzivatel.WorkAddress.StreetName = Input.StreetName;
@@ -123,7 +125,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             }
             else
             {
-                StatusMessage = "Unexpected error when trying to set phone number.";
+                StatusMessage = "Chyba při zadávání adresy";
                 return RedirectToPage();
             }
             await _signInManager.RefreshSignInAsync(user);

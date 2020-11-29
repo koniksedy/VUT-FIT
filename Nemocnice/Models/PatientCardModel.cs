@@ -18,6 +18,7 @@ namespace Nemocnice.Models
         public IPagedList<MedicallBill> MedicallBills { get; set; }
         public IPagedList<PatientTreatmentLog> PatientTreatmentLogs { get; set; }
         public IPagedList<CureProgress> CureProgresses { get; set; }
+        public IPagedList<Picture> Pictures { get; set; }
         public int PageNum1 { get; set; }
         public int PageNum2 { get; set; }
         public int PageNum3 { get; set; }

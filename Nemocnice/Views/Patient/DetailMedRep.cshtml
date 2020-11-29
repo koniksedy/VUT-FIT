@@ -1,0 +1,15 @@
+﻿@model Nemocnice.Data.MedicallReport
+@using Nemocnice.Data;
+
+
+<h2 style="margin-top:30px">Detail zprávy</h2>
+
+@using (var db = new DatabaseContext())
+{
+    var doctorCName = db.UserT.Where(x => x.UserId == Model.Author.DoctorId).First();
+
+    <p style="margin-top: 30px"><b>Vytvořil:</b> @doctorCName.Title @doctorCName.Name @doctorCName.Surname</p>
+    <p><b>Vytvořeno:</b> @Model.CreateDate.Day<a>.</a>@Model.CreateDate.Month<a>.</a>@Model.CreateDate.Year</p>
+    <h3>Popis:</h3>
+    <p>@Model.Description</p>
+}
