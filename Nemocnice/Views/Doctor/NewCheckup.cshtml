@@ -84,6 +84,61 @@
             text-decoration: none;
             cursor: pointer;
         }
+
+    .hledat-lekar {
+        border-radius: 0.25rem;
+        color: black;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+        width: 300px;
+    }
+
+    .hlavni-diagnoza {
+        max-width: 148px;
+        margin-right: 5px;
+        margin-top: 12px;
+    }
+
+        .hlavni-diagnoza div {
+            max-width: 148px;
+        }
+
+        .hlavni-diagnoza input {
+            border-radius: 0.25rem;
+            color: black;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            max-width: 148px;
+        }
+
+        .hlavni-diagnoza button {
+            width: 148px;
+            width: 148px;
+        }
+
+    .diagnoza {
+        max-width: 107px;
+        margin-right: 5px;
+        margin-top: 12px;
+    }
+
+        .diagnoza div {
+            max-width: 107px;
+        }
+
+        .diagnoza input {
+            border-radius: 0.25rem;
+            color: #495050;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            max-width: 107px;
+        }
+
+    .ulozit-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
 </style>
 
 <script src="~/lib/extern/jquery.js"></script>
@@ -94,85 +149,123 @@
         $('.dropdown-toggle').dropdown();
     });
 </script>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
-<form method="post" enctype="multipart/form-data" asp-action="CreateNewCheckup" onsubmit="return TicketValidation()">
-    <div>
-        Pacient: <b>@Model.FullName.getFullName() (@Model.SocialSecurityNum)</b>
-        <input hidden name="patientNum" value="@Model.SocialSecurityNum" />
-    </div>
-    <div>
-        <label>Lékař:</label>
-        <input type="text" id="doctorName" name="doctorName" placeholder="Vyberte lékaře" />
-        <input hidden id="doctorICZ" name="doctorICZ" value="" />
-    </div>
 
-    <div>
-        <label>Diagnózy:</label>
-    </div>
-    <div class="row">
-        <input type="text" id="Diagnosis1" name="Diagnosis1" placeholder="Halvní diagnoza" autocomplete="off">
-        <input type="text" id="Diagnosis2" name="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off">
-        <input type="text" id="Diagnosis3" name="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off">
-        <input type="text" id="Diagnosis4" name="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off">
-    </div>
-    <!-- ADD PICTURE-->
-    <div class="row">
-        <button id="addRowFile" type="button" class="btn btn-success">
-            Add-New
-        </button>
-        <button id="addRowExisting" type="button" class="btn btn-success">
-            Add-Exist
-        </button>
-    </div>
+<h2 style="margin-top:20px;margin-bottom:20px">Nová žádost k vyšetření</h2>
 
-    <!--Dynamic row-->
-    <div class="row">
-        <div class="col-6">
-            <div id="newRow"></div>
+<div>
+    <form method="post" enctype="multipart/form-data" asp-action="CreateNewCheckup" onsubmit="return TicketValidation()">
+        <div style="margin-bottom:20px">
+            <h4>@Model.FullName.getFullName() (@Model.SocialSecurityNum)</h4>
+            <input hidden name="patientNum" value="@Model.SocialSecurityNum" />
         </div>
-    </div>
-    <!-- END ADD PICTURE-->
-
-    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">Přiložit zprávu</button>
-    <div class="modal fade" id="CopyReportModal" tabindex="-1" role="dialog" aria-labelledby="CopyReportModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="CopyReportModalLabel">Přiložit zprávu</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+        <div class="flex-row row">
+            <div class="col-4" style="margin-bottom:20px">
+                <h4>Lékař</h4>
+                <div class=" align-self-end">
+                    <input class="hledat-lekar" type="text" id="doctorName" name="doctorName" placeholder="Vyhledat lékaře (? - všichni)" />
+                    <input hidden id="doctorICZ" name="doctorICZ" value="" />
                 </div>
-                <div class="modal-body">
-                    <table class="table-responsive-md  table-striped">
-                        @foreach (var item in Model.Reports)
-                        {
-                            <tr>
-                                <td data-dismiss="modal" onclick="selectedReport('@item', '@Model.SocialSecurityNum')">
-                                    @item
-                                </td>
-                            </tr>
-                        }
-                    </table>
-
+            </div>
+            <div class="col">
+                <h4 style="margin-bottom:-5px;">Diagnozy</h4>
+                <div class="flex-row row">
+                    <div class="col hlavni-diagnoza">
+                        <input type="text" id="Diagnosis1" name="Diagnosis1" placeholder="Halvní diagnoza" autocomplete="off">
+                    </div>
+                    <div class="col diagnoza">
+                        <input type="text" id="Diagnosis2" name="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off">
+                    </div>
+                    <div class="col diagnoza">
+                        <input type="text" id="Diagnosis3" name="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off">
+                    </div>
+                    <div class="col diagnoza">
+                        <input type="text" id="Diagnosis4" name="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div>
-        <label>Text:</label>
-    </div>
-    <div>
-        <textarea cols="100" rows="10" id="checkupText" name="checkupText"></textarea>
-    </div>
+        <!-- Přikládání obrázků a výsledků vyšetření -->
+        <!-- ADD PICTURE/RESULT-->
+        <div style="margin-top:15px;margin-bottom:15px" class="row">
+            <div style="margin-right:5px" class="col-4">
+                <h4>Přiložit obrázky.</h4>
+                <div>
+                    <button id="addRowFile" type="button" class="btn btn-success">
+                        <i style="margin-right:5px" class="fa fa-upload" aria-hidden="true"></i>
+                        Nový
+                    </button>
+                    <button id="addRowExisting" type="button" class="btn btn-success">
+                        <i style="margin-right:5px" class="fa fa-cloud-upload" aria-hidden="true"></i>
+                        Existující
+                    </button>
+                </div>
+            </div>
+            <div class="col-6">
+                <h4>Přiložit zprávu.</h4>
+                <div>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">
+                        <i style="margin-right:5px" class="fa fa-file-text" aria-hidden="true"></i>
+                        Výsledek vyšetření
+                    </button>
+                </div>
+            </div>
 
-    <div>
-        <!-- Uložit -->
-        <input class="btn btn-primary" type="submit" value="Uložit">
-    </div>
-</form>
+        </div>
+
+
+        <!--Dynamic row-->
+        <div class="row">
+            <div class="col-4">
+                <div id="newRow"></div>
+            </div>
+        </div>
+        <!-- END ADD PICTURE-->
+        <div class="modal fade" id="CopyReportModal" tabindex="-1" role="dialog" aria-labelledby="CopyReportModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="CopyReportModalLabel">Přiložit zprávu</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table-responsive-md  table-striped">
+                            @foreach (var item in Model.Reports)
+                            {
+                                <tr>
+                                    <td data-dismiss="modal" onclick="selectedReport('@item', '@Model.SocialSecurityNum')">
+                                        @item
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="max-width:866px;margin-top:15px">
+            <div>
+                <textarea style="width:100%" rows="10" id="checkupText" name="checkupText"></textarea>
+            </div>
+            <div style="margin-top:10px" class="ulozit-btn">
+                <!-- Uložit, blokováno, dokud se nezmáčkne tlačítko Upravit-->
+                <button onclick="loading_spinner()" class="btn btn-primary" type="submit" id="RepareReportSaveBtn">
+                    <span id="saveButton">
+                        <i style="margin-right:3px" class="fa fa-floppy-o" aria-hidden="true"></i>
+                    </span>
+                    Uložit
+                </button>
+            </div>
+        </div>     
+    </form>
+</div>
 
 <!-- Modal For pictures -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -214,6 +307,14 @@
     <div id="caption"></div>
 </div>
 
+
+<!--Script for spinner on save-->
+<script>
+    function loading_spinner() {
+        document.getElementById("saveButton").innerHTML = "<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>";
+    }
+</script>
+
 <script src="~/js/NewTicket.js"></script>
 <script>
     function selectedReport(report, patNum) {
@@ -247,7 +348,7 @@
         html += '<label class="custom-file-label" for="inputGroupFile02">Vyberte existující soubor</label>';
         html += '</div>';
         html += '<div class="input-group-append">';
-        html += '<button id="removeRowFile" type="button" class="btn btn-danger">&times;</button>';
+        html += '<button id="removeRowFile" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>';
         html += '</div>';
         html += '</div>';
         html += '</div>';
@@ -267,7 +368,7 @@
         html += '<label class="custom-file-label" for="inputGroupFile01">Vyberte soubor</label>';
         html += '</div>';
         html += '<div class="input-group-append">';
-        html += '<button id="removeRowFile" type="button" class="btn btn-danger">&times;</button>';
+        html += '<button id="removeRowFile" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>';
         html += '</div>';
         html += '</div>';
         html += '</div>';

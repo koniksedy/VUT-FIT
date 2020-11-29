@@ -319,7 +319,7 @@
                     @foreach (var item in Model.CheckupToMe)
                     {
                         <tr>
-                            <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate, reports = Model.AllReports })')">
+                            <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate, reports = Model.AllReports.Select(s => s.Date).ToList() })')">
                                 @Html.DisplayFor(modelItem => item.CreateDate)
                             </td>
                             <td onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
@@ -388,7 +388,7 @@
         </table>
     </div>
     <div class="nova-zprava-btn">
-        <button onclick="redirectToAction('@Url.Action("NewCheckup", "Doctor", new { patientNum = Model.SocialSecurityNumber, reports = Model.AllReports })')" class="btn btn-success" type="button">Vytvořit žádost</button>
+        <button onclick="redirectToAction('@Url.Action("NewCheckup", "Doctor", new { patientNum = Model.SocialSecurityNumber, reports = Model.AllReports.Select(s => s.Date).ToList() })')" class="btn btn-success" type="button">Vytvořit žádost</button>
     </div>
 </div>
 

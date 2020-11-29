@@ -1768,7 +1768,7 @@ namespace Nemocnice.Controllers
             DateTime mydate = DateTime.ParseExact(date, "d.M.yyyy H:m:s", null);
             var test = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum).ToList().First();
             string result = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == mydate).Select(s => s.Description).ToList().First();
-            result = String.Format("##########################{0}##########################n{1}\n#######################################################################n", date, result);
+            result = String.Format("##########################{0}##########################\n{1}\n######################################################################", date, result);
             return new JsonResult(result);
         }
 
@@ -1782,7 +1782,7 @@ namespace Nemocnice.Controllers
             string result = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum &&
                                                          o.FinishDate == mydate)
                                              .Select(s => s.Result).ToList().First();
-            result = String.Format("##########################{0}##########################\nAutor: {1}\n#######################################################################n{2}\n", date, doctor.getFullName() ,result);
+            result = String.Format("##########################{0}##########################\nAutor: {1}\n\n{2}#####################################################################\n", date, doctor.getFullName() ,result);
             return new JsonResult(result);
         }
 

@@ -139,16 +139,19 @@ function TicketValidation() {
 
     if (Text == "") {
         if (!confirm("Jste si jistí, že chcete vytvořit prázdnou žádost o vyšetření?")) {
+            stop_spinner();
             return false;
         }
     }
 
     if (Diag1 == "") {
         alert("Hlavní diagnóza musí být zadaná.");
+        stop_spinner();
         return false;
     }
     if (Doctor == "") {
         alert("Lékař musí být zadán.");
+        stop_spinner();
         return false;
     }
 
@@ -192,8 +195,13 @@ function TicketValidation() {
     }
 
     if (result != 0) {
+        stop_spinner();
         return false;
     }
 
     return true;
+}
+
+function stop_spinner() {
+    document.getElementById("saveButton").innerHTML = '<i style="margin-right: 3px" class="fa fa-floppy-o" aria-hidden="true"></i>';
 }
