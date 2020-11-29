@@ -9,20 +9,37 @@
     ViewData["Title"] = "Activity";
 }
 
-<div class="container">
-    <h1 class="pojistovna-nadpis">Výkazy</h1>
+<style>
+    .hledat-text {
+        border-radius: 0.25rem;
+        color: black;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+    }
+</style>
 
+<h1 class="pojistovna-nadpis">Výkazy</h1>
 
-    <form asp-action="Activity" method="get">
-        <div class="search-doctor">
-
-            <p>
-                <label><strong>Název výkonu:</strong></label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
-                <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]" class="btn-insurance">Hledat</button> @Html.ActionLink("Zrušit hledání", "Activity", new { SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-cancel" })
-
-            </p>
+<div class="flex-row" style="display:flex;margin-bottom:5px">
+    <div>
+        <form asp-action="Activity" method="get">
+            <div class="form-actions no-color">
+                <div class="input-group">
+                    <input class="hledat-text" type="text" placeholder="Hledat název výkonu" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]"/>
+                    <div class="input-group-append">
+                        <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col float-right">
+        <div class="row">
+            <div>
+                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("Activity", "Doctor", new { SortOrder = ViewData["CurrentSort"] })')" class="btn btn-secondary">Zrušit filtry</button>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
 
 @if (Model.medicallBills.Count == 0)
