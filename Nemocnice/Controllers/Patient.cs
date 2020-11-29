@@ -49,26 +49,24 @@ namespace Nemocnice.Controllers
             PatientCardModel.PageNum6 = (pageCure ?? 1);
             PatientCardModel.TabNumber = (select ?? 1);
 
+            PatientCardModel.Pictures = db.PictureT.ToPagedList(PatientCardModel.PageNum3, pageSize);//.Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList();
             PatientCardModel.medicallReports = db.MedicallReportT.Include(x => x.Author).Include(x => x.Patient).Include(x => x.Owner).ToPagedList(PatientCardModel.PageNum1, pageSize);//Where(x => x.Patient.UserId == PatientCardModel.User.UserId).ToPagedList();
             PatientCardModel.checkupTickets = db.CheckupTicketT.Include(x => x.ToDoctor).Include(x => x.Patient).Include(x => x.CreatedBy).ToPagedList(PatientCardModel.PageNum2, pageSize);//.Where(x => x.Patient.UserId == PatientCardModel.User.UserId).ToPagedList();
             try
             {
                 IPagedList<string> hotovo;
-                var list = db.HealthConditionT.Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).Select(x => x.Allergys).DefaultIfEmpty("Kunda").ToPagedList();
+                var list = db.HealthConditionT.Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).Select(x => x.Allergys).DefaultIfEmpty("").ToPagedList();
 
 
                 
                 PatientCardModel.Allergies = list;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
 
-
-
-
-                   //Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList();
+            //Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList();
             PatientCardModel.MedicallBills = db.MedicallBillT.Include(x => x.Doctor).Include(x => x.MedicallActivityPrice).Include(x => x.Diagnosis).ToPagedList(PatientCardModel.PageNum4, pageSize);//Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList();
             PatientCardModel.PatientTreatmentLogs = db.PatientTreatmentLogT.Include(x => x.Patient).Include(x => x.Diagnosis).ToPagedList(PatientCardModel.PageNum5, pageSize);//Where(x => x.Patient.UserId == PatientCardModel.Patient.UserId).ToPagedList();
             PatientCardModel.CureProgresses = db.CureProgressT.Include(x => x.MedicallReport).Include(x => x.Diagnosis).ToPagedList(PatientCardModel.PageNum6, pageSize); //Where(x => x.MedicallReport.Patient.UserId == PatientCardModel.Patient.UserId).ToPagedList();
@@ -107,8 +105,15 @@ namespace Nemocnice.Controllers
         public IActionResult DetailMedRep(int currentTicketID)
         {
             var db = new DatabaseContext();
-            var ticket = db.MedicallReportT.Where(x => x.MedicallReportId == currentTicketID).Include(x => x.Author).Include(x => x.Patient).Include(x => x.IncludePic).FirstOrDefault();
+            var ticket = db.MedicallReportT.Include(x => x.Author).Include(x => x.Patient).Include(x => x.Owner).Where(x => x.MedicallReportId == currentTicketID).FirstOrDefault();
             return View(ticket);
+        }
+
+        public IActionResult DetailCureProg(int currentCureProg)
+        {
+            var db = new DatabaseContext();
+            var CureProg = db.CureProgressT.Include(x => x.Diagnosis).Include(x => x.MedicallReport).Where(x => x.CureProgressId == currentCureProg).First();
+            return View();
         }
     }
 }

@@ -32,8 +32,8 @@
         position: absolute;
         text-align: left;
         opacity: 1;
-        margin-top: -2.6em;
-        margin-left: 20px;
+        margin-top: -2.4em;
+        margin-left: 30px;
         width: 100%;
         height: 2em;
         pointer-events: none;
@@ -69,7 +69,7 @@
         <div class="first_row_second_item">
             <div class="row">
 
-                <img class="Doctor" alt="Corona" height="240" width="340" src="~/Img/Shared/corona.jpg" onclick="CoronaClicked()" />
+                <img class="Doctor" alt="Corona" height="220" width="300" src="~/Img/Shared/corona.jpg" onclick="ImgClicked1()" />
             </div>
         </div>
     </div>
@@ -79,14 +79,14 @@
             <div class="first_second">
 
 
-                <img class="Doctor" alt="Doctor" height="240" width="330" src="~/Img/Shared/doctors.jpg" onclick="DoctorClicked()" />
+                <img class="Doctor" alt="Doctor" height="220" width="300" src="~/Img/Shared/doctors.jpg" onclick="ImgClicked()" />
                 <div class="test-text"><a class="test-text" href="Home/Privacy">DOKTOŘI</a></div>
 
 
             </div>
             <div class="second_second">
                 <h2 style="padding-bottom: 20px">O elektronické knížce</h2>
-                <a>Výhody elektronické knížky jsou...... Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum</a>
+                <a>Zdravel přináší služby vyvinuté na míru českým lékařům, nemocnicím a všem odborníkům, včetně firem a veřejné správy. Přináší komplexní pohled na pacienta, bezpečné sdílení informací mezi lékaři a díky umělé inteligenci efektivnější prevenci a léčbu.</a>
             </div>
         </div>
         <div class="second_row_second_item">
@@ -117,13 +117,8 @@
         function DoctorClicked() {
             window.location.href = "Home/DoctorList";
         }
-        function CoronaClicked() {
+        function ImgClicked1() {
             window.location.href = "https://www.worldometers.info/coronavirus/";
         }
-        function addgreen() {
-            document.getElementById("corona").classList.add("mouseover");
-        }
-        function delgreen() {
-            document.getElementById("corona").classList.remove("mouseover");
-        }
+
     </script>
