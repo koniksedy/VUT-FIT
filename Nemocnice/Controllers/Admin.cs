@@ -65,54 +65,57 @@ namespace Nemocnice.Controllers
                 var PatientId = db.PatientT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.PatientID).FirstOrDefault();
 
                 List<CheckupTicket> tmp = new List<CheckupTicket>();
-                tmp = db.CheckupTicketT.Where(a => a.Patient.PatientID == PatientId).ToList();
-                foreach (var a in tmp) {
-                    db.Remove(db.CheckupTicketT.Single(a => a.Patient.PatientID == PatientId));
+                tmp = db.CheckupTicketT.Where(a => a.Patient.PatientID == PatientId).Include(i => i.Patient).ToList();
+                foreach (var pom in tmp) {
+                    db.Remove(db.CheckupTicketT.FirstOrDefault(a => a.Patient.PatientID == pom.Patient.PatientID));
                 }
 
                 List<MedicallReport> tmp1 = new List<MedicallReport>();
-                tmp1 = db.MedicallReportT.Where(a => a.Patient.PatientID == PatientId).ToList();
-                foreach (var a in tmp1)
+                tmp1 = db.MedicallReportT.Where(a => a.Patient.PatientID == PatientId).Include(i => i.Patient).ToList();
+                foreach (var pom in tmp1)
                 {
-                    db.Remove(db.MedicallReportT.Single(a => a.Patient.PatientID == PatientId));
+                    db.Remove(db.MedicallReportT.FirstOrDefault(a => a.Patient.PatientID == pom.Patient.PatientID));
                 }
 
                 List<PatientTreatmentLog> tmp2 = new List<PatientTreatmentLog>();
-                tmp2 = db.PatientTreatmentLogT.Where(a => a.Patient.PatientID == PatientId).ToList();
-                foreach (var a in tmp2)
+                tmp2 = db.PatientTreatmentLogT.Where(a => a.Patient.PatientID == PatientId).Include(i => i.Patient).ToList();
+                foreach (var pom in tmp2)
                 {
-                    db.Remove(db.PatientTreatmentLogT.Single(a => a.Patient.PatientID == PatientId));
+                    db.Remove(db.PatientTreatmentLogT.FirstOrDefault(a => a.Patient.PatientID == pom.Patient.PatientID));
                 }
                
                 var PictureId = db.PictureT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.PictureId).FirstOrDefault();
                 List<PictureOnReport> tmp3 = new List<PictureOnReport>();
-                tmp3 = db.PictureOnReportT.Where(a => a.Picture.PictureId == PictureId).ToList();
-                foreach (var a in tmp3)
+                tmp3 = db.PictureOnReportT.Where(a => a.Picture.PictureId == PictureId).Include(i => i.Picture).ToList();
+                foreach (var pom in tmp3)
                 {
-                    db.Remove(db.PictureOnReportT.Single(a => a.Picture.PictureId == PictureId));
+                    db.Remove(db.PictureOnReportT.FirstOrDefault(a => a.Picture.PictureId == pom.Picture.PictureId));
                 }
 
                 List<PictureOnTicket> tmp4 = new List<PictureOnTicket>();
-                tmp4 = db.PictureOnTicketsT.Where(a => a.Picture.PictureId == PictureId).ToList();
-                foreach (var a in tmp4)
+                tmp4 = db.PictureOnTicketsT.Where(a => a.Picture.PictureId == PictureId).Include(i => i.Picture).ToList();
+                foreach (var pom in tmp4)
                 {
-                    db.Remove(db.PictureOnTicketsT.Single(a => a.Picture.PictureId == PictureId));
+                    db.Remove(db.PictureOnTicketsT.FirstOrDefault(a => a.Picture.PictureId == pom.Picture.PictureId));
                 }
 
                 List<Picture> tmp5 = new List<Picture>();
                 tmp5 = db.PictureT.Where(a => a.PictureId == PictureId).ToList();
-                foreach (var a in tmp5)
+                foreach (var pom in tmp5)
                 {
-                    db.Remove(db.PictureT.Single(a => a.SocialSecurityNum == ID_delete));
+                    db.Remove(db.PictureT.FirstOrDefault(a => a.SocialSecurityNum == ID_delete));
+                }
+
+                var health = db.HealthConditionT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.HealthConditionId).FirstOrDefault();
+                if (health != 0)
+                {
+                    db.Remove(db.HealthConditionT.FirstOrDefault(a => a.HealthConditionId == health));
                 }
 
                 var ID = db.PatientT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.UserId).FirstOrDefault();
-                db.Remove(db.PatientT.Single(a => a.SocialSecurityNum == ID_delete));
+                db.Remove(db.PatientT.FirstOrDefault(a => a.SocialSecurityNum == ID_delete));
 
-                db.Remove(db.UserT.Single(a => a.UserId == ID));
-
-                var health = db.HealthConditionT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.HealthConditionId).FirstOrDefault();
-                db.Remove(db.HealthConditionT.Single(a => a.HealthConditionId == health));
+                db.Remove(db.UserT.FirstOrDefault(a => a.UserId == ID));
 
                 var Patient = db.PatientT.Where(x => x.SocialSecurityNum == ID_delete).Select(s => s.UserId).First();
                 var userLogin = db.UserT.Where(x => x.UserId == Patient).Select(x => x.Login).FirstOrDefault();
