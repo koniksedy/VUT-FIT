@@ -22,7 +22,7 @@
     <form asp-action="CardInsurance" method="get">
         <div class="form-actions no-color">
             <p id="right">
-                <strong>Najít: </strong> <input type="text" name="SearchString" value="@ViewData["Search"]" ) />
+                <strong>Najít: </strong> <input type="text" name="SearchString" value="@ViewData["Search"]" autocomplete="off" />
                 <input type="submit" class="btn-insurance" value="Hledat" />
                 <a asp-action="CardInsurance" class="btn-insurance-cancel">Zrušit filtry</a>
             </p>
@@ -37,7 +37,7 @@
 <!-- Vyskakovací okno (modální dialog), k zadání údajů pro vytvoření nového pacienta. -->
 <form asp-action="CreateInsurance" method="post" onsubmit="return testRC('RC')">
     <div class="modal fade" id="newPatientModal" tabindex="-1" role="dialog" aria-labelledby="newPatientModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="max-width:80%" role="document">
+        <div class="modal-dialog" style="max-width:800px" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="newPatientModalLabel">Nový pracovník</h5>
@@ -49,11 +49,11 @@
                     <div class="form-row">
                         <div class="col">
                             <div class="form-group">
-                                <label class="col-form-label">Jméno*</label>
+                                <label class="col-form-label">Jméno<a style="color:red">*</a></label>
                                 <input name="NewName" type="text" required autocomplete="off" class="form-control" />
                             </div>
                             <div class="form-group">
-                                <label class="col-form-label">Telefon*</label>
+                                <label class="col-form-label">Telefon<a style="color:red">*</a></label>
                                 <input name="NewTel" type="text" required autocomplete="off" class="form-control" />
                             </div>
                             <div class="form-group">
@@ -61,17 +61,17 @@
                                 <input name="NewStreet" autocomplete="off" value="" class="form-control" />
                             </div>
                             <div class="form-group">
-                                <label class="col-form-label">Město*</label>
+                                <label class="col-form-label">Město<a style="color:red">*</a></label>
                                 <input name="NewCity" required autocomplete="off" class="form-control" />
                             </div>
                             <div class="form-group">
-                                <label class="col-form-label">Pozice*</label>
+                                <label class="col-form-label">Pozice<a style="color:red">*</a></label>
                                 <input name="NewPosition" type="text" required autocomplete="off" value="" class="form-control" />
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-group">
-                                <label class="col-form-label">Příjmení*</label>
+                                <label class="col-form-label">Příjmení<a style="color:red">*</a></label>
                                 <input name="NewSurname" type="text" required autocomplete="off" class="form-control" />
                             </div>
                             <div class="form-group">
@@ -83,7 +83,7 @@
                                 <input name="NewHouseNum" type="text" pattern="[0-9]+" value="" autocomplete="off" class="form-control" />
                             </div>
                             <div class="form-group">
-                                <label class="col-form-label">Směrovací číslo*</label>
+                                <label class="col-form-label">Směrovací číslo<a style="color:red">*</a></label>
                                 <input name="NewZip" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" />
                             </div>
                             <div class="form-group">
@@ -112,7 +112,7 @@
 
 <!-- Halvní tabulka kartotéky. Vybrané sloupce je mořné řadit (řazení je vždy sestupné). -->
 <!-- Řazení neovlivní výsledky vyhledávání. Provede pouze jejich seřazení. -->
-<table class="table-striped" style="overflow-x: auto;">
+<table class="table table-striped" style="overflow-x: auto;">
     <thead>
         <tr>
             <th>
@@ -188,11 +188,11 @@
                                             <div class="form-row">
                                                 <div class="col">
                                                     <div class="form-group">
-                                                        <label class="col-form-label">Jméno*</label>
+                                                        <label class="col-form-label">Jméno<a style="color:red">*</a></label>
                                                         <input name="edit_name" type="text" required autocomplete="off" class="form-control" value="@item.InsuranceFullName.Name" />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="col-form-label">Telefon*</label>
+                                                        <label class="col-form-label">Telefon<a style="color:red">*</a></label>
                                                         <input name="edit_tel" type="text" required autocomplete="off" class="form-control" value="@tel" />
                                                     </div>
                                                     <div class="form-group">
@@ -200,13 +200,13 @@
                                                         <input name="edit_street" autocomplete="off" class="form-control" value="@address.StreetName" />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="col-form-label">Město*</label>
+                                                        <label class="col-form-label">Město<a style="color:red">*</a></label>
                                                         <input name="edit_town" required autocomplete="off" class="form-control" value="@address.City" />
                                                     </div>
                                                 </div>
                                                 <div class="col">
                                                     <div class="form-group">
-                                                        <label class="col-form-label">Příjmení*</label>
+                                                        <label class="col-form-label">Příjmení<a style="color:red">*</a></label>
                                                         <input name="edit_surname" type="text" required autocomplete="off" class="form-control" value="@item.InsuranceFullName.Surname" />
                                                     </div>
                                                     <div class="form-group">
@@ -219,7 +219,7 @@
                                                     </div>
 
                                                     <div class="form-group">
-                                                        <label class="col-form-label">Směrovací číslo*</label>
+                                                        <label class="col-form-label">Směrovací číslo<a style="color:red">*</a></label>
                                                         <input name="edit_psc" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" value="@(address.ZIP == 0 ? "" : address.ZIP.ToString())" />
                                                     </div>
                                                 </div>
@@ -233,11 +233,11 @@
                                                         <input name="edit_work" type="text" autocomplete="off" value="@item.WorkPhone" class="form-control" />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="col-form-label">Pozice*</label>
+                                                        <label class="col-form-label">Pozice<a style="color:red">*</a></label>
                                                         <input name="edit_position" type="text" required autocomplete="off" class="form-control" value="@item.Position" />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="col-form-label">Login*</label>
+                                                        <label class="col-form-label">Login<a style="color:red">*</a></label>
                                                         <input name="edit_login" type="text" required autocomplete="off" value="@item.Login" class="form-control" />
                                                     </div>
                                                 </div>

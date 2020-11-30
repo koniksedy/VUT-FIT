@@ -9,14 +9,14 @@
 <form asp-action="OutRequest" method="get">
     <div class="form-actions no-color">
         <p>
-            Najít: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
+            Najít: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" autocomplete="off"  />
             <input type="submit" value="Hledat" class="btn btn-default" /> |
             <a asp-action="OutRequest">Zrušit filtry</a>
         </p>
     </div>
 </form>
 <div style="overflow-x: auto">
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>
