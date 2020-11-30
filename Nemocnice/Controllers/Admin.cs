@@ -125,6 +125,8 @@ namespace Nemocnice.Controllers
                     await _userManager.DeleteAsync(user);
                 }
                 db.SaveChanges();
+
+
             }
 
             // Model - Seznam všech pacientů v databázi
@@ -941,6 +943,21 @@ namespace Nemocnice.Controllers
 
             return RedirectToAction("DoctorEdit", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
+
+        public JsonResult TestSocialSecurityNumUnique(string num)
+        {
+            bool result = true;
+
+            if (db.PatientT.Select(s => s.SocialSecurityNum).Where(o => o == num).Any())
+            {
+                result = false;
+            }
+
+            return new JsonResult(result);
+        }
+
+
     }
+
 }
 
