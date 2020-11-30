@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,18 +40,20 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
         {
 
             [Display(Name = "Číslo domu")]
-            public int HouseNumber { get; set; }
+            [DefaultValue("0")]
+            [RegularExpression("[0-9]*", ErrorMessage = "Neplatné číslo domu.")]
+            public string HouseNumber { get; set; }
 
 
             [Display(Name = "Název ulice")]
             public string StreetName { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "Město je povinné.")]
             [Display(Name = "Město")]
-            [StringLength(100, ErrorMessage = "Povinné pole města domu")]
+            [StringLength(100, ErrorMessage = "Takhle dlouhlé město snad neexituje.")]
             public string City { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "PSČ je povinné")]
             [Display(Name = "PSČ")]
             
             public int ZIP { get; set; }
@@ -68,7 +71,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             {
                 Input = new InputModel
                 {
-                    HouseNumber = uzivatel.WorkAddress.HouseNumber,
+                    HouseNumber = uzivatel.WorkAddress.HouseNumber.ToString(),
                     StreetName = uzivatel.WorkAddress.StreetName ?? String.Empty,
                     City = uzivatel.WorkAddress.City ?? String.Empty,
                     ZIP = uzivatel.WorkAddress.ZIP
@@ -114,8 +117,8 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             {
                 uzivatel.WorkAddress = new Address();
             }
-            if ( Input.HouseNumber > 0 && Input.ZIP > 0 ) { 
-                uzivatel.WorkAddress.HouseNumber = Input.HouseNumber;
+            if ( int.Parse(Input.HouseNumber) > 0 && Input.ZIP > 0 ) { 
+                uzivatel.WorkAddress.HouseNumber = int.Parse(Input.HouseNumber);
                 uzivatel.WorkAddress.StreetName = Input.StreetName;
                 uzivatel.WorkAddress.City = Input.City;
                 uzivatel.WorkAddress.ZIP = Input.ZIP;

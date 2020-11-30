@@ -394,6 +394,12 @@
                             </td>
                         </tr>
                     }
+                    @if(!Model.AllReports.Any())
+                    { 
+                    <tr class="vypnout">
+                        <td>Žádné zprávy</td>
+                    </tr>
+                    }
                 </tbody>
             </table>
         </div>

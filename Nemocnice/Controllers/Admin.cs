@@ -170,6 +170,7 @@ namespace Nemocnice.Controllers
                                         Name = user.Name,
                                         Title = user.Title,
                                     },
+                                    UserId = patient.UserId,
                                     SocialSecurityNum = patient.SocialSecurityNum,
                                     Insurance = patient.InsuranceCompany
                                 }

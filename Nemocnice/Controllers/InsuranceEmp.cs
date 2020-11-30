@@ -50,19 +50,15 @@ namespace Nemocnice.Controllers
          * model - model pro uložení vybraných dat
          * p - proměnná pro stránkování
          */
-        public async Task<IActionResult> InRequest(int ID_accept, int ID_reject, string searchString, string SortOrder, string buttonAll, InsuranceModel model, int? p)
+        public IActionResult InRequest(int ID_accept, int ID_reject, string searchString, string SortOrder, string buttonAll, InsuranceModel model, int? p)
         {
-            //uložení aktuálně vyhledaného řetězce
-            ViewData["Search"] = searchString;
-
-            ViewData["CurrentSort"] = SortOrder;
-
-            ViewData["CurrentPage"] = p;
-
-
+  
             //pokud je string naplněný, schválí/zamítne se vše na dané stránce
             if (!String.IsNullOrEmpty(buttonAll))
             {
+                ViewData["Search"] = "";
+                ViewData["CurrentSort"] = "";
+                ViewData["CurrentPage"] = 1;
                 //searchString je prázdný, pracujeme se vším
                 if (String.IsNullOrEmpty(searchString))
                 {
@@ -73,21 +69,31 @@ namespace Nemocnice.Controllers
                 {
                     searchString = (searchString.Split(' ').Last() ?? "");
                 }
-                var users = this.Context.UserT.Where(s => s.Name.Contains(searchString) || s.Surname.Contains(searchString)).Select(x => x.UserId).ToList();
+
+                List<MedicallBill> medicalBills;
+                try
+                {
+                    medicalBills = this.Context.MedicallBillT.Where(s => s.State == null && (s.Doctor.ICZ == int.Parse(searchString))).ToList();
+                }
+                catch
+                {
+                    medicalBills = this.Context.MedicallBillT.Where(s => s.State == null && (s.MedicallActivityPrice.Name.Contains(searchString) || s.Diagnosis.Name.Contains(searchString))).ToList();
+                }
 
                 //zde se vyberou a uloží vybrané položky (ve vyhledávacím řetězci) databáze
+                /*
                 List<MedicallBill> state = new List<MedicallBill>();
-                foreach (var user in users)
+                foreach (var bill in medicalBills)
                 {
                     List<MedicallBill> temp;
                     temp = this.Context.MedicallBillT.Where(a => a.State == null && a.Doctor.UserId == user).ToList();
                     state.AddRange(temp);
                 }
-
+                */
                 //pokud je string "schvalit-vse" schvalujeme vše
                 if (buttonAll == "schvalit-vse")
                 {
-                    state.ForEach(a => { a.State = "schváleno"; });
+                    medicalBills.ForEach(a => { a.State = "schváleno"; });
                     List<MedicallBill> date = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
                     date.ForEach(a => { a.DecisionDate = DateTime.Now; ; });
                     this.Context.SaveChanges();
@@ -96,11 +102,23 @@ namespace Nemocnice.Controllers
                 //pokud je string "zamitnnout-vse" zamítneme vše
                 if (buttonAll == "zamitnout-vse")
                 {
-                    state.ForEach(a => { a.State = "zamítnuto"; });
+                    medicalBills.ForEach(a => { a.State = "zamítnuto"; });
                     List<MedicallBill> date = this.Context.MedicallBillT.Where(a => a.State == null).ToList();
                     date.ForEach(a => { a.DecisionDate = DateTime.Now; ; });
                     this.Context.SaveChanges();
                 }
+                p = 1;
+                searchString = "";
+                SortOrder = "";
+            }
+            else
+            {
+                //uložení aktuálně vyhledaného řetězce
+                ViewData["Search"] = searchString;
+
+                ViewData["CurrentSort"] = SortOrder;
+
+                ViewData["CurrentPage"] = p;
             }
 
             //pokud je různé od 0, byla schválena žádost s daným ID a tu d datbázi změníme z null na "schváleno"

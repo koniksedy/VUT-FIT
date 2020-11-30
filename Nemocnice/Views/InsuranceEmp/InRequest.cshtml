@@ -31,7 +31,7 @@
             <form asp-action="InRequest" method="get">
                 <div class="form-actions no-color">
                     <div class="input-group">
-                        <input placeholder="Hledat jméno lékaře" class="hledat-text" type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
+                        <input placeholder="Hledat" class="hledat-text" type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
                         </div>
@@ -47,7 +47,7 @@
         <div class="col to-end">
             <div class="flex-row row">
                 <div class="col">
-                    <button class="btn-insurance-accept" type="button" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { buttonAll = "zamitnout-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })')">
+                    <button class="btn-insurance-accept" type="button" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { buttonAll = "schvalit-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })')">
                         Schválit vše
                     </button>
                 </div>
