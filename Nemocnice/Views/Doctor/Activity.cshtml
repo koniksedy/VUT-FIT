@@ -9,18 +9,10 @@
     ViewData["Title"] = "Activity";
 }
 
-<style>
-    .hledat-text {
-        border-radius: 0.25rem;
-        color: black;
-        padding: 0.375rem 0.75rem;
-        border: 1px solid #ced4da;
-    }
-</style>
 
 <h1 class="pojistovna-nadpis">Výkazy</h1>
 
-<div class="flex-row" style="display:flex;margin-bottom:5px">
+<div class="flex-row row" style="display:flex;margin-bottom:5px">
     <div>
         <form asp-action="Activity" method="get">
             <div class="form-actions no-color">
@@ -36,7 +28,7 @@
     <div class="col float-right">
         <div class="row">
             <div>
-                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("Activity", "Doctor", new { SortOrder = ViewData["CurrentSort"] })')" class="btn btn-secondary">Zrušit filtry</button>
+                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("Activity", "Doctor", new { })')" class="btn btn-secondary">Zrušit filtry</button>
             </div>
         </div>
     </div>

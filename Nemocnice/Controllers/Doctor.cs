@@ -1280,6 +1280,7 @@ namespace Nemocnice.Controllers
         public IActionResult InRequest(string sortOrder, string searchString)
         {
             ViewData["Search"] = searchString;
+            ViewData["SortOrder"] = sortOrder;
             var db = new DatabaseContext();
 
             List<CheckupTicketToMe> MyInRequests = new List<CheckupTicketToMe>();
@@ -1367,6 +1368,7 @@ namespace Nemocnice.Controllers
         {
             var db = new DatabaseContext();
             ViewData["Search"] = searchString;
+            ViewData["SortOrder"] = sortOrder;
             List<CheckupTicketToOtherModel> MyOutRequests = new List<CheckupTicketToOtherModel>();
 
             string user = User.FindFirstValue(ClaimTypes.Name);
@@ -1451,6 +1453,8 @@ namespace Nemocnice.Controllers
         public IActionResult InFinishRequest(string sortOrder, string searchString)
         {
             ViewData["Search"] = searchString;
+            ViewData["SortOrder"] = sortOrder;
+
             var db = new DatabaseContext();
 
             List<CheckupTicketToMeFinish> MyFinishRequests = new List<CheckupTicketToMeFinish>();

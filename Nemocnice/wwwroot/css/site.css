@@ -37,6 +37,15 @@ a {
     border-color: #1861ac;
 }
 
+.hledat-text {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    color: black;
+    padding-left: 0.75rem;
+    border: 1px solid #ced4da;
+}
+
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -332,13 +341,13 @@ tbody tr:hover {
     .moje-tabulka thead {
         border-bottom: 4px solid #d0d0d0 !important;
     }
-    /*
-.btn  {
-    font-weight: 600;
-    padding: 5px 14px;
-    cursor: pointer;
-    border-radius: 10px;
-    border: none;
-        }
+    
+    .btn  {
+        font-weight: 600;
+        padding: 5px 14px;
+        cursor: pointer;
+        border-radius: 10px;
+        border: none;
+    }
 
-    */
+    

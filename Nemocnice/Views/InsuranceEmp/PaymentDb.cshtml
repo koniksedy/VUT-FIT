@@ -11,20 +11,45 @@
 @using X.PagedList.Web.Common;
 @using Microsoft.AspNetCore.Mvc;
 
+<style>
+
+
+        .to-end {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+</style>
 
 
 <div class="pojistovna">
     <h1 class="pojistovna-nadpis">Ceník vyšetření a úkonů</h1>
 
-    <form asp-action="PaymentDb" method="get">
-        <div class="search-doctor">
-            <p id="left">
-                <label><strong>Název výkonu:</strong></label><input type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
-                <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]" class="btn-insurance">Hledat</button> @Html.ActionLink("Zrušit hledání", "PaymentDb", new { SortOrder = ViewData["CurrentSort"] }, new { @class = "btn-insurance-cancel" })
-            </p>
-        
+
+
+    <div class="flex-row row" style="display:flex;margin-bottom:5px">
+        <div>
+            <form asp-action="PaymentDb" method="get">
+                <div class="form-actions no-color">
+                    <div class="input-group">
+                        <input placeholder="Hledat název zýkonu" class="hledat-text" type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+        <div class="col float-right">
+            <div class="row">
+                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { })')" class="btn btn-secondary">Zrušit filtry</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 
     @if (Model.medicallActivityPricePage.Count == 0)
     {

@@ -4,16 +4,33 @@
     ViewData["Title"] = "Příchozí žádosti";
 }
 
+
+
 <h1>Příchozí žádosti</h1>
-<form asp-action="InRequest" method="get">
-    <div class="form-actions no-color">
-        <p>
-            Najít: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
-            <input type="submit" value="Hledat" class="btn btn-default" /> |
-            <a asp-action="InRequest">Zrušit filtry</a>
-        </p>
+
+<div class="flex-row row" style="display:flex;margin-bottom:5px">
+    <div>
+        <form asp-action="InRequest" method="get">
+            <div class="form-actions no-color">
+                <div class="input-group">
+                    <input class="hledat-text" type="text" placeholder="Hledat název výkonu" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]" />
+                    <div class="input-group-append">
+                        <button type="submit" name="SortOrder" value="@ViewData["SortOrder"]" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-</form>
+    <div class="col float-right">
+        <div class="row">
+            <div>
+                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("InRequest", "Doctor", new { })')" class="btn btn-secondary">Zrušit filtry</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div style="overflow-x: auto">
     <table class="table">
         <thead>

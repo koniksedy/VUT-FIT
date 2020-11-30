@@ -14,26 +14,54 @@
 @using Microsoft.AspNetCore.Mvc;
 
 
+<style>
+
+    @@media only screen and (min-width:501px) {
+        .to-end {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+    }
+
+    @@media only screen and (max-width:500px) {
+        .to-end {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 5px;
+        }
+    }
+</style>
+
+
 <h1 class="pojistovna-nadpis">Správa pacientů</h1>
 
-<div class="search-doctor">
-
-    <!-- Vyhledávání pacienta podle zadaného výrazu. -->
-    <!-- Zaměření na vyhledáné výsled je možné zrušit tlačítkem |Zrušit filtry|, které zobrazí zase všechny pacienty. -->
-    <form asp-action="Card" method="get">
-        <div class="form-actions no-color">
-            <p id="right">
-                <strong>Najít: </strong> <input type="text" name="SearchString" value="@ViewData["Search"]" ) />
-                <input type="submit" class="btn-insurance" value="Hledat" />
-                <a asp-action="Card" class="btn-insurance-cancel">Zrušit filtry</a>
-            </p>
+<!-- Zaměření na vyhledáné výsled je možné zrušit tlačítkem |Zrušit filtry|, které zobrazí zase všechny pacienty. -->
+<div class="flex-row" style="display:flex;margin-bottom:5px">
+    <div>
+        <form asp-action="Card" method="get">
+            <div class="form-actions no-color">
+                <div class="input-group">
+                    <input class="hledat-text" type="text" autocomplete="off" placeholder="Hledat" name="SearchString" value="@ViewData["Search"]" />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col float-right">
+        <div class="row">
+            <div>
+                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("Card", "Admin", new { })')" class="btn btn-secondary">Zrušit filtry</button>
+            </div>
+            <div class="col to-end">
+                <!-- Tlačítko |Nový pacient|, které ve vyskakovacím okně umožní zadat údaje pro vytvoření nového pacienta. -->
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#newPatientModal">Nový pacient</button>
+            </div>
         </div>
-    </form>
-
-    <p id="left">
-        <!-- Tlačítko |Nový pacient|, které ve vyskakovacím okně umožní zadat údaje pro vytvoření nového pacienta. -->
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#newPatientModal">Nový pacient</button>
-    </p>
+    </div>
 </div>
 <!-- Vyskakovací okno (modální dialog), k zadání údajů pro vytvoření nového pacienta. -->
 <form asp-action="CreatePatient" method="post" onsubmit="return testRC('RC')">
@@ -147,7 +175,7 @@
                 var tel = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.Phone).FirstOrDefault();
                 var mail = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.Email).FirstOrDefault();
                 var tmp = db.PatientT.Where(x => x.UserId == item.UserId).Select(s => s.HomeAddress).FirstOrDefault();
-               
+
 
                 var address = db.AddressT.ToList().First();
                 if (tmp != null)
@@ -277,6 +305,9 @@
     </tbody>
 </table>
 
-<br /><br />
+<br />
+<br />
 @(Html.Pager(Model.patientsPage).Url(page => Url.Action("Card", new { p = page, sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
-<br /><br /><br />
+<br />
+<br />
+<br />
