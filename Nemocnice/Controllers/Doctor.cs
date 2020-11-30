@@ -671,7 +671,7 @@ namespace Nemocnice.Controllers
          * Akce zobrazí hlavní kartu pacienta se všemi informacemi.
          * patientNum - rodné číslo pacienta, jehož karta je zobrazována.
          */
-        public IActionResult PatientProfile(string patientNum)
+        public async Task<IActionResult> PatientProfileAsync(string patientNum)
         {
             // Získání informaci o lékaři, který si pacienta zobrazuje.
             // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
@@ -705,6 +705,9 @@ namespace Nemocnice.Controllers
             };
             patientProfileModel.InsuranceCompany = patient.InsuranceCompany;
             patientProfileModel.SocialSecurityNumber = patientNum;
+            var user1 = await _userManager.FindByNameAsync(patientUser.Login);
+            user1.UserName = patientNum;
+            db.SaveChanges();
             patientProfileModel.Tel = patientUser.Phone;
             patientProfileModel.Email = patientUser.Email;
             patientProfileModel.Age = getAge(patientNum);

@@ -6,10 +6,10 @@
 
 @using (var db = new DatabaseContext())
 {
-    var doctorCName = db.UserT.Where(x => x.UserId == Model.Author.DoctorId).First();
+    var doctorCName = db.UserT.Where(x => x.UserId == Model.Author.UserId).First();
 
     <p style="margin-top: 30px"><b>Vytvořil:</b> @doctorCName.Title @doctorCName.Name @doctorCName.Surname</p>
     <p><b>Vytvořeno:</b> @Model.CreateDate.Day<a>.</a>@Model.CreateDate.Month<a>.</a>@Model.CreateDate.Year</p>
     <h3>Popis:</h3>
-    <p>@Model.Description</p>
+    <textarea style="width:100%" rows="10" readonly>@Model.Description</textarea>
 }

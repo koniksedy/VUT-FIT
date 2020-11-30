@@ -99,7 +99,7 @@ namespace Nemocnice.Controllers
         public IActionResult Detail(int currentTicketID)
         {
             var db = new DatabaseContext();
-            var ticket = db.CheckupTicketT.Where(x => x.CheckupTicketId == currentTicketID).Include(x => x.CreatedBy).Include(x => x.ToDoctor).Include(x => x.Patient).FirstOrDefault();
+            var ticket = db.CheckupTicketT.Include(x => x.CreatedBy).Include(x => x.ToDoctor).Include(x => x.Patient).Where(x => x.CheckupTicketId == currentTicketID).FirstOrDefault();
             return View(ticket);
         }
         public IActionResult DetailMedRep(int currentTicketID)
@@ -109,11 +109,11 @@ namespace Nemocnice.Controllers
             return View(ticket);
         }
 
-        public IActionResult DetailCureProg(int currentCureProg)
+        public IActionResult CheckupTicket(int CheckupTicketId)
         {
             var db = new DatabaseContext();
-            var CureProg = db.CureProgressT.Include(x => x.Diagnosis).Include(x => x.MedicallReport).Where(x => x.CureProgressId == currentCureProg).First();
-            return View();
+            var CureProg = db.CheckupTicketT.Include(x => x.CreatedBy).Include(x => x.Patient).Where(x => x.CheckupTicketId == CheckupTicketId).First();
+            return View(CureProg);
         }
     }
 }

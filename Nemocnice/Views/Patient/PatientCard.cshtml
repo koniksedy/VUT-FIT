@@ -110,7 +110,8 @@
         <a><b>Email:<span></span></b> @Model.User.Email</a><br />
         <a><b>Rodné číslo:  </b> @Model.Patient.SocialSecurityNum </a><br />
         <a><b>Pojišťovna:  </b> @Model.Patient.InsuranceCompany</a><br />
-        <a><b>Adresa:  </b> @Model.Patient.HomeAddress.HouseNumber @Model.Patient.HomeAddress.StreetName @Model.Patient.HomeAddress.City @Model.Patient.HomeAddress.ZIP</a><br />
+        <a><b>Adresa:  </b>        
+        @Model.Patient.HomeAddress.StreetName @Model.Patient.HomeAddress.City @Model.Patient.HomeAddress.ZIP</a><br />
 
 
     </div>
@@ -158,8 +159,6 @@
                     <th>
                         Vytvořeno
                     </th>
-                    <th></th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -172,7 +171,6 @@
                         <td>
                             <p>Nejsou zde žádné záznamy k zobrazení</p>
                         </td>
-                        <td></td>
                         <td></td>
                     </tr>
                 }
@@ -192,7 +190,7 @@
                     {
                         var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Author.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
 
-                        <tr class="radek_zaznamu">
+                        <tr class="radek_zaznamu"  style="cursor:pointer" onclick="redirectToAction('@Url.Action("DetailMedRep", "Patient", new { currentTicketID = prohlidka.MedicallReportId })')">
                             <td>
                                 @DoctorCreator.Name @DoctorCreator.Surname
                             </td>
@@ -201,9 +199,6 @@
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => prohlidka.CreateDate.Day)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.CreateDate.Month)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.CreateDate.Year)
-                            </td>
-                            <td>
-                                @Html.ActionLink("Detail", "DetailMedRep", "Patient", new { currentTicketID = prohlidka.MedicallReportId }, null)
                             </td>
                         </tr>
                     }
@@ -234,8 +229,6 @@
                     <th>
                         Ukončeno
                     </th>
-
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -249,7 +242,6 @@
                         </td>
                         <td></td>
                         <td></td>
-                        <td></td>
                     </tr>
                 }
                 @foreach (var prohlidka in Model.checkupTickets)
@@ -259,7 +251,7 @@
                         var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.CreatedBy.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
                         var DoctorTo = db.UserT.Where(x => x.UserId == prohlidka.ToDoctor.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
 
-                        <tr class="radek_zaznamu">
+                        <tr class="radek_zaznamu"  style="cursor:pointer" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketId = prohlidka.CheckupTicketId })')">
                             <td>
                                 @DoctorCreator.Name @DoctorCreator.Surname
                             </td>
@@ -288,6 +280,11 @@
                 }
             </tbody>
         </table>
+        <script>
+            function onClick() {
+                modal.style.display = "none";
+            };
+        </script>
 
         @(Html.Pager(Model.checkupTickets).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = page, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select = 2 }))
     .Classic())
@@ -327,7 +324,7 @@
                     @foreach (var fotka in Model.Pictures)
                     {
 
-                        <tr class="radek_zaznamu" onclick="viewImage('/images/' + '@fotka.NameInt' + '@fotka.Type', '@fotka.Description')">
+                        <tr class="radek_zaznamu"  style="cursor:pointer"  onclick="viewImage('/images/' + '@fotka.NameInt' + '@fotka.Type', '@fotka.Description')">
                             <td>
                                 @fotka.CreateDate
                             </td>
@@ -484,24 +481,19 @@
                     <th>
                         Stav
                     </th>
-                    <th>
-                        Popis
-                    </th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 @if (Model.CureProgresses.Count() == 0)
                 {
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td>
-                            <p>Nejsou zde žádné záznamy k zobrazení</p>
-                        </td>
-                        <td></td>
-                        <td></td>
-                    </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <p>Nejsou zde žádné záznamy k zobrazení</p>
+                    </td>
+                    <td></td>
+
+                </tr>
                 }
                 @foreach (var prohlidka in Model.CureProgresses)
                 {
@@ -528,12 +520,6 @@
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => prohlidka.StateOfTreatment)
-                            </td>
-                            <td>
-                                @desc
-                            </td>
-                            <td>
-                                @Html.ActionLink("Detail", "DetailCureProg", "Patient", new { currentCureProg = prohlidka.CureProgressId }, null)
                             </td>
                         </tr>
                     }
