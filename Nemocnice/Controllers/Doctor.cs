@@ -112,9 +112,9 @@ namespace Nemocnice.Controllers
                                     SocialSecurityNum = patient.SocialSecurityNum,
                                     Insurance = patient.InsuranceCompany
                                 }
-                                ).Where(s => s.SocialSecurityNum.StartsWith(searchString) ||
-                                             s.PatientFullName.Name.StartsWith(searchString) ||
-                                             s.PatientFullName.Surname.StartsWith(searchString)).ToList();
+                                ).Where(s => s.SocialSecurityNum.Contains(searchString) ||
+                                             s.PatientFullName.Name.Contains(searchString) ||
+                                             s.PatientFullName.Surname.Contains(searchString)).ToList();
             }
 
             model.patients = Patients;

@@ -126,20 +126,13 @@ namespace Nemocnice.Controllers
             //pokud vyhledávací řetězec něco obsahuje, podle jeho obsahu provedeme vyhledání v databázi
             if (!String.IsNullOrEmpty(searchString))
             {
-                model.medicallBills = this.Context.MedicallBillT.Join(this.Context.UserT.Where(s => s.Name.Contains(searchString) || s.Surname.Contains(searchString)),
-                                                                                                 bill => bill.Doctor.UserId,
-                                                                                                 user => user.UserId,
-                                                                                                 (bill, user) => new MedicallBill
-                                                                                                 {
-                                                                                                     MedicallBillId = bill.MedicallBillId,
-                                                                                                     Doctor = bill.Doctor,
-                                                                                                     SocialSecurityNum = bill.SocialSecurityNum,
-                                                                                                     MedicallActivityPrice = bill.MedicallActivityPrice,
-                                                                                                     Diagnosis = bill.Diagnosis,
-                                                                                                     State = bill.State,
-                                                                                                     CreateDate = bill.CreateDate,
-                                                                                                     DecisionDate = bill.DecisionDate
-                                                                                                 }).Where(s => s.State == null).ToList();
+                try {
+                    model.medicallBills = this.Context.MedicallBillT.Where(s => s.State == null && (s.Doctor.ICZ == int.Parse(searchString))).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).ToList();
+                }
+                catch
+                {
+                    model.medicallBills = this.Context.MedicallBillT.Where(s => s.State == null && (s.MedicallActivityPrice.Name.Contains(searchString) || s.Diagnosis.Name.Contains(searchString))).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).ToList();
+                }
             }
             //pokud je vyhledávací řetězec prázdný, vypisujeme všechny nerozhodnuté žádosti -> ty, co moají stav null
             else
