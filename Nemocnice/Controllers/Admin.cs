@@ -296,10 +296,10 @@ namespace Nemocnice.Controllers
 
 
         [HttpPost]
-        public IActionResult EditDb_Patient()
+        public async Task<IActionResult> EditDb_PatientAsync()
         {
 
-            string edit_ID = Request.Form["edit_ID"];
+            string edit_oldRC = Request.Form["edit_ID"];
             string edit_name = Request.Form["edit_name"];
             string edit_surname = Request.Form["edit_surname"];
             string edit_rc = Request.Form["edit_rc"];
@@ -307,26 +307,41 @@ namespace Nemocnice.Controllers
             string edit_tel = Request.Form["edit_tel"];
             string edit_mail = Request.Form["edit_mail"];
             string edit_title = Request.Form["edit_title"];
+            string edit_password = Request.Form["edit_password"];
+            string edit_confirmPassword = Request.Form["edit_confirmPassword"];
 
-            var work = db.UserT.Where(a => a.Login == edit_ID).Select(s => s.WorkAddress).FirstOrDefault();
-
-            if (work != null)
+            var PatientId = db.PatientT.Where(x => x.SocialSecurityNum == edit_oldRC).Select(x => x.UserId).First();
+            
+            var Patient = db.UserT.Include(x => x.WorkAddress).Where(x => x.UserId == PatientId).First();
+            
+            if (Patient.WorkAddress != null)
             {
+
                 string edit_street = Request.Form["edit_street"];
-                int edit_cp = int.Parse(Request.Form["edit_cp"]);
+                
                 string edit_town = Request.Form["edit_town"];
                 int edit_psc = int.Parse(Request.Form["edit_psc"]);
-
-                int pom2 = Convert.ToInt32(work.AddressId);
+                var changePicSSN = db.PictureT.Where(x => x.SocialSecurityNum == edit_oldRC).ToList();
+                foreach (var fotka in changePicSSN)
+                {
+                    fotka.SocialSecurityNum = edit_rc;
+                }
+                db.SaveChanges();
+                int pom2 = Convert.ToInt32(Patient.WorkAddress.AddressId);
                 var pom3 = db.AddressT.First(a => a.AddressId == pom2);
 
+                if (Request.Form["edit_cp"] == "")
+                {
+                    int edit_cp = int.Parse(Request.Form["edit_cp"]);
+                    pom3.HouseNumber = edit_cp;
+                }
                 pom3.StreetName = edit_street;
-                pom3.HouseNumber = edit_cp;
+                
                 pom3.City = edit_town;
                 pom3.ZIP = edit_psc;
             }
 
-            var pom = db.UserT.First(a => a.Login == edit_ID);
+            var pom = db.UserT.First(a => a.Login == Patient.Login);
             pom.Name = edit_name;
             pom.Surname = edit_surname;
             pom.Title = edit_title;
@@ -334,16 +349,28 @@ namespace Nemocnice.Controllers
             pom.Email = edit_mail;
             pom.Login = edit_rc;
 
-            var pat = db.PatientT.First(a => a.SocialSecurityNum == edit_ID);
+            var pat = db.PatientT.First(a => a.SocialSecurityNum == edit_oldRC);
             pat.SocialSecurityNum = edit_rc;
             pat.InsuranceCompany = edit_insurance;
 
-            var user = db.Users.First(s => s.UserName == edit_ID);
-            user.UserName = edit_rc;
-            user.NormalizedUserName = edit_rc;
+
+            var userChangeLogin = await _userManager.FindByNameAsync(edit_oldRC);
+            userChangeLogin.UserName = edit_rc;
+            //user.UserName = edit_rc;
+            //user.NormalizedUserName = edit_rc.ToUpper();
+            await _userManager.UpdateAsync(userChangeLogin);
+
+            /****************************/
 
 
-            db.SaveChanges();
+            var newPasswordHashed = _userManager.PasswordHasher.HashPassword(userChangeLogin,edit_password);
+            var token = _userManager.GeneratePasswordResetTokenAsync(userChangeLogin).Result;
+            await _userManager.ResetPasswordAsync(userChangeLogin, token, edit_password);
+            await _userManager.UpdateAsync(userChangeLogin);
+            
+            /****************************/
+
+            await db.SaveChangesAsync();
 
             return RedirectToAction("Card", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
