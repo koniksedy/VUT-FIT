@@ -741,14 +741,27 @@ namespace Nemocnice.Controllers
                 // Je potřeba vyhledat konkrétní pacienty odpovídající hledanému výrazu.
                 // Hledání probíhá skrz položky (Jméno, Příjmení, R.Č.).
                 // Rodné číslo je převáděno na string. Hledání probíhá na základě metody StartsWith.
-                Doctors = db.UserT.Include(x => x.WorkAddress).Join(db.DoctorT, user => user.UserId, doctor => doctor.UserId,
+                try
+                {
+                    Doctors = db.UserT.Include(x => x.WorkAddress).Join(db.DoctorT, user => user.UserId, doctor => doctor.UserId,
                             (user, doctor) => new DoctorJoined1
                             {
                                 Doctor = doctor,
                                 User = user
-                            }).Where(s => s.User.Title.Contains(searchString) ||
-                                             s.User.Surname.Contains(searchString) ||
-                                             s.User.Name.Contains(searchString)).ToList();
+                            }).Where(s => s.Doctor.ICZ == int.Parse(searchString)).ToList();
+                }
+                catch
+                {
+                    Doctors = db.UserT.Include(x => x.WorkAddress).Join(db.DoctorT, user => user.UserId, doctor => doctor.UserId,
+                         (user, doctor) => new DoctorJoined1
+                         {
+                             Doctor = doctor,
+                             User = user
+                         }).Where(s => s.User.Title.Contains(searchString) ||
+                                          s.User.Surname.Contains(searchString) ||
+                                          s.User.Name.Contains(searchString)).ToList();
+
+                }
             }
             model.doctors = Doctors;
 
