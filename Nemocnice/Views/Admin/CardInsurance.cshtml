@@ -233,7 +233,7 @@
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Heslo</label>
-                                                        <input name="edit_confirmPassword" type="password" id="password" pattern=".{9,}" autocomplete="off" class="form-control" />
+                                                        <input name="password" type="password" id="password" pattern=".{9,}" autocomplete="off" class="form-control" />
                                                     </div>
                                                 </div>
                                                 <div class="col">
@@ -303,6 +303,12 @@
     </tbody>
 </table>
 
+<br /><br />
+@(Html.Pager(Model.insurancePage).Url(page => Url.Action("CardInsurance", new { p = page, sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
+<br />
+<br />
+<br />
+
 <script>
     var password = document.getElementById("password")
         , confirm_password = document.getElementById("confirm_password");
@@ -318,9 +324,3 @@
     password.onchange = validatePassword;
     confirm_password.onkeyup = validatePassword;
 </script>
-
-<br /><br />
-@(Html.Pager(Model.insurancePage).Url(page => Url.Action("CardInsurance", new { p = page, sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
-<br />
-<br />
-<br />

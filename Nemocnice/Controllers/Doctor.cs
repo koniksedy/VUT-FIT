@@ -568,7 +568,7 @@ namespace Nemocnice.Controllers
                     Description = image.FileName,
                     SocialSecurityNum = patientNum,
                     CreateDate = TimeNowTruncateToSec(),
-                    Type = image.FileName.Substring(image.FileName.IndexOf("."))
+                    Type = image.FileName.Substring(image.FileName.LastIndexOf("."))
                 };
                 db.PictureT.Add(pic);
                 db.SaveChanges();

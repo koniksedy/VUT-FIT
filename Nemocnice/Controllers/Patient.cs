@@ -54,7 +54,6 @@ namespace Nemocnice.Controllers
             PatientCardModel.checkupTickets = db.CheckupTicketT.Include(x => x.ToDoctor).Include(x => x.Patient).Include(x => x.CreatedBy).ToPagedList(PatientCardModel.PageNum2, pageSize);//.Where(x => x.Patient.UserId == PatientCardModel.User.UserId).ToPagedList();
             try
             {
-                IPagedList<string> hotovo;
                 var list = db.HealthConditionT.Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).Select(x => x.Allergys).DefaultIfEmpty("").ToPagedList();
 
 
@@ -63,7 +62,6 @@ namespace Nemocnice.Controllers
             }
             catch (Exception)
             {
-
             }
 
             //Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList();
