@@ -5,6 +5,11 @@
 @model CheckupTicketModel
 
 <style>
+
+</style>
+
+
+<style>
     body {
         font-family: Arial, Helvetica, sans-serif;
     }
@@ -264,7 +269,12 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Vyberte Obrázek</h5>
+                <div id="loadingPicture" class="spinner col">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
+                </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -286,7 +296,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
             </div>
         </div>
     </div>
@@ -415,6 +425,8 @@
                             }
                         }
                     }
+
+                    document.getElementById("loadingPicture").innerHTML = "";
                 },
                 error: function () {
                     alert("Nepodařilo se načíst obrázky.");

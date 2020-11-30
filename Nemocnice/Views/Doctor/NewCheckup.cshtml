@@ -289,6 +289,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Vyberte Obrázek</h5>
+                <div id="loadingPicture" class="spinner col">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
+                </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -448,6 +453,8 @@
                             }
                         }
                     }
+
+                    document.getElementById("loadingPicture").innerHTML = "";
                 },
                 error: function () {
                     alert("Nepodařilo se načíst obrázky.");
