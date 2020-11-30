@@ -1,0 +1,10 @@
+﻿@model Nemocnice.Data.CheckupTicket
+@using Nemocnice.Data;
+
+
+<h2 style="margin-top:30px">Vyšetření</h2>
+
+@using (var db = new DatabaseContext())
+{
+    var Doctor = db.UserT.Where(x => x.UserId == Model.CreatedBy.UserId).First();
+}

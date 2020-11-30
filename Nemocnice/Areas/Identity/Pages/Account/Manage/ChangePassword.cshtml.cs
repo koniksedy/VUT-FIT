@@ -35,17 +35,18 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            [Required]
+            [Required(ErrorMessage = "Toto pole je povinné")]
             [DataType(DataType.Password)]
             [Display(Name = "Current password")]
             public string OldPassword { get; set; }
 
-            [Required]
+            [Required(ErrorMessage = "Toto pole je povinné")]
             [StringLength(100, ErrorMessage = "Heslo musí být aspoň 9 znaků dlouhé")]
             [DataType(DataType.Password)]
             [Display(Name = "New password")]
             public string NewPassword { get; set; }
 
+            [Required(ErrorMessage = "Toto pole je povinné")]
             [DataType(DataType.Password)]
             [Display(Name = "Confirm new password")]
             [Compare("NewPassword", ErrorMessage = "Hesla se neshodují")]

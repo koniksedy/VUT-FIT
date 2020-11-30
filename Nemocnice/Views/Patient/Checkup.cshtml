@@ -12,20 +12,13 @@
 }
 <link href="~/lib/bootstrap/dist/css/PagedList.css" rel="stylesheet" type="text/css" />
 <style>
-    .radek_zaznamu {
-        border: solid;
-        border-top: solid;
-    }
 
-        .radek_zaznamu:hover {
-            background-color: lightgray;
-        }
 </style>
 
     <h2>Aktivní prohlídky</h2>
     <div>
         <div>
-            <table class="checkup table">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>
@@ -40,7 +33,6 @@
                         <th>
                             Vytvořeno
                         </th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -52,7 +44,6 @@
                             <td>
                                 <p>Nejsou zde žádné záznamy k zobrazení</p>
                             </td>
-                            <td></td>
                             <td></td>
                         </tr>
                     }
@@ -72,7 +63,7 @@
                         {
                             var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.CreatedBy.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault() ;
                             var DoctorTo = db.UserT.Where(x => x.UserId == prohlidka.ToDoctor.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
-                        <tr class="radek_zaznamu">
+                        <tr class="radek_zaznamu" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId })')">
                             <td>
                                 @DoctorCreator.Name @DoctorCreator.Surname
                             </td>
@@ -85,22 +76,21 @@
                             <td>
                                 @Html.DisplayFor(modelItem => prohlidka.CreateDate)
                             </td>
-                            <td>
-                                @Html.ActionLink("Detail", "Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId }, null)
-                            </td>
                         </tr>
                             }
                         }
                 </tbody>
             </table>
+            <script>
 
+            </script>
             @(Html.Pager(Model.CheckupTicketsRunning).Url(page => Url.Action("Checkup", new { tab1 = page, tab2 = Model.tab2}))
             .Classic())
         </div>
 
         <h2>Ukončené prohlídky</h2>
         <div>
-            <table class="checkup table">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>
@@ -115,7 +105,6 @@
                         <th>
                             Ukončeno
                         </th>
-                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -127,7 +116,6 @@
                             <td>
                                 <p>Nejsou zde žádné záznamy k zobrazení</p>
                             </td>
-                            <td></td>
                             <td></td>
                         </tr>
                     }
@@ -147,7 +135,7 @@
                         {
                             var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.CreatedBy.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
                             var DoctorTo = db.UserT.Where(x => x.UserId == prohlidka.ToDoctor.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
-                            <tr class="radek_zaznamu">
+                            <tr class="radek_zaznamu" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId })')">
                                 <td>
                                     @DoctorCreator.Name @DoctorCreator.Surname
                                 </td>
@@ -159,9 +147,6 @@
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => prohlidka.FinishDate)
-                                </td>
-                                <td>
-                                    @Html.ActionLink("Detail", "Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId }, null)
                                 </td>
                             </tr>
                         }

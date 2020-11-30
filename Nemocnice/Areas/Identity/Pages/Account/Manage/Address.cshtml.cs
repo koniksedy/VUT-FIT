@@ -37,13 +37,12 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
         
         public class InputModel
         {
-            
-            [Required(ErrorMessage = "Není platné číslo domu")]
+
+            [Display(Name = "Číslo domu")]
             public int HouseNumber { get; set; }
 
-            [Required]
+
             [Display(Name = "Název ulice")]
-            [StringLength(100, ErrorMessage = "Povinné pole ulice")]
             public string StreetName { get; set; }
 
             [Required]
