@@ -769,7 +769,7 @@ namespace Nemocnice.Controllers
 
         // Akce aktualizuje základní informace o pacientovi (Adresa, jméno, r.č., ...)
         [HttpPost]
-        public IActionResult UpdatePatientInfo()
+        public async Task<IActionResult> UpdatePatientInfoAsync()
         {
             // Získání nových dat o uživateli z meotdy POST.
             string oldpatientNumber = Request.Form["OldNum"];
@@ -816,6 +816,15 @@ namespace Nemocnice.Controllers
                     // Pokud HealthCondition neexistuje, vytvoříme jej.
                     patient.HealthCondition = new HealthCondition { SocialSecurityNum = patientNumber };
                 }
+
+                foreach (Picture image in db.PictureT.Where(o => o.SocialSecurityNum == oldpatientNumber))
+                {
+                    image.SocialSecurityNum = patient.SocialSecurityNum;
+                }
+
+                var patientUser = await _userManager.FindByNameAsync(oldpatientNumber);
+                patientUser.UserName = patient.SocialSecurityNum;
+                await _userManager.UpdateAsync(patientUser);
             }
 
             // Aktualizace Address
