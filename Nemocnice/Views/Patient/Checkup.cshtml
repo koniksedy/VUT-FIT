@@ -63,7 +63,7 @@
                         {
                             var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.CreatedBy.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault() ;
                             var DoctorTo = db.UserT.Where(x => x.UserId == prohlidka.ToDoctor.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
-                        <tr class="radek_zaznamu" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId })')">
+                        <tr class="radek_zaznamu" style="cursor:pointer" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId })')">
                             <td>
                                 @DoctorCreator.Name @DoctorCreator.Surname
                             </td>
@@ -135,7 +135,7 @@
                         {
                             var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.CreatedBy.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
                             var DoctorTo = db.UserT.Where(x => x.UserId == prohlidka.ToDoctor.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
-                            <tr class="radek_zaznamu" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId })')">
+                            <tr class="radek_zaznamu" style="cursor:pointer" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId })')">
                                 <td>
                                     @DoctorCreator.Name @DoctorCreator.Surname
                                 </td>

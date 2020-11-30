@@ -12,4 +12,5 @@
     <p><b>Vytvořeno:</b> @Model.CreateDate.Day<a>.</a>@Model.CreateDate.Month<a>.</a>@Model.CreateDate.Year</p>
     <h3>Popis:</h3>
     <textarea style="width:100%" rows="10" readonly>@Model.Description</textarea>
+    <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
 }
