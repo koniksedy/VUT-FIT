@@ -121,15 +121,37 @@
         <a><b>Výška: </b> @Model.Patient.HealthCondition.Height cm</a><br />
         <a><b>Váha: </b> @Model.Patient.HealthCondition.Weight kg</a><br />
         <a><b>Krevní typ: </b> @Model.Patient.HealthCondition.BloodType</a><br />
-        <a>
-            <b>Alergie: </b> @if (Model.Allergies != null)
-            {
-                @foreach (var prohlidka in Model.Allergies)
-                {
-                    @prohlidka
-                }
-            }
-        </a>
+        @if (Model.Patient.HealthCondition.Allergys.Length < 25)
+        {
+            <div>
+                <b>Alergie: </b><b class="text-danger">@Model.Patient.HealthCondition.Allergys</b>
+            </div>
+        }
+        else
+        {
+            <div>
+                <b>Alergie: </b>
+                <b class="text-danger">@Model.Patient.HealthCondition.Allergys.Substring(0, 25)</b>
+                <i style="color:#dc3545" data-toggle="modal" data-target="#AllergysModal" class="fa fa-ellipsis-h icons" aria-hidden="true"></i>
+                <div class="modal fade" id="AllergysModal" tabindex="-1" role="dialog" aria-labelledby="AllergysModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="AllergysModalLabel">Alergie pacienta</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                @Model.Patient.HealthCondition.Allergys
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+
     </div>
 </div>
 
@@ -179,7 +201,7 @@
                     string desc = prohlidka.Description.Substring(0, prohlidka.Description.Length);
                     @try
                     {
-                        desc = prohlidka.Description.Substring(0, 37);
+                        desc = prohlidka.Description.Substring(0, 40);
                         desc = desc + "...";
                     }
                     catch (Exception e)
@@ -188,11 +210,11 @@
                     }
                     @using (var db = new DatabaseContext())
                     {
-                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Author.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Author.UserId).Select(x => new { x.Name, x.Surname, x. Title }).FirstOrDefault();
 
                         <tr class="radek_zaznamu"  style="cursor:pointer" onclick="redirectToAction('@Url.Action("DetailMedRep", "Patient", new { currentTicketID = prohlidka.MedicallReportId })')">
                             <td>
-                                @DoctorCreator.Name @DoctorCreator.Surname
+                                @DoctorCreator.Title  @DoctorCreator.Name @DoctorCreator.Surname
                             </td>
                             <td>
                                 @desc
@@ -248,18 +270,26 @@
                 {
                     @using (var db = new DatabaseContext())
                     {
-                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.CreatedBy.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
-                        var DoctorTo = db.UserT.Where(x => x.UserId == prohlidka.ToDoctor.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.CreatedBy.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
+                        var DoctorTo = db.UserT.Where(x => x.UserId == prohlidka.ToDoctor.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
 
                         <tr class="radek_zaznamu"  style="cursor:pointer" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketId = prohlidka.CheckupTicketId })')">
                             <td>
-                                @DoctorCreator.Name @DoctorCreator.Surname
+                                @DoctorCreator.Title @DoctorCreator.Name @DoctorCreator.Surname
                             </td>
                             <td>
-                                @DoctorTo.Name @DoctorTo.Surname
+                                @DoctorCreator.Title @DoctorTo.Name @DoctorTo.Surname
                             </td>
                             <td>
-                                @Html.DisplayFor(modelItem => prohlidka.State)
+                                @if (prohlidka.State.Length > 25)
+                                {
+                                    @((prohlidka.State.Substring(0, 32)) + "...")
+
+                                }
+                                else
+                                {
+                                    @prohlidka.State
+                                }
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => prohlidka.CreateDate.Day)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.CreateDate.Month)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.CreateDate.Year)
@@ -324,18 +354,26 @@
                     @foreach (var fotka in Model.Pictures)
                     {
 
-                        <tr class="radek_zaznamu"  style="cursor:pointer"  onclick="viewImage('/images/' + '@fotka.NameInt' + '@fotka.Type', '@fotka.Description')">
-                            <td>
-                                @fotka.CreateDate
-                            </td>
-                            <td>
-                                @fotka.Description
-                            </td>
-                            <td>
-                            </td>
-                            <td></td>
-                            <td></td>
-                        </tr>
+            <tr class="radek_zaznamu" style="cursor:pointer" onclick="viewImage('/images/' + '@fotka.NameInt' + '@fotka.Type', '@fotka.Description')">
+                <td>
+                    @fotka.CreateDate
+                </td>
+                <td>
+                <td>
+                    @if (fotka.Description.Length > 25)
+                    {
+                        @((fotka.Description.Substring(0, 35)) + "...")
+
+                    }
+                    else
+                    {
+                        @fotka.Description
+                    }
+                <td>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
                     }
                 }
             </tbody>
@@ -385,10 +423,10 @@
                 {
                     @using (var db = new DatabaseContext())
                     {
-                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Doctor.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Doctor.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
                         <tr class="radek_zaznamu">
                             <td>
-                                @DoctorCreator.Name @DoctorCreator.Surname
+                                @DoctorCreator.Title @DoctorCreator.Name @DoctorCreator.Surname
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => prohlidka.Diagnosis.Name)
@@ -509,11 +547,11 @@
                     }
                     @using (var db = new DatabaseContext())
                     {
-                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.MedicallReport.Owner.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.MedicallReport.Owner.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
 
                         <tr class="radek_zaznamu">
                             <td>
-                                @DoctorCreator.Name @DoctorCreator.Surname
+                                @DoctorCreator.Title @DoctorCreator.Name @DoctorCreator.Surname
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => prohlidka.Diagnosis.Name)
