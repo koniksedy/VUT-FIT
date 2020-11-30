@@ -31,7 +31,7 @@ namespace Nemocnice.Data
             }
             else
             {
-                return Title + " " + Name + ", " + Surname ;
+                return Title + " " + Name + " " + Surname ;
             }
         }
 

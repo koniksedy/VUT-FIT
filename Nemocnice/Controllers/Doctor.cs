@@ -857,6 +857,29 @@ namespace Nemocnice.Controllers
         }
 
 
+        public IActionResult PrepareForCheckupIn(string patientNum, DateTime date)
+        {
+            // Získání informaci o lékaři, který si pacienta zobrazuje.
+            // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
+            string user = User.Identity.Name;
+            var doctorId = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList().First();
+
+            // Získání lékařských zpráv, jejichž autorem je přihlášený lékař.
+            // Pokud de přihlášen administrátor, vidí všechny zprávy.
+            List<DateTime> reports = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum
+#if (!TEST)
+            &&
+                                                                           (User.IsInRole("Admin") || o.Owner.UserId == doctorId)
+#endif
+                                                                           )
+                                                                .Select(s => s.CreateDate)
+                                                                .ToList().OrderByDescending(o => o).ToList();
+
+            return RedirectToAction("CheckupIn", new { patientNum, date });
+
+        }
+
+
         /*
          * Akce zpbrazí příchozí žádost o vyšetření daného pacienta.
          * patientNum - rodné číslo zobrazovaného pacienta
@@ -905,6 +928,55 @@ namespace Nemocnice.Controllers
                                                      date = s.Picture.CreateDate.ToString(),
                                                      type = s.Picture.Type
                                                  }).ToList();
+
+            return View(model);
+        }
+
+        public IActionResult CheckupInFin(string patientNum, DateTime date)
+        {
+
+            // Získání dané žádosti o vyšetření
+            CheckupTicket checkupTicket = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == date)
+                                                           .Include(i => i.CreatedBy)
+                                                           .Include(i => i.Patient).ToList().First();
+
+            // Získání informací o pacientovi a doktorovi
+            Data.User patient = db.UserT.Where(o => o.UserId == checkupTicket.Patient.UserId).ToList().First();
+            Data.User doctorFrom = db.UserT.Where(o => o.UserId == checkupTicket.CreatedBy.UserId).ToList().First();
+
+            // Naplnění modelu pro zobrazení
+            CheckupTicketModel model = new CheckupTicketModel
+            {
+                PatientFullName = new NameModel
+                {
+                    Name = patient.Name,
+                    Surname = patient.Surname,
+                    Title = patient.Title
+                },
+                SocialSecurityNumber = patientNum,
+                DoctorFullName = new NameModel
+                {
+                    Name = doctorFrom.Name,
+                    Surname = doctorFrom.Surname,
+                    Title = doctorFrom.Title
+                },
+                State = checkupTicket.State,
+                CreateDate = date,
+                FinishDate = checkupTicket.FinishDate,
+                RequestText = checkupTicket.Description,
+                ReportText = checkupTicket.Result
+            };
+            // Získání obrázků
+            model.Pictures = db.PictureOnTicketsT.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+                                                               o.Ticket.CreateDate == model.CreateDate)
+                                                 .Select(s => new PictureJsonModel
+                                                 {
+                                                     id = s.Picture.NameInt,
+                                                     name = s.Picture.Description,
+                                                     date = s.Picture.CreateDate.ToString(),
+                                                     type = s.Picture.Type
+                                                 }).ToList();
+
 
             return View(model);
         }
@@ -1305,8 +1377,8 @@ namespace Nemocnice.Controllers
                     PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                     PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                     SocialSecurityNumber = s.Patient.SocialSecurityNum,
-                    FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
-                    CreationDate = s.CreateDate.ToString("dd.MM.yyyy")
+                    FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.getFullName()).First(),
+                    CreationDate = s.CreateDate
                 }
                 ).ToList();
             }
@@ -1320,8 +1392,8 @@ namespace Nemocnice.Controllers
                     PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                     PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                     SocialSecurityNumber = s.Patient.SocialSecurityNum,
-                    FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
-                    CreationDate = s.CreateDate.ToString("dd.MM.yyyy")
+                    FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.getFullName()).First(),
+                    CreationDate = s.CreateDate
                     }
                 ).Where(s => s.SocialSecurityNumber == searchString).ToList();
                 }
@@ -1332,8 +1404,9 @@ namespace Nemocnice.Controllers
                         PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                         PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                         SocialSecurityNumber = s.Patient.SocialSecurityNum,
-                        FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
-                        CreationDate = s.CreateDate.ToString("dd.MM.yyyy")
+                        FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId)
+                        .Select(p => (String.IsNullOrEmpty(p.Title) ? "" : (p.Title + " ")) + p.Name + " " + p.Surname).First(),
+                        CreationDate = s.CreateDate
                     }
                     ).Where(s => s.PatientName.Contains(searchString) || s.PatientSurname.Contains(searchString) || s.FromDoctor.Contains(searchString)).ToList();
                 }
@@ -1357,7 +1430,7 @@ namespace Nemocnice.Controllers
                     MyInRequests = MyInRequests.OrderBy(s => s.FromDoctor).ToList();
                     break;
                 default:
-                    MyInRequests = MyInRequests.OrderByDescending(o => DateTime.Parse(o.CreationDate)).ToList();
+                    MyInRequests = MyInRequests.OrderByDescending(o => o.CreationDate).ToList();
                     break;
             }
 
@@ -1382,12 +1455,11 @@ namespace Nemocnice.Controllers
                     PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                     PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                     SocialSecurityNumber = s.Patient.SocialSecurityNum,
-                    ToDoctor = db.UserT.Where(o => o.UserId == s.ToDoctor.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
-                    CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
+                    ToDoctor = db.UserT.Where(o => o.UserId == s.ToDoctor.UserId).Select(p => p.getFullName()).First(),
+                    CreationDate = s.CreateDate,
                     State = s.State == "dokončeno"
-                }
-                               ).ToList().OrderByDescending(p => DateTime.Parse(p.CreationDate)).ToList();
-                MyOutRequests.Sort((x, y) => (y.State == x.State) ? DateTime.Compare(DateTime.Parse(y.CreationDate), DateTime.Parse(x.CreationDate)) : (x.State ? 1 : -1));
+                }).ToList().OrderByDescending(p =>p.CreationDate).ToList();
+                MyOutRequests.Sort((x, y) => (y.State == x.State) ? DateTime.Compare(y.CreationDate, x.CreationDate) : (x.State ? 1 : -1));
             }
             else
             {
@@ -1400,12 +1472,11 @@ namespace Nemocnice.Controllers
                         PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                         PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                         SocialSecurityNumber = s.Patient.SocialSecurityNum,
-                        ToDoctor = db.UserT.Where(o => o.UserId == s.ToDoctor.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
-                        CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
+                        ToDoctor = db.UserT.Where(o => o.UserId == s.ToDoctor.UserId).Select(p => p.getFullName()).First(),
+                        CreationDate = s.CreateDate,
                         State = s.State == "dokončeno"
-                    }
-               ).Where(s => s.SocialSecurityNumber == searchString).ToList();
-                    MyOutRequests.Sort((x, y) => (y.State == x.State) ? DateTime.Compare(DateTime.Parse(y.CreationDate), DateTime.Parse(x.CreationDate)) : (x.State ? 1 : -1));
+                    }).Where(s => s.SocialSecurityNumber == searchString).ToList();
+                    MyOutRequests.Sort((x, y) => (y.State == x.State) ? DateTime.Compare(y.CreationDate, x.CreationDate) : (x.State ? 1 : -1));
                 }
                 else
                 {
@@ -1415,12 +1486,11 @@ namespace Nemocnice.Controllers
                         PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                         PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                         SocialSecurityNumber = s.Patient.SocialSecurityNum,
-                        ToDoctor = db.UserT.Where(o => o.UserId == s.ToDoctor.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
-                        CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
+                        ToDoctor = db.UserT.Where(o => o.UserId == s.ToDoctor.UserId).Select(p => (String.IsNullOrEmpty(p.Title) ? "" : (p.Title + " ")) + p.Name + " " + p.Surname).First(),
+                        CreationDate = s.CreateDate,
                         State = s.State == "dokončeno"
-                    }
-               ).Where(s => s.PatientName.Contains(searchString) || s.PatientSurname.Contains(searchString) || s.ToDoctor.Contains(searchString)).ToList();
-                    MyOutRequests.Sort((x, y) => (y.State == x.State) ? DateTime.Compare(DateTime.Parse(y.CreationDate), DateTime.Parse(x.CreationDate)) : (x.State ? 1 : -1));
+                    }).Where(s => s.PatientName.Contains(searchString) || s.PatientSurname.Contains(searchString) || s.ToDoctor.Contains(searchString)).ToList();
+                    MyOutRequests.Sort((x, y) => (y.State == x.State) ? DateTime.Compare(y.CreationDate, x.CreationDate) : (x.State ? 1 : -1));
                 }
             }
 
@@ -1442,7 +1512,7 @@ namespace Nemocnice.Controllers
                     MyOutRequests = MyOutRequests.OrderBy(s => s.State).ToList();
                     break;
                 default:
-                    MyOutRequests = MyOutRequests.OrderByDescending(o => DateTime.Parse(o.CreationDate)).ToList();
+                    MyOutRequests = MyOutRequests.OrderByDescending(o => o.CreationDate).ToList();
                     break;
             }
 
@@ -1481,11 +1551,10 @@ namespace Nemocnice.Controllers
                     PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                     PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                     SocialSecurityNumber = s.Patient.SocialSecurityNum,
-                    FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
-                    CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
+                    FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.getFullName()).First(),
+                    CreationDate = s.CreateDate,
                     FinishDate = s.FinishDate.ToString("dd.MM.yyyy")
-                }
-                           ).ToList().OrderByDescending(o => DateTime.Parse(o.CreationDate)).ToList();
+                }).ToList().OrderByDescending(o => o.CreationDate).ToList();
             }
             else
             {
@@ -1499,8 +1568,8 @@ namespace Nemocnice.Controllers
                             PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                             PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                             SocialSecurityNumber = s.Patient.SocialSecurityNum,
-                            FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
-                            CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
+                            FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.getFullName()).First(),
+                            CreationDate = s.CreateDate,
                             FinishDate = s.FinishDate.ToString("dd.MM.yyyy")
                         }
                         ).Where(s => s.SocialSecurityNumber == searchString).ToList();
@@ -1513,8 +1582,9 @@ namespace Nemocnice.Controllers
                             PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                             PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                             SocialSecurityNumber = s.Patient.SocialSecurityNum,
-                            FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.Title + ((String.IsNullOrEmpty(p.Title)) ? "" : " ") + p.Name + " " + p.Surname).First(),
-                            CreationDate = s.CreateDate.ToString("dd.MM.yyyy"),
+                            FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId)
+                            .Select(p => (String.IsNullOrEmpty(p.Title) ? "" : (p.Title + " ")) + p.Name + " " + p.Surname).First(),
+                            CreationDate = s.CreateDate,
                             FinishDate = s.FinishDate.ToString("dd.MM.yyyy")
                         }
                         ).Where(s => s.PatientName.Contains(searchString) || s.PatientSurname.Contains(searchString) || s.FromDoctor.Contains(searchString)).ToList();
@@ -1540,7 +1610,7 @@ namespace Nemocnice.Controllers
                     MyFinishRequests = MyFinishRequests.OrderByDescending(s => s.FinishDate).ToList();
                     break;
                 default:
-                    MyFinishRequests = MyFinishRequests.OrderByDescending(o => DateTime.Parse(o.CreationDate)).ToList();
+                    MyFinishRequests = MyFinishRequests.OrderByDescending(o => o.CreationDate).ToList();
                     break;
             }
             return View(MyFinishRequests);

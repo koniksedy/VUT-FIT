@@ -11,7 +11,7 @@
         <form asp-action="InFinishRequest" method="get">
             <div class="form-actions no-color">
                 <div class="input-group">
-                    <input class="hledat-text" type="text" placeholder="Hledat název výkonu" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]" />
+                    <input class="hledat-text" type="text" placeholder="Hledat" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]" />
                     <div class="input-group-append">
                         <button type="submit" name="SortOrder" value="@ViewData["SortOrder"]" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
                     </div>
@@ -51,13 +51,12 @@
                 <th>
                     @Html.ActionLink("Datum ošetření", "InFinishRequest", new { sortOrder = "byOsetreniDate", searchString = ViewData["Search"] })
                 </th>
-                <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
-                <tr>
+                <tr onclick="redirectToAction('@Url.Action("CheckupInFin", "Doctor", new { patientNum = item.SocialSecurityNumber, date = item.CreationDate })')">
                     <td>
                         @Html.DisplayFor(modelItem => item.PatientSurname)
                     </td>
@@ -71,13 +70,10 @@
                         @Html.DisplayFor(modelItem => item.FromDoctor)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.CreationDate)
+                        @item.GetCreationDateAsString()
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.FinishDate)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Zobrazit", "Edit", new { /* id=item.PrimaryKey */ })
                     </td>
                 </tr>
             }
