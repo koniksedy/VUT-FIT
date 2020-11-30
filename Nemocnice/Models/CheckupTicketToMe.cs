@@ -12,6 +12,11 @@ namespace Nemocnice.Models
         public string PatientName { get; set; }
         public string SocialSecurityNumber { get; set; }
         public string FromDoctor { get; set; }
-        public string CreationDate { get; set; }
+        public DateTime CreationDate { get; set; }
+
+        public string GetDateString()
+        {
+            return CreationDate.ToString("dd.MM.yyyy");
+        }
     }
 }

@@ -13,26 +13,54 @@
 @using Microsoft.AspNetCore.Mvc;
 
 
+<style>
+
+    @@media only screen and (min-width:501px) {
+        .to-end {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+    }
+
+    @@media only screen and (max-width:500px) {
+        .to-end {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 5px;
+        }
+    }
+</style>
+
+
+
 <h1 class="pojistovna-nadpis">Správa pracovníků pojišťovny</h1>
 
-<div class="search-doctor">
-
-    <!-- Vyhledávání pacienta podle zadaného výrazu. -->
-    <!-- Zaměření na vyhledáné výsled je možné zrušit tlačítkem |Zrušit filtry|, které zobrazí zase všechny pacienty. -->
-    <form asp-action="CardInsurance" method="get">
-        <div class="form-actions no-color">
-            <p id="right">
-                <strong>Najít: </strong> <input type="text" name="SearchString" value="@ViewData["Search"]" ) />
-                <input type="submit" class="btn-insurance" value="Hledat" />
-                <a asp-action="CardInsurance" class="btn-insurance-cancel">Zrušit filtry</a>
-            </p>
+<div class="flex-row" style="display:flex;margin-bottom:5px">
+    <div>
+        <form asp-action="CardInsurance" method="get">
+            <div class="form-actions no-color">
+                <div class="input-group">
+                    <input class="hledat-text" type="text" autocomplete="off" placeholder="Hledat" name="SearchString" value="@ViewData["Search"]" />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col float-right">
+        <div class="row">
+            <div>
+                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("CardInsurance", "Admin", new { })')" class="btn btn-secondary">Zrušit filtry</button>
+            </div>
+            <div class="col to-end">
+                <!-- Tlačítko |Nový pacient|, které ve vyskakovacím okně umožní zadat údaje pro vytvoření nového pacienta. -->
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#newPatientModal">Nový pracovník</button>
+            </div>
         </div>
-    </form>
-
-    <p id="left">
-        <!-- Tlačítko |Nový pacient|, které ve vyskakovacím okně umožní zadat údaje pro vytvoření nového pacienta. -->
-        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#newPatientModal">Nový pracovník</button>
-    </p>
+    </div>
 </div>
 <!-- Vyskakovací okno (modální dialog), k zadání údajů pro vytvoření nového pacienta. -->
 <form asp-action="CreateInsurance" method="post" onsubmit="return testRC('RC')">
@@ -295,4 +323,6 @@
 
 <br /><br />
 @(Html.Pager(Model.insurancePage).Url(page => Url.Action("CardInsurance", new { p = page, sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
-<br /><br /><br />
+<br />
+<br />
+<br />

@@ -5,6 +5,11 @@
 @model CheckupTicketModel
 
 <style>
+
+</style>
+
+
+<style>
     body {
         font-family: Arial, Helvetica, sans-serif;
     }
@@ -105,10 +110,45 @@
     Žádost o vyšetření
 </h2>
 
-<div style="margin-top:30px">
-    <b>Pacient:     @Model.PatientFullName.getFullName() (r.č.:&nbsp;@Model.SocialSecurityNumber)</b><br />
-    <b>Od lékaře:  </b>@Model.DoctorFullName.getFullName()<br />
+<div style="max-width:1075px" class="flex-row row">
+    <div class="col">
+        <div style="margin-top:30px">
+            <b>Pacient:     @Model.PatientFullName.getFullName() (r.č.:&nbsp;@Model.SocialSecurityNumber)</b><br />
+            <b>Od lékaře:  </b>@Model.DoctorFullName.getFullName()<br />
+        </div>
+    </div>
+    <div class="col">
+        <h4 style="margin-top:25px">Obrázky</h4>
+        <div>
+            <table class="table-striped moje-tabulka">
+                <tbody>
+                    @foreach (var item in Model.Pictures)
+                    {
+                        <tr class="kurzor" onclick="viewImage('/images/' + '@item.id' + '@item.type', '@item.name')">
+                            <td>
+                                @if (item.name.Length > 25)
+                                {
+                                    @((item.name.Substring(0, 20)) + "...")
+
+                                }
+                                else
+                                {
+                                    @item.name
+
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.Pictures.Count == 0)
+                    {
+                        <tr class="vypnout"><td>Žádné obrázky</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
 
 
 <div style="margin-top:20px;margin-bottom:20px;max-width:735px">
@@ -229,7 +269,12 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Vyberte Obrázek</h5>
+                <div id="loadingPicture" class="spinner col">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
+                </div>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -251,7 +296,7 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
             </div>
         </div>
     </div>
@@ -380,6 +425,8 @@
                             }
                         }
                     }
+
+                    document.getElementById("loadingPicture").innerHTML = "";
                 },
                 error: function () {
                     alert("Nepodařilo se načíst obrázky.");

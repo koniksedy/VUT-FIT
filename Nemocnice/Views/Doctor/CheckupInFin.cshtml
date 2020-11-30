@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Výsledek vyšetření";
+    ViewData["Title"] = "Příchozí žádost";
 }
 
 @model CheckupTicketModel
@@ -79,28 +79,41 @@
         .input-image .btn {
             z-index: 1;
         }
+
+    .ulozit-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
 </style>
 
+<!-- Knihovny pro autocomplete -->
+<script src="~/lib/extern/jquery.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<script src="~/lib/extern/jquery-ui.js"></script>
+<!-- Bez následujícího skriptu nebude fungovat drobdown menu.-->
+<script>
+    $(document).ready(function () {
+        $('.dropdown-toggle').dropdown();
+    });
+</script>
 
-<h2 style="margin-bottom:20px">@Model.PatientFullName.getFullName() (ř.č.:&nbsp;@Model.SocialSecurityNumber)</h2>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<h2>
+    Vyřízené žádosti vyšetření
+</h2>
 
 <div class="flex-row row">
     <div class="col">
-        <div>
-            <b>Lékař:  </b>@Model.DoctorFullName.getFullName()<br />
-            <b>Stav: </b>
-            @if (Model.State != "dokončeno")
-            {
-                <b class="text-danger">@Model.State</b>
-            }
-            else
-            {
-                <b class="text-success">@Model.State</b>
-            }
+        <div style="margin-top:30px">
+            <b>Pacient:     @Model.PatientFullName.getFullName() (r.č.:&nbsp;@Model.SocialSecurityNumber)</b><br />
+            <b>Od lékaře:  </b>@Model.DoctorFullName.getFullName()<br />
         </div>
     </div>
     <div class="col">
-        <h4>Obrázky</h4>
+        <h4 style="margin-top:30px">Obrázky</h4>
         <div>
             <table class="table-striped moje-tabulka">
                 <tbody>
@@ -131,23 +144,31 @@
     </div>
 </div>
 
-<div>
-    <h4 style="margin-top:20px">
-        Žádost [@Model.CreateDate]
-    </h4>
-    <textarea style="width:100%;max-width:909px" rows="10" readonly>@Model.RequestText</textarea>
+
+
+
+<div style="max-width:900px;margin-top:20px">
+    <h4>Žádost [@Model.CreateDate]</h4>
+    <textarea style="width:100%" rows="10" readonly>@Model.RequestText</textarea>
 </div>
 
-<div>
-    <h4 style="margin-top:20px">
-        Zpráva z vyšetření @((Model.State == "dokončeno") ? "[" + Model.FinishDate + "]" : "")
-    </h4>
-    <textarea style="width:100%;max-width:909px" rows="10" readonly>@Model.ReportText</textarea>
+<div style="max-width:900px;margin-top:20px">
+    <form asp-action="FinishTicket" enctype="multipart/form-data" method="post" onsubmit="return check_TicketReport()">
+
+        <h4>Výsledek mého vyšetření</h4>
+        <div>
+            <textarea style="width:100%" rows="10" id="reportText" name="reportText">@Model.ReportText</textarea>
+        </div>
+        
+
+        <div class="row">
+            <div class="col">
+                <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
+            </div>
+        </div>
+    </form>
 </div>
 
-<div>
-    <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
-</div>
 
 <!-- The Modal For picture DISPLAY-->
 <div id="myModal" class="modalImage">
@@ -155,6 +176,7 @@
     <img class="modal-contentImage" id="img01">
     <div id="caption"></div>
 </div>
+
 
 
 <script>
