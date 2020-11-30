@@ -85,16 +85,16 @@
                                 <input name="NewTel" type="text" required autocomplete="off" class="form-control" />
                             </div>
                             <div class="form-group">
+                                <label class="col-form-label">Email</label>
+                                <input name="NewEmail" type="email" value="" autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
                                 <label class="col-form-label">Ulice</label>
                                 <input name="NewStreet" autocomplete="off" value="" class="form-control" />
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label">Město<a style="color:red">*</a></label>
                                 <input name="NewCity" required autocomplete="off" class="form-control" />
-                            </div>
-                            <div class="form-group">
-                                <label class="col-form-label">Pozice<a style="color:red">*</a></label>
-                                <input name="NewPosition" type="text" required autocomplete="off" value="" class="form-control" />
                             </div>
                         </div>
                         <div class="col">
@@ -103,8 +103,12 @@
                                 <input name="NewSurname" type="text" required autocomplete="off" class="form-control" />
                             </div>
                             <div class="form-group">
-                                <label class="col-form-label">Email</label>
-                                <input name="NewEmail" type="email" value="" autocomplete="off" class="form-control" />
+                                <label class="col-form-label">Telefon do práce</label>
+                                <input name="NewWorkPhone" type="text" autocomplete="off" value="" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Pozice<a style="color:red">*</a></label>
+                                <input name="NewPosition" type="text" required autocomplete="off" value="" class="form-control" />
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label">Číslo popisné</label>
@@ -114,16 +118,11 @@
                                 <label class="col-form-label">Směrovací číslo<a style="color:red">*</a></label>
                                 <input name="NewZip" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" />
                             </div>
-                            <div class="form-group">
-                                <label class="col-form-label">Titul</label>
-                                <input name="NewTitle" type="text" autocomplete="off" value="" class="form-control" />
-                            </div>
-
                         </div>
                         <div class="col-2">
                             <div class="form-group">
-                                <label class="col-form-label">Telefon do práce</label>
-                                <input name="NewWorkPhone" type="text" autocomplete="off" value="" class="form-control" />
+                                <label class="col-form-label">Titul</label>
+                                <input name="NewTitle" type="text" autocomplete="off" value="" class="form-control" />
                             </div>
                         </div>
                     </div>
@@ -243,14 +242,13 @@
                                                         <input name="edit_surname" type="text" required autocomplete="off" class="form-control" value="@item.InsuranceFullName.Surname" />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="col-form-label">Email</label>
-                                                        <input name="edit_mail" type="email" autocomplete="off" class="form-control" value="@mail" />
+                                                        <label class="col-form-label">Telefon do práce</label>
+                                                        <input name="edit_work" type="text" autocomplete="off" value="@item.WorkPhone" class="form-control" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Číslo popisné</label>
                                                         <input name="edit_cp" type="text" pattern="[0-9]+" autocomplete="off" class="form-control" value="@(address.HouseNumber == 0 ? "" : address.HouseNumber.ToString())" />
                                                     </div>
-
                                                     <div class="form-group">
                                                         <label class="col-form-label">Směrovací číslo<a style="color:red">*</a></label>
                                                         <input name="edit_psc" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" value="@(address.ZIP == 0 ? "" : address.ZIP.ToString())" />
@@ -266,16 +264,16 @@
                                                         <input name="edit_title" type="text" autocomplete="off" value="@title" class="form-control" />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="col-form-label">Telefon do práce</label>
-                                                        <input name="edit_work" type="text" autocomplete="off" value="@item.WorkPhone" class="form-control" />
+                                                        <label class="col-form-label">Email</label>
+                                                        <input name="edit_mail" type="email" autocomplete="off" class="form-control" value="@mail" />
                                                     </div>
                                                     <div class="form-group">
                                                         <label class="col-form-label">Pozice<a style="color:red">*</a></label>
                                                         <input name="edit_position" type="text" required autocomplete="off" class="form-control" value="@item.Position" />
                                                     </div>
                                                     <div class="form-group">
-                                                        <label class="col-form-label">Login<a style="color:red">*</a></label>
-                                                        <input name="edit_login" type="text" required autocomplete="off" value="@item.Login" class="form-control" />
+                                                        <label class="col-form-label">Login</label>
+                                                        <input readonly disabled name="edit_login" type="text" required autocomplete="off" value="@item.Login" class="form-control" />
                                                     </div>
                                                 </div>
                                             </div>

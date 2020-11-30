@@ -212,8 +212,8 @@
                     </td>
                     <td>
                         <button name="button" type="button" class="butt-payment" data-toggle="modal" data-target="@pom">Upravit</button>
-                        <form asp-action="EditDb_Patient" method="post" onsubmit="return test('@(pom2+"RC")')">
-                            <input hidden id="oldNum" name="oldNum" type="text" value="@item.SocialSecurityNum" />
+                        <form asp-action="EditDb_Patient" method="post" onsubmit="return test('@(pom2+"RC")', '@(pom2+"OLD")')">
+                            <input hidden id="@(pom2+"OLD")" name="oldNum" type="text" value="@item.SocialSecurityNum" />
                             <div class="modal fade" id="@pom2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                 <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
                                 <div class="modal-dialog" style="max-width:800px" role="document">
@@ -340,11 +340,11 @@
 
 <script>
 
-    function test(id) {
-        var oldNum = document.getElementById("oldNum").value;
-        var newNum = document.getElementById(id).value;
+    function test(idNew, idOld) {
+        var oldNum = document.getElementById(idOld).value;
+        var newNum = document.getElementById(idNew).value;
         if (newNum != oldNum) {
-            if (!validateSSN_Admin_edit(id)) {
+            if (!validateSSN_Admin_edit(idNew)) {
                 return false;
             }
         }

@@ -188,11 +188,11 @@
                     }
                     @using (var db = new DatabaseContext())
                     {
-                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Author.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Author.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
 
                         <tr class="radek_zaznamu"  style="cursor:pointer" onclick="redirectToAction('@Url.Action("DetailMedRep", "Patient", new { currentTicketID = prohlidka.MedicallReportId })')">
                             <td>
-                                @DoctorCreator.Name @DoctorCreator.Surname
+                                @DoctorCreator.Title @DoctorCreator.Name @DoctorCreator.Surname
                             </td>
                             <td>
                                 @desc
