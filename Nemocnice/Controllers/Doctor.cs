@@ -336,6 +336,9 @@ namespace Nemocnice.Controllers
             reportsModel.SocialSecurityNumber = socialNum;
 
             // Získání všech obrázků pacienta ke zprávě
+            var test = db.PictureOnReportT.Where(o => o.Report.CreateDate == reportsModel.ActualReportDate &&
+                                                                   o.Picture.SocialSecurityNum == socialNum)
+                                                       .ToList();
             reportsModel.Pictures = db.PictureOnReportT.Where(o => o.Report.CreateDate == reportsModel.ActualReportDate &&
                                                                    o.Picture.SocialSecurityNum == socialNum)
                                                        .Select(s => new PictureJsonModel

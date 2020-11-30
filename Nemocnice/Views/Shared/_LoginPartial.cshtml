@@ -8,12 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/css/site.css?v=7" />
 
-
     <ul class="navbar-nav">
         @if (SignInManager.IsSignedIn(User))
         {
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown text-dark" href="#" id="LoginUser" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="nav-link dropdown-toggle text-dark" href="#" id="LoginUser" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-user" aria-hidden="true" style="font-size:40px"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="LoginUser">
