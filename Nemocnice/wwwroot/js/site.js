@@ -1,12 +1,6 @@
 ﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
-// HACK původně mělo zajišťovat funkčnost Z kartotéky Nový pacient. Pokud nefunguje, přidat zpět.
-/*
-    $('#exampleModal').on('show.bs.modal', function (event) {
-        var button = $(event.relatedTarget) // Button that triggered the modal
-})
-*/
 
 
 
@@ -26,8 +20,8 @@ function unlockPatientInfo() {
     document.getElementById("UpdateTitle").disabled = false;
     document.getElementById("UpdateTitle").readOnly = false;
 
-    document.getElementById("UpdateNum").disabled = false;
-    document.getElementById("UpdateNum").readOnly = false;
+    document.getElementById("RC").disabled = false;
+    document.getElementById("RC").readOnly = false;
 
     document.getElementById("UpdateInsurance").disabled = false;
     document.getElementById("UpdateInsurance").readOnly = false;
@@ -59,6 +53,35 @@ function redirectToAction(hr) {
     window.location.href = hr;
 }
 
+function validateSSN() {
+
+    if (!testRC('RC')) {
+        return false;
+    }
+
+    if ($.ajax({
+        url: '/Doctor/TestSocialSecurityNumUnique',
+        dataType: "json",
+        async: false,
+        data: {
+            num: document.getElementById("RC").value,
+        },
+        success: function (data) {
+            return data;
+        },
+        error: function () {
+            alert("Nepodařilo zkontrolovat rodné číslo.");
+        }
+    }).responseJSON === false) {
+        alert("Pacient se zadaným rodným číslem již existuje.")
+        return false;
+    }
+
+    return true;
+
+    
+}
+
 // Kod převzat z https://www.zizka.ch/pages/programming/ruzne/rodne-cislo-identifikacni-cislo-rc-ico-kontrola-validace.html
 function testRC(RC) {
     x = document.getElementById(RC).value;
@@ -72,7 +95,7 @@ function testRC(RC) {
         if ((x.length == 9) && (year < 54)) {
             // před rokem 54 bylo k měsícům povolemo přičítat pouze 50
             if ((month > 12 && month < 51) || (month > 62)) {
-                alert("K měsícům rodných čísel před rokem 2003 je možné přičítat pouze 50.")
+                alert("K měsícům rodných čísel před rokem 2003 je možné přičítat pouze 50.");
                 throw 1;
             }
             return true;
@@ -86,7 +109,7 @@ function testRC(RC) {
         // Pokud není dělitelné 11 bezezbytku, nebo se nejedná o vyjímku,
         // Pak je rodné číslo chybné.
         if (m != c) {
-            Alert("Rodné číslo nesplňuje kontrolu dělitelnosti 11.")
+            alert("Rodné číslo nesplňuje kontrolu dělitelnosti 11.");
             throw 1;
         }
         // Čísla o délce 10, jsou rodná čísla od roku 1954.
@@ -97,26 +120,26 @@ function testRC(RC) {
         else if ((month > 20) && (year > 2003)) month -= 20;
         // Kontrola měsíců a dnů
         if (month == 0) {
-            alert("Měsic zakódovaný v rodném čísle nemůže být 0.")
+            alert("Měsic zakódovaný v rodném čísle nemůže být 0.");
             throw 1;
         }
         if (month > 12) {
-            alert("Měsíc zakódovaný v rodném čísle nemůže být větší než 12.")
+            alert("Měsíc zakódovaný v rodném čísle nemůže být větší než 12.");
             throw 1;
         }
         if (day == 0) {
-            alert("Den zakódovaný v rodném čísle nemůže být roven 0.")
+            alert("Den zakódovaný v rodném čísle nemůže být roven 0.");
             throw 1;
         }
         if (day > 31) {
-            alert("Den zakódovaný v rodném čísle nemůže být větší než 31.")
+            alert("Den zakódovaný v rodném čísle nemůže být větší než 31.");
             throw 1;
         }
         // Kontrola, zda se jedná o datum v minulosti
         var dateFromRC = new Date(year, month-1, day);
         var dateNow = new Date();
         if (dateFromRC > dateNow) {
-            alert("Datum zakódované v rodném čísle je datum z budoucnosti.")
+            alert("Datum zakódované v rodném čísle je datum z budoucnosti.");
             throw 1;
         }
     }

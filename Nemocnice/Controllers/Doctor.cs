@@ -919,14 +919,14 @@ namespace Nemocnice.Controllers
             };
 
             // Získání obrázků
-            model.Pictures = db.PictureOnTicketsT.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
-                                                               o.Ticket.CreateDate == model.CreateDate)
+            model.Pictures = db.PictureOnTicketsT/*.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+                                                               o.Ticket.CreateDate == model.CreateDate)*/
                                                  .Select(s => new PictureJsonModel
                                                  {
                                                      id = s.Picture.NameInt,
                                                      name = s.Picture.Description,
                                                      date = s.Picture.CreateDate.ToString(),
-                                                     type = s.Picture.Type
+                                                     type = s.Picture.Type  
                                                  }).ToList();
 
             return View(model);
@@ -1107,8 +1107,8 @@ namespace Nemocnice.Controllers
                 ReportText = checkupTicket.Result
             };
             // Získání obrázků
-            model.Pictures = db.PictureOnTicketsT.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
-                                                               o.Ticket.CreateDate == model.CreateDate)
+            model.Pictures = db.PictureOnTicketsT/*.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+                                                               o.Ticket.CreateDate == model.CreateDate)*/
                                                  .Select(s => new PictureJsonModel 
                                                  {
                                                      id = s.Picture.NameInt,
@@ -1925,6 +1925,18 @@ namespace Nemocnice.Controllers
             result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(3).ToString(), id = 4, name = "test4" });
             result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(4).ToString(), id = 5, name = "test5" });
             */
+            return new JsonResult(result);
+        }
+
+        public JsonResult TestSocialSecurityNumUnique(string num)
+        {
+            bool result = true;
+
+            if(db.PatientT.Select(s => s.SocialSecurityNum).Where(o => o == num).Any())
+            {
+                result = false;
+            }
+
             return new JsonResult(result);
         }
     }
