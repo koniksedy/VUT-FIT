@@ -1,22 +1,173 @@
 ﻿@model Nemocnice.Data.CheckupTicket
 @using Nemocnice.Data;
 
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+
+    /* The Modal (background) */
+    .modalImage {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 9999; /* Sit on top */
+        padding-top: 50px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    }
+
+    /* Modal Content (image) */
+    .modal-contentImage {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+    }
+
+    /* Caption of Modal Image */
+    #caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+    }
+
+    /* Add Animation */
+    .modal-contentImage, #caption {
+        -webkit-animation-name: zoom;
+        -webkit-animation-duration: 0.6s;
+        animation-name: zoom;
+        animation-duration: 0.6s;
+    }
+
+    /* The Close Button */
+    .closeImage {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .closeImage:hover,
+        .closeImage:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .input-image {
+        max-width: 383px;
+        margin-bottom: 15px;
+    }
+
+        .input-image .btn {
+            z-index: 1;
+        }
+</style>
+
 <h2 style="margin-top:30px">Detail žádosti</h2>
 
 @using (var db = new DatabaseContext())
 {
     var doctorCName = db.UserT.Where(x => x.UserId == Model.CreatedBy.UserId).FirstOrDefault();
     var doctorTName = db.UserT.Where(x => x.UserId == Model.ToDoctor.UserId).FirstOrDefault();
-    <p><b>Vytvořeno:</b> @doctorCName.Title @doctorCName.Name @doctorCName.Surname</p>
-    <p><b>Ke komu:</b> @doctorTName.Title @doctorTName.Name @doctorTName.Surname</p>
-    <h3>Popis:</h3>
-    <textarea style="width:100%" rows="10" readonly>@Model.Description</textarea>
 
-
-    <br />
-    if (Model.Result != null)
+    var Pictures = db.PictureOnTicketsT/*.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+        o.Ticket.CreateDate == model.CreateDate)*/
+    .Select(s => new PictureJsonModel
     {
+        id = s.Picture.NameInt,
+        name = s.Picture.Description,
+        date = s.Picture.CreateDate.ToString(),
+        type = s.Picture.Type
+    }).ToList();
+
+
+    <div class="flex-row row">
+        <div class="col">
+            <a><b>Vytvořeno:</b> @doctorCName.Title @doctorCName.Name @doctorCName.Surname</a><br />
+            <a><b>Ke komu:</b> @doctorTName.Title @doctorTName.Name @doctorTName.Surname</a><br />
+        </div>
+
+        <div class="col" >
+            <h4>Obrázky</h4>
+            <div>
+                <table class="table-striped moje-tabulka">
+                    <tbody>
+
+
+                        @foreach (var item in Pictures)
+                        {
+                            <tr class="kurzor" onclick="viewImage('/images/' + '@item.id' + '@item.type', '@item.name')">
+                                <td>
+                                    @if (item.name.Length > 25)
+                                    {
+                                        @((item.name.Substring(0, 20)) + "...")
+
+                                    }
+                                    else
+                                    {
+                                        @item.name
+
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        @if (Pictures.Count == 0)
+                        {
+                            <tr class="vypnout"><td>Žádné obrázky</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <br />
+    </div>
+        if (Model.Result != null)
+        {
         <h3>Výsledek:</h3>
         <textarea style="width:100%" rows="10" readonly>@Model.Result</textarea>
-    }
-}
+        }
+        }
+        <h3>Popis:</h3>
+<textarea style="width:100%" rows="10" readonly>@Model.Description</textarea>
+        <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
+
+        <!-- The Modal For picture DISPLAY-->
+        <div id="myModal" class="modalImage">
+            <span onclick="closeModalPicture()" class="closeImage" id="close2">&times;</span>
+            <img class="modal-contentImage" id="img01">
+            <div id="caption"></div>
+        </div>
+
+
+        <script>
+            // Get the modal
+            var modal = document.getElementById("myModal");
+            var modalImg = document.getElementById("img01");
+            var captionText = document.getElementById("caption");
+
+            function viewImage(source, name) {
+                modal.style.display = "block";
+                modalImg.src = source;
+                captionText.innerHTML = name;
+            };
+
+            // When the user clicks on <span> (x), close the modal
+            function closeModalPicture() {
+                modal.style.display = "none";
+            };
+        </script>

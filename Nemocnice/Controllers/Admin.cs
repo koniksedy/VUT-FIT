@@ -398,6 +398,8 @@ namespace Nemocnice.Controllers
             string edit_position = Request.Form["edit_position"];
             string edit_login = Request.Form["edit_login"];
             string old = Request.Form["old"];
+            string edit_password = Request.Form["edit_password"];
+            string edit_confirmPassword = Request.Form["edit_confirmPassword"];
 
             var ID = db.InsureEmpT.Where(a => a.PersonalId == edit_ID).Select(s => s.UserId).FirstOrDefault();
             var pom = db.UserT.First(a => a.UserId == ID);
