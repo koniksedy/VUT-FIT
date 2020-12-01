@@ -1,4 +1,8 @@
-﻿$("#NewDoctor").autocomplete({
+﻿/* Javascript pro zobrazení PatientProgile, které se stará o předávání zpráv jiným lékařům.
+ * Autor: Michal Šedý <xsedym02>
+ */
+
+$("#NewDoctor").autocomplete({
     source: function (request, response) {
         $.ajax({
             url: '/Doctor/GetAllDoctors',

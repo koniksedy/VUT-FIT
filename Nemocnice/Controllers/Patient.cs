@@ -17,7 +17,7 @@ namespace Nemocnice.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Home");
         }
         public static IPagedList<T> Empty<T>()
         {

@@ -1,4 +1,8 @@
-﻿using Nemocnice.Data;
+﻿/*
+ * PatientCheckupModel
+ * Autor: Michal Šedý <xsedym02>, Ondřej Pavlacký <xpavla15, Kateřina Kunorzová <xkunor00>
+ */
+using Nemocnice.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,7 @@
-﻿$("#Diagnosis1").autocomplete({
+﻿/* Javascript pro zobrazení PatientProgile, které se stará o vytváření nového olékařského záznamu.
+ * Autor: Michal Šedý <xsedym02>
+ */
+$("#Diagnosis1").autocomplete({
     source: function (request, response) {
         $.ajax({
             url: '/Doctor/GetAllDiagnosis',

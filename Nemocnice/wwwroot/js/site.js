@@ -1,8 +1,6 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-
-
+﻿/* Javascript pro sdílený všemi zobrazeními.
+ * Autor: Michal Šedý <xsedym02>
+ */
 
 function upravitBtnFunction() {
     document.getElementById("ReportText").disabled = false;

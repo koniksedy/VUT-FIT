@@ -1,4 +1,7 @@
-﻿$("#Diagnosis1").autocomplete({
+﻿/* Javascritp or zovrazení vytváření nového ticketu.
+ * Autor: Michal Šedý <xsedym02>
+ */
+$("#Diagnosis1").autocomplete({
     source: function (request, response) {
         $.ajax({
             url: '/Doctor/GetAllDiagnosis',

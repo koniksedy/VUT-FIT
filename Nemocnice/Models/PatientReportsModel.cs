@@ -1,7 +1,6 @@
 ﻿/*
- * Model dat pro zobrazení Report (zprávy).
- * Autor: Michal Šedý <xsedym02>
- * Poslední úpravy: 12.11.2020
+ * PatientReportsModel
+ * Autor: Michal Šedý <xsedym02>, Ondřej Pavlacký <xpavla15, Kateřina Kunorzová <xkunor00>
  */
 using System;
 using System.Collections.Generic;

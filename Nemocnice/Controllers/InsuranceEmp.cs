@@ -40,6 +40,11 @@ namespace Nemocnice.Controllers
             this.Context = _context;
         }
 
+        public IActionResult Index()
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         /*
          * Akce vypíše všechny nerozhodnuté žádosti o proplacení
          * ID_accept - ID žádosti, která byla schválena

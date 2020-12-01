@@ -1,4 +1,11 @@
-﻿using System;
+﻿/*
+ * Kontroller pro vytvoření testovacích loginů pacientů.
+ * Autor: Michal Šedý <xsedym02>
+ * Suptění: Po načtení loginů je potřeba odkomentovat nasledující část a na url
+ * Create tohoto kontroleru.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

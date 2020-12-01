@@ -1,7 +1,6 @@
 ﻿/*
  * Soubor kontroleru uživatele s rolí Doctor, nebo Admin.
- * Autor: Michal Šedý <xsedym02>
- * Poslední úprave: 12.11.2020
+ * Autor: Michal Šedý <xsedym02>, Ondřej Pavlacký <xpavla15>, Kateřina Kunorzová <xkunor00>
  */
 
 /*
@@ -54,6 +53,14 @@ namespace Nemocnice.Controllers
         {
             _userManager = userManager;
             webHostEnvironment = hostEnvironment;
+        }
+
+        /*
+         * Akce index přesměruje na hlavní stránku.
+         */
+        public IActionResult Index()
+        {
+            return RedirectToAction("Index", "Home");
         }
 
         /*
@@ -1060,7 +1067,7 @@ namespace Nemocnice.Controllers
                     Description = image.FileName,
                     SocialSecurityNum = patientNumber,
                     CreateDate = TimeNowTruncateToSec(),
-                    Type = image.FileName.Substring(image.FileName.IndexOf("."))
+                    Type = image.FileName.Substring(image.FileName.LastIndexOf("."))
                 };
                 db.PictureT.Add(pic);
                 db.SaveChanges();
@@ -1277,7 +1284,7 @@ namespace Nemocnice.Controllers
                     Description = image.FileName,
                     SocialSecurityNum = patientNumber,
                     CreateDate = TimeNowTruncateToSec(),
-                    Type = image.FileName.Substring(image.FileName.IndexOf("."))
+                    Type = image.FileName.Substring(image.FileName.LastIndexOf("."))
                 };
                 db.PictureT.Add(pic);
                 db.SaveChanges();
@@ -1294,6 +1301,9 @@ namespace Nemocnice.Controllers
             return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
         }
 
+        /*
+         * Statická zunkce vracející datum zaokrouhlené na delé sekundy.
+         */
         static DateTime TimeNowTruncateToSec()
         {
             DateTime now = DateTime.Now;
@@ -1302,10 +1312,16 @@ namespace Nemocnice.Controllers
             return ret;
         }
 
+        /*
+         * Statická funkce nahraje obrázek do systému.
+         * image - obrázek k nahrátí
+         * webHostEnv - systemové proměnné serveru
+         * newNam - jméno nového souboru, ubáváno v celých číslech.
+         */
         static private void UploadImage(IFormFile image, IWebHostEnvironment webHostEnv, int newName)
         {
             string uploadsFolder = Path.Combine(webHostEnv.WebRootPath, "images");
-            string type = image.FileName.Substring(image.FileName.IndexOf("."));
+            string type = image.FileName.Substring(image.FileName.LastIndexOf("."));
             string filePath = Path.Combine(uploadsFolder, newName.ToString() + type);
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
@@ -1313,12 +1329,14 @@ namespace Nemocnice.Controllers
             }
         }
 
+        /*
+         * Metoda akce pro vobrazení výkonů pro pojišťovny a stav jejich schválení.
+         */
         public IActionResult Activity(string searchString, string SortOrder, ActivityModel model, int ? p)
         {
 
             //uložení aktuálně vyhledaného řetězce
             ViewData["Search"] = searchString;
-
             ViewData["CurrentSort"] = SortOrder;
 
             if (!String.IsNullOrEmpty(searchString))
@@ -1354,11 +1372,19 @@ namespace Nemocnice.Controllers
             return View(model);
         }
 
+        /*
+         * Akce pro zobrazení rozcestníku d jednotlivým příchozím a odchozím žádostem k vyšetření.
+         */
         public IActionResult Requests()
         {
             return View();
         }
 
+        /*
+         * Akce pro zobrazení příchozích žádostí o vyšetření.
+         * sortOrder - filtrovací klíč
+         * searchString - vyhledávaný text
+         */
         public IActionResult InRequest(string sortOrder, string searchString)
         {
             ViewData["Search"] = searchString;
@@ -1367,49 +1393,41 @@ namespace Nemocnice.Controllers
 
             List<CheckupTicketToMe> MyInRequests = new List<CheckupTicketToMe>();
 
-            string user = User.FindFirstValue(ClaimTypes.Name);
-            var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
+            // Získání informaci o lékaři, který si pacienta zobrazuje.
+            // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
+            string user = User.Identity.Name;
+            var doctorId = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList().First();
 
-
-
-#if (!TEST)
-            if(id_list.Any())
-            {
-                MyInRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno").Where(o => o.ToDoctor.UserId == id_list.First())
-#else
 
             if (String.IsNullOrEmpty(searchString))
             {
-                MyInRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno")
-#endif
-                .Select(s => new CheckupTicketToMe
-                {
-                    PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
-                    PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
-                    SocialSecurityNumber = s.Patient.SocialSecurityNum,
-                    FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.getFullName()).First(),
-                    CreationDate = s.CreateDate
-                }
-                ).ToList();
+                MyInRequests = db.CheckupTicketT.Where(o => (o.State != "dokončeno") && (o.ToDoctor.UserId == doctorId || User.IsInRole("Admin")))
+                                            .Select(s => new CheckupTicketToMe
+                                            {
+                                                PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
+                                                PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
+                                                SocialSecurityNumber = s.Patient.SocialSecurityNum,
+                                                FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.getFullName()).First(),
+                                                CreationDate = s.CreateDate
+                                            }).ToList(); ;
             }
             else
             {
                 Int64 parseRes;
                 if (Int64.TryParse(searchString, out parseRes))
                 {
-                    MyInRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno").Select(s => new CheckupTicketToMe
+                    MyInRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno" && (o.ToDoctor.UserId == doctorId || User.IsInRole("Admin"))).Select(s => new CheckupTicketToMe
                     {
                     PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                     PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
                     SocialSecurityNumber = s.Patient.SocialSecurityNum,
                     FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId).Select(p => p.getFullName()).First(),
                     CreationDate = s.CreateDate
-                    }
-                ).Where(s => s.SocialSecurityNumber == searchString).ToList();
+                    }).Where(s => s.SocialSecurityNumber == searchString).ToList();
                 }
                 else
                 {
-                    MyInRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno").Select(s => new CheckupTicketToMe
+                    MyInRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno" && (o.ToDoctor.UserId == doctorId || User.IsInRole("Admin"))).Select(s => new CheckupTicketToMe
                     {
                         PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
                         PatientName = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Name).First(),
@@ -1417,15 +1435,11 @@ namespace Nemocnice.Controllers
                         FromDoctor = db.UserT.Where(o => o.UserId == s.CreatedBy.UserId)
                         .Select(p => (String.IsNullOrEmpty(p.Title) ? "" : (p.Title + " ")) + p.Name + " " + p.Surname).First(),
                         CreationDate = s.CreateDate
-                    }
-                    ).Where(s => s.PatientName.Contains(searchString) || s.PatientSurname.Contains(searchString) || s.FromDoctor.Contains(searchString)).ToList();
+                    }).Where(s => s.PatientName.Contains(searchString) || s.PatientSurname.Contains(searchString) || s.FromDoctor.Contains(searchString)).ToList();
                 }
             }
 
-#if (!TEST)
-            }
-#endif
-                switch (sortOrder)
+            switch (sortOrder)
             {
                 case "bySurname":
                     MyInRequests = MyInRequests.OrderBy(s => s.PatientSurname).ToList();
@@ -1447,6 +1461,11 @@ namespace Nemocnice.Controllers
             return View(MyInRequests);
         }
 
+        /*
+         * Akce zobrazující odchozí žádosti o vyšetření.
+         * sortOrder - filtrovací klíč
+         * searchString - vyhledávaný text
+         */
         public IActionResult OutRequest(string sortOrder, string searchString)
         {
             var db = new DatabaseContext();
@@ -1454,12 +1473,14 @@ namespace Nemocnice.Controllers
             ViewData["SortOrder"] = sortOrder;
             List<CheckupTicketToOtherModel> MyOutRequests = new List<CheckupTicketToOtherModel>();
 
-            string user = User.FindFirstValue(ClaimTypes.Name);
-            var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
+            // Získání informaci o lékaři, který si pacienta zobrazuje.
+            // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
+            string user = User.Identity.Name;
+            var doctorId = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList().First();
 
             if (String.IsNullOrEmpty(searchString))
             {
-                MyOutRequests = db.CheckupTicketT
+                MyOutRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno" && (o.CreatedBy.UserId == doctorId || User.IsInRole("Admin")))
                 .Select(s => new CheckupTicketToOtherModel
                 {
                     PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
@@ -1476,7 +1497,7 @@ namespace Nemocnice.Controllers
                 Int64 parseRes;
                 if (Int64.TryParse(searchString, out parseRes))
                 {
-                    MyOutRequests = db.CheckupTicketT
+                    MyOutRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno" && (o.CreatedBy.UserId == doctorId || User.IsInRole("Admin")))
                     .Select(s => new CheckupTicketToOtherModel
                     {
                         PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
@@ -1490,7 +1511,7 @@ namespace Nemocnice.Controllers
                 }
                 else
                 {
-                    MyOutRequests = db.CheckupTicketT
+                    MyOutRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno" && (o.CreatedBy.UserId == doctorId || User.IsInRole("Admin")))
                     .Select(s => new CheckupTicketToOtherModel
                     {
                         PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
@@ -1504,7 +1525,7 @@ namespace Nemocnice.Controllers
                 }
             }
 
-                switch (sortOrder)
+            switch (sortOrder)
             {
                 case "bySurname":
                     MyOutRequests = MyOutRequests.OrderBy(s => s.PatientSurname).ToList();
@@ -1526,10 +1547,12 @@ namespace Nemocnice.Controllers
                     break;
             }
 
-
             return View(MyOutRequests);
         }
 
+        /*
+         * Akce zobrazí příchozí vyřešení žádosti.
+         */
         public IActionResult InFinishRequest(string sortOrder, string searchString)
         {
             ViewData["Search"] = searchString;
@@ -1539,23 +1562,15 @@ namespace Nemocnice.Controllers
 
             List<CheckupTicketToMeFinish> MyFinishRequests = new List<CheckupTicketToMeFinish>();
 
-            string user = User.FindFirstValue(ClaimTypes.Name);
-            var id_list = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList();
+            // Získání informaci o lékaři, který si pacienta zobrazuje.
+            // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
+            string user = User.Identity.Name;
+            var doctorId = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList().First();
 
-#if (!TEST)
-            if(id_list.Any())
-            {
-                MyFinishRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno").Where(o => o.ToDoctor.UserId == id_list.First())
-#else
-
-#if (!TEST)
-            }
-#endif
-#endif
 
             if (String.IsNullOrEmpty(searchString))
             {
-                MyFinishRequests = db.CheckupTicketT.Where(o => o.State == "dokončeno")
+                MyFinishRequests = db.CheckupTicketT.Where(o => o.State == "dokončeno" && (o.ToDoctor.UserId == doctorId || User.IsInRole("Admin")))
                 .Select(s => new CheckupTicketToMeFinish
                 {
                     PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
@@ -1572,7 +1587,7 @@ namespace Nemocnice.Controllers
                     Int64 parseRes;
                     if (Int64.TryParse(searchString, out parseRes))
                     {
-                        MyFinishRequests = db.CheckupTicketT.Where(o => o.State == "dokončeno")
+                        MyFinishRequests = db.CheckupTicketT.Where(o => o.State == "dokončeno" && (o.ToDoctor.UserId == doctorId || User.IsInRole("Admin")))
                         .Select(s => new CheckupTicketToMeFinish
                         {
                             PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
@@ -1586,7 +1601,7 @@ namespace Nemocnice.Controllers
                     }
                     else
                     {
-                        MyFinishRequests = db.CheckupTicketT.Where(o => o.State == "dokončeno")
+                        MyFinishRequests = db.CheckupTicketT.Where(o => o.State == "dokončeno" && (o.ToDoctor.UserId == doctorId || User.IsInRole("Admin")))
                         .Select(s => new CheckupTicketToMeFinish
                         {
                             PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
@@ -1602,7 +1617,7 @@ namespace Nemocnice.Controllers
                 }
             }
 
-                switch (sortOrder)
+            switch (sortOrder)
             {
                 case "bySurname":
                     MyFinishRequests = MyFinishRequests.OrderBy(s => s.PatientSurname).ToList();
@@ -1626,6 +1641,9 @@ namespace Nemocnice.Controllers
             return View(MyFinishRequests);
         }
 
+        /*
+         * Akce pro změnu vlastníka (lékaře) zprávy.
+         */
         [HttpPost]
         public IActionResult ChangeOwner()
         {
@@ -1649,6 +1667,9 @@ namespace Nemocnice.Controllers
             return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
         }
 
+        /*
+         * Json dotaz vrátí všechny diagnozy při autocompletu.
+         */
         public JsonResult GetAllDiagnosis(string search)
         {
             List<Diagnosis> matchedDiagnosis;
@@ -1664,6 +1685,9 @@ namespace Nemocnice.Controllers
             return new JsonResult(matchedDiagnosis);
         }
 
+        /*
+         * Json dotaz vrátí všechny typy lékařských výkonů pro autocomplete.
+         */
         public JsonResult GetAllActivities(string search)
         {
             List<ActivityJsonModel> matchedActivities;
@@ -1687,6 +1711,9 @@ namespace Nemocnice.Controllers
             return new JsonResult(matchedActivities);
         }
 
+        /*
+         * Json dotaz získá všechny doktory pro autocomplete.
+         */
         public JsonResult GetAllDoctors(string search)
         {
             List<DoctorJsonModel> matchedDoctors;
@@ -1715,6 +1742,9 @@ namespace Nemocnice.Controllers
             return new JsonResult(matchedDoctors);
         }
 
+        /*
+         * Statická funkce pro kontrolu hodnot zvolených diagnóz.
+         */
         static public int TestDiagnosis(DatabaseContext db, string diag1, string diag2, string diag3, string diag4)
         {
             if (String.IsNullOrEmpty(diag1))
@@ -1791,6 +1821,9 @@ namespace Nemocnice.Controllers
             return 0;
         }
 
+        /*
+         * Statická funkce pro kontrolu kódů lékařských výkonů.
+         */
         static public int TestActivity(DatabaseContext db, string activity)
         {
             if (String.IsNullOrEmpty(activity))
@@ -1813,7 +1846,9 @@ namespace Nemocnice.Controllers
             return 0;
         }
     
-
+        /*
+         * Metoda zkontroluje zprávnost vutvářené zpvávy a výsledek vyhodnocení (bool) vrátí klientovi.
+         */
         public JsonResult CheckNewReport(string diag1, string diag2, string diag3, string diag4, string activity)
         {
             int result = TestDiagnosis(db, diag1, diag2, diag3, diag4);
@@ -1826,6 +1861,9 @@ namespace Nemocnice.Controllers
             return new JsonResult(result);
         }
 
+        /*
+         * Metoda zkontroluje zprávně zvoleného lékaře
+         */
         static public int TestDoctor(DatabaseContext db, string doctor)
         {
             if (String.IsNullOrEmpty(doctor))
@@ -1848,6 +1886,9 @@ namespace Nemocnice.Controllers
             return 0;
         }
 
+        /*
+         * Metoda zkontroluje správně vytvořenou žádost na vyšetření.
+         */
         public JsonResult CheckNewTicket(string diag1, string diag2, string diag3, string diag4, string doctor)
         {
             int result = TestDiagnosis(db, diag1, diag2, diag3, diag4);
@@ -1860,6 +1901,9 @@ namespace Nemocnice.Controllers
             return new JsonResult(result);
         }
 
+        /*
+         * Metoda vrátí text požadované zprávy klientovi.
+         */
         public JsonResult GetReport(string patientNum, string date)
         {
             DateTime mydate = DateTime.ParseExact(date, "d.M.yyyy H:m:s", null);
@@ -1869,6 +1913,9 @@ namespace Nemocnice.Controllers
             return new JsonResult(result);
         }
 
+        /*
+         * Metoda vrátí text požadovaného výsledku vyšetření klientovi.
+         */
         public JsonResult GetResult(string patientNum, string date)
         {
 
@@ -1883,6 +1930,9 @@ namespace Nemocnice.Controllers
             return new JsonResult(result);
         }
 
+        /*
+         * Metoda vrátí klientovi všechny obrázky příslušné k namému pacientovi.
+         */
         public JsonResult GetPictures(string patientNum)
         {
             
@@ -1927,17 +1977,12 @@ namespace Nemocnice.Controllers
                 }
             }
             
-            /*
-            List<PictureJsonModel> result = new List<PictureJsonModel>();
-            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(0).ToString(), id = 1, name = "test1" });
-            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(1).ToString(), id = 2, name = "test2" });
-            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(2).ToString(), id = 3, name = "test3" });
-            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(3).ToString(), id = 4, name = "test4" });
-            result.Add(new PictureJsonModel { date = DateTime.Now.AddDays(4).ToString(), id = 5, name = "test5" });
-            */
             return new JsonResult(result);
         }
 
+        /*
+         * Metoda zkontroluje unikátnost rodného čísla.
+         */
         public JsonResult TestSocialSecurityNumUnique(string num)
         {
             bool result = true;
@@ -1950,6 +1995,9 @@ namespace Nemocnice.Controllers
             return new JsonResult(result);
         }
 
+        /*
+         * Metoda aktualizuje stav vyšetření o které požádal jeden lékař druhého.
+         */
         public JsonResult UpdateState(string newState, string date, string patient)
         {
             db.CheckupTicketT.Where(o => o.CreateDate == DateTime.Parse(date) && o.Patient.SocialSecurityNum == patient).First().State = newState;
