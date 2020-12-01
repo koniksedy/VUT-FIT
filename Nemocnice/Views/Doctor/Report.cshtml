@@ -217,7 +217,7 @@
 <!-- Model obsahující informace o pacientovi, všech zprávách a předchozí a aktuální zprávě. -->
 @model Nemocnice.Models.PatientReportsModel
 <!-- Základní informace o pacientovi -->
-<h2 style="margin-bottom:0px;margin-top:8px;">
+<h2 style="margin-bottom:0px;margin-top:30px;">
     @Model.PatientFullName.getFullName() (r.č:&nbsp;@Model.SocialSecurityNumber, poj:&nbsp;@Model.Insurance)
     <i onclick="redirectToAction('@Url.Action("PatientProfile", "Doctor", new { patientNum = Model.SocialSecurityNumber})')" class="fa fa-external-link icons" aria-hidden="true"></i>
 
