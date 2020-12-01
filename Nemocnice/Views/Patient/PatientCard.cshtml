@@ -153,7 +153,8 @@
                 </div>
             }
 
-        }else
+        }
+        else
         {
             <a><strong>Alergie:</strong></a>
         }
@@ -287,9 +288,9 @@
                                 @DoctorCreator.Title @DoctorTo.Name @DoctorTo.Surname
                             </td>
                             <td>
-                                @if (prohlidka.State.Length > 25)
+                                @if (prohlidka.State.Length > 32)
                                 {
-                                    @((prohlidka.State.Substring(0, 32)) + "...")
+                                    @((prohlidka.State.Substring(0, 31)) + "...")
 
                                 }
                                 else
@@ -366,7 +367,7 @@
                 </td>
                 <td>
                 <td>
-                    @if (fotka.Description.Length > 25)
+                    @if (fotka.Description.Length > 36)
                     {
                         @((fotka.Description.Substring(0, 35)) + "...")
 

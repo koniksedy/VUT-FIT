@@ -10,7 +10,7 @@ namespace Nemocnice.DatabaseDataCreator
     {
         public void PatientCreate(DatabaseContext db)
         {
-            int ID = db.UserT.Where(s => s.Login == "8605274117").Select(x => x.UserId).ToList().First();
+            int ID = db.UserT.Where(s => s.Login == "xmalic0a").Select(x => x.UserId).ToList().First();
             HealthCondition health = db.HealthConditionT.Where(s => s.SocialSecurityNum == "8605274117").ToList().First();
             Address add = db.AddressT.Where(s => s.AddressId == 3).ToList().First();
             db.PatientT.Add(PatientAdd(ID, "8605274117", 111, add,health));

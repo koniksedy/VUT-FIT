@@ -1,6 +1,10 @@
 ﻿@model Nemocnice.Data.CheckupTicket
 @using Nemocnice.Data;
 
+@{
+    ViewData["Title"] = "Vyšetření";
+}
+
 <style>
     body {
         font-family: Arial, Helvetica, sans-serif;
@@ -85,8 +89,7 @@
     var doctorCName = db.UserT.Where(x => x.UserId == Model.CreatedBy.UserId).FirstOrDefault();
     var doctorTName = db.UserT.Where(x => x.UserId == Model.ToDoctor.UserId).FirstOrDefault();
 
-    var Pictures = db.PictureOnTicketsT/*.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
-        o.Ticket.CreateDate == model.CreateDate)*/
+    var Pictures = db.PictureOnTicketsT.Where(o => o.Ticket.CheckupTicketId == Model.CheckupTicketId)
     .Select(s => new PictureJsonModel
     {
         id = s.Picture.NameInt,
@@ -102,7 +105,7 @@
             <p><b>Ke komu:</b> @doctorTName.Title @doctorTName.Name @doctorTName.Surname</p>
         </div>
 
-        <div class="col" >
+        <div class="col">
             <h4>Obrázky</h4>
             <div>
                 <table class="table-striped moje-tabulka">
@@ -136,38 +139,38 @@
         </div>
         <br />
     </div>
-        if (Model.Result != null)
-        {
+    if (Model.Result != null)
+    {
         <h3>Výsledek:</h3>
         <textarea style="width:100%" rows="10" readonly>@Model.Result</textarea>
-        }
-        }
-        <h3>Popis:</h3>
+    }
+}
+<h3>Popis:</h3>
 <textarea style="width:100%" rows="10" readonly>@Model.Description</textarea>
-        <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
+<button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
 
-        <!-- The Modal For picture DISPLAY-->
-        <div id="myModal" class="modalImage">
-            <span onclick="closeModalPicture()" class="closeImage" id="close2">&times;</span>
-            <img class="modal-contentImage" id="img01">
-            <div id="caption"></div>
-        </div>
+<!-- The Modal For picture DISPLAY-->
+<div id="myModal" class="modalImage">
+    <span onclick="closeModalPicture()" class="closeImage" id="close2">&times;</span>
+    <img class="modal-contentImage" id="img01">
+    <div id="caption"></div>
+</div>
 
 
-        <script>
-            // Get the modal
-            var modal = document.getElementById("myModal");
-            var modalImg = document.getElementById("img01");
-            var captionText = document.getElementById("caption");
+<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("caption");
 
-            function viewImage(source, name) {
-                modal.style.display = "block";
-                modalImg.src = source;
-                captionText.innerHTML = name;
-            };
+    function viewImage(source, name) {
+        modal.style.display = "block";
+        modalImg.src = source;
+        captionText.innerHTML = name;
+    };
 
-            // When the user clicks on <span> (x), close the modal
-            function closeModalPicture() {
-                modal.style.display = "none";
-            };
-        </script>
+    // When the user clicks on <span> (x), close the modal
+    function closeModalPicture() {
+        modal.style.display = "none";
+    };
+</script>

@@ -865,7 +865,7 @@ namespace Nemocnice.Controllers
             string patientNumber = Request.Form["PatientNum"];
             
             int patientHeight = int.Parse(String.IsNullOrEmpty(Request.Form["UpdateHeight"]) ? "0" : Request.Form["UpdateHeight"].ToString());
-            int patientWeight = int.Parse(String.IsNullOrEmpty(Request.Form["UpdateWeight"]) ? "0" : Request.Form["UpdateHeight"].ToString());
+            int patientWeight = int.Parse(String.IsNullOrEmpty(Request.Form["UpdateWeight"]) ? "0" : Request.Form["UpdateWeight"].ToString());
             string patientBlodType = Request.Form["UpdateBlodType"];
             string patientAlergys = Request.Form["UpdateAllergys"];
 
@@ -1508,7 +1508,7 @@ namespace Nemocnice.Controllers
 
             if (String.IsNullOrEmpty(searchString))
             {
-                MyOutRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno" && (o.CreatedBy.UserId == doctorId || User.IsInRole("Admin")))
+                MyOutRequests = db.CheckupTicketT.Where(o => (o.CreatedBy.UserId == doctorId || User.IsInRole("Admin")))
                 .Select(s => new CheckupTicketToOtherModel
                 {
                     PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
@@ -1525,7 +1525,7 @@ namespace Nemocnice.Controllers
                 Int64 parseRes;
                 if (Int64.TryParse(searchString, out parseRes))
                 {
-                    MyOutRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno" && (o.CreatedBy.UserId == doctorId || User.IsInRole("Admin")))
+                    MyOutRequests = db.CheckupTicketT.Where(o => (o.CreatedBy.UserId == doctorId || User.IsInRole("Admin")))
                     .Select(s => new CheckupTicketToOtherModel
                     {
                         PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),
@@ -1539,7 +1539,7 @@ namespace Nemocnice.Controllers
                 }
                 else
                 {
-                    MyOutRequests = db.CheckupTicketT.Where(o => o.State != "dokončeno" && (o.CreatedBy.UserId == doctorId || User.IsInRole("Admin")))
+                    MyOutRequests = db.CheckupTicketT.Where(o => (o.CreatedBy.UserId == doctorId || User.IsInRole("Admin")))
                     .Select(s => new CheckupTicketToOtherModel
                     {
                         PatientSurname = db.UserT.Where(o => o.UserId == s.Patient.UserId).Select(p => p.Surname).First(),

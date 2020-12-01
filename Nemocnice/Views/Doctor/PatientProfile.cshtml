@@ -154,8 +154,8 @@
                 <h4>
                     Aktuální stav <i data-toggle="modal" data-target="#PatientHealthModal" class="fa fa-pencil icons" style="font-size:24px"></i>
                 </h4>
-                <b>Výška:</b> @Model.HealthCondition.GetWeightString() cm<br />
-                <b>Váha:</b> @Model.HealthCondition.GetHeightString() kg<br />
+                <b>Výška:</b> @Model.HealthCondition.GetHeightString() cm<br />
+                <b>Váha:</b> @Model.HealthCondition.GetWeightString() kg<br />
                 <b>Krevní skupina:</b> @Model.HealthCondition.GetBlodTypeString() <br />
 
                 @if (Model.Allergys.Length < 25)
@@ -202,15 +202,15 @@
                                 <div class="modal-body">
                                     <div class="form-group">
                                         <label class="col-form-label">Výška</label>
-                                        <input oninvalid="this.setCustomValidity('Zadejte hodnotu v celých číslech');" oninput="this.setCustomValidity('');" name="UpdateHeight" pattern="[0-9]{1,3}" type="text" placeholder="cm"  autocomplete="off" class="form-control" value="@Model.HealthCondition.Height" />
+                                        <input oninvalid="this.setCustomValidity('Zadejte hodnotu v celých číslech');" oninput="this.setCustomValidity('');" name="UpdateHeight" pattern="[0-9]{1,3}" type="text" placeholder="cm" autocomplete="off" class="form-control" value="@Model.HealthCondition.Height" />
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label">Váha</label>
-                                        <input oninvalid="this.setCustomValidity('Zadejte hodnotu v celých číslech');" oninput="this.setCustomValidity('')"; name="UpdateWeight" pattern="[0-9]{1,3}" type="text" placeholder="kg"  autocomplete="off" class="form-control" value="@Model.HealthCondition.Weight" />
+                                        <input oninvalid="this.setCustomValidity('Zadejte hodnotu v celých číslech');" oninput="this.setCustomValidity('')" ; name="UpdateWeight" pattern="[0-9]{1,3}" type="text" placeholder="kg" autocomplete="off" class="form-control" value="@Model.HealthCondition.Weight" />
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label">Krevní typ</label>
-                                        <input oninvalid="this.setCustomValidity('Zdejte krevní typ s RH faktorem, např.: A+');" oninput="this.setCustomValidity('')"; name="UpdateBlodType" pattern="((0|A|B|(AB))\+)|((0|A|B|(AB))-)" placeholder="Typ" autocomplete="off" class="form-control" value="@Model.HealthCondition.BloodType" />
+                                        <input oninvalid="this.setCustomValidity('Zdejte krevní typ s RH faktorem, např.: A+');" oninput="this.setCustomValidity('')" ; name="UpdateBlodType" pattern="((0|A|B|(AB))\+)|((0|A|B|(AB))-)" placeholder="Typ" autocomplete="off" class="form-control" value="@Model.HealthCondition.BloodType" />
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label">Alergie</label>

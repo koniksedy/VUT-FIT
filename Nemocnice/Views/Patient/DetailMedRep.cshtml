@@ -87,8 +87,7 @@
 @using (var db = new DatabaseContext())
 {
     var doctorCName = db.UserT.Where(x => x.UserId == Model.Author.UserId).First();
-    var Pictures = db.PictureOnReportT/*.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
-o.Ticket.CreateDate == model.CreateDate)*/
+    var Pictures = db.PictureOnReportT.Where(o => o.Report.MedicallReportId == Model.MedicallReportId)
     .Select(s => new PictureJsonModel
     {
         id = s.Picture.NameInt,
