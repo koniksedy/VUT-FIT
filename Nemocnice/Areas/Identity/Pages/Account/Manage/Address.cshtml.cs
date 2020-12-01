@@ -41,7 +41,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
 
             [Display(Name = "Číslo domu")]
             [DefaultValue("0")]
-            [RegularExpression("[0-9]*", ErrorMessage = "Neplatné číslo domu.")]
+            [RegularExpression("[0-9]{0,9}", ErrorMessage = "Neplatné číslo domu.")]
             public string HouseNumber { get; set; }
 
 
@@ -64,18 +64,44 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
 
             var db = new DatabaseContext();
-            var uzivatel = db.UserT.Where(x => x.Login == userName).Include(x => x.WorkAddress).First();
+            var uzivatel = db.UserT.Include(x => x.WorkAddress).Where(x => x.Login == userName).First();
 
             db.SaveChanges();
-            if(uzivatel.WorkAddress != null)
+            if (User.IsInRole("Patient"))
             {
+                var Patient = db.PatientT.Include(x => x.HomeAddress).Where(x => x.UserId == uzivatel.UserId).First();
+                if (Patient.HomeAddress == null)
+                {
+                    Patient.HomeAddress = new Address();
+                    db.SaveChanges();
+                }
+                                    
                 Input = new InputModel
                 {
-                    HouseNumber = uzivatel.WorkAddress.HouseNumber.ToString(),
-                    StreetName = uzivatel.WorkAddress.StreetName ?? String.Empty,
-                    City = uzivatel.WorkAddress.City ?? String.Empty,
-                    ZIP = uzivatel.WorkAddress.ZIP
+                    HouseNumber = Patient.HomeAddress.HouseNumber.ToString() == "0" ? "" : Patient.HomeAddress.HouseNumber.ToString(),
+                    StreetName = Patient.HomeAddress.StreetName == null ? "" : Patient.HomeAddress.StreetName,
+                    City = Patient.HomeAddress.City == null ? "" : Patient.HomeAddress.City,
+                    ZIP = Patient.HomeAddress.ZIP == null ? 0 : Patient.HomeAddress.ZIP
                 };
+
+
+
+            }
+            else
+            {
+                if (uzivatel.WorkAddress != null)
+                {
+                    uzivatel.WorkAddress = new Address();
+                    db.SaveChanges();
+                }
+                    Input = new InputModel
+                    {
+                        HouseNumber = uzivatel.WorkAddress.HouseNumber.ToString() == "0" ? "" : uzivatel.WorkAddress.HouseNumber.ToString(),
+                        StreetName = uzivatel.WorkAddress.StreetName == null ? "" : uzivatel.WorkAddress.StreetName ,
+                        City = String.IsNullOrEmpty(uzivatel.WorkAddress.City) ? "xxx" : uzivatel.WorkAddress.City ,
+                        ZIP = uzivatel.WorkAddress.ZIP == 0 ? 0 : uzivatel.WorkAddress.ZIP
+                    };
+                
             }
 
 
@@ -84,11 +110,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
-            var userTypePatient = false;
-            if (await _userManager.IsInRoleAsync(user, "Patient"))
-            {
-                userTypePatient = true;
-            }
+
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -122,15 +144,34 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             {
                 uzivatel.WorkAddress = new Address();
             }
+            
             try
             {
 
 
-                if (Input.HouseNumber > 0 && Input.ZIP > 0)
+                if (int.Parse(Input.HouseNumber) > 0 && Input.ZIP > 0)
                 {
-                    uzivatel.WorkAddress.HouseNumber = Input.HouseNumber;
-                    uzivatel.WorkAddress.StreetName = Input.StreetName;
+                    if (User.IsInRole("Patient"))
+                    {
+                       
+                        var Patient = db.PatientT.Include(x => x.HomeAddress).Where(x => x.UserId == uzivatel.UserId).First();
+                        if (Patient.HomeAddress == null)
+                        {
+                            Patient.HomeAddress = new Address();
+                        }
+                        Patient.HomeAddress.HouseNumber = int.Parse(Input.HouseNumber);
+                        Patient.HomeAddress.StreetName = Input.StreetName;
+                        Patient.HomeAddress.City = Input.City;
+                        Patient.HomeAddress.ZIP = Input.ZIP;
 
+                    }
+                    else
+                    {
+                        uzivatel.WorkAddress.HouseNumber = int.Parse(Input.HouseNumber);
+                        uzivatel.WorkAddress.StreetName = Input.StreetName;
+                        uzivatel.WorkAddress.City = Input.City;
+                        uzivatel.WorkAddress.ZIP = Input.ZIP;
+                    }
 
                 }
                 else
@@ -143,11 +184,10 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             {
 
             }
-            uzivatel.WorkAddress.City = Input.City;
-            uzivatel.WorkAddress.ZIP = Input.ZIP;
+
             db.SaveChanges();
             await _signInManager.RefreshSignInAsync(user);
-            _logger.LogInformation("User changed their password successfully.");
+            _logger.LogInformation("Vaše adresa byla změněna.");
             StatusMessage = "Vaše adresa byla změněna.";
             return RedirectToPage();
         }
