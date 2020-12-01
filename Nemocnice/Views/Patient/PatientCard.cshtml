@@ -1,0 +1,589 @@
+﻿@model Nemocnice.Models.PatientCardModel
+@using X.PagedList
+@using Nemocnice.Data
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
+
+<link href="~/lib/bootstrap/dist/css/PagedList.css" rel="stylesheet" type="text/css" />
+@{
+    ViewData["Title"] = "Karta";
+}
+<link href="jquery-ui.css" rel="stylesheet">
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    /* Create two equal columns that floats next to each other */
+
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .modalImage {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 9999; /* Sit on top */
+        padding-top: 50px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    }
+
+    /* Modal Content (image) */
+    .modal-contentImage {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+    }
+
+    /* Caption of Modal Image */
+    #caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+    }
+
+    /* Add Animation */
+    .modal-contentImage, #caption {
+        -webkit-animation-name: zoom;
+        -webkit-animation-duration: 0.6s;
+        animation-name: zoom;
+        animation-duration: 0.6s;
+    }
+
+    /* The Close Button */
+    .closeImage {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .closeImage:hover,
+        .closeImage:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+</style>
+
+
+<!-- The Modal For picture DISPLAY-->
+<div id="myModal" class="modalImage">
+    <span onclick="closeModalPicture()" class="closeImage" id="close2">&times;</span>
+    <img class="modal-contentImage" id="img01">
+    <div id="caption"></div>
+</div>
+
+
+
+
+
+<div class="row" style="justify-content: space-between; margin-bottom: 30px;">
+    <div class="column" style="margin-left:20px; margin-top:30px;">
+        <h2> Karta Pacienta</h2>
+        <img src="~/Img/Shared/userImg.jpg" class="user_logo" height="60" width="60" style="margin-bottom : 10px" /></a>
+        <a><b> @Model.User.Title    </b></a>
+        <a><b> @Model.User.Name     </b></a>
+        <a><b> @Model.User.Surname  </b></a><br />
+        <a><b>Telefon:</b> @Model.User.Phone</a><br />
+        <a><b>Email:<span></span></b> @Model.User.Email</a><br />
+        <a><b>Rodné číslo:  </b> @Model.Patient.SocialSecurityNum </a><br />
+        <a><b>Pojišťovna:  </b> @Model.Patient.InsuranceCompany</a><br />
+        <a><b>Adresa:  </b>        
+        @Model.Patient.HomeAddress.StreetName @Model.Patient.HomeAddress.City @Model.Patient.HomeAddress.ZIP</a><br />
+
+
+    </div>
+    <div class="column" style="margin-left:20px; margin-top:30px;">
+        <h2>Aktuální stav</h2>
+        <a><b>Datum poslední prohlídky: </b> @Model.Patient.HealthCondition.LastCheckupDate</a><br />
+        <a><b>Výška: </b> @Model.Patient.HealthCondition.Height cm</a><br />
+        <a><b>Váha: </b> @Model.Patient.HealthCondition.Weight kg</a><br />
+        <a><b>Krevní typ: </b> @Model.Patient.HealthCondition.BloodType</a><br />
+        @if (Model.Patient.HealthCondition.Allergys.Length < 25)
+        {
+            <div>
+                <b>Alergie: </b><b class="text-danger">@Model.Patient.HealthCondition.Allergys</b>
+            </div>
+        }
+        else
+        {
+            <div>
+                <b>Alergie: </b>
+                <b class="text-danger">@Model.Patient.HealthCondition.Allergys.Substring(0, 25)</b>
+                <i style="color:#dc3545" data-toggle="modal" data-target="#AllergysModal" class="fa fa-ellipsis-h icons" aria-hidden="true"></i>
+                <div class="modal fade" id="AllergysModal" tabindex="-1" role="dialog" aria-labelledby="AllergysModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="AllergysModalLabel">Alergie pacienta</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                @Model.Patient.HealthCondition.Allergys
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+    </div>
+</div>
+
+<!-- Tabs -->
+<h2 class="demoHeaders">Záznamy</h2>
+<input name="vstup" id="pozice" hidden />
+<div id="tabs">
+    <ul>
+        <li><a href="#tabs-1" onclick="$('#pozice').value = 1">Zprávy</a></li>
+        <li><a href="#tabs-2" onclick="$('#pozice').value = 2">Vyšetření</a></li>
+        <li><a href="#tabs-5" onclick="$('#pozice').value = 5">Léčba</a></li>
+        <li><a href="#tabs-6" onclick="$('#pozice').value = 6">Historie návštěv</a></li>
+        <li><a href="#tabs-4" onclick="$('#pozice').value = 4">Úhrady na pojišťovnu</a></li>
+        <li><a href="#tabs-3" onclick="$('#pozice').value = 3">Obrázky</a></li>
+    </ul>
+
+    <div id="tabs-1">
+        <table class="checkup table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořil
+                    </th>
+                    <th>
+                        Popis
+                    </th>
+                    <th>
+                        Vytvořeno
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.medicallReports.Count() == 0)
+                {
+
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
+                    </tr>
+                }
+                @foreach (var prohlidka in Model.medicallReports)
+                {
+                    string desc = prohlidka.Description.Substring(0, prohlidka.Description.Length);
+                    @try
+                    {
+                        desc = prohlidka.Description.Substring(0, 40);
+                        desc = desc + "...";
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    @using (var db = new DatabaseContext())
+                    {
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Author.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
+
+                        <tr class="radek_zaznamu"  style="cursor:pointer" onclick="redirectToAction('@Url.Action("DetailMedRep", "Patient", new { currentTicketID = prohlidka.MedicallReportId })')">
+                            <td>
+                                @DoctorCreator.Title @DoctorCreator.Name @DoctorCreator.Surname
+                            </td>
+                            <td>
+                                @desc
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.CreateDate.Day)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.CreateDate.Month)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.CreateDate.Year)
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <br />
+
+        @(Html.Pager(Model.medicallReports).Url(page => Url.Action("PatientCard", new { pageReport = page, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select = 1 }))
+    .Classic())
+    </div>
+    <div id="tabs-2">
+        <table class="checkup table table-striped">
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořil
+                    </th>
+                    <th>
+                        Kam zajít
+                    </th>
+                    <th>
+                        Stav
+                    </th>
+                    <th>
+                        Vytvořeno
+                    </th>
+                    <th>
+                        Ukončeno
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.checkupTickets.Count() == 0)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+                @foreach (var prohlidka in Model.checkupTickets)
+                {
+                    @using (var db = new DatabaseContext())
+                    {
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.CreatedBy.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
+                        var DoctorTo = db.UserT.Where(x => x.UserId == prohlidka.ToDoctor.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
+
+                        <tr class="radek_zaznamu"  style="cursor:pointer" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketId = prohlidka.CheckupTicketId })')">
+                            <td>
+                                @DoctorCreator.Title @DoctorCreator.Name @DoctorCreator.Surname
+                            </td>
+                            <td>
+                                @DoctorCreator.Title @DoctorTo.Name @DoctorTo.Surname
+                            </td>
+                            <td>
+                                @if (prohlidka.State.Length > 25)
+                                {
+                                    @((prohlidka.State.Substring(0, 32)) + "...")
+
+                                }
+                                else
+                                {
+                                    @prohlidka.State
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.CreateDate.Day)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.CreateDate.Month)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.CreateDate.Year)
+                            </td>
+                            <td>
+                                @if (prohlidka.FinishDate.Year == 0001)
+                                {
+                                    <a>----</a>
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => prohlidka.FinishDate.Day)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.FinishDate.Month)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.FinishDate.Year)
+                                }
+
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <script>
+            function onClick() {
+                modal.style.display = "none";
+            };
+        </script>
+
+        @(Html.Pager(Model.checkupTickets).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = page, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select = 2 }))
+    .Classic())
+    </div>
+    <div id="tabs-3">
+        <table class="checkup table table-striped">
+
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořeno
+                    </th>
+                    <th>
+                        Název
+                    </th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @if (Model.Pictures == null)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var fotka in Model.Pictures)
+                    {
+
+            <tr class="radek_zaznamu" style="cursor:pointer" onclick="viewImage('/images/' + '@fotka.NameInt' + '@fotka.Type', '@fotka.Description')">
+                <td>
+                    @fotka.CreateDate
+                </td>
+                <td>
+                <td>
+                    @if (fotka.Description.Length > 25)
+                    {
+                        @((fotka.Description.Substring(0, 35)) + "...")
+
+                    }
+                    else
+                    {
+                        @fotka.Description
+                    }
+                <td>
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        @(Html.Pager(Model.Pictures).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = page, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select=6 }))
+        .Classic())
+
+    </div>
+    <div id="tabs-4">
+        <table class="checkup table table-striped">
+
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořil
+                    </th>
+                    <th>
+                        Diagnóza
+                    </th>
+                    <th>
+                        Stav
+                    </th>
+                    <th>
+                        Cena
+                    </th>
+                    <th>
+                        Vytvořeno
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @if (Model.MedicallBills.Count() == 0)
+                {
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                }
+                @foreach (var prohlidka in Model.MedicallBills)
+                {
+                    @using (var db = new DatabaseContext())
+                    {
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Doctor.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
+                        <tr class="radek_zaznamu">
+                            <td>
+                                @DoctorCreator.Title @DoctorCreator.Name @DoctorCreator.Surname
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.Diagnosis.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.State)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.MedicallActivityPrice.Amount) Kč
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.CreateDate.Day)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.CreateDate.Month)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.CreateDate.Year)
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        @(Html.Pager(Model.MedicallBills).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = page, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select=5 }))
+        .Classic())
+    </div>
+    <div id="tabs-5">
+        <table class="checkup table table-striped">
+
+            <thead>
+                <tr>
+                    <th>
+                        Diagnóza
+                    </th>
+                    <th>
+                        Zahájeno
+                    </th>
+                    <th>
+                        Ukončeno
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PatientTreatmentLogs.Count() == 0)
+                {
+                    <tr>
+                        <td></td>
+                        <td><p>Nejsou zde žádné záznamy k zobrazení</p></td>
+                        <td></td>
+
+                    </tr>
+                }
+                @foreach (var prohlidka in Model.PatientTreatmentLogs)
+                {
+
+                    <tr class="radek_zaznamu">
+                        <td>
+                            @Html.DisplayFor(modelItem => prohlidka.Diagnosis.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => prohlidka.StartOfTreatment.Day)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.StartOfTreatment.Month)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.StartOfTreatment.Year)
+                        </td>
+                        <td>
+                            @if (prohlidka.EndOfTreatment.Year == 0001)
+                            {
+                                <a>----</a>
+                            }else
+                            {
+                                @Html.DisplayFor(modelItem => prohlidka.EndOfTreatment.Day)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.EndOfTreatment.Month)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.EndOfTreatment.Year)
+                            }
+
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @(Html.Pager(Model.PatientTreatmentLogs).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = page, pageCure = Model.PageNum6, select=3 }))
+        .Classic())
+    </div>
+    <div id="tabs-6">
+        <table class="checkup table table-striped">
+
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořil
+                    </th>
+                    <th>
+                        Diagnóza
+                    </th>
+                    <th>
+                        Stav
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.CureProgresses.Count() == 0)
+                {
+                <tr>
+                    <td></td>
+                    <td>
+                        <p>Nejsou zde žádné záznamy k zobrazení</p>
+                    </td>
+                    <td></td>
+
+                </tr>
+                }
+                @foreach (var prohlidka in Model.CureProgresses)
+                {
+
+                    @using (var db = new DatabaseContext())
+                    {
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.MedicallReport.Owner.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
+
+                        <tr class="radek_zaznamu">
+                            <td>
+                                @DoctorCreator.Title @DoctorCreator.Name @DoctorCreator.Surname
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.Diagnosis.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.StateOfTreatment)
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        @(Html.Pager(Model.CureProgresses).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = page, select=4 }))
+        .Classic())
+    </div>
+</div>
+
+
+
+
+<script src="~/lib/extern/jquery.js"></script>
+<script src="~/lib/extern/jquery-ui.js"></script>
+<script>
+    $("#tabs").tabs();
+    $("#tabs").tabs("option", "active", @Model.TabNumber-1);
+</script>
+<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("caption");
+
+    function viewImage(source, name) {
+        modal.style.display = "block";
+        modalImg.src = source;
+        captionText.innerHTML = name;
+    };
+
+    // When the user clicks on <span> (x), close the modal
+    function closeModalPicture() {
+        modal.style.display = "none";
+    };
+</script>

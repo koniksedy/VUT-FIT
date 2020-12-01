@@ -1,0 +1,400 @@
+﻿﻿ /* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+body {
+    text-align: left !important;
+}
+
+img.logo_img {
+    height: 50px;
+    width: 150px;
+    padding-right: 10px;
+}
+
+header {
+    background-color: lightskyblue !important;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.hledat-text {
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
+    color: black;
+    padding-left: 0.75rem;
+    border: 1px solid #ced4da;
+}
+
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    font-size: 14px;
+    max-height: 800px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+.border-top {
+    border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    /* Margin bottom by footer height */
+    /*margin-bottom: 60px;*/
+    /*height:100vh;*/
+}
+
+.vypnout {
+    background-color: white !important;
+}
+
+    .vypnout td:hover {
+        background-color: white;
+        cursor: default;
+    }
+
+.detail {
+    color: #008CD2;
+    font-weight: 700;
+    background-color: transparent;
+    border: none;
+}
+
+    .detail:hover {
+        color: #035464;
+    }
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 20px; /* Vertically center the text there */
+}
+
+table{
+    width: 100%;
+}
+
+
+/* Pojistovna
+-------------------------------------------------- */
+.pojistovna-nadpis {
+    margin-top: 1em;
+}
+
+.search-doctor {
+    margin-top: 4em;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 2em;
+}
+
+#search {
+    margin-left: 1em;
+}
+
+.pridat {
+    margin-left: 3em;
+    margin-right: 1em;
+}
+
+
+#right {
+    margin-top: .3em;
+}
+
+#payment {
+    margin-top: 3em;
+}
+
+#payment-down-left {
+    float: left;
+}
+
+#payment-down-right {
+    float: right;
+}
+
+.btn-insurance {
+    color: #fff;
+    background-color: #1b6ec2;
+    font-weight: 600;
+    padding: 5px 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+}
+
+.btn-insurance-cancel {
+    color: #fff;
+    background-color: #535453;
+    font-weight: 600;
+    padding: 5px 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+}
+
+.btn-insurance:hover {
+    background-color: #0D6293;
+}
+
+.btn-insurance-cancel:hover {
+    background-color: #3F4540;
+    color: #fff;
+    text-decoration: none;
+}
+
+
+.btn-insurance-denied {
+    color: #fff;
+    font-weight: 600;
+    background-color: #A30217;
+    padding: 5px 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+}
+
+.btn-insurance-accept {
+    color: #fff;
+    font-weight: 600;
+    background-color: #028520;
+    padding: 5px 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+}
+
+.btn-insurance-accept:hover {
+    background-color: #024311;
+    text-decoration: none;
+    color: #fff;
+}
+
+
+.btn-insurance-denied:hover {
+    background-color: #640410;
+    text-decoration: none;
+    color: #fff;
+}
+
+.accept {
+    color: #028520;
+    font-weight: 700;
+    background-color: transparent;
+    border: none;
+}
+
+.accept:hover {
+    color: #024311;
+}
+
+.denied {
+    color: #A30217;
+    font-weight: 700;
+    background-color: transparent;
+    border: none;
+}
+
+.denied:hover {
+    color: #640410;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.butt-payment {
+    border: none;
+    background-color: transparent;
+    color: #008CD2;
+    font-weight: 700;
+}
+
+.butt-payment:hover {
+    color: #035464;
+}
+
+.paymentDb-down {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+
+#payment-down-left {
+    margin-bottom: 3em;
+}
+
+
+#payment-down-right {
+    margin-bottom: 3em;
+}
+
+.butt-pridat {
+    color: #fff;
+    background-color: #17a2b8;
+    font-weight: 600;
+    padding: 5px 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    border: none;
+}
+
+.butt-pridat:hover {
+    background-color: #026170;
+    text-decoration: none;
+    color: #fff;
+}
+
+
+
+
+
+    /*-------------------  DOCTOR -----------------------------*/
+tbody tr:hover {
+    background-color: lightblue !important;
+}
+
+.null_record {
+    text-align: center;
+}
+
+
+.menu .login {
+    padding-top: 150px;
+}
+
+
+
+.icons:hover {
+    -ms-transform: scale(1.04); /* IE 9 */
+    -webkit-transform: scale(1.04); /* Safari 3-8 */
+    transform: scale(1.04);
+    filter: grayscale(40%);
+    cursor: pointer;
+}
+
+.moje-tabulka {
+    border: 2px solid #d0d0d0 !important;
+    max-width: 200px;
+}
+
+    .moje-tabulka td {
+        max-height: 27px;
+    }
+
+    .moje-tabulka tbody tr:hover {
+        background-color: lightblue;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .moje-tabulka thead {
+        border-bottom: 4px solid #d0d0d0 !important;
+    }
+    
+    .btn  {
+        font-weight: 600;
+        padding: 5px 14px;
+        cursor: pointer;
+        border-radius: 10px;
+        border: none;
+    }
+
+    /*Dots spinner*/
+/*Huge thanks to @@tobiasahlin at http://tobiasahlin.com/spinkit/ */
+
+.spinner {
+    margin-top: 2px;
+}
+
+    .spinner > div {
+        width: 12px;
+        height: 12px;
+        background-color: #333;
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+        animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+    }
+
+    .spinner .bounce1 {
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+
+    .spinner .bounce2 {
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+
+@-webkit-keyframes sk-bouncedelay {
+    0%, 80%, 100% {
+        -webkit-transform: scale(0)
+    }
+
+    40% {
+        -webkit-transform: scale(1.0)
+    }
+}
+
+@keyframes sk-bouncedelay {
+    0%, 80%, 100% {
+        -webkit-transform: scale(0);
+        transform: scale(0);
+    }
+
+    40% {
+        -webkit-transform: scale(1.0);
+        transform: scale(1.0);
+    }
+}

@@ -1,0 +1,126 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Nemocnice</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css?v=9" />
+    <link rel="stylesheet" href="~/css/site.css?v=12" />
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/PagedList.css" />
+    <link rel="stylesheet" href="~/lib/extern/jquery-ui.css" />
+    <link href="jquery-ui.css" rel="stylesheet">
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
+            <div class="container">
+                <a href="/Home/Index"><img src="~/Img/Shared/ekg.svg" class="logo_img icons" /></a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Nemocnice</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
+                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Aktuality</a>
+                        </li>
+                        @if (User.IsInRole("Patient"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Patient" asp-action="PatientCard">Karta</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Patient" asp-action="Checkup">Vyšetření</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Doctor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Doctor" asp-action="Card">Kartotéka</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Doctor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Doctor" asp-action="Activity">Výkon</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Doctor" asp-action="Requests">Žádosti</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Insurance"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="InsuranceEmp" asp-action="InRequest">Žádosti</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="InsuranceEmp" asp-action="PaymentDb">Databáze úhrad</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="InsuranceEmp" asp-action="Diagnosis">Databáze diagnóz</a>
+                            </li>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownDoctor" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Lékař
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownDoctor">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Doctor" asp-action="Card">Kartotéka</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownInsurance" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Pojišťovna
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownInsurance">
+                                    <a class="dropdown-item" asp-area="" asp-controller="InsuranceEmp" asp-action="InRequest">Žádosti k proplacení</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="InsuranceEmp" asp-action="PaymentDb">Databáze výkonů</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="InsuranceEmp" asp-action="Diagnosis">Databáze diagnóz</a>
+                                </div>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownUsers" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Správa uživatelů
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdownUsers">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="Card">Pacienti</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="CardInsurance">Pojišťovny</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="DoctorEdit">Lékaři</a>
+                                </div>
+                            </li>
+                        }
+                        <!--
+                                    <li class="nav-item">
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="LoginCreator" asp-action="Create">Create logins</a>
+                                    </li>
+                        
+                            -->
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <div>&nbsp;</div>
+    <div class="border-top footer text-muted" style="text-align:center; z-index: 3; background-color: lightblue; margin-top:20px">
+        &copy; 2020 - Nemocnice - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

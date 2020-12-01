@@ -1,0 +1,466 @@
+﻿<!-- Model obsahující seznam základních informací o pacientech pro kartotéku. -->
+@model PatientProfileModel
+
+@{
+    ViewData["Title"] = Model.PatientFullName.Surname + " " + Model.PatientFullName.Name;
+}
+
+<style>
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    /* IE 6 doesn't support max-height
+    * we use height instead, but this forces the menu to always be this tall
+    */
+    * html .ui-autocomplete {
+        height: 100px;
+    }
+
+    .tabulka-pacient tbody tr:hover {
+        cursor:pointer;
+    }
+
+    .nova-zprava-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .pevna-hlavicka thead tr th{
+        position: sticky;
+        background-color: white;
+        top: 0;
+    }
+
+    .button-on-end {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+</style>
+
+<script src="~/lib/extern/jquery.js"></script>
+<script src="~/lib/extern/jquery-ui.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<div style="margin-bottom:30px">
+    <div class="flex-row row">
+        <h2 class="col" style="margin-top:20px;margin-bottom:20px">@Model.PatientFullName.getFullName() </h2>
+        <div class="col button-on-end" style="margin-top:20px;margin-bottom:20px">
+            <form asp-action="Card">
+                <button type="submit" class="btn btn-secondary">
+                    <i style="margin-right:3px" class="fa fa-folder-open" aria-hidden="true"></i>
+                    Kartotéka
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="row flex-row" style="margin-bottom:30px">
+        <div style="margin-right:50px;min-width:175px" class="col-4">
+            <div style="margin-bottom:50px">
+                <h4>
+                    Informace <i data-toggle="modal" data-target="#PatientInfoModal" class="fa fa-pencil icons" style="font-size:24px"></i>
+                </h4>
+
+                <b>Rodné Číslo:</b> @Model.SocialSecurityNumber<br />
+                <b>Pojišťovna:</b> @Model.InsuranceCompany<br />
+                <b>Věk:</b>  @Model.Age<br />
+                <form asp-action="UpdatePatientInfo" method="post" onsubmit="return validateSSNInPatientProfile()">
+                    <input hidden name="OldNum" type="text" value="@Model.SocialSecurityNumber" />
+                    <div class="modal fade" id="PatientInfoModal" tabindex="-1" role="dialog" aria-labelledby="PatientInfoModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" style="max-width:800px" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="PatientInfoModalLabel">Informace</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Jméno<a style="color:red">*</a></label>
+                                                <input name="UpdateName" id="UpdateName" type="text" required disabled readonly autocomplete="off" class="form-control" value="@Model.PatientFullName.Name" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Rodné číslo<a style="color:red">*</a></label>
+                                                <input name="UpdateNum" id="RC" type="text" required disabled readonly pattern="[0-9]{2}(([1,6][0-2])|([0,5][1-9]))((0[1-9])|1[0-9]|2[0-9]|3[0-1])[0-9]{3,4}" autocomplete="off" class="form-control" value="@Model.SocialSecurityNumber" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Telefon<a style="color:red">*</a></label>
+                                                <input name="UpdateTel" id="UpdateTel" type="text" required autocomplete="off" disabled readonly class="form-control" value="@Model.Tel" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Ulice</label>
+                                                <input name="UpdateStreet" id="UpdateStreet" autocomplete="off" disabled readonly class="form-control" value="@Model.Address.StreetName" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Město<a style="color:red">*</a></label>
+                                                <input name="UpdateCity" id="UpdateCity" required disabled readonly autocomplete="off" class="form-control" value="@Model.Address.City" />
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Příjmení<a style="color:red">*</a></label>
+                                                <input name="UpdateSurname" id="UpdateSurname" type="text" required disabled readonly autocomplete="off" class="form-control" value="@Model.PatientFullName.Surname" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Pojišťovna<a style="color:red">*</a></label>
+                                                <input name="UpdateInsurance" id="UpdateInsurance" type="text" required disabled readonly pattern="205|207|213|111|201|209|211" autocomplete="off" class="form-control" value="@Model.InsuranceCompany" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Email</label>
+                                                <input name="UpdateEmail" id="UpdateEmail" type="email" autocomplete="off" disabled readonly class="form-control" value="@Model.Email" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Číslo popisné</label>
+                                                <input name="UpdateHouseNum" id="UpdateHouseNum" type="text" disabled readonly pattern="[0-9]+" autocomplete="off" class="form-control" value="@Model.Address.HouseNumber" />
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-form-label">Směrovací číslo<a style="color:red">*</a></label>
+                                                <input name="UpdateZip" id="UpdateZip" type="text" disabled readonly required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" value="@Model.Address.ZIP" />
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-2">
+                                            <div class="form-group">
+                                                <label class="col-form-label">Titul</label>
+                                                <input name="UpdateTitle" id="UpdateTitle" type="text" disabled readonly autocomplete="off" class="form-control" value="@Model.PatientFullName.Title" />
+                                            </div>
+                                        </div>
+                                    </div>  
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-primary" type="button" onclick="unlockPatientInfo()">                                        
+                                        <i  style="margin-right:3px" class="fa fa-pencil" aria-hidden="true"></i>
+                                        Upravit
+                                    </button>
+                                    <button class="btn btn-primary" id="UpdateButton" disabled readonly type="submit">
+                                        <i style="margin-right:3px" class="fa fa-floppy-o" aria-hidden="true"></i>
+                                        Uložit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div>
+                <h4>
+                    Aktuální stav <i data-toggle="modal" data-target="#PatientHealthModal" class="fa fa-pencil icons" style="font-size:24px"></i>
+                </h4>
+                <b>Výška:</b> @Model.HealthCondition.GetWeightString() cm<br />
+                <b>Váha:</b> @Model.HealthCondition.GetHeightString() kg<br />
+                <b>Krevní skupina:</b> @Model.HealthCondition.GetBlodTypeString() <br />
+
+                @if (Model.Allergys.Length < 25)
+                {
+                    <div>
+                        <b>Alergie: </b><b class="text-danger">@Model.Allergys</b>
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        <b>Alergie: </b>
+                        <b class="text-danger">@Model.Allergys.Substring(0, 25)</b>
+                        <i style="color:#dc3545" data-toggle="modal" data-target="#AllergysModal" class="fa fa-ellipsis-h icons" aria-hidden="true"></i>
+                        <div class="modal fade" id="AllergysModal" tabindex="-1" role="dialog" aria-labelledby="AllergysModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="AllergysModalLabel">Alergie pacienta</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @Model.Allergys
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <form asp-action="UpdateHealthInfo" method="post">
+                    <input hidden name="PatientNum" type="text" value="@Model.SocialSecurityNumber" />
+                    <div class="modal fade" id="PatientHealthModal" tabindex="-1" role="dialog" aria-labelledby="PatientHealthModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="PatientHealthModalLabel">Upravit zdravotní přehled</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="col-form-label">Výška</label>
+                                        <input oninvalid="this.setCustomValidity('Zadejte hodnotu v celých číslech');" oninput="this.setCustomValidity('');" name="UpdateHeight" pattern="[0-9]{1,3}" type="text" placeholder="cm"  autocomplete="off" class="form-control" value="@Model.HealthCondition.Height" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label">Váha</label>
+                                        <input oninvalid="this.setCustomValidity('Zadejte hodnotu v celých číslech');" oninput="this.setCustomValidity('')"; name="UpdateWeight" pattern="[0-9]{1,3}" type="text" placeholder="kg"  autocomplete="off" class="form-control" value="@Model.HealthCondition.Weight" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label">Krevní typ</label>
+                                        <input oninvalid="this.setCustomValidity('Zdejte krevní typ s RH faktorem, např.: A+');" oninput="this.setCustomValidity('')"; name="UpdateBlodType" pattern="((A|B|(AB))\+)|((A|B|(AB))-)" placeholder="Typ" autocomplete="off" class="form-control" value="@Model.HealthCondition.BloodType" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-form-label">Alergie</label>
+                                        <input name="UpdateAllergys" type="text" placeholder="Sine" autocomplete="off" class="form-control" value="@Model.Allergys" />
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <input class="btn btn-primary" id="UpdateButton" type="submit" value="Uložit" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col" style="min-width:300px">
+            <div>
+                <h4>Dekurzy</h4>
+                <form asp-action="ChangeOwner" method="post" onsubmit="return checkNewOwner()">
+                    <input hidden id="doctorICZ" name="doctorICZ" value="" />
+                    <input hidden name="patientNumber" value="@Model.SocialSecurityNumber" />
+                    <div class="modal fade" id="ChangeOwnerModal" tabindex="-1" role="dialog" aria-labelledby="ChangeOwnerLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="ChangeOwnerLabel">Předat správu nad záznamy jinému lékaři</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="form-group">
+                                        <label class="col-form-label">Lékař</label>
+                                        <select id="NewOwnerSelect" class="browser-default custom-select">
+                                            <option selected onclick="document.getElementById('doctorICZ').value = ''">Vyberte lékaře</option>
+                                        </select>
+                                    </div>
+                                    @foreach (var item in Model.AllReports)
+                                    {
+                                        <div class="custom-control custom-checkbox">
+                                            <input value="off" onclick="checkboxClicked(this)" type="checkbox" class="custom-control-input" id="@item.Date">
+                                            <input hidden type="text" name="Checkbox[]" value="off" />
+                                            <label class="custom-control-label" for="@item.Date">@item.Date</label>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="modal-footer">
+                                    <input class="btn btn-primary" id="UpdateButton" type="submit" value="Předat" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div style="max-height:300px; overflow-y:auto;margin-bottom:10px">
+                    <table class="table table-striped tabulka-pacient pevna-hlavicka">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Datum
+                                </th>
+                                <th>
+                                    Náhled
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.AllReports.Any())
+                            {
+                                @foreach (var item in Model.AllReports)
+                                {
+                                    <tr onmousedown="redirectToAction('@Url.Action("Report", "Doctor", new { socialNum = Model.SocialSecurityNumber, date = item.Date })')">
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Date)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Text)
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr class="vypnout">
+                                    <td>
+                                        Doposud nebyly zadány žádné zprávy.
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row flex-row">
+                <div class="col">
+                    <button onclick="generateSelect()" type="button" class="btn btn-secondary" data-toggle="modal" data-target="#ChangeOwnerModal">Předat vlastnictví</button>
+                </div>
+                <div class="col float-right nova-zprava-btn">
+                    <button onclick="redirectToAction('@Url.Action("Report", "Doctor", new { socialNum = Model.SocialSecurityNumber })')" type="button" class="btn btn-success">Nová zpráva</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="margin-bottom:30px">
+    <h2>Příchozí žádosti na vyšetření</h2>
+    <div style="overflow-x:auto;max-height:300px;overflow-y:auto">
+        <table class="table table-striped tabulka-pacient pevna-hlavicka">
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořeno
+                    </th>
+                    <th>
+                        Lékař
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.CheckupToMe.Any())
+                {
+                    @foreach (var item in Model.CheckupToMe)
+                    {
+                        <tr onmousedown="redirectToAction('@Url.Action("CheckupIn", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate, reports = Model.AllReports.Select(s => s.Date).ToList() })')">
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreateDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modeItem => item.FromDoctor)
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="vypnout">
+                        <td>
+                            Žádné příchozí řádosti o vyšetření.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div>
+    <h2>Moje žádosti na vyšetření</h2>
+    <div style="overflow-x:auto;max-height:300px;overflow-y:auto">
+        <table class="table table-striped tabulka-pacient pevna-hlavicka" style="margin-bottom:10px">
+            <thead>
+                <tr>
+                    <th>
+                        Vytvořeno
+                    </th>
+                    <th>
+                        Lékař
+                    </th>
+                    <th>
+                        Stav
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.CheckupToOther.Any())
+                {
+                    @foreach (var item in Model.CheckupToOther)
+                    {
+                        <tr onmousedown="redirectToAction('@Url.Action("CheckupOut", "Doctor", new { patientNum = Model.SocialSecurityNumber, date = item.CreateDate })')">
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CreateDate)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modeItem => item.ToDoctor)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modeItem => item.State)
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr class="vypnout">
+                        <td>
+                            Nemáte vytvořené žádné žádosti.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="nova-zprava-btn">
+        <button onclick="redirectToAction('@Url.Action("NewCheckup", "Doctor", new { patientNum = Model.SocialSecurityNumber, reports = Model.AllReports.Select(s => s.Date).ToList() })')" class="btn btn-success" type="button">Vytvořit žádost</button>
+    </div>
+</div>
+
+<script>
+    function generateSelect() {
+        var result = $.ajax({
+            url: '/Doctor/GetAllDoctors',
+            dataType: "json",
+            async: false,
+            data: {
+                search: "?"
+            },
+            success: function (data) {
+                return data;
+            },
+            error: function () {
+                alert("Nepodařilo se získat doktory.");
+            }
+        }).responseJSON;
+
+        jQuery.each(result, function (i, val) {
+            $("#NewOwnerSelect").append("\"<option value=\"" + i + "\" onclick=\"document.getElementById(\'doctorICZ\').value = \'" + val.id + "\'\">" + val.name + "</option>");
+
+        });
+    }
+
+    function checkNewOwner() {
+        if (document.getElementById("doctorICZ").value == "") {
+            alert("Lékař musí být zadán.");
+            return false;
+        }
+        return true;
+    }
+
+    function checkboxClicked(checkbox) {
+        if (checkbox.value == "off") {
+            checkbox.value = "on";
+            checkbox.nextElementSibling.value = "on";
+        } else {
+            checkbox.value = "off";
+            checkbox.nextElementSibling.value = "off";
+        }
+    }
+</script>
+
+
+<script>
+    function validateSSNInPatientProfile(old) {
+        var newNum = document.getElementById("RC").value;
+        if (newNum != old) {
+            if (!validateSSN()) {
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+
+

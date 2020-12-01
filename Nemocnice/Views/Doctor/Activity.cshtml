@@ -1,0 +1,99 @@
+﻿@model ActivityModel
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
+
+@{
+    ViewData["Title"] = "Activity";
+}
+
+
+<h1 style="margin-bottom:30px" class="pojistovna-nadpis">Výkazy</h1>
+
+<div class="flex-row row" style="display:flex;margin-bottom:5px">
+    <div>
+        <form asp-action="Activity" method="get">
+            <div class="form-actions no-color">
+                <div class="input-group">
+                    <input class="hledat-text" type="text" placeholder="Hledat název výkonu" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]" />
+                    <div class="input-group-append">
+                        <button type="submit" name="SortOrder" value="@ViewData["CurrentSort"]" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col float-right">
+        <div class="row">
+            <div>
+                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("Activity", "Doctor", new { })')" class="btn btn-secondary">Zrušit filtry</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.medicallBills.Count == 0)
+{
+    <br />
+    <br />
+    <br />
+    <hr /><p class="null_record">Nejsou zde žádné záznamy k zobrazení</p>
+    <hr />
+}
+else
+{
+
+    <div class="table table-striped" style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        @Html.ActionLink("Diagnóza", "Activity", new { SortOrder = "nazev", searchString = ViewData["Search"] })
+                    </th>
+                    <th>
+                        Pacient
+                    </th>
+                    <th>
+                        @Html.ActionLink("Datum vystavení", "Activity", new { SortOrder = "datum", searchString = ViewData["Search"] })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Stav schválení", "Activity", new { SortOrder = "stav", searchString = ViewData["Search"] })
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var medicalBill in Model.medicallBillsPage)
+                {
+                    string state = "";
+
+                    if (medicalBill.State == null)
+                    {
+                        state = "čeká na schválení...";
+                    }
+                    else
+                    {
+                        state = medicalBill.State;
+                    }
+
+                    <tr>
+                        <td>@medicalBill.Diagnosis.Name</td>
+                        <td>@medicalBill.SocialSecurityNum</td>
+                        <td>@medicalBill.CreateDate</td>
+                        <td>@state</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    <br />
+    <br />
+    @(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("Activity", new { p = page, searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })).Classic())
+    <br />
+    <br />
+    <br />
+}
