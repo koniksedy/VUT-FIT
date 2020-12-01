@@ -54,6 +54,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             public string City { get; set; }
 
             [Required(ErrorMessage = "PSČ je povinné")]
+            [RegularExpression("([0-9]{5})|([0-9]{3} [0-9]{2})", ErrorMessage = "Neplatné PSČ.")]
             [Display(Name = "PSČ")]
             
             public int ZIP { get; set; }
@@ -72,39 +73,48 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
                 var Patient = db.PatientT.Include(x => x.HomeAddress).Where(x => x.UserId == uzivatel.UserId).First();
                 if (Patient.HomeAddress == null)
                 {
-                    Patient.HomeAddress = new Address();
-                    db.SaveChanges();
+                    Input = new InputModel
+                    {
+                        HouseNumber = "",
+                        StreetName = "",
+                        City = "",
+                        ZIP = 0
+                    };
                 }
-                                    
-                Input = new InputModel
+                else
                 {
-                    HouseNumber = Patient.HomeAddress.HouseNumber.ToString() == "0" ? "" : Patient.HomeAddress.HouseNumber.ToString(),
-                    StreetName = Patient.HomeAddress.StreetName == null ? "" : Patient.HomeAddress.StreetName,
-                    City = Patient.HomeAddress.City == null ? "" : Patient.HomeAddress.City,
-                    ZIP = Patient.HomeAddress.ZIP == null ? 0 : Patient.HomeAddress.ZIP
-                };
-
-
-
+                    Input = new InputModel
+                    {
+                        HouseNumber = Patient.HomeAddress.HouseNumber.ToString() == "0" ? "" : Patient.HomeAddress.HouseNumber.ToString(),
+                        StreetName = String.IsNullOrEmpty(Patient.HomeAddress.StreetName) ? "" : Patient.HomeAddress.StreetName,
+                        City = Patient.HomeAddress.City,
+                        ZIP = Patient.HomeAddress.ZIP
+                    };
+                }
             }
             else
             {
-                if (uzivatel.WorkAddress != null)
+                if (uzivatel.WorkAddress == null)
                 {
-                    uzivatel.WorkAddress = new Address();
-                    db.SaveChanges();
+                    Input = new InputModel
+                    {
+                        HouseNumber = "",
+                        StreetName = "",
+                        City = "",
+                        ZIP = 0
+                    };
                 }
+                else
+                {
                     Input = new InputModel
                     {
                         HouseNumber = uzivatel.WorkAddress.HouseNumber.ToString() == "0" ? "" : uzivatel.WorkAddress.HouseNumber.ToString(),
-                        StreetName = uzivatel.WorkAddress.StreetName == null ? "" : uzivatel.WorkAddress.StreetName ,
-                        City = String.IsNullOrEmpty(uzivatel.WorkAddress.City) ? "xxx" : uzivatel.WorkAddress.City ,
-                        ZIP = uzivatel.WorkAddress.ZIP == 0 ? 0 : uzivatel.WorkAddress.ZIP
+                        StreetName = String.IsNullOrEmpty(uzivatel.WorkAddress.StreetName) ? "" : uzivatel.WorkAddress.StreetName,
+                        City = uzivatel.WorkAddress.City,
+                        ZIP = uzivatel.WorkAddress.ZIP
                     };
-                
+                }
             }
-
-
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -135,57 +145,39 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             }
             var userName = await _userManager.GetUserNameAsync(user);
             var db = new DatabaseContext();
-            var uzivatel = db.UserT.Where(x => x.Login == userName).Include(x => x.WorkAddress).First();
+            var uzivatel = db.UserT.Include(x => x.WorkAddress).Where(x => x.Login == userName).First();
 
 
-
-
-            if(uzivatel.WorkAddress == null)
+            // TODO kontrola na záporné PSČ
+            if (User.IsInRole("Patient"))
             {
-                uzivatel.WorkAddress = new Address();
-            }
-            
-            try
-            {
-
-
-                if (int.Parse(Input.HouseNumber) > 0 && Input.ZIP > 0)
+                var Patient = db.PatientT.Include(x => x.HomeAddress).Where(x => x.UserId == uzivatel.UserId).First();
+                if (Patient.HomeAddress == null)
                 {
-                    if (User.IsInRole("Patient"))
-                    {
-                       
-                        var Patient = db.PatientT.Include(x => x.HomeAddress).Where(x => x.UserId == uzivatel.UserId).First();
-                        if (Patient.HomeAddress == null)
-                        {
-                            Patient.HomeAddress = new Address();
-                        }
-                        Patient.HomeAddress.HouseNumber = int.Parse(Input.HouseNumber);
-                        Patient.HomeAddress.StreetName = Input.StreetName;
-                        Patient.HomeAddress.City = Input.City;
-                        Patient.HomeAddress.ZIP = Input.ZIP;
-
-                    }
-                    else
-                    {
-                        uzivatel.WorkAddress.HouseNumber = int.Parse(Input.HouseNumber);
-                        uzivatel.WorkAddress.StreetName = Input.StreetName;
-                        uzivatel.WorkAddress.City = Input.City;
-                        uzivatel.WorkAddress.ZIP = Input.ZIP;
-                    }
-
+                    Patient.HomeAddress = new Address();
                 }
-                else
-                {
-                    StatusMessage = "Chyba při zadávání adresy";
-                    return RedirectToPage();
-                }
+
+                Patient.HomeAddress.HouseNumber = int.Parse(String.IsNullOrEmpty(Input.HouseNumber) ? "0" : Input.HouseNumber);
+                Patient.HomeAddress.StreetName = String.IsNullOrEmpty(Input.StreetName) ? "" : Input.StreetName;
+                Patient.HomeAddress.City = Input.City;
+                Patient.HomeAddress.ZIP = Input.ZIP;
+
             }
-            catch
+            else
             {
+                if(uzivatel.WorkAddress == null)
+                {
+                    uzivatel.WorkAddress = new Address();
+                }
+
+                uzivatel.WorkAddress.HouseNumber = int.Parse(String.IsNullOrEmpty(Input.HouseNumber) ? "0" : Input.HouseNumber);
+                uzivatel.WorkAddress.StreetName = String.IsNullOrEmpty(Input.StreetName) ? "" : Input.StreetName;
+                uzivatel.WorkAddress.City = Input.City;
+                uzivatel.WorkAddress.ZIP = Input.ZIP;
 
             }
-
             db.SaveChanges();
+
             await _signInManager.RefreshSignInAsync(user);
             _logger.LogInformation("Vaše adresa byla změněna.");
             StatusMessage = "Vaše adresa byla změněna.";
