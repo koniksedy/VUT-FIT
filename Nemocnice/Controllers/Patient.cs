@@ -86,7 +86,6 @@ namespace Nemocnice.Controllers
 
             var user = User.Identity.Name;
 
-            var query = db.CheckupTicketT.Where(x => x.State == "dokončeno").OrderByDescending(s => s.CreateDate);
 
             PatientCheckupModel.User = db.UserT.Where(x => x.Login == user).Include(s => s.WorkAddress).FirstOrDefault();
             PatientCheckupModel.Patient = db.PatientT.Where(x => x.UserId == PatientCheckupModel.User.UserId).Include(s => s.HomeAddress).Include(s => s.HealthCondition).FirstOrDefault();
@@ -95,8 +94,8 @@ namespace Nemocnice.Controllers
             PatientCheckupModel.tab2 = (tab2 ?? 1);
             int pageSize = 4;
 
-            PatientCheckupModel.CheckupTicketsRunning = db.CheckupTicketT.Include(x => x.ToDoctor).Include(x => x.Patient).Include(x => x.CreatedBy).Where(x => x.State != "dokončeno").ToPagedList(PatientCheckupModel.tab1, pageSize);
-            PatientCheckupModel.CheckupTicketsDone = db.CheckupTicketT.Include(x => x.ToDoctor).Include(x => x.Patient).Include(x => x.CreatedBy).Where(x => x.State == "dokončeno").ToPagedList(PatientCheckupModel.tab2, pageSize);
+            PatientCheckupModel.CheckupTicketsRunning = db.CheckupTicketT.Include(x => x.ToDoctor).Include(x => x.Patient).Include(x => x.CreatedBy).Where(x => x.State != "dokončeno" && x.Patient.SocialSecurityNum == user).ToPagedList(PatientCheckupModel.tab1, pageSize);
+            PatientCheckupModel.CheckupTicketsDone = db.CheckupTicketT.Include(x => x.ToDoctor).Include(x => x.Patient).Include(x => x.CreatedBy).Where(x => x.State == "dokončeno" && x.Patient.SocialSecurityNum == user).ToPagedList(PatientCheckupModel.tab2, pageSize);
 
 
 

@@ -9,6 +9,8 @@
     <Compile Remove="Migrations\20201127134414_Initialize.Designer.cs" />
     <Compile Remove="Migrations\20201129151239_Initialize.cs" />
     <Compile Remove="Migrations\20201129151239_Initialize.Designer.cs" />
+    <Compile Remove="Migrations\20201130224514_Initialize.cs" />
+    <Compile Remove="Migrations\20201130224514_Initialize.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,7 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>
 

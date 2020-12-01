@@ -262,7 +262,7 @@
             <tbody>
                 @if (Model.checkupTickets.Count() == 0)
                 {
-                    <tr>
+                    <tr >
                         <td></td>
                         <td></td>
                         <td>
@@ -345,7 +345,7 @@
 
                 @if (Model.Pictures == null)
                 {
-                    <tr>
+                    <tr >
                         <td></td>
                         <td></td>
                         <td>
@@ -415,7 +415,7 @@
 
                 @if (Model.MedicallBills.Count() == 0)
                 {
-                    <tr>
+                    <tr >
                         <td></td>
                         <td></td>
                         <td>
@@ -475,7 +475,7 @@
             <tbody>
                 @if (Model.PatientTreatmentLogs.Count() == 0)
                 {
-                    <tr>
+                    <tr >
                         <td></td>
                         <td><p>Nejsou zde žádné záznamy k zobrazení</p></td>
                         <td></td>
@@ -530,14 +530,14 @@
             <tbody>
                 @if (Model.CureProgresses.Count() == 0)
                 {
-                <tr>
-                    <td></td>
-                    <td>
-                        <p>Nejsou zde žádné záznamy k zobrazení</p>
-                    </td>
-                    <td></td>
+                    <tr >
+                        <td></td>
+                        <td>
+                            <p>Nejsou zde žádné záznamy k zobrazení</p>
+                        </td>
+                        <td></td>
 
-                </tr>
+                    </tr>
                 }
                 @foreach (var prohlidka in Model.CureProgresses)
                 {

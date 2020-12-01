@@ -38,7 +38,7 @@
                 <tbody>
                     @if (Model.CheckupTicketsRunning.Count == 0)
                     {
-                        <tr>
+                        <tr style="background-color:white;">
                             <td></td>
                             <td></td>
                             <td>
@@ -153,7 +153,6 @@
                     }
                     </tbody>
             </table>
-            </b>
 
             @(Html.Pager(Model.CheckupTicketsDone).Url(page => Url.Action("Checkup", new { tab1 = Model.tab1, tab2 = page}))
             .Classic())

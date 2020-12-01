@@ -92,10 +92,14 @@ body {
 .vypnout {
     background-color: white !important;
 }
+    .vypnout tr:hover {
+        background-color: white !important;
+        cursor: default !important;
+    }
 
     .vypnout td:hover {
-        background-color: white;
-        cursor: default;
+        background-color: white !important;
+        cursor: default !important;
     }
 
 .detail {
