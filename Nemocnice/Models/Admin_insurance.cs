@@ -1,7 +1,9 @@
 ﻿/*
- * Admin_insurance
- * Autor: Michal Šedý <xsedym02>, Ondřej Pavlacký <xpavla15, Kateřina Kunorzová <xkunor00>
+ * Soubor modelu pro uživatelskou část Admin a správu pracovníků pojišťovny
+ * Autor: Kateřina Kunorzová <xkunor00>
+ * Poslední úprava: 1.12.2020
  */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

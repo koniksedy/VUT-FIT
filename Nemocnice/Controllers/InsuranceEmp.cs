@@ -1,7 +1,7 @@
 ﻿/*
  * Soubor kontroleru uživatele s rolí pracovník pojišťovny nebo admin.
  * Autor: Kateřina Kunorzová <xkunor00>
- * Poslední úprava: 20.11.2020
+ * Poslední úprava: 1.12.2020
  */
 
 using System;
@@ -24,7 +24,7 @@ using X.PagedList;
 namespace Nemocnice.Controllers
 {
     /*
-     * Třída, která zpracuje požadavky uživatele s rolí pracovník pojišťovny nebo doktor,
+     * Třída, která zpracuje požadavky uživatele s rolí pracovník pojišťovny nebo admin,
      * k jednotlivým akcím může přistoupit jen uživatel s těmito rolemi.
      */
     [Authorize(Roles = "Insurance,Admin")]
@@ -61,9 +61,11 @@ namespace Nemocnice.Controllers
             //pokud je string naplněný, schválí/zamítne se vše na dané stránce
             if (!String.IsNullOrEmpty(buttonAll))
             {
+                //uložení aktuálně vyhledaného řetězce, vyhledávání a stránky
                 ViewData["Search"] = "";
                 ViewData["CurrentSort"] = "";
                 ViewData["CurrentPage"] = 1;
+
                 //searchString je prázdný, pracujeme se vším
                 if (String.IsNullOrEmpty(searchString))
                 {
@@ -85,16 +87,6 @@ namespace Nemocnice.Controllers
                     medicalBills = this.Context.MedicallBillT.Where(s => s.State == null && (s.MedicallActivityPrice.Name.Contains(searchString) || s.Diagnosis.Name.Contains(searchString))).ToList();
                 }
 
-                //zde se vyberou a uloží vybrané položky (ve vyhledávacím řetězci) databáze
-                /*
-                List<MedicallBill> state = new List<MedicallBill>();
-                foreach (var bill in medicalBills)
-                {
-                    List<MedicallBill> temp;
-                    temp = this.Context.MedicallBillT.Where(a => a.State == null && a.Doctor.UserId == user).ToList();
-                    state.AddRange(temp);
-                }
-                */
                 //pokud je string "schvalit-vse" schvalujeme vše
                 if (buttonAll == "schvalit-vse")
                 {
@@ -118,15 +110,13 @@ namespace Nemocnice.Controllers
             }
             else
             {
-                //uložení aktuálně vyhledaného řetězce
+                //uložení aktuálně vyhledaného řetězce, vyhledávání a stránky
                 ViewData["Search"] = searchString;
-
                 ViewData["CurrentSort"] = SortOrder;
-
                 ViewData["CurrentPage"] = p;
             }
 
-            //pokud je různé od 0, byla schválena žádost s daným ID a tu d datbázi změníme z null na "schváleno"
+            //pokud je různé od 0, byla schválena žádost s daným ID a tu v datbázi změníme z null na "schváleno"
             if (ID_accept != 0)
             {
                 var state = this.Context.MedicallBillT.First(a => a.MedicallBillId == ID_accept);
@@ -136,7 +126,7 @@ namespace Nemocnice.Controllers
                 this.Context.SaveChanges();
             }
 
-            //pokud je různé od 0, byla zamítnuta žádost s daným ID a tu d datbázi změníme z null na "zamítnuto"
+            //pokud je různé od 0, byla zamítnuta žádost s daným ID a tu v datbázi změníme z null na "zamítnuto"
             if (ID_reject != 0)
             {
                 var state = this.Context.MedicallBillT.First(a => a.MedicallBillId == ID_reject);
@@ -157,7 +147,7 @@ namespace Nemocnice.Controllers
                     model.medicallBills = this.Context.MedicallBillT.Where(s => s.State == null && (s.MedicallActivityPrice.Name.Contains(searchString) || s.Diagnosis.Name.Contains(searchString))).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).ToList();
                 }
             }
-            //pokud je vyhledávací řetězec prázdný, vypisujeme všechny nerozhodnuté žádosti -> ty, co moají stav null
+            //pokud je vyhledávací řetězec prázdný, vypisujeme všechny nerozhodnuté žádosti -> ty, co mají stav null
             else
             {
                 model.medicallBills = this.Context.MedicallBillT.Where(x => x.State == null).Include(s => s.Doctor).Include(s => s.Diagnosis).Include(s => s.MedicallActivityPrice).ToList();
@@ -193,10 +183,14 @@ namespace Nemocnice.Controllers
 
         }
 
+
+         /*
+         * Akce upravuje položky v databázi ceníku úkonů
+         */
         [HttpPost]
         public IActionResult EditDb()
         {
-
+            //vytáhneme z formuláře zadaná data a těmi přepíšeme databázi
             int edit_ID = int.Parse(Request.Form["edit_ID"]);
             string edit_name = Request.Form["edit_name"];
             decimal edit_amount = decimal.Parse(Request.Form["edit_amount"].ToString().Replace(".", ","));
@@ -209,9 +203,15 @@ namespace Nemocnice.Controllers
             return RedirectToAction("PaymentDb", new { SortOrder = Request.Form["SortOrder"], p1 = Request.Form["p1"], searchString = Request.Form["searchString"] });
         }
 
+
+        /*
+        * Akce přidává položky do ceníku úkonů
+        */
         [HttpPost]
         public IActionResult NewDb()
         {
+
+            //vytáhneme z formuláře zadaná data a ty vložíme do databáze
             string new_name = Request.Form["new_name"];
             decimal new_amount = decimal.Parse(Request.Form["new_amount"].ToString().Replace(".", ","));
 
@@ -228,17 +228,17 @@ namespace Nemocnice.Controllers
         * Akce vypíše tabulku s úkony, které se proplácí
         * ID_delete - ID úkonu, který se z tabulky vymaže
         * sortOrder - typ řazení (dle jména doktora, data nebo diagnózy)
-        * ID_edit - ID výkonu, který bude upraven
-        * new_butt - ID s nově vytvořeným úkonem
+        * searchString - vyhledávací řetězec
         * model - model pro uložení vybraných dat
         * p - proměnná pro stránkování
         */
         public IActionResult PaymentDb(int ID_delete, string SortOrder, string searchString, InsuranceModel model, int ? p1)
         {
 
+            //uložení aktuálně vyhledaného řetězce, vyhledávání a stránky
             ViewData["CurrentSort"] = SortOrder;
-
             ViewData["CurrentPage"] = p1;
+            ViewData["Search"] = searchString;
 
             ViewData["Search"] = searchString;
 
@@ -249,13 +249,14 @@ namespace Nemocnice.Controllers
                 this.Context.SaveChanges();
             }
 
+            //pokud vyhledávací řetězec něco obsahuje, provedeme vyhledávání
             if (!String.IsNullOrEmpty(searchString))
             {
                 model.medicallActivityPrice = this.Context.MedicallActivityPriceT.Where(s => s.Name.Contains(searchString)).OrderBy(o => o.Name).ToList();
             }
+            //v opačném případě proběhně nachystání celé tabulky se všemi úkony k vypsání
             else
             {   
-                //nachystání celé tabulky se všemi úkony k vypsání
                 model.medicallActivityPrice = this.Context.MedicallActivityPriceT.OrderBy(o => o.Name).ToList();
             }
 
@@ -282,11 +283,14 @@ namespace Nemocnice.Controllers
 
 
 
-
+       /*
+       * Akce upravuje položky v databázi diagnóz
+       */
         [HttpPost]
         public IActionResult EditDb_Dia()
         {
 
+            //vytáhneme z formuláře zadaná data a těmi přepíšeme databázi
             int edit_ID = int.Parse(Request.Form["edit_ID"]);
             string edit_name = Request.Form["edit_name"];
 
@@ -297,11 +301,14 @@ namespace Nemocnice.Controllers
             return RedirectToAction("Diagnosis", new { p2 = Request.Form["p2"] });
         }
 
+        /*
+        * Akce přídává nové položky v databázi diagnóz
+        */
         [HttpPost]
         public IActionResult NewDb_Dia()
         {
+            //vytáhneme z formuláře zadaná data a ty vložíme do databáze
             string new_name = Request.Form["new_name"];
-
             var diagnosis = new Diagnosis { Name = new_name };
             this.Context.Add<Diagnosis>(diagnosis);
             this.Context.SaveChanges();
@@ -310,9 +317,15 @@ namespace Nemocnice.Controllers
         }
 
 
+        /*
+        * Akce vypíše tabulku diagnóz
+        * ID_delete - ID úkonu, který se z tabulky vymaže
+        * model - model pro uložení vybraných dat
+        * p - proměnná pro stránkování
+        */
         public IActionResult Diagnosis(int ID_delete, InsuranceModel model, int? p2)
         {
-
+            //uložení aktuálně vyhledaného řetězce
             ViewData["CurrentPage"] = p2;
 
             //pokud je ID_delete různé od 0, víme, jaký úkon s daným ID máme vymazat
@@ -322,7 +335,7 @@ namespace Nemocnice.Controllers
                 this.Context.SaveChanges();
             }
 
-            //nachystání celé tabulky se všemi úkony k vypsání
+            //nachystání celé tabulky se všemi diagnózami k vypsání
             model.diagnosis = this.Context.DiagnosisT.OrderBy(o => o.Name).ToList();
 
 

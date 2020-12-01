@@ -14,13 +14,11 @@
 
 <style>
 
-        .to-end {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-
-
+    .to-end {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
 </style>
 
 <div class="pojistovna">
@@ -65,13 +63,16 @@
 
 
 
-    @if (Model.medicallBillsPage.Count == 0)
-    {
-        <br /><br /><br />
-        <hr /><p class="null_record">Nejsou zde žádné záznamy k zobrazení</p><hr />
-    }
-    else
-    {
+@if (Model.medicallBillsPage.Count == 0)
+{
+    <br />
+    <br />
+    <br />
+    <hr /><p class="null_record">Nejsou zde žádné záznamy k zobrazení</p>
+    <hr />
+}
+else
+{
 
         <div class="table table-striped" style="overflow-x: auto;">
             <table style="text-align:center;">
@@ -120,13 +121,16 @@
                         }
                     }
 
-                </tbody>
-            </table>
-        </div>
-        <br /><br />
-        @(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("InRequest", new { p = page, SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
-        <br /><br /><br />
-    }
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <br />
+    @(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("InRequest", new { p = page, SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
+    <br />
+    <br />
+    <br />
+}
 
 </div>
 

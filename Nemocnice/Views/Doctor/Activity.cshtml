@@ -65,32 +65,35 @@ else
         </thead>
         <tbody>
 
-            @foreach (var medicalBill in Model.medicallBillsPage)
-            {
-                string state = "";
-
-                if (medicalBill.State == null)
+                @foreach (var medicalBill in Model.medicallBillsPage)
                 {
-                    state = "čeká na schválení...";
+                    string state = "";
+
+                    if (medicalBill.State == null)
+                    {
+                        state = "čeká na schválení...";
+                    }
+                    else
+                    {
+                        state = medicalBill.State;
+                    }
+
+                    <tr>
+                        <td>@medicalBill.Diagnosis.Name</td>
+                        <td>@medicalBill.SocialSecurityNum</td>
+                        <td>@medicalBill.CreateDate</td>
+                        <td>@state</td>
+                    </tr>
                 }
-                else
-                {
-                    state = medicalBill.State;
-                }
 
-                <tr>
-                    <td>@medicalBill.Diagnosis.Name</td>
-                    <td>@medicalBill.SocialSecurityNum</td>
-                    <td>@medicalBill.CreateDate</td>
-                    <td>@state</td>
-                </tr>
-            }
+            </tbody>
+        </table>
+    </div>
 
-        </tbody>
-    </table>
-</div>
-
-<br /><br />
-@(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("Activity", new { p = page, searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })).Classic())
-<br /><br /><br />
+    <br />
+    <br />
+    @(Html.Pager(Model.medicallBillsPage).Url(page => Url.Action("Activity", new { p = page, searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })).Classic())
+    <br />
+    <br />
+    <br />
 }

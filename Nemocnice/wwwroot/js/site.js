@@ -202,3 +202,31 @@ function validateSSN_Admin() {
     return true;
 }
 
+
+function validateSSN_Admin() {
+
+    if (!testRC('RC')) {
+        return false;
+    }
+
+    if ($.ajax({
+        url: '/Admin/TestSocialSecurityNumUnique',
+        dataType: "json",
+        async: false,
+        data: {
+            num: document.getElementById("RC").value,
+        },
+        success: function (data) {
+            return data;
+        },
+        error: function () {
+            alert("Nepodařilo zkontrolovat rodné číslo.");
+        }
+    }).responseJSON === false) {
+        alert("Pacient se zadaným rodným číslem již existuje.")
+        return false;
+    }
+
+    return true;
+}
+

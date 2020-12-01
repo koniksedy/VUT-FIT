@@ -1,7 +1,9 @@
 ﻿/*
- * ActivityModel
- * Autor: Michal Šedý <xsedym02>, Ondřej Pavlacký <xpavla15, Kateřina Kunorzová <xkunor00>
+ * Soubor modelu pro uživatelskou část Doktor, konkrétně výkazy
+ * Autor: Kateřina Kunorzová <xkunor00>
+ * Poslední úprava: 1.12.2020
  */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

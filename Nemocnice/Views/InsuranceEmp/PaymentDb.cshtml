@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Ceník úkonů";
 }
 
@@ -30,8 +29,6 @@
     input[type="number"] {
         -moz-appearance: textfield;
     }
-
-
 </style>
 
 
@@ -63,129 +60,133 @@
 
 
 
-    @if (Model.medicallActivityPricePage.Count == 0)
-    {
-        <br /><br /><br />
-        <hr /><p class="null_record">Nejsou zde žádné záznamy k zobrazení</p><hr />
-    }
-    else
-    {
+@if (Model.medicallActivityPricePage.Count == 0)
+{
+    <br />
+    <br />
+    <br />
+    <hr /><p class="null_record">Nejsou zde žádné záznamy k zobrazení</p>
+    <hr />
+}
+else
+{
 
-        <div class="table table-striped" style="overflow-x: auto;">
-            <table>
-                <thead>
+    <div class="table table-striped" style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        Id výkonu
+                    </th>
+                    <th>
+                        @Html.ActionLink("Název výkonu", "PaymentDb", new { SortOrder = "nazev", searchString = ViewData["Search"] })
+                    </th>
+                    <th>
+                        @Html.ActionLink("Cena (Kč)", "PaymentDb", new { SortOrder = "cena", searchString = ViewData["Search"] })
+                    </th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var medicalActivityPrice in Model.medicallActivityPricePage)
+                {
+                    string pom = "#exampleModal" + @medicalActivityPrice.MedicallActivityPriceId.ToString();
+                    string pom2 = "exampleModal" + @medicalActivityPrice.MedicallActivityPriceId.ToString();
+                    Decimal cena = @medicalActivityPrice.Amount;
+
                     <tr>
-                        <th>
-                            Id výkonu
-                        </th>
-                        <th>
-                            @Html.ActionLink("Název výkonu", "PaymentDb", new { SortOrder = "nazev", searchString = ViewData["Search"] })
-                        </th>
-                        <th>
-                            @Html.ActionLink("Cena (Kč)", "PaymentDb", new { SortOrder = "cena", searchString = ViewData["Search"] })
-                        </th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-
-                    @foreach (var medicalActivityPrice in Model.medicallActivityPricePage)
-                    {
-                        string pom = "#exampleModal" + @medicalActivityPrice.MedicallActivityPriceId.ToString();
-                        string pom2 = "exampleModal" + @medicalActivityPrice.MedicallActivityPriceId.ToString();
-                        Decimal cena = @medicalActivityPrice.Amount;
-
-                        <tr>
-                            <td>@medicalActivityPrice.MedicallActivityPriceId</td>
-                            <td>@medicalActivityPrice.Name</td>
-                            <td>@medicalActivityPrice.Amount</td>
-                            <td>
+                        <td>@medicalActivityPrice.MedicallActivityPriceId</td>
+                        <td>@medicalActivityPrice.Name</td>
+                        <td>@medicalActivityPrice.Amount</td>
+                        <td>
 
 
-                                <button name="button" type="button" class="butt-payment" data-toggle="modal" data-target="@pom">Upravit</button>
-                                <form asp-action="EditDb" method="post">
+                            <button name="button" type="button" class="butt-payment" data-toggle="modal" data-target="@pom">Upravit</button>
+                            <form asp-action="EditDb" method="post">
 
-                                    <div class="modal fade" id="@pom2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal fade" id="@pom2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
+                                    <div class="modal-dialog" role="document">
                                         <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
-                                        <div class="modal-dialog" role="document">
-                                            <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
-                                            <div class="modal-content">
-                                                <!-- pozadi ve vyskakovacim oknu -->
-                                                <div class="modal-header">
-                                                    <!-- formatovani nadpisu a krizku -->
-                                                    <h5>Upravit položku</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <!-- formatovani vyskakovaciho okna -->
-                                                    <label>Název<a style="color:red;">*</a></label>
-                                                    <input name="edit_name" type="text" class="form-control" value="@medicalActivityPrice.Name" required autocomplete="off">
-                                                    <label>Cena<a style="color:red;">*</a></label>
-                                                    <input name="edit_amount" type="number" step="0.01" class="form-control" value="@cena" required autocomplete="off">
-                                                    <div class="modal-footer">
-                                                        <!-- formatovani tlacitka odeslat -->
-                                                        <input type="hidden" name="edit_ID" value="@medicalActivityPrice.MedicallActivityPriceId" />
-                                                        <input type="hidden" name="SortOrder" value="@ViewData["CurrentSort"]" />
-                                                        <input type="hidden" name="p1" value="@ViewData["CurrentPage"]" />
-                                                        <input type="hidden" name="searchString" value="@ViewData["Search"]" />
-                                                        <input name="new_butt" class="btn-insurance" type="submit" value="Odeslat" /> <!-- tlacitko odeslat -->
-
-                                                    </div>
+                                        <div class="modal-content">
+                                            <!-- pozadi ve vyskakovacim oknu -->
+                                            <div class="modal-header">
+                                                <!-- formatovani nadpisu a krizku -->
+                                                <h5>Upravit položku</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <!-- formatovani vyskakovaciho okna -->
+                                                <label>Název<a style="color:red;">*</a></label>
+                                                <input name="edit_name" type="text" class="form-control" value="@medicalActivityPrice.Name" required autocomplete="off">
+                                                <label>Cena<a style="color:red;">*</a></label>
+                                                <input name="edit_amount" type="number" step="0.01" class="form-control" value="@cena" required autocomplete="off">
+                                                <div class="modal-footer">
+                                                    <!-- formatovani tlacitka odeslat -->
+                                                    <input type="hidden" name="edit_ID" value="@medicalActivityPrice.MedicallActivityPriceId" />
+                                                    <input type="hidden" name="SortOrder" value="@ViewData["CurrentSort"]" />
+                                                    <input type="hidden" name="p1" value="@ViewData["CurrentPage"]" />
+                                                    <input type="hidden" name="searchString" value="@ViewData["Search"]" />
+                                                    <input name="new_butt" class="btn-insurance" type="submit" value="Odeslat" /> <!-- tlacitko odeslat -->
 
                                                 </div>
+
                                             </div>
                                         </div>
                                     </div>
-                                </form>
-                            </td>
-                            <td><button name="button" class="butt-payment" onclick="redirectToAction('@Url.Action("PaymentDb", "InsuranceEmp", new { ID_delete = @medicalActivityPrice.MedicallActivityPriceId,  SortOrder = ViewData["CurrentSort"], p1 = ViewData["CurrentPage"], searchString = ViewData["Search"] })')">Odstranit</button></td>
-                        </tr>
-                    }
-
-                </tbody>
-            </table>
-        </div>
-        <br /><br />
-
-        <div class="paymentDb-down">
-            <div id="payment-down-left">
-                @(Html.Pager(Model.medicallActivityPricePage).Url(page => Url.Action("PaymentDb", new { p1 = page, SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
-            </div>
-            <div id="payment-down-right">
-                <button name="pridat" type="button" class="butt-pridat" data-toggle="modal" data-target="#exampleModal0">Přidat položku</button>
-                <form asp-action="NewDb">
-                    <div class="modal fade" id="exampleModal0" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
-                        <div class="modal-dialog" role="document">
-                            <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
-                            <div class="modal-content">
-                                <!-- pozadi ve vyskakovacim oknu -->
-                                <div class="modal-header">
-                                    <!-- formatovani nadpisu a krizku -->
-                                    <h5>Nová položka</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
                                 </div>
-                                <div class="modal-body">
-                                    <!-- formatovani vyskakovaciho okna -->
+                            </form>
+                        </td>
+                        <td><button name="button" class="butt-payment" onclick="redirectToAction('@Url.Action("PaymentDb", "InsuranceEmp", new { ID_delete = @medicalActivityPrice.MedicallActivityPriceId,  SortOrder = ViewData["CurrentSort"], p1 = ViewData["CurrentPage"], searchString = ViewData["Search"] })')">Odstranit</button></td>
+                    </tr>
+                }
 
-                                    <label>Název<a style="color:red;">*</a></label>
-                                    <input name="new_name" type="text" class="form-control" required autocomplete="off">
-                                    <label>Cena<a style="color:red;">*</a></label>
-                                    <input name="new_amount" type="number" step="0.01" class="form-control" required value="" autocomplete="off">
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <br />
+
+    <div class="paymentDb-down">
+        <div id="payment-down-left">
+            @(Html.Pager(Model.medicallActivityPricePage).Url(page => Url.Action("PaymentDb", new { p1 = page, SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
+        </div>
+        <div id="payment-down-right">
+            <button name="pridat" type="button" class="butt-pridat" data-toggle="modal" data-target="#exampleModal0">Přidat položku</button>
+            <form asp-action="NewDb">
+                <div class="modal fade" id="exampleModal0" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
+                    <div class="modal-dialog" role="document">
+                        <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
+                        <div class="modal-content">
+                            <!-- pozadi ve vyskakovacim oknu -->
+                            <div class="modal-header">
+                                <!-- formatovani nadpisu a krizku -->
+                                <h5>Nová položka</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- formatovani vyskakovaciho okna -->
+
+                                <label>Název<a style="color:red;">*</a></label>
+                                <input name="new_name" type="text" class="form-control" required autocomplete="off">
+                                <label>Cena<a style="color:red;">*</a></label>
+                                <input name="new_amount" type="number" step="0.01" class="form-control" required value="" autocomplete="off">
 
                                 </div>
                                 <div class="modal-footer">
                                     <!-- formatovani tlacitka odeslat -->
 
-                                    <input type="hidden" name="SortOrder" value="@ViewData["CurrentSort"]" />
-                                    <input type="hidden" name="p1" value="@ViewData["CurrentPage"]" />
-                                    <input type="hidden" name="searchString" value="@ViewData["Search"]" />
-                                    <input name="new_butt" class="btn-insurance" type="submit" value="Přidat" /> <!-- tlacitko odeslat -->
+                                <input type="hidden" name="SortOrder" value="@ViewData["CurrentSort"]" />
+                                <input type="hidden" name="p1" value="@ViewData["CurrentPage"]" />
+                                <input type="hidden" name="searchString" value="@ViewData["Search"]" />
+                                <input name="new_butt" class="btn-insurance" type="submit" value="Přidat" /> <!-- tlacitko odeslat -->
 
                                 </div>
                             </div>
@@ -196,7 +197,7 @@
         </div>
 
 
-    }
+}
 
 </div>
 

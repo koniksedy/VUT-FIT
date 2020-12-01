@@ -984,16 +984,15 @@ namespace Nemocnice.Controllers
                 ReportText = checkupTicket.Result
             };
             // Získání obrázků
-            model.Pictures = db.PictureOnTicketsT.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
-                                                               o.Ticket.CreateDate == model.CreateDate)
+            model.Pictures = db.PictureOnTicketsT/*.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+                                                               o.Ticket.CreateDate == model.CreateDate)*/
                                                  .Select(s => new PictureJsonModel
                                                  {
                                                      id = s.Picture.NameInt,
                                                      name = s.Picture.Description,
                                                      date = s.Picture.CreateDate.ToString(),
-                                                     type = s.Picture.Type
+                                                     type = s.Picture.Type  
                                                  }).ToList();
-
 
             return View(model);
         }

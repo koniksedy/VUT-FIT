@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Správa pracovníků pojišťovny";
 }
 
@@ -303,7 +302,8 @@
     </tbody>
 </table>
 
-<br /><br />
+<br />
+<br />
 @(Html.Pager(Model.insurancePage).Url(page => Url.Action("CardInsurance", new { p = page, sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
 <br />
 <br />
