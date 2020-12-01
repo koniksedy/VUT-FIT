@@ -81,6 +81,11 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
+            var userTypePatient = false;
+            if (await _userManager.IsInRoleAsync(user, "Patient"))
+            {
+                userTypePatient = true;
+            }
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -114,19 +119,30 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             {
                 uzivatel.WorkAddress = new Address();
             }
-            if ( Input.HouseNumber > 0 && Input.ZIP > 0 ) { 
-                uzivatel.WorkAddress.HouseNumber = Input.HouseNumber;
-                uzivatel.WorkAddress.StreetName = Input.StreetName;
-                uzivatel.WorkAddress.City = Input.City;
-                uzivatel.WorkAddress.ZIP = Input.ZIP;
-                db.SaveChanges();
+            try
+            {
+
+
+                if (Input.HouseNumber > 0 && Input.ZIP > 0)
+                {
+                    uzivatel.WorkAddress.HouseNumber = Input.HouseNumber;
+                    uzivatel.WorkAddress.StreetName = Input.StreetName;
+
+
+                }
+                else
+                {
+                    StatusMessage = "Chyba při zadávání adresy";
+                    return RedirectToPage();
+                }
+            }
+            catch
+            {
 
             }
-            else
-            {
-                StatusMessage = "Chyba při zadávání adresy";
-                return RedirectToPage();
-            }
+            uzivatel.WorkAddress.City = Input.City;
+            uzivatel.WorkAddress.ZIP = Input.ZIP;
+            db.SaveChanges();
             await _signInManager.RefreshSignInAsync(user);
             _logger.LogInformation("User changed their password successfully.");
             StatusMessage = "Vaše adresa byla změněna.";
