@@ -1,3 +1,7 @@
+/*
+ * Hlavní tøída pro projekt do pøedmìtu IIS.
+ * Autor: Michal Šedý <xsedym02>, Ondøej Pavlacký <xpavla15>, Katka Kunorzová <xkunor00>
+ */
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,14 +13,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Nemocnice.Data;
 using Nemocnice.DatabaseDataCreator;
-
-
-/*
- * Pøidána ukázka pro práci s databází.
- * ------------------------------------
- * Úpravy:
- * 14.10.2020 - vytvoøení šablony - xsedym02
- */
 
 
 

@@ -183,7 +183,7 @@
                 <h4 style="margin-bottom:-5px;">Diagnozy<a style="color:red">*</a></h4>
                 <div class="flex-row row">
                     <div class="col hlavni-diagnoza">
-                        <input type="text" id="Diagnosis1" name="Diagnosis1" placeholder="Halvní diagnoza*" autocomplete="off">
+                        <input type="text" id="Diagnosis1" name="Diagnosis1" placeholder="Hlavní diagnoza*" autocomplete="off">
                     </div>
                     <div class="col diagnoza">
                         <input type="text" id="Diagnosis2" name="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off">
@@ -247,7 +247,7 @@
                         <table class="table-responsive-md  table-striped">
                             @foreach (var item in Model.Reports)
                             {
-                                <tr>
+                                <tr style="cursor:pointer">
                                     <td data-dismiss="modal" onclick="selectedReport('@item', '@Model.SocialSecurityNum')">
                                         @item
                                     </td>
@@ -430,7 +430,7 @@
                 success: function (data) {
                     if (modal.innerHTML == "") {
                         jQuery.each(data, function (i, val) {
-                            var html = "<tr><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">";
+                            var html = "<tr style=\"cursor:pointer\"><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">";
                             if (val.name.length > 25) {
                                 html += val.name.substring(0, 23) + "...";
                             }

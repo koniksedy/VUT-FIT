@@ -548,16 +548,24 @@ namespace Nemocnice.Controllers
             // Existujících
             if (Request.Form.Keys.Contains("FileExist"))
             {
-                foreach (int name in new List<int> { int.Parse(Request.Form["FileExist"]) })
+                try
                 {
-                    Picture pic = db.PictureT.Where(o => o.NameInt == name).ToList().First();
-                    db.PictureOnReportT.Add(new PictureOnReport
+                    foreach (string nameString in Request.Form["FileExist"])
                     {
-                        Picture = pic,
-                        Report = report
-                    });
+                        int name = int.Parse(nameString);
+                        Picture pic = db.PictureT.Where(o => o.NameInt == name).ToList().First();
+                        db.PictureOnReportT.Add(new PictureOnReport
+                        {
+                            Picture = pic,
+                            Report = report
+                        });
+                    }
+                    db.SaveChanges();
+                } 
+                catch
+                {
+                    // catched
                 }
-                db.SaveChanges();
             }
 
             // Nových
@@ -610,7 +618,7 @@ namespace Nemocnice.Controllers
                               .ToList().First().Description = reportText;
             db.SaveChanges();
 
-            return RedirectToAction("Card");
+            return RedirectToAction("PatientProfile", new { patientNum });
         }
 
         /*
@@ -936,8 +944,8 @@ namespace Nemocnice.Controllers
             };
 
             // Získání obrázků
-            model.Pictures = db.PictureOnTicketsT/*.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
-                                                               o.Ticket.CreateDate == model.CreateDate)*/
+            model.Pictures = db.PictureOnTicketsT.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+                                                               o.Ticket.CreateDate == model.CreateDate)
                                                  .Select(s => new PictureJsonModel
                                                  {
                                                      id = s.Picture.NameInt,
@@ -984,8 +992,8 @@ namespace Nemocnice.Controllers
                 ReportText = checkupTicket.Result
             };
             // Získání obrázků
-            model.Pictures = db.PictureOnTicketsT/*.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
-                                                               o.Ticket.CreateDate == model.CreateDate)*/
+            model.Pictures = db.PictureOnTicketsT.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+                                                               o.Ticket.CreateDate == model.CreateDate)
                                                  .Select(s => new PictureJsonModel
                                                  {
                                                      id = s.Picture.NameInt,
@@ -1039,16 +1047,24 @@ namespace Nemocnice.Controllers
             // Existujících
             if (Request.Form.Keys.Contains("FileExist"))
             {
-                foreach (int name in new List<int> { int.Parse(Request.Form["FileExist"]) })
+                try
                 {
-                    Picture pic = db.PictureT.Where(o => o.NameInt == name).ToList().First();
-                    db.PictureOnTicketsT.Add(new PictureOnTicket
+                    foreach (string nameString in Request.Form["FileExist"])
                     {
-                        Picture = pic,
-                        Ticket = checkupTicket
-                    });
+                        int name = int.Parse(nameString);
+                        Picture pic = db.PictureT.Where(o => o.NameInt == name).ToList().First();
+                        db.PictureOnTicketsT.Add(new PictureOnTicket
+                        {
+                            Picture = pic,
+                            Ticket = checkupTicket
+                        });
+                    }
+                    db.SaveChanges();
                 }
-                db.SaveChanges();
+                catch
+                {
+                    // Catched
+                }
             }
 
             // Nových
@@ -1123,8 +1139,8 @@ namespace Nemocnice.Controllers
                 ReportText = checkupTicket.Result
             };
             // Získání obrázků
-            model.Pictures = db.PictureOnTicketsT/*.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
-                                                               o.Ticket.CreateDate == model.CreateDate)*/
+            model.Pictures = db.PictureOnTicketsT.Where(o => o.Ticket.Patient.SocialSecurityNum == patientNum &&
+                                                               o.Ticket.CreateDate == model.CreateDate)
                                                  .Select(s => new PictureJsonModel 
                                                  {
                                                      id = s.Picture.NameInt,
@@ -1256,16 +1272,24 @@ namespace Nemocnice.Controllers
             // Existujících
             if (Request.Form.Keys.Contains("FileExist"))
             {
-                foreach (int name in new List<int> { int.Parse(Request.Form["FileExist"]) })
+                try
                 {
-                    Picture pic = db.PictureT.Where(o => o.NameInt == name).ToList().First();
-                    db.PictureOnTicketsT.Add(new PictureOnTicket
+                    foreach (string nameString in Request.Form["FileExist"])
                     {
-                        Picture = pic,
-                        Ticket = ticket
-                    });
+                        int name = int.Parse(nameString);
+                        Picture pic = db.PictureT.Where(o => o.NameInt == name).ToList().First();
+                        db.PictureOnTicketsT.Add(new PictureOnTicket
+                        {
+                            Picture = pic,
+                            Ticket = ticket
+                        });
+                    }
+                    db.SaveChanges();
                 }
-                db.SaveChanges();
+                catch
+                {
+                    // catched
+                }
             }
 
             // Nových
@@ -1338,13 +1362,18 @@ namespace Nemocnice.Controllers
             ViewData["Search"] = searchString;
             ViewData["CurrentSort"] = SortOrder;
 
+            // Získání informaci o lékaři, který si pacienta zobrazuje.
+            // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
+            string user = User.Identity.Name;
+            var doctorId = db.UserT.Where(s => s.Login == user).Select(o => o.UserId).ToList().First();
+
             if (!String.IsNullOrEmpty(searchString))
             {
-                model.medicallBills = db.MedicallBillT.Where(s => s.Diagnosis.Name.Contains(searchString)).Include(s => s.Diagnosis).ToList();
+                model.medicallBills = db.MedicallBillT.Include(s => s.Diagnosis).Include(s => s.Doctor).Where(s => s.Diagnosis.Name.Contains(searchString) && s.Doctor.UserId == doctorId).ToList();
             }
             else
             {
-                model.medicallBills = db.MedicallBillT.Include(s => s.Diagnosis).OrderByDescending(s => s.CreateDate).ToList();
+                model.medicallBills = db.MedicallBillT.Include(s => s.Diagnosis).Include(s => s.Doctor).Where(o => o.Doctor.UserId == doctorId).OrderByDescending(s => s.CreateDate).ToList();
             }
 
             switch (SortOrder)
@@ -1905,7 +1934,7 @@ namespace Nemocnice.Controllers
          */
         public JsonResult GetReport(string patientNum, string date)
         {
-            DateTime mydate = DateTime.ParseExact(date, "d.M.yyyy H:m:s", null);
+            DateTime mydate = DateTime.Parse(date);
             var test = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum).ToList().First();
             string result = db.MedicallReportT.Where(o => o.Patient.SocialSecurityNum == patientNum && o.CreateDate == mydate).Select(s => s.Description).ToList().First();
             result = String.Format("##########################{0}##########################\n{1}\n######################################################################", date, result);
@@ -1921,11 +1950,11 @@ namespace Nemocnice.Controllers
             // Získání informaci o lékaři, který si pacienta zobrazuje.
             // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
             var doctor = db.UserT.Where(s => s.Login == User.Identity.Name).ToList().First();
-            DateTime mydate = DateTime.ParseExact(date, "d.M.yyyy H:m:s", null);
+            DateTime mydate = DateTime.Parse(date);
             string result = db.CheckupTicketT.Where(o => o.Patient.SocialSecurityNum == patientNum &&
                                                          o.FinishDate == mydate)
                                              .Select(s => s.Result).ToList().First();
-            result = String.Format("##########################{0}##########################\nAutor: {1}\n\n{2}#####################################################################\n", date, doctor.getFullName() ,result);
+            result = String.Format("##########################{0}##########################\nAutor: {1}\n\n{2}\n#####################################################################\n", date, doctor.getFullName() ,result);
             return new JsonResult(result);
         }
 

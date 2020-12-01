@@ -10,7 +10,7 @@ using Nemocnice.Data;
 namespace Nemocnice.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20201201160624_Initialize")]
+    [Migration("20201201185723_Initialize")]
     partial class Initialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

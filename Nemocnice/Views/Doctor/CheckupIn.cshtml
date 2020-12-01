@@ -221,7 +221,7 @@
                                     <table class="table-responsive-md table-striped">
                                         @foreach (var item in Model.AllReports)
                                         {
-                                            <tr>
+                                            <tr style="cursor:pointer">
                                                 <td data-dismiss="modal" onclick="selectedReport('@item', '@Model.SocialSecurityNumber')">
                                                     @item
                                                 </td>
@@ -416,7 +416,7 @@
                 success: function (data) {
                     if (modal.innerHTML == "") {
                         jQuery.each(data, function (i, val) {
-                            var html = "<tr><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">";
+                            var html = "<tr style=\"cursor:pointer\"><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">";
                             if (val.name.length > 25) {
                                 html += val.name.substring(0, 23) + "...";
                             }
