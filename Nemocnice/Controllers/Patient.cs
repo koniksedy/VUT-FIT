@@ -64,14 +64,14 @@ namespace Nemocnice.Controllers
             PatientCardModel.TabNumber = (select ?? 1);
 
             PatientCardModel.Pictures = db.PictureT.Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList(PatientCardModel.PageNum3, pageSize);
-            PatientCardModel.medicallReports = db.MedicallReportT.Include(x => x.Author).Include(x => x.Patient).Include(x => x.Owner).Where(x => x.Patient.UserId == PatientCardModel.User.UserId).ToPagedList(PatientCardModel.PageNum1, pageSize);
-            PatientCardModel.checkupTickets = db.CheckupTicketT.Include(x => x.ToDoctor).Include(x => x.Patient).Include(x => x.CreatedBy).Where(x => x.Patient.UserId == PatientCardModel.User.UserId).ToPagedList(PatientCardModel.PageNum2, pageSize);
+            PatientCardModel.medicallReports = db.MedicallReportT.Include(x => x.Author).Include(x => x.Patient).Include(x => x.Owner).Where(x => x.Patient.UserId == PatientCardModel.User.UserId).OrderByDescending(x => x.CreateDate).ToPagedList(PatientCardModel.PageNum1, pageSize);
+            PatientCardModel.checkupTickets = db.CheckupTicketT.Include(x => x.ToDoctor).Include(x => x.Patient).Include(x => x.CreatedBy).Where(x => x.Patient.UserId == PatientCardModel.User.UserId).OrderByDescending(x => x.CreateDate).ToPagedList(PatientCardModel.PageNum2, pageSize);
 
 
             //Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList();
-            PatientCardModel.MedicallBills = db.MedicallBillT.Include(x => x.Doctor).Include(x => x.MedicallActivityPrice).Include(x => x.Diagnosis).Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList(PatientCardModel.PageNum4, pageSize);
-            PatientCardModel.PatientTreatmentLogs = db.PatientTreatmentLogT.Include(x => x.Patient).Include(x => x.Diagnosis).Where(x => x.Patient.UserId == PatientCardModel.Patient.UserId).ToPagedList(PatientCardModel.PageNum5, pageSize);
-            PatientCardModel.CureProgresses = db.CureProgressT.Include(x => x.MedicallReport).Include(x => x.MedicallReport.Owner).Include(x => x.Diagnosis).Where(x => x.MedicallReport.Patient.UserId == PatientCardModel.Patient.UserId).ToPagedList(PatientCardModel.PageNum6, pageSize);
+            PatientCardModel.MedicallBills = db.MedicallBillT.Include(x => x.Doctor).Include(x => x.MedicallActivityPrice).Include(x => x.Diagnosis).Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).OrderByDescending(x => x.CreateDate).ToPagedList(PatientCardModel.PageNum4, pageSize);
+            PatientCardModel.PatientTreatmentLogs = db.PatientTreatmentLogT.Include(x => x.Patient).Include(x => x.Diagnosis).Where(x => x.Patient.UserId == PatientCardModel.Patient.UserId).OrderByDescending(x => x.StartOfTreatment).ToPagedList(PatientCardModel.PageNum5, pageSize);
+            PatientCardModel.CureProgresses = db.CureProgressT.Include(x => x.MedicallReport).Include(x => x.MedicallReport.Owner).Include(x => x.Diagnosis).Where(x => x.MedicallReport.Patient.UserId == PatientCardModel.Patient.UserId).OrderByDescending(x => x.MedicallReport.CreateDate).ToPagedList(PatientCardModel.PageNum6, pageSize);
             return View(PatientCardModel);
         }
 
