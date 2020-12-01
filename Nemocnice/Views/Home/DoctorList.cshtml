@@ -11,7 +11,7 @@
 
 @model DoctorListModel
 
-<h1>Seznam Doktorů</h1>
+<h1 style="margin-top:30px">Seznam Doktorů</h1>
 
 <!-- Vyhledávání pacienta podle zadaného výrazu. -->
 <!-- Zaměření na vyhledáné výsled je možné zrušit tlačítkem |Zrušit filtry|, které zobrazí zase všechny pacienty. -->
@@ -27,7 +27,7 @@
 
 
 <div style=" overflow-x: auto;">
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr >
                 <th>
@@ -48,7 +48,7 @@
         <tbody>
             @foreach (var item in Model.DoctorJoined)
             {
-                <tr onclick="redirectToAction('@Url.Action("DoctorDetail", "Home", item, null )')">
+                <tr style="cursor:pointer" onclick="redirectToAction('@Url.Action("DoctorDetail", "Home", item, null )')">
                     <td>
                         @Html.DisplayFor(modelItem => item.Surname)
                     </td>

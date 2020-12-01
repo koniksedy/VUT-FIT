@@ -54,9 +54,10 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
             public string City { get; set; }
 
             [Required(ErrorMessage = "PSČ je povinné")]
-            [RegularExpression("([0-9]{5})|([0-9]{3} [0-9]{2})", ErrorMessage = "Neplatné PSČ.")]
+            [RegularExpression("[0-9]{5}", ErrorMessage = "Neplatné PSČ. Zadejte číslo bez mezer.")]
             [Display(Name = "PSČ")]
-            
+            [DataType("Number", ErrorMessage = "Kokote")]
+
             public int ZIP { get; set; }
         }
 

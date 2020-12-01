@@ -53,7 +53,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
 
-<h1 style="margin-bottom:30px">Kartotéka</h1>
+<h1 style="margin-top:30px;margin-bottom:30px">Kartotéka</h1>
 
 
 <!-- Vyskakovací okno (modální dialog), k zadání údajů pro vytvoření nového pacienta. -->
@@ -107,7 +107,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label">Číslo popisné</label>
-                                <input oninvalid="this.setCustomValidity('Zdejte číslo popisné bez, a to bez lomítka.');" oninput="this.setCustomValidity('');" name="NewHouseNum" type="text" pattern="[0-9]+" value="" autocomplete="off" class="form-control" />
+                                <input oninvalid="this.setCustomValidity('Zdejte číslo popisné bez, a to bez lomítka.');" oninput="this.setCustomValidity('');" name="NewHouseNum" type="text" pattern="[0-9]{1,9}" value="" autocomplete="off" class="form-control" />
                             </div>
 
                             <div class="form-group">
