@@ -121,36 +121,42 @@
         <a><b>Výška: </b> @Model.Patient.HealthCondition.Height cm</a><br />
         <a><b>Váha: </b> @Model.Patient.HealthCondition.Weight kg</a><br />
         <a><b>Krevní typ: </b> @Model.Patient.HealthCondition.BloodType</a><br />
-        @if (Model.Patient.HealthCondition.Allergys.Length < 25)
+        @if (Model.Patient.HealthCondition.Allergys != null)
         {
-            <div>
-                <b>Alergie: </b><b class="text-danger">@Model.Patient.HealthCondition.Allergys</b>
-            </div>
-        }
-        else
-        {
-            <div>
-                <b>Alergie: </b>
-                <b class="text-danger">@Model.Patient.HealthCondition.Allergys.Substring(0, 25)</b>
-                <i style="color:#dc3545" data-toggle="modal" data-target="#AllergysModal" class="fa fa-ellipsis-h icons" aria-hidden="true"></i>
-                <div class="modal fade" id="AllergysModal" tabindex="-1" role="dialog" aria-labelledby="AllergysModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="AllergysModalLabel">Alergie pacienta</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                @Model.Patient.HealthCondition.Allergys
+            @if (Model.Patient.HealthCondition.Allergys.Length < 25)
+            {
+                <div>
+                    <b>Alergie: </b><b class="text-danger">@Model.Patient.HealthCondition.Allergys</b>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <b>Alergie: </b>
+                    <b class="text-danger">@Model.Patient.HealthCondition.Allergys.Substring(0, 25)</b>
+                    <i style="color:#dc3545" data-toggle="modal" data-target="#AllergysModal" class="fa fa-ellipsis-h icons" aria-hidden="true"></i>
+                    <div class="modal fade" id="AllergysModal" tabindex="-1" role="dialog" aria-labelledby="AllergysModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="AllergysModalLabel">Alergie pacienta</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    @Model.Patient.HealthCondition.Allergys
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
 
+        }else
+        {
+            <a><strong>Alergie:</strong></a>
+        }
 
     </div>
 </div>
