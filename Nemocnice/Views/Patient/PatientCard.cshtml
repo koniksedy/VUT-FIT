@@ -165,7 +165,7 @@
         <li><a href="#tabs-5" onclick="$('#pozice').value = 5">Léčba</a></li>
         <li><a href="#tabs-6" onclick="$('#pozice').value = 6">Historie návštěv</a></li>
         <li><a href="#tabs-4" onclick="$('#pozice').value = 4">Úhrady na pojišťovnu</a></li>
-        <li><a href="#tabs-3" onclick="$('#pozice').value = 3">Alergie</a></li>
+        <li><a href="#tabs-3" onclick="$('#pozice').value = 3">Obrázky</a></li>
     </ul>
 
     <div id="tabs-1">
@@ -204,17 +204,17 @@
                         desc = prohlidka.Description.Substring(0, 40);
                         desc = desc + "...";
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
 
                     }
                     @using (var db = new DatabaseContext())
                     {
-                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Author.UserId).Select(x => new { x.Name, x.Surname, x. Title }).FirstOrDefault();
+                        var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.Author.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
 
                         <tr class="radek_zaznamu"  style="cursor:pointer" onclick="redirectToAction('@Url.Action("DetailMedRep", "Patient", new { currentTicketID = prohlidka.MedicallReportId })')">
                             <td>
-                                @DoctorCreator.Title  @DoctorCreator.Name @DoctorCreator.Surname
+                                @DoctorCreator.Title @DoctorCreator.Name @DoctorCreator.Surname
                             </td>
                             <td>
                                 @desc
@@ -379,7 +379,7 @@
             </tbody>
         </table>
 
-        @(Html.Pager(Model.Pictures).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = page, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select=3 }))
+        @(Html.Pager(Model.Pictures).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = page, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select=6 }))
         .Classic())
 
     </div>
@@ -446,7 +446,7 @@
             </tbody>
         </table>
 
-        @(Html.Pager(Model.MedicallBills).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = page, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select=4 }))
+        @(Html.Pager(Model.MedicallBills).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = page, pageTreatmentLogs = Model.PageNum5, pageCure = Model.PageNum6, select=5 }))
         .Classic())
     </div>
     <div id="tabs-5">
@@ -502,7 +502,7 @@
             </tbody>
         </table>
 
-        @(Html.Pager(Model.PatientTreatmentLogs).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = page, pageCure = Model.PageNum6, select=5 }))
+        @(Html.Pager(Model.PatientTreatmentLogs).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = page, pageCure = Model.PageNum6, select=3 }))
         .Classic())
     </div>
     <div id="tabs-6">
@@ -535,16 +535,7 @@
                 }
                 @foreach (var prohlidka in Model.CureProgresses)
                 {
-                    string desc = prohlidka.MedicallReport.Description.Substring(0, prohlidka.MedicallReport.Description.Length);
-                    @try
-                    {
-                        desc = prohlidka.MedicallReport.Description.Substring(0, 37);
-                        desc = desc + "...";
-                    }
-                    catch (Exception)
-                    {
 
-                    }
                     @using (var db = new DatabaseContext())
                     {
                         var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.MedicallReport.Owner.UserId).Select(x => new { x.Name, x.Surname, x.Title }).FirstOrDefault();
@@ -565,7 +556,7 @@
             </tbody>
         </table>
 
-        @(Html.Pager(Model.CureProgresses).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = page, select=6 }))
+        @(Html.Pager(Model.CureProgresses).Url(page => Url.Action("PatientCard", new { pageReport = Model.PageNum1, pageCheckup = Model.PageNum2, pageAllergies = Model.PageNum3, pageBill = Model.PageNum4, pageTreatmentLogs = Model.PageNum5, pageCure = page, select=4 }))
         .Classic())
     </div>
 </div>

@@ -43,7 +43,7 @@
         </div>
         <div class="col float-right">
             <div class="row">
-                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { })')" class="btn btn-secondary">Zrušit filtry</button>
+                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("PaymentDb", "InsuranceEmp", new { })')" class="btn btn-secondary">Zrušit filtry</button>
             </div>
         </div>
     </div>
@@ -59,7 +59,7 @@
     else
     {
 
-        <div class="table-striped" id="payment" style="overflow-x: auto;">
+        <div class="table table-striped" id="payment" style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
@@ -109,9 +109,9 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <!-- formatovani vyskakovaciho okna -->
-                                                    <label>Název:</label>
+                                                    <label>Název<a style="color:red;">*</a></label>
                                                     <input name="edit_name" type="text" class="form-control" value="@medicalActivityPrice.Name" required autocomplete="off">
-                                                    <label>Cena:</label>
+                                                    <label>Cena<a style="color:red;">*</a></label>
                                                     <input name="edit_amount" type="text" class="form-control" value="@cena" required autocomplete="off">
                                                     <div class="modal-footer">
                                                         <!-- formatovani tlacitka odeslat -->
@@ -161,9 +161,9 @@
                                 <div class="modal-body">
                                     <!-- formatovani vyskakovaciho okna -->
 
-                                    <label>Název:<a style="color:red;">*</a></label>
+                                    <label>Název<a style="color:red;">*</a></label>
                                     <input name="new_name" type="text" class="form-control" required autocomplete="off">
-                                    <label>Cena:<a style="color:red;">*</a></label>
+                                    <label>Cena<a style="color:red;">*</a></label>
                                     <input name="new_amount" type="text" class="form-control" required value="" autocomplete="off">
 
                                 </div>

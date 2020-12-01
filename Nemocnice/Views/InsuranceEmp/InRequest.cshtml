@@ -31,7 +31,7 @@
             <form asp-action="InRequest" method="get">
                 <div class="form-actions no-color">
                     <div class="input-group">
-                        <input placeholder="Hledat jméno lékaře" class="hledat-text" type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
+                        <input placeholder="Hledat" class="hledat-text" type="text" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
                         </div>
@@ -47,7 +47,7 @@
         <div class="col to-end">
             <div class="flex-row row">
                 <div class="col">
-                    <button class="btn-insurance-accept" type="button" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { buttonAll = "zamitnout-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })')">
+                    <button class="btn-insurance-accept" type="button" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { buttonAll = "schvalit-vse", searchString = ViewData["Search"], SortOrder = ViewData["CurrentSort"] })')">
                         Schválit vše
                     </button>
                 </div>
@@ -73,24 +73,21 @@
     else
     {
 
-        <div class="table-striped" style="overflow-x: auto;">
+        <div class="table table-striped" style="overflow-x: auto;">
             <table style="text-align:center;">
                 <thead>
                     <tr>
                         <th>
-                            ID
-                        </th>
-                        <th>
-                            Doktor
+                            IČZ 
                         </th>
                         <th>
                             Pacient
                         </th>
                         <th>
-                            @Html.ActionLink("Cena", "InRequest", new { SortOrder = "cena", searchString = ViewData["Search"] })
+                            @Html.ActionLink("Typ", "InRequest", new { SortOrder = "typ", searchString = ViewData["Search"] })
                         </th>
                         <th>
-                            @Html.ActionLink("Typ", "InRequest", new { SortOrder = "typ", searchString = ViewData["Search"] })
+                            @Html.ActionLink("Cena(Kč)", "InRequest", new { SortOrder = "cena", searchString = ViewData["Search"] })
                         </th>
                         <th>
                             @Html.ActionLink("Diagnóza", "InRequest", new { SortOrder = "diagnoza", searchString = ViewData["Search"] })
@@ -108,20 +105,18 @@
                     {
                         using (var db = new DatabaseContext())
                         {
-                            var name = db.UserT.Where(x => x.UserId == medicalBill.Doctor.UserId).Select(x => x.Name);
-                            var surname = db.UserT.Where(x => x.UserId == medicalBill.Doctor.UserId).Select(x => x.Surname);
+                            
 
-                            <tr>
-                                <td>@Html.DisplayFor(modelItem => medicalBill.MedicallBillId)</td>
-                                <td>@Html.DisplayFor(modelItem => name) @Html.DisplayFor(modelItem => surname)</td>
-                                <td>@medicalBill.SocialSecurityNum</td>
-                                <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Amount) Kč</td>
-                                <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Name)</td>
-                                <td>@medicalBill.Diagnosis.Name</td>
-                                <td>@medicalBill.CreateDate</td>
-                                <td><button name="button" class="accept" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_accept = @medicalBill.MedicallBillId, p = ViewData["CurrentPage"], SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })')">Schválit</button></td>
-                                <td><button name="button" class="denied" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_reject = @medicalBill.MedicallBillId, p = ViewData["CurrentPage"], SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })')">Zamítnout</button></td>
-                            </tr>
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => medicalBill.Doctor.ICZ)</td>
+                        <td>@medicalBill.SocialSecurityNum</td>
+                        <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Name)</td>
+                        <td>@Html.DisplayFor(modelItem => medicalBill.MedicallActivityPrice.Amount)</td>
+                        <td>@medicalBill.Diagnosis.Name</td>
+                        <td>@medicalBill.CreateDate</td>
+                        <td><button name="button" class="accept" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_accept = @medicalBill.MedicallBillId, p = ViewData["CurrentPage"], SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })')">Schválit</button></td>
+                        <td><button name="button" class="denied" onclick="redirectToAction('@Url.Action("InRequest", "InsuranceEmp", new { ID_reject = @medicalBill.MedicallBillId, p = ViewData["CurrentPage"], SortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })')">Zamítnout</button></td>
+                    </tr>
                         }
                     }
 

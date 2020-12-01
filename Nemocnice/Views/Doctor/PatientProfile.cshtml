@@ -202,15 +202,15 @@
                                 <div class="modal-body">
                                     <div class="form-group">
                                         <label class="col-form-label">Výška</label>
-                                        <input oninvalid="this.setCustomValidity('Zadejte hodnotu v celých číslech')" name="UpdateHeight" pattern="[0-9]+" type="text" placeholder="cm"  autocomplete="off" class="form-control" value="@Model.HealthCondition.Height" />
+                                        <input oninvalid="this.setCustomValidity('Zadejte hodnotu v celých číslech');" oninput="this.setCustomValidity('');" name="UpdateHeight" pattern="[0-9]+" type="text" placeholder="cm"  autocomplete="off" class="form-control" value="@Model.HealthCondition.Height" />
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label">Váha</label>
-                                        <input oninvalid="this.setCustomValidity('Zadejte hodnotu v celých číslech')" name="UpdateWeight" pattern="[0-9]+" type="text" placeholder="kg"  autocomplete="off" class="form-control" value="@Model.HealthCondition.Weight" />
+                                        <input oninvalid="this.setCustomValidity('Zadejte hodnotu v celých číslech');" oninput="this.setCustomValidity('')"; name="UpdateWeight" pattern="[0-9]+" type="text" placeholder="kg"  autocomplete="off" class="form-control" value="@Model.HealthCondition.Weight" />
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label">Krevní typ</label>
-                                        <input oninvalid="this.setCustomValidity('Zdejte krevní typ s RH faktorem, např.: A+')" name="UpdateBlodType" pattern="((A|B|(AB))\+)|((A|B|(AB))-)" placeholder="Typ" autocomplete="off" class="form-control" value="@Model.HealthCondition.BloodType" />
+                                        <input oninvalid="this.setCustomValidity('Zdejte krevní typ s RH faktorem, např.: A+');" oninput="this.setCustomValidity('')"; name="UpdateBlodType" pattern="((A|B|(AB))\+)|((A|B|(AB))-)" placeholder="Typ" autocomplete="off" class="form-control" value="@Model.HealthCondition.BloodType" />
                                     </div>
                                     <div class="form-group">
                                         <label class="col-form-label">Alergie</label>

@@ -112,9 +112,9 @@ namespace Nemocnice.Controllers
                                     SocialSecurityNum = patient.SocialSecurityNum,
                                     Insurance = patient.InsuranceCompany
                                 }
-                                ).Where(s => s.SocialSecurityNum.StartsWith(searchString) ||
-                                             s.PatientFullName.Name.StartsWith(searchString) ||
-                                             s.PatientFullName.Surname.StartsWith(searchString)).ToList();
+                                ).Where(s => s.SocialSecurityNum.Contains(searchString) ||
+                                             s.PatientFullName.Name.Contains(searchString) ||
+                                             s.PatientFullName.Surname.Contains(searchString)).ToList();
             }
 
             model.patients = Patients;
@@ -135,7 +135,7 @@ namespace Nemocnice.Controllers
 
             //stránkování vybraných dat
             model.PageNum = (p ?? 1);
-            int pageSize = 5;
+            int pageSize = 8;
             IPagedList<CardModel> lide = model.patients.ToPagedList(model.PageNum, pageSize);
             model.patientsPage = lide;
 
@@ -568,7 +568,7 @@ namespace Nemocnice.Controllers
                     Description = image.FileName,
                     SocialSecurityNum = patientNum,
                     CreateDate = TimeNowTruncateToSec(),
-                    Type = image.FileName.Substring(image.FileName.IndexOf("."))
+                    Type = image.FileName.Substring(image.FileName.LastIndexOf("."))
                 };
                 db.PictureT.Add(pic);
                 db.SaveChanges();
@@ -671,7 +671,7 @@ namespace Nemocnice.Controllers
          * Akce zobrazí hlavní kartu pacienta se všemi informacemi.
          * patientNum - rodné číslo pacienta, jehož karta je zobrazována.
          */
-        public async Task<IActionResult> PatientProfileAsync(string patientNum)
+        public IActionResult PatientProfile(string patientNum)
         {
             // Získání informaci o lékaři, který si pacienta zobrazuje.
             // HACK - pokud by uživatel nebyl v UserT pak dojde k chybě.
@@ -705,9 +705,7 @@ namespace Nemocnice.Controllers
             };
             patientProfileModel.InsuranceCompany = patient.InsuranceCompany;
             patientProfileModel.SocialSecurityNumber = patientNum;
-            var user1 = await _userManager.FindByNameAsync(patientUser.Login);
-            user1.UserName = patientNum;
-            db.SaveChanges();
+
             patientProfileModel.Tel = patientUser.Phone;
             patientProfileModel.Email = patientUser.Email;
             patientProfileModel.Age = getAge(patientNum);
@@ -850,7 +848,7 @@ namespace Nemocnice.Controllers
             
             // Získání dat o pacientovi a zdravotním stavu z metody POST
             string patientNumber = Request.Form["PatientNum"];
-            /*
+            
             int patientHeight = int.Parse(String.IsNullOrEmpty(Request.Form["UpdateHeight"]) ? "0" : Request.Form["UpdateHeight"].ToString());
             int patientWeight = int.Parse(String.IsNullOrEmpty(Request.Form["UpdateWeight"]) ? "0" : Request.Form["UpdateHeight"].ToString());
             string patientBlodType = Request.Form["UpdateBlodType"];
@@ -863,7 +861,7 @@ namespace Nemocnice.Controllers
             healthCondition.BloodType = patientBlodType;
             healthCondition.Allergys = patientAlergys;
             db.SaveChanges();
-            */
+            
             // Přesměrování na kartu pacienta s upravenými údaji.
             return RedirectToAction("PatientProfile", new { patientNum = patientNumber });
         }

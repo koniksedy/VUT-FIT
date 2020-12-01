@@ -33,7 +33,7 @@ namespace Nemocnice.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            [Phone]
+            [Phone(ErrorMessage = "Nejedná se o platné telefonní číslo.")]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
         }

@@ -9,7 +9,7 @@
             success: function (data) {
                 response($.map(data, function (item) {
                     return {
-                        label: "[".concat(pad(item.diagnosisId, 3)).concat("] ").concat(item.name),
+                        label: "[".concat(pad(item.diagnosisId, 4)).concat("] ").concat(item.name),
                         value: pad(item.diagnosisId, 4)
                     }
                 }));
@@ -32,7 +32,7 @@ $("#Diagnosis2").autocomplete({
             success: function (data) {
                 response($.map(data, function (item) {
                     return {
-                        label: "[".concat(pad(item.diagnosisId, 3)).concat("] ").concat(item.name),
+                        label: "[".concat(pad(item.diagnosisId, 4)).concat("] ").concat(item.name),
                         value: pad(item.diagnosisId, 4)
                     }
                 }));
@@ -55,7 +55,7 @@ $("#Diagnosis3").autocomplete({
             success: function (data) {
                 response($.map(data, function (item) {
                     return {
-                        label: "[".concat(pad(item.diagnosisId, 3)).concat("] ").concat(item.name),
+                        label: "[".concat(pad(item.diagnosisId, 4)).concat("] ").concat(item.name),
                         value: pad(item.diagnosisId, 4)
                     }
                 }));
@@ -78,7 +78,7 @@ $("#Diagnosis4").autocomplete({
             success: function (data) {
                 response($.map(data, function (item) {
                     return {
-                        label: "[".concat(pad(item.diagnosisId, 3)).concat("] ").concat(item.name),
+                        label: "[".concat(pad(item.diagnosisId, 4)).concat("] ").concat(item.name),
                         value: pad(item.diagnosisId, 4)
                     }
                 }));
@@ -101,7 +101,7 @@ $("#Bill").autocomplete({
             success: function (data) {
                 response($.map(data, function (item) {
                     return {
-                        label: "[".concat(pad(item.id, 3)).concat("] ").concat(item.name),
+                        label: "[".concat(pad(item.id, 4)).concat("] ").concat(item.name),
                         value: pad(item.id, 4)
                     }
                 }));

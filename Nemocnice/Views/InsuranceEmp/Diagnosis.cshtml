@@ -24,7 +24,7 @@
     else
     {
 
-        <div class="table-striped" id="payment" style="overflow-x: auto;">
+        <div class="table table-striped" id="payment" style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
@@ -69,7 +69,7 @@
                                                 </div>
                                                 <div class="modal-body">
                                                     <!-- formatovani vyskakovaciho okna -->
-                                                    <label>Název:</label>
+                                                    <label>Název<a style="color:red;">*</a></label>
                                                     <input name="edit_name" type="text" class="form-control" value="@diagnosis.Name" required autocomplete="off">
                                                     <div class="modal-footer">
                                                         <!-- formatovani tlacitka odeslat -->
@@ -117,7 +117,7 @@
                                 <div class="modal-body">
                                     <!-- formatovani vyskakovaciho okna -->
 
-                                    <label>Název:<a style="color:red;">*</a></label>
+                                    <label>Název<a style="color:red;">*</a></label>
                                     <input name="new_name" type="text" class="form-control" required autocomplete="off">
 
                                 </div>

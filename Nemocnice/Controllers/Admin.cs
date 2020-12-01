@@ -65,54 +65,57 @@ namespace Nemocnice.Controllers
                 var PatientId = db.PatientT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.PatientID).FirstOrDefault();
 
                 List<CheckupTicket> tmp = new List<CheckupTicket>();
-                tmp = db.CheckupTicketT.Where(a => a.Patient.PatientID == PatientId).ToList();
-                foreach (var a in tmp) {
-                    db.Remove(db.CheckupTicketT.Single(a => a.Patient.PatientID == PatientId));
+                tmp = db.CheckupTicketT.Where(a => a.Patient.PatientID == PatientId).Include(i => i.Patient).ToList();
+                foreach (var pom in tmp) {
+                    db.Remove(db.CheckupTicketT.FirstOrDefault(a => a.Patient.PatientID == pom.Patient.PatientID));
                 }
 
                 List<MedicallReport> tmp1 = new List<MedicallReport>();
-                tmp1 = db.MedicallReportT.Where(a => a.Patient.PatientID == PatientId).ToList();
-                foreach (var a in tmp1)
+                tmp1 = db.MedicallReportT.Where(a => a.Patient.PatientID == PatientId).Include(i => i.Patient).ToList();
+                foreach (var pom in tmp1)
                 {
-                    db.Remove(db.MedicallReportT.Single(a => a.Patient.PatientID == PatientId));
+                    db.Remove(db.MedicallReportT.FirstOrDefault(a => a.Patient.PatientID == pom.Patient.PatientID));
                 }
 
                 List<PatientTreatmentLog> tmp2 = new List<PatientTreatmentLog>();
-                tmp2 = db.PatientTreatmentLogT.Where(a => a.Patient.PatientID == PatientId).ToList();
-                foreach (var a in tmp2)
+                tmp2 = db.PatientTreatmentLogT.Where(a => a.Patient.PatientID == PatientId).Include(i => i.Patient).ToList();
+                foreach (var pom in tmp2)
                 {
-                    db.Remove(db.PatientTreatmentLogT.Single(a => a.Patient.PatientID == PatientId));
+                    db.Remove(db.PatientTreatmentLogT.FirstOrDefault(a => a.Patient.PatientID == pom.Patient.PatientID));
                 }
                
                 var PictureId = db.PictureT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.PictureId).FirstOrDefault();
                 List<PictureOnReport> tmp3 = new List<PictureOnReport>();
-                tmp3 = db.PictureOnReportT.Where(a => a.Picture.PictureId == PictureId).ToList();
-                foreach (var a in tmp3)
+                tmp3 = db.PictureOnReportT.Where(a => a.Picture.PictureId == PictureId).Include(i => i.Picture).ToList();
+                foreach (var pom in tmp3)
                 {
-                    db.Remove(db.PictureOnReportT.Single(a => a.Picture.PictureId == PictureId));
+                    db.Remove(db.PictureOnReportT.FirstOrDefault(a => a.Picture.PictureId == pom.Picture.PictureId));
                 }
 
                 List<PictureOnTicket> tmp4 = new List<PictureOnTicket>();
-                tmp4 = db.PictureOnTicketsT.Where(a => a.Picture.PictureId == PictureId).ToList();
-                foreach (var a in tmp4)
+                tmp4 = db.PictureOnTicketsT.Where(a => a.Picture.PictureId == PictureId).Include(i => i.Picture).ToList();
+                foreach (var pom in tmp4)
                 {
-                    db.Remove(db.PictureOnTicketsT.Single(a => a.Picture.PictureId == PictureId));
+                    db.Remove(db.PictureOnTicketsT.FirstOrDefault(a => a.Picture.PictureId == pom.Picture.PictureId));
                 }
 
                 List<Picture> tmp5 = new List<Picture>();
                 tmp5 = db.PictureT.Where(a => a.PictureId == PictureId).ToList();
-                foreach (var a in tmp5)
+                foreach (var pom in tmp5)
                 {
-                    db.Remove(db.PictureT.Single(a => a.SocialSecurityNum == ID_delete));
+                    db.Remove(db.PictureT.FirstOrDefault(a => a.SocialSecurityNum == ID_delete));
+                }
+
+                var health = db.HealthConditionT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.HealthConditionId).FirstOrDefault();
+                if (health != 0)
+                {
+                    db.Remove(db.HealthConditionT.FirstOrDefault(a => a.HealthConditionId == health));
                 }
 
                 var ID = db.PatientT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.UserId).FirstOrDefault();
-                db.Remove(db.PatientT.Single(a => a.SocialSecurityNum == ID_delete));
+                db.Remove(db.PatientT.FirstOrDefault(a => a.SocialSecurityNum == ID_delete));
 
-                db.Remove(db.UserT.Single(a => a.UserId == ID));
-
-                var health = db.HealthConditionT.Where(s => s.SocialSecurityNum == ID_delete).Select(s => s.HealthConditionId).FirstOrDefault();
-                db.Remove(db.HealthConditionT.Single(a => a.HealthConditionId == health));
+                db.Remove(db.UserT.FirstOrDefault(a => a.UserId == ID));
 
                 var Patient = db.PatientT.Where(x => x.SocialSecurityNum == ID_delete).Select(s => s.UserId).First();
                 var userLogin = db.UserT.Where(x => x.UserId == Patient).Select(x => x.Login).FirstOrDefault();
@@ -122,6 +125,8 @@ namespace Nemocnice.Controllers
                     await _userManager.DeleteAsync(user);
                 }
                 db.SaveChanges();
+
+
             }
 
             // Model - Seznam všech pacientů v databázi
@@ -165,6 +170,7 @@ namespace Nemocnice.Controllers
                                         Name = user.Name,
                                         Title = user.Title,
                                     },
+                                    UserId = patient.UserId,
                                     SocialSecurityNum = patient.SocialSecurityNum,
                                     Insurance = patient.InsuranceCompany
                                 }
@@ -310,65 +316,93 @@ namespace Nemocnice.Controllers
             string edit_password = Request.Form["edit_password"];
             string edit_confirmPassword = Request.Form["edit_confirmPassword"];
 
-            var PatientId = db.PatientT.Where(x => x.SocialSecurityNum == edit_oldRC).Select(x => x.UserId).First();
-            
-            var Patient = db.UserT.Include(x => x.WorkAddress).Where(x => x.UserId == PatientId).First();
-            
-            if (Patient.WorkAddress != null)
-            {
+            string edit_street = Request.Form["edit_street"];
+            string edit_town = Request.Form["edit_town"];
+            int edit_psc = int.Parse(Request.Form["edit_psc"]);
+            int edit_cp = int.Parse(String.IsNullOrEmpty(Request.Form["edit_cp"]) ? "0" : Request.Form["edit_cp"].ToString());
 
-                string edit_street = Request.Form["edit_street"];
-                
-                string edit_town = Request.Form["edit_town"];
-                int edit_psc = int.Parse(Request.Form["edit_psc"]);
+            // Získání User a Patient
+            var Patient = db.PatientT.Include(i => i.HomeAddress).Include(i => i.HealthCondition).Where(x => x.SocialSecurityNum == edit_oldRC).First();         
+            var PatientUser = db.UserT.Where(x => x.UserId == Patient.UserId).First();
+
+            if (edit_oldRC != edit_rc)
+            {
+                // Změna rodného čísla u obrázků  
                 var changePicSSN = db.PictureT.Where(x => x.SocialSecurityNum == edit_oldRC).ToList();
                 foreach (var fotka in changePicSSN)
                 {
                     fotka.SocialSecurityNum = edit_rc;
                 }
+                // Změna u health condition
+                Patient.HealthCondition.SocialSecurityNum = edit_rc;
                 db.SaveChanges();
-                int pom2 = Convert.ToInt32(Patient.WorkAddress.AddressId);
-                var pom3 = db.AddressT.First(a => a.AddressId == pom2);
-
-                if (Request.Form["edit_cp"] == "")
-                {
-                    int edit_cp = int.Parse(Request.Form["edit_cp"]);
-                    pom3.HouseNumber = edit_cp;
-                }
-                pom3.StreetName = edit_street;
-                
-                pom3.City = edit_town;
-                pom3.ZIP = edit_psc;
             }
 
-            var pom = db.UserT.First(a => a.Login == Patient.Login);
-            pom.Name = edit_name;
-            pom.Surname = edit_surname;
-            pom.Title = edit_title;
-            pom.Phone = edit_tel;
-            pom.Email = edit_mail;
-            pom.Login = edit_rc;
-
-            var pat = db.PatientT.First(a => a.SocialSecurityNum == edit_oldRC);
-            pat.SocialSecurityNum = edit_rc;
-            pat.InsuranceCompany = edit_insurance;
+            if (Patient.HomeAddress == null)
+            {
+                Patient.HomeAddress = new Address { };
+                db.SaveChanges();
+            }
 
 
-            var userChangeLogin = await _userManager.FindByNameAsync(edit_oldRC);
-            userChangeLogin.UserName = edit_rc;
-            //user.UserName = edit_rc;
-            //user.NormalizedUserName = edit_rc.ToUpper();
-            await _userManager.UpdateAsync(userChangeLogin);
-
-            /****************************/
-
-
-            var newPasswordHashed = _userManager.PasswordHasher.HashPassword(userChangeLogin,edit_password);
-            var token = _userManager.GeneratePasswordResetTokenAsync(userChangeLogin).Result;
-            await _userManager.ResetPasswordAsync(userChangeLogin, token, edit_password);
-            await _userManager.UpdateAsync(userChangeLogin);
             
+            // Aktualizace adresy
+            Patient.HomeAddress.City = edit_town;
+            Patient.HomeAddress.ZIP = edit_psc;
+            Patient.HomeAddress.StreetName = edit_street;
+            Patient.HomeAddress.HouseNumber = edit_cp;
+            db.SaveChanges();
+
+            /*
+            int pom2 = Convert.ToInt32(PatientUser.WorkAddress.AddressId);
+            var pom3 = db.AddressT.First(a => a.AddressId == pom2);
+
+            if (Request.Form["edit_cp"] == "")
+            {
+                    
+                pom3.HouseNumber = edit_cp;
+            }
+            pom3.StreetName = edit_street;
+                
+            pom3.City = edit_town;
+            pom3.ZIP = edit_psc;
+            */
+
+
+            // Změna jnéna atd...
+            PatientUser.Name = edit_name;
+            PatientUser.Surname = edit_surname;
+            PatientUser.Title = edit_title;
+            PatientUser.Phone = edit_tel;
+            PatientUser.Email = edit_mail;
+            PatientUser.Login = edit_rc;
+
+            Patient.InsuranceCompany = edit_insurance;
+
             /****************************/
+
+            if (!String.IsNullOrEmpty(edit_password))
+            {
+                var userChangeLogin = await _userManager.FindByNameAsync(edit_oldRC);
+
+                var newPasswordHashed = _userManager.PasswordHasher.HashPassword(userChangeLogin, edit_password);
+                var token = _userManager.GeneratePasswordResetTokenAsync(userChangeLogin).Result;
+                await _userManager.ResetPasswordAsync(userChangeLogin, token, edit_password);
+                await _userManager.UpdateAsync(userChangeLogin);
+            }
+
+            /****************************/
+
+            // Změna rodného čísla - loginu
+            if (edit_oldRC != edit_rc)
+            {
+                var pat = db.PatientT.First(a => a.SocialSecurityNum == edit_oldRC);
+                pat.SocialSecurityNum = edit_rc;
+
+                var userChangeLogin = await _userManager.FindByNameAsync(edit_oldRC);
+                userChangeLogin.UserName = edit_rc;
+                await _userManager.UpdateAsync(userChangeLogin);
+            }
 
             await db.SaveChangesAsync();
 
@@ -378,63 +412,62 @@ namespace Nemocnice.Controllers
         
 
         [HttpPost]
-        public IActionResult EditDb_Insurance()
-        {
-
+        public async Task<IActionResult> EditDb_InsuranceAsync()
+        { 
             int edit_ID = int.Parse(Request.Form["edit_ID"]);
             string edit_name = Request.Form["edit_name"];
             string edit_surname = Request.Form["edit_surname"];
-            string edit_rc = Request.Form["edit_rc"];
             string edit_tel = Request.Form["edit_tel"];
             string edit_mail = Request.Form["edit_mail"];
             string edit_title = Request.Form["edit_title"];
-            string edit_work = Request.Form["edit_work"];
+            string edit_work_phone = Request.Form["edit_work"];
             string edit_position = Request.Form["edit_position"];
-            string edit_login = Request.Form["edit_login"];
-            string old = Request.Form["old"];
-            string edit_password = Request.Form["edit_password"];
-            string edit_confirmPassword = Request.Form["edit_confirmPassword"];
+            string edit_password = Request.Form["password"];
 
-            var ID = db.InsureEmpT.Where(a => a.PersonalId == edit_ID).Select(s => s.UserId).FirstOrDefault();
-            var pom = db.UserT.First(a => a.UserId == ID);
+            string edit_street = Request.Form["edit_street"];
+            int edit_cp = int.Parse(String.IsNullOrEmpty(Request.Form["edit_cp"]) ? "0" : Request.Form["edit_cp"].ToString());
+            string edit_town = Request.Form["edit_town"];
+            int edit_psc = int.Parse(Request.Form["edit_psc"]);
 
-            pom.Name = edit_name;
-            pom.Surname = edit_surname;
-            pom.Title = edit_title;
-            pom.Phone = edit_tel;
-            pom.Email = edit_mail;
-            pom.Login = edit_login;
+            var InsuranceEmp = db.InsureEmpT.Where(a => a.PersonalId == edit_ID).First();
+            var User = db.UserT.Include(i => i.WorkAddress).First(a => a.UserId == InsuranceEmp.UserId);
 
-            var ins = db.InsureEmpT.First(s => s.UserId == ID);
-            ins.Possition = edit_position;
-            ins.WorkPhone = edit_work;
+            // Změna User
+            User.Name = edit_name;
+            User.Surname = edit_surname;
+            User.Title = edit_title;
+            User.Phone = edit_tel;
+            User.Email = edit_mail;
 
-            var user = db.Users.First(s => s.UserName == old);
-            user.UserName = edit_login;
-            user.NormalizedUserName = edit_login;
+            InsuranceEmp.Possition = edit_position;
+            InsuranceEmp.WorkPhone = edit_work_phone;
 
-
-
-            var work = db.UserT.Where(a => a.UserId == ID).Select(s => s.WorkAddress).FirstOrDefault();
-
-            if (work != null)
+            if (User.WorkAddress == null)
             {
-                string edit_street = Request.Form["edit_street"];
-                int edit_cp = int.Parse(Request.Form["edit_cp"]);
-                string edit_town = Request.Form["edit_town"];
-                int edit_psc = int.Parse(Request.Form["edit_psc"]);
-
-                int pom2 = Convert.ToInt32(work.AddressId);
-                var pom3 = db.AddressT.First(a => a.AddressId == pom2);
-
-                pom3.StreetName = edit_street;
-                pom3.HouseNumber = edit_cp;
-                pom3.City = edit_town;
-                pom3.ZIP = edit_psc;
+                User.WorkAddress = new Address { };
+                db.SaveChanges();
             }
 
-
+            User.WorkAddress.StreetName = edit_street;
+            User.WorkAddress.HouseNumber = edit_cp;
+            User.WorkAddress.City = edit_town;
+            User.WorkAddress.ZIP = edit_psc;
             db.SaveChanges();
+
+
+            /****************************/
+
+            if (!String.IsNullOrEmpty(edit_password))
+            {
+                var userChangeLogin = await _userManager.FindByNameAsync(User.Login);
+
+                var newPasswordHashed = _userManager.PasswordHasher.HashPassword(userChangeLogin, edit_password);
+                var token = _userManager.GeneratePasswordResetTokenAsync(userChangeLogin).Result;
+                await _userManager.ResetPasswordAsync(userChangeLogin, token, edit_password);
+                await _userManager.UpdateAsync(userChangeLogin);
+            }
+
+            /****************************/
 
             return RedirectToAction("CardInsurance", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
@@ -735,14 +768,27 @@ namespace Nemocnice.Controllers
                 // Je potřeba vyhledat konkrétní pacienty odpovídající hledanému výrazu.
                 // Hledání probíhá skrz položky (Jméno, Příjmení, R.Č.).
                 // Rodné číslo je převáděno na string. Hledání probíhá na základě metody StartsWith.
-                Doctors = db.UserT.Include(x => x.WorkAddress).Join(db.DoctorT, user => user.UserId, doctor => doctor.UserId,
+                try
+                {
+                    Doctors = db.UserT.Include(x => x.WorkAddress).Join(db.DoctorT, user => user.UserId, doctor => doctor.UserId,
                             (user, doctor) => new DoctorJoined1
                             {
                                 Doctor = doctor,
                                 User = user
-                            }).Where(s => s.User.Title.Contains(searchString) ||
-                                             s.User.Surname.Contains(searchString) ||
-                                             s.User.Name.Contains(searchString)).ToList();
+                            }).Where(s => s.Doctor.ICZ == int.Parse(searchString)).ToList();
+                }
+                catch
+                {
+                    Doctors = db.UserT.Include(x => x.WorkAddress).Join(db.DoctorT, user => user.UserId, doctor => doctor.UserId,
+                         (user, doctor) => new DoctorJoined1
+                         {
+                             Doctor = doctor,
+                             User = user
+                         }).Where(s => s.User.Title.Contains(searchString) ||
+                                          s.User.Surname.Contains(searchString) ||
+                                          s.User.Name.Contains(searchString)).ToList();
+
+                }
             }
             model.doctors = Doctors;
 
@@ -922,10 +968,9 @@ namespace Nemocnice.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditDb_Doctor()
+        public async Task<IActionResult> EditDb_DoctorAsync()
         {
-
-            string edit_ID = Request.Form["edit_ID"];
+            string login = Request.Form["edit_ID"];
             string edit_name = Request.Form["edit_name"];
             string edit_surname = Request.Form["edit_surname"];
             int edit_ICZ = int.Parse(Request.Form["edit_icz"]);
@@ -933,40 +978,70 @@ namespace Nemocnice.Controllers
             string edit_mail = Request.Form["edit_mail"];
             string edit_title = Request.Form["edit_title"];
 
-            var pom = db.UserT.Include(x => x.WorkAddress).First(a => a.Login == edit_ID);
-            pom.Name = edit_name;
-            pom.Surname = edit_surname;
-            pom.Title = edit_title;
-            pom.Phone = edit_tel;
-            pom.Email = edit_mail;
+            string edit_street = Request.Form["edit_street"];
+            int edit_cp = int.Parse(String.IsNullOrEmpty(Request.Form["edit_cp"]) ? "0" : Request.Form["edit_cp"].ToString());
+            string edit_town = Request.Form["edit_town"];
+            int edit_psc = int.Parse(Request.Form["edit_psc"]);
 
-            var DoctorInfo = db.DoctorT.Where(x => x.UserId == pom.UserId).First();
-            DoctorInfo.ICZ = edit_ICZ;
-            DoctorInfo.WorkPhone = edit_tel;
+            string edit_password = Request.Form["password"];
 
-            var work = db.UserT.Include(x => x.WorkAddress).Where(a => a.Login == edit_ID).Select(s => s.WorkAddress).FirstOrDefault();
+            var DoctorUser = db.UserT.Include(x => x.WorkAddress).First(a => a.Login == login);
+            var Doctor = db.DoctorT.Where(x => x.UserId == DoctorUser.UserId).First();
 
-            if (work != null)
+            DoctorUser.Name = edit_name;
+            DoctorUser.Surname = edit_surname;
+            DoctorUser.Title = edit_title;
+            DoctorUser.Phone = edit_tel;
+            DoctorUser.Email = edit_mail;
+
+            Doctor.ICZ = edit_ICZ;
+            Doctor.WorkPhone = edit_tel;
+
+
+            if (DoctorUser.WorkAddress == null)
             {
-                string edit_street = Request.Form["edit_street"];
-                int edit_cp = int.Parse(Request.Form["edit_cp"]);
-                string edit_town = Request.Form["edit_town"];
-                int edit_psc = int.Parse(Request.Form["edit_psc"]);
-
-                int pom2 = Convert.ToInt32(work.AddressId);
-                var pom3 = db.AddressT.First(a => a.AddressId == pom2);
-
-                pom3.StreetName = edit_street;
-                pom3.HouseNumber = edit_cp;
-                pom3.City = edit_town;
-                pom3.ZIP = edit_psc;
+                DoctorUser.WorkAddress = new Address { };
+                db.SaveChanges();
             }
 
 
+            DoctorUser.WorkAddress.StreetName = edit_street;
+            DoctorUser.WorkAddress.HouseNumber = edit_cp;
+            DoctorUser.WorkAddress.City = edit_town;
+            DoctorUser.WorkAddress.ZIP = edit_psc;
             db.SaveChanges();
+
+            /****************************/
+
+            if (!String.IsNullOrEmpty(edit_password))
+            {
+                var userChangeLogin = await _userManager.FindByNameAsync(DoctorUser.Login);
+
+                var newPasswordHashed = _userManager.PasswordHasher.HashPassword(userChangeLogin, edit_password);
+                var token = _userManager.GeneratePasswordResetTokenAsync(userChangeLogin).Result;
+                await _userManager.ResetPasswordAsync(userChangeLogin, token, edit_password);
+                await _userManager.UpdateAsync(userChangeLogin);
+            }
+
+            /****************************/
+
 
             return RedirectToAction("DoctorEdit", new { SortOrder = Request.Form["SortOrder"], p = Request.Form["p"], Search = Request.Form["Search"] });
         }
+
+        public JsonResult TestSocialSecurityNumUnique(string num)
+        {
+            bool result = true;
+
+            if (db.PatientT.Select(s => s.SocialSecurityNum).Where(o => o == num).Any())
+            {
+                result = false;
+            }
+
+            return new JsonResult(result);
+        }
+
     }
+
 }
 

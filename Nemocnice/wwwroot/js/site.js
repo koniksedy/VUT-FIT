@@ -82,6 +82,33 @@ function validateSSN() {
     
 }
 
+function validateSSN_Admin_edit(id) {
+
+    if (!testRC(id)) {
+        return false;
+    }
+
+    if ($.ajax({
+        url: '/Admin/TestSocialSecurityNumUnique',
+        dataType: "json",
+        async: false,
+        data: {
+            num: document.getElementById(id).value,
+        },
+        success: function (data) {
+            return data;
+        },
+        error: function () {
+            alert("Nepodařilo zkontrolovat rodné číslo.");
+        }
+    }).responseJSON === false) {
+        alert("Pacient se zadaným rodným číslem již existuje.")
+        return false;
+    }
+
+    return true;
+}
+
 // Kod převzat z https://www.zizka.ch/pages/programming/ruzne/rodne-cislo-identifikacni-cislo-rc-ico-kontrola-validace.html
 function testRC(RC) {
     x = document.getElementById(RC).value;
@@ -148,3 +175,32 @@ function testRC(RC) {
     }
     return true;
 }
+
+
+function validateSSN_Admin() {
+
+    if (!testRC('RC')) {
+        return false;
+    }
+
+    if ($.ajax({
+        url: '/Admin/TestSocialSecurityNumUnique',
+        dataType: "json",
+        async: false,
+        data: {
+            num: document.getElementById("RC").value,
+        },
+        success: function (data) {
+            return data;
+        },
+        error: function () {
+            alert("Nepodařilo zkontrolovat rodné číslo.");
+        }
+    }).responseJSON === false) {
+        alert("Pacient se zadaným rodným číslem již existuje.")
+        return false;
+    }
+
+    return true;
+}
+
