@@ -194,7 +194,7 @@ namespace Nemocnice.Controllers
 
             int edit_ID = int.Parse(Request.Form["edit_ID"]);
             string edit_name = Request.Form["edit_name"];
-            decimal edit_amount = decimal.Parse(Request.Form["edit_amount"]);
+            decimal edit_amount = decimal.Parse(Request.Form["edit_amount"].ToString().Replace(".", ","));
 
             var pom = this.Context.MedicallActivityPriceT.First(a => a.MedicallActivityPriceId == edit_ID);
             pom.Name = edit_name;
@@ -208,7 +208,7 @@ namespace Nemocnice.Controllers
         public IActionResult NewDb()
         {
             string new_name = Request.Form["new_name"];
-            decimal new_amount = decimal.Parse(Request.Form["new_amount"]);
+            decimal new_amount = decimal.Parse(Request.Form["new_amount"].ToString().Replace(".", ","));
 
             var activityPrice = new MedicallActivityPrice { Name = new_name, Amount = new_amount };
             this.Context.Add<MedicallActivityPrice>(activityPrice);

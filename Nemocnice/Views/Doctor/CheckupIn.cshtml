@@ -152,13 +152,12 @@
 
 
 <div style="margin-top:20px;margin-bottom:20px;max-width:735px">
-    <form asp-action="TicketActualizeState" method="post">
         <div class="flex-row row">
             <div style="margin-top:5px;max-width:50px" class="col">
                 <b>Stav: </b>
             </div>
             <div class="input-group col">
-                <input autocomplete="off" type="text" class="form-control m-input" name="newState" value="@Model.State" />
+                <input autocomplete="off" type="text" class="form-control m-input" id="newState" name="newState" value="@Model.State" />
                 <div class="input-group-append">
                     <button onclick="refresh_spinner()" class="btn btn-primary" type="submit">
                         <span id="refreshButton">
@@ -171,7 +170,6 @@
         </div>
         <input hidden name="patientNumber" value="@Model.SocialSecurityNumber" />
         <input hidden name="ticketDate" value="@Model.CreateDate" />
-    </form>
 </div>
 
 <div style="max-width:900px">
@@ -230,6 +228,9 @@
                                             </tr>
                                         }
                                     </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
                                 </div>
                             </div>
                         </div>
@@ -325,7 +326,23 @@
 <!--Script for spinner on save-->
 <script>
     function refresh_spinner() {
-        document.getElementById("refreshButton").innerHTML = "<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>";
+
+        $.ajax({
+                url: '/Doctor/UpdateState',
+                dataType: "json",
+            data: {
+                newState: document.getElementById("newState").value,
+                    date: '@Model.CreateDate',
+                    patient: '@Model.SocialSecurityNumber'
+                },
+                success: function (data) {
+                    document.getElementById("refreshButton").innerHTML = '<i style="margin-right:3px" class="fa fa-refresh" aria-hidden="true"></i>';
+                },
+                error: function () {
+                    alert("Nepodařilo se načíst obrázky.");
+                    document.getElementById("refreshButton").innerHTML = '<i style="margin-right:3px" class="fa fa-refresh" aria-hidden="true"></i>';
+                }
+            });  
     }
 </script>
 
@@ -490,7 +507,7 @@
 
 <script>
     function check_TicketReport() {
-        if (document.getElementById("reportText")) {
+        if (document.getElementById("reportText").value == "") {
             if (!confirm("Jste si jistí, že chcete odeslat výsledek vyšetření s žádným textem?")) {
                 stop_spinner();
                 return false;

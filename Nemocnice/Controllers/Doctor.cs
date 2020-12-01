@@ -1949,5 +1949,15 @@ namespace Nemocnice.Controllers
 
             return new JsonResult(result);
         }
+
+        public JsonResult UpdateState(string newState, string date, string patient)
+        {
+            db.CheckupTicketT.Where(o => o.CreateDate == DateTime.Parse(date) && o.Patient.SocialSecurityNum == patient).First().State = newState;
+            db.SaveChanges();
+
+            bool toret = true;
+
+            return new JsonResult(toret);
+        }
     }
 }
