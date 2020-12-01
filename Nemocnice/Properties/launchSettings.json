@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sqlDebugging": true,
-      "nativeDebugging": false
+      "nativeDebugging": true
     },
     "Nemocnice": {
       "commandName": "Project",
