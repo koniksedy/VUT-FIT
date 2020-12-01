@@ -63,7 +63,7 @@ namespace Nemocnice.Controllers
             PatientCardModel.PageNum6 = (pageCure ?? 1);
             PatientCardModel.TabNumber = (select ?? 1);
 
-            PatientCardModel.Pictures = db.PictureT.Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).ToPagedList(PatientCardModel.PageNum3, pageSize);
+            PatientCardModel.Pictures = db.PictureT.Where(x => x.SocialSecurityNum == PatientCardModel.Patient.SocialSecurityNum).OrderByDescending(x => x.CreateDate).ToPagedList(PatientCardModel.PageNum3, pageSize);
             PatientCardModel.medicallReports = db.MedicallReportT.Include(x => x.Author).Include(x => x.Patient).Include(x => x.Owner).Where(x => x.Patient.UserId == PatientCardModel.User.UserId).OrderByDescending(x => x.CreateDate).ToPagedList(PatientCardModel.PageNum1, pageSize);
             PatientCardModel.checkupTickets = db.CheckupTicketT.Include(x => x.ToDoctor).Include(x => x.Patient).Include(x => x.CreatedBy).Where(x => x.Patient.UserId == PatientCardModel.User.UserId).OrderByDescending(x => x.CreateDate).ToPagedList(PatientCardModel.PageNum2, pageSize);
 

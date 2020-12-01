@@ -525,6 +525,9 @@
                     <th>
                         Stav
                     </th>
+                    <th>
+                        Vytvořeno
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -555,6 +558,9 @@
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => prohlidka.StateOfTreatment)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.MedicallReport.CreateDate.Day)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.MedicallReport.CreateDate.Month)<a>.</a>@Html.DisplayFor(modelItem => prohlidka.MedicallReport.CreateDate.Year)
                             </td>
                         </tr>
                     }
