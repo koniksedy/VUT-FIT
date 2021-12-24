@@ -50,6 +50,8 @@ def main():
         print("Unsupported number of AIs")
         exit(1)
 
+    # procs.clear()
+
     summaries = []
     for i in range(args.nb_games):
         if args.report:
