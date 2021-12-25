@@ -24,11 +24,11 @@ def define_parameters():
     params['epsilon_decay_linear'] = 1/100
     params['learning_rate'] = 0.00013629
     params['first_layer_size'] = 200        # neurons in the first layer
-    params['second_layer_size'] = 20        # neurons in the second layer
-    params['third_layer_size'] = 50         # neurons in the third layer
-    params['episodes'] = 100        
-    params['memory_size'] = 300
-    params['batch_size'] = 100
+    params['second_layer_size'] = 60        # neurons in the second layer
+    params['third_layer_size'] = 30         # neurons in the third layer
+    params['episodes'] = 100   
+    params['memory_size'] = 400
+    params['batch_size'] = 200
     # Settings
     params['weights_path'] = os.path.join(os.getcwd(), 'dicewars/ai/kb/xreinm00/weights/weights.h5')
     params['train'] = True
@@ -61,6 +61,12 @@ class DQNSupaSoldierAI(torch.nn.Module):
         self.fresh_init = True
         self.player_areas_old = 1
 
+        self.bad_prediction = False
+
+        self.num_of_turns = 0
+        self.num_of_model_predictions = 0
+        self.num_of_bad_predictions = 0
+
         # loss values
         self.loss_vals = []
         self.epoch_loss= []
@@ -68,7 +74,7 @@ class DQNSupaSoldierAI(torch.nn.Module):
 
         self.config = self.load_ai_state()
         self.network()
-        
+
         if self.config:
             print("Config loaded")
             self.epsilon = self.config['epsilon']
@@ -79,7 +85,9 @@ class DQNSupaSoldierAI(torch.nn.Module):
             self.load_weights = self.config['load_weights']
             self.player_areas_old = self.config['players_areas_old']
             self.loss_vals = self.config['loss_vals']
+            print("Load weights: {}".format(self.load_weights))
         
+
         print("Episodes: {}, Games total: {}".format(self.params['episodes'], self.counter_games))
         
         """
@@ -95,6 +103,7 @@ class DQNSupaSoldierAI(torch.nn.Module):
 
     def __del__(self):
         self.save_ai_state()
+        print("Total turns: {}, Model made {} predictions, {} of them were bad.".format(self.num_of_turns, self.num_of_model_predictions, self.num_of_bad_predictions))
         if self.params['episodes'] == self.counter_games:
             if self.params['train']:
                 model_weights = self.state_dict()
@@ -104,8 +113,8 @@ class DQNSupaSoldierAI(torch.nn.Module):
             
 
     def ai_turn(self, board: Board, nb_moves_this_turn, nb_transfers_this_turn, nb_turns_this_game, time_left):
-        # self.optimizer = optim.Adam(self.parameters(), weight_decay=0, lr=self.params['learning_rate'])
-        self.optimizer = optim.SGD(self.parameters(), weight_decay=0, lr=self.params['learning_rate'])
+        self.optimizer = optim.Adam(self.parameters(), weight_decay=0, lr=self.params['learning_rate'])
+        # self.optimizer = optim.SGD(self.parameters(), weight_decay=0, lr=self.params['learning_rate'])
 
         if self.fresh_init:
             self.fresh_init = False
@@ -127,14 +136,16 @@ class DQNSupaSoldierAI(torch.nn.Module):
 
         # get old state + attacks
         state_old, attacks = self.get_state(board)
-        if len(attacks) == 0 or self.performed_attacks >= 6:
+        
+        if len(attacks) == 0 or self.performed_attacks >= 10:
             self.performed_attacks = 0
             # print("Ending turn...")
             return EndTurnCommand()
 
         self.state_old = state_old
-
+        
         NN_predicted = False
+        self.bad_prediction = False
         # perform random actions based on agent.epsilon, or choose the action
         # print("Epsilon: ", self.epsilon)
         if random.uniform(0, 1) < self.epsilon:
@@ -144,16 +155,30 @@ class DQNSupaSoldierAI(torch.nn.Module):
             # predict action based on the old state
             with torch.no_grad():
                 NN_predicted = True
-                state_old_tensor = torch.tensor(state_old.reshape((1, 30)), dtype=torch.float32).to(DEVICE)
+                state_old_tensor = torch.tensor(state_old.reshape((1, 36)), dtype=torch.float32).to(DEVICE)
                 prediction = self(state_old_tensor)
                 # print("Attacks len: ", len(attacks))
                 # print("ASD", prediction.detach().cpu().numpy()[0])
                 # print("MAX", np.argmax(prediction.detach().cpu().numpy()[0]))
                 final_move = np.eye(6)[np.argmax(prediction.detach().cpu().numpy()[0])]
                 self.final_move = final_move
-                
+                self.num_of_model_predictions += 1
+                # print("NN Output: {}, attacks len: {}".format(prediction.detach().cpu().numpy()[0], len(attacks)))
                 if len(attacks) <= np.argmax(prediction.detach().cpu().numpy()[0]):
-                    final_move = np.eye(6)[len(attacks)-1]
+                    
+                    max_prob = 0
+                    max_prob_index = 0
+                    for i, attack in enumerate(attacks):
+                        prob = probability_of_successful_attack(board, attack[0].get_name(), attack[1].get_name())
+                        if max_prob < prob:
+                            max_prob = prob
+                            max_prob_index = i
+
+                    final_move = np.eye(6)[max_prob_index]
+                    self.final_move = final_move
+                    self.bad_prediction = True
+                    self.num_of_bad_predictions += 1
+                    
         
 
         # print("Setting reward and training short memory....")
@@ -174,16 +199,11 @@ class DQNSupaSoldierAI(torch.nn.Module):
                 index = i
                 break
         
-        try:
-            src_target = attacks[index]
-        except Exception as e:
-            print("Attacks len: {}".format(len(attacks)))
-            print("Counted index: {}".format(index))
-            print("final move: {}".format(final_move))
-            print("Attacking target, predicted by NN: {}".format(NN_predicted))
         src_target = attacks[index]
-        self.performed_attacks += 1
+        # print("[{}] Attack: {} ({}) -> {} ({}), prob. of success: {} {}".format("NN" if NN_predicted else "RD", src_target[0].get_name(), src_target[0].get_dice(), src_target[1].get_name(), src_target[1].get_dice(), probability_of_successful_attack(board, src_target[0].get_name(), src_target[1].get_name()), "[Bad prediction]" if self.bad_prediction else ""))
         self.player_areas_old = board.get_player_areas(self.player_name)
+        self.num_of_turns += 1
+        self.performed_attacks += 1
         return BattleCommand(src_target[0].get_name(), src_target[1].get_name())  
     
     def save_ai_state(self):
@@ -200,6 +220,7 @@ class DQNSupaSoldierAI(torch.nn.Module):
                 "players_areas_old": self.player_areas_old,
                 "loss_vals": self.loss_vals
             }
+            print("Saving state, weights: {}".format(self.load_weights))
             pickle.dump(state, config_dictionary_file)
 
     def load_ai_state(self):
@@ -209,7 +230,7 @@ class DQNSupaSoldierAI(torch.nn.Module):
 
     def network(self):
         # Layers
-        self.f1 = nn.Linear(30, self.first_layer)
+        self.f1 = nn.Linear(36, self.first_layer)
         self.f2 = nn.Linear(self.first_layer, self.second_layer)
         self.f3 = nn.Linear(self.second_layer, self.third_layer)
         self.f4 = nn.Linear(self.third_layer, 6)
@@ -217,7 +238,7 @@ class DQNSupaSoldierAI(torch.nn.Module):
         if self.load_weights:
             self.load_weights = False
             self.model = self.load_state_dict(torch.load(self.weights))
-            print("weights loaded")
+            print("weights loaded, now its {}".format(self.load_weights))
 
     def forward(self, x):
         x = F.relu(self.f1(x))
@@ -229,14 +250,23 @@ class DQNSupaSoldierAI(torch.nn.Module):
     def get_state(self, board: Board):
         state = []
         attacks = list(possible_attacks(board, self.player_name))
+        attacks_sorted = sorted(attacks, key=lambda x: probability_of_successful_attack(board, x[0].get_name(), x[1].get_name()), reverse=True)
         if attacks:
-            for i, attack in enumerate(attacks): 
+            for i, attack in enumerate(attacks_sorted): 
                 if i == 6: break
                 src: Area = attack[0]
                 dst: Area = attack[1]
                 prob_of_success = probability_of_successful_attack(board, src.get_name(), dst.get_name())
                 prob_of_hodl = probability_of_holding_area(board, src.get_name(), src.get_dice(), self.player_name)
                 areas_around: list[int] = src.get_adjacent_areas_names()
+                
+                max_dice_around_target = 0
+                for area_name in dst.get_adjacent_areas_names():
+                    target_area: Area = board.get_area(area_name)
+                    if target_area.get_owner_name() != self.player_name:
+                        if max_dice_around_target < target_area.get_dice():
+                            max_dice_around_target = target_area.get_dice()
+
                 num_of_enemies_around = 0
                 for area in areas_around:
                     if board.get_area(area).get_owner_name() != self.player_name: 
@@ -245,21 +275,40 @@ class DQNSupaSoldierAI(torch.nn.Module):
                 state.append(prob_of_success)
                 state.append(prob_of_hodl)
                 state.append(num_of_enemies_around)
+                state.append(max_dice_around_target)
                 state.append(src.get_dice())
                 state.append(dst.get_dice())
+                
 
-        for i in range(len(state), 30):
-            state.append(0)
+                # print("""
+                # Training dato:
+                # ({})   Src dice:       {},
+                # ({})   Target dice:    {},
+                #        Enemies around: {},
+                #        Success prob.:  {},
+                #        Hodl prob.   :  {}
+                #  """.format(src.get_name(), src.get_dice(), dst.get_name(), dst.get_dice(), num_of_enemies_around, prob_of_success, prob_of_hodl))
 
-        return np.asarray(state), attacks
+        for i in range(len(state), 36, 6):
+            state.append(0.00)
+            state.append(1.00)
+            state.append(1)
+            state.append(8)
+            state.append(2)
+            state.append(8)
+
+
+        return np.asarray(state), attacks_sorted
 
     def set_reward(self, num_of_areas: int, last_num_of_areas: int):
         
         self.reward = 0
-        if num_of_areas < last_num_of_areas:
-            self.reward = -10
+        if self.bad_prediction:
+            self.reward = -5
+        elif num_of_areas < last_num_of_areas:
+            self.reward = -5
         elif num_of_areas > last_num_of_areas:
-            self.reward = 20
+            self.reward = 10
 
         # print("Reward: {}".format(self.reward))
         # print("current areas: {}, old areas: {}".format(num_of_areas, last_num_of_areas))
@@ -311,8 +360,8 @@ class DQNSupaSoldierAI(torch.nn.Module):
         self.train()
         torch.set_grad_enabled(True)
         target = reward
-        next_state_tensor = torch.tensor(next_state.reshape((1, 30)), dtype=torch.float32).to(DEVICE)
-        state_tensor = torch.tensor(state.reshape((1, 30)), dtype=torch.float32, requires_grad=True).to(DEVICE)
+        next_state_tensor = torch.tensor(next_state.reshape((1, 36)), dtype=torch.float32).to(DEVICE)
+        state_tensor = torch.tensor(state.reshape((1, 36)), dtype=torch.float32, requires_grad=True).to(DEVICE)
         target = reward + self.gamma * torch.max(self.forward(next_state_tensor[0]))
         output = self.forward(state_tensor)
         target_f = output.clone()
@@ -321,4 +370,5 @@ class DQNSupaSoldierAI(torch.nn.Module):
         self.optimizer.zero_grad()
         loss = F.mse_loss(output, target_f)
         loss.backward()
+        # print("Loss value {}".format(loss.item()))
         self.optimizer.step()
