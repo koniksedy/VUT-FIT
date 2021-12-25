@@ -2,3 +2,6 @@ __pycache__/
 
 testData/
 
+dicewars/ai/kb/xreinm00/weights/
+
+logs/

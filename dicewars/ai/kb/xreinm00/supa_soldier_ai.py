@@ -21,18 +21,20 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 def define_parameters():
     params = dict()
     # Neural Network
-    params['epsilon_decay_linear'] = 1/100
+    cnt = 50
+    params['epsilon_decay_linear'] = 1/cnt
     params['learning_rate'] = 0.00013629
     params['first_layer_size'] = 200        # neurons in the first layer
     params['second_layer_size'] = 60        # neurons in the second layer
     params['third_layer_size'] = 30         # neurons in the third layer
-    params['episodes'] = 100   
+    params['episodes'] = cnt   
     params['memory_size'] = 400
     params['batch_size'] = 200
     # Settings
     params['weights_path'] = os.path.join(os.getcwd(), 'dicewars/ai/kb/xreinm00/weights/weights.h5')
-    params['train'] = True
-    params['load_weights'] = False
+    TrainAndNotLoat = False
+    params['train'] = TrainAndNotLoat
+    params['load_weights'] = not TrainAndNotLoat
     params['log_path'] = 'logs/scores_' + str(datetime.datetime.now().strftime("%Y%m%d%H%M%S")) +'.txt'
     return params
 
@@ -104,10 +106,11 @@ class DQNSupaSoldierAI(torch.nn.Module):
     def __del__(self):
         self.save_ai_state()
         print("Total turns: {}, Model made {} predictions, {} of them were bad.".format(self.num_of_turns, self.num_of_model_predictions, self.num_of_bad_predictions))
+        if self.params['train']:
+            model_weights = self.state_dict()
+            torch.save(model_weights, self.params["weights_path"])
         if self.params['episodes'] == self.counter_games:
             if self.params['train']:
-                model_weights = self.state_dict()
-                torch.save(model_weights, self.params["weights_path"])
                 print("Deleting state files...")
                 os.remove(os.path.join(os.getcwd(), 'dicewars/ai/kb/xreinm00/pickles/SUPA_SOLDIER_STATE.pickle'))
             
@@ -249,7 +252,7 @@ class DQNSupaSoldierAI(torch.nn.Module):
     
     def get_state(self, board: Board):
         state = []
-        attacks = list(possible_attacks(board, self.player_name))
+        attacks = [a for a in possible_attacks(board, self.player_name) if a[0].get_dice() > a[1].get_dice()]
         attacks_sorted = sorted(attacks, key=lambda x: probability_of_successful_attack(board, x[0].get_name(), x[1].get_name()), reverse=True)
         if attacks:
             for i, attack in enumerate(attacks_sorted): 
@@ -304,7 +307,7 @@ class DQNSupaSoldierAI(torch.nn.Module):
         
         self.reward = 0
         if self.bad_prediction:
-            self.reward = -5
+            self.reward = -10
         elif num_of_areas < last_num_of_areas:
             self.reward = -5
         elif num_of_areas > last_num_of_areas:
