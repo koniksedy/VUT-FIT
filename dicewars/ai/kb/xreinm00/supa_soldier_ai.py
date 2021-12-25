@@ -12,7 +12,6 @@ import datetime
 import os
 import pickle
 import time
-
 from dicewars.ai.utils import possible_attacks, probability_of_holding_area, probability_of_successful_attack
 from dicewars.client.ai_driver import BattleCommand, EndTurnCommand
 from dicewars.client.game.area import Area
@@ -22,18 +21,18 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 def define_parameters():
     params = dict()
     # Neural Network
-    params['epsilon_decay_linear'] = 1/30
+    params['epsilon_decay_linear'] = 1/100
     params['learning_rate'] = 0.00013629
     params['first_layer_size'] = 200        # neurons in the first layer
     params['second_layer_size'] = 20        # neurons in the second layer
     params['third_layer_size'] = 50         # neurons in the third layer
     params['episodes'] = 100        
-    params['memory_size'] = 2500
+    params['memory_size'] = 300
     params['batch_size'] = 100
     # Settings
     params['weights_path'] = os.path.join(os.getcwd(), 'dicewars/ai/kb/xreinm00/weights/weights.h5')
     params['train'] = True
-    params['load_weights'] = True
+    params['load_weights'] = False
     params['log_path'] = 'logs/scores_' + str(datetime.datetime.now().strftime("%Y%m%d%H%M%S")) +'.txt'
     return params
 
@@ -59,6 +58,13 @@ class DQNSupaSoldierAI(torch.nn.Module):
         self.load_weights = self.params['load_weights']
         self.counter_games = 0
         self.performed_attacks = 0
+        self.fresh_init = True
+        self.player_areas_old = 1
+
+        # loss values
+        self.loss_vals = []
+        self.epoch_loss= []
+
 
         self.config = self.load_ai_state()
         self.network()
@@ -71,29 +77,42 @@ class DQNSupaSoldierAI(torch.nn.Module):
             self.memory = self.config['memory']
             self.counter_games = self.config['counter_games']
             self.load_weights = self.config['load_weights']
+            self.player_areas_old = self.config['players_areas_old']
+            self.loss_vals = self.config['loss_vals']
         
+        print("Episodes: {}, Games total: {}".format(self.params['episodes'], self.counter_games))
         
+        """
+        if len(self.loss_vals) == 8:
+            import matplotlib
+            matplotlib.use('Agg')
+            import matplotlib.pyplot as plt
+            print("Printing loss graph")
+            temp = list(range(0, len(self.loss_vals)))
+            plt.plot(np.linspace(1, temp, temp).astype(int), self.loss_vals)
+            plt.savefig('mygraph.png')
+        """ 
 
     def __del__(self):
-        print("Episodes on Netflix: {}, current game num: {}".format(self.params['episodes'], self.counter_games))
-
-        # if self.params['train']:
-        #    self.replay_new(self.memory, self.params['batch_size'])
         self.save_ai_state()
+        if self.params['episodes'] == self.counter_games:
+            if self.params['train']:
+                model_weights = self.state_dict()
+                torch.save(model_weights, self.params["weights_path"])
+                print("Deleting state files...")
+                os.remove(os.path.join(os.getcwd(), 'dicewars/ai/kb/xreinm00/pickles/SUPA_SOLDIER_STATE.pickle'))
+            
 
     def ai_turn(self, board: Board, nb_moves_this_turn, nb_transfers_this_turn, nb_turns_this_game, time_left):
-        
         # self.optimizer = optim.Adam(self.parameters(), weight_decay=0, lr=self.params['learning_rate'])
         self.optimizer = optim.SGD(self.parameters(), weight_decay=0, lr=self.params['learning_rate'])
 
-        if nb_turns_this_game == 0:
-            if self.params['train']:
+        if self.fresh_init:
+            self.fresh_init = False
+            self.player_areas_old = board.get_player_areas(self.player_name)
+            if self.params['train'] and len(self.memory) > 0:
                 self.replay_new(self.memory, self.params['batch_size'])
-            
-            if self.params['episodes'] == self.counter_games + 1:
-                if self.params['train']:
-                    model_weights = self.state_dict()
-                    torch.save(model_weights, self.params["weights_path"])
+        
 
 
         if not self.params['train']:
@@ -112,18 +131,6 @@ class DQNSupaSoldierAI(torch.nn.Module):
             self.performed_attacks = 0
             # print("Ending turn...")
             return EndTurnCommand()
-
-        if nb_turns_this_game != 0:
-            # set reward for the new state
-            reward = self.set_reward(len(self.player_areas_current), len(self.player_areas_old))
-
-            if self.params['train']:
-                # train short memory base on the new action and state
-                self.train_short_memory(self.state_old, self.final_move, reward, state_new, True if len(attacks) == 0 else False)
-                # store the new data into a long term memory
-                self.remember(self.state_old, self.final_move, reward, state_new, True if len(attacks) == 0 else False)
-
-
 
         self.state_old = state_old
 
@@ -147,9 +154,19 @@ class DQNSupaSoldierAI(torch.nn.Module):
                 
                 if len(attacks) <= np.argmax(prediction.detach().cpu().numpy()[0]):
                     final_move = np.eye(6)[len(attacks)-1]
-
-        self.player_areas_old = board.get_player_areas(self.player_name)
         
+
+        # print("Setting reward and training short memory....")
+        # set reward for the new state
+        reward = self.set_reward(len(self.player_areas_current), len(self.player_areas_old))
+
+        if self.params['train']:
+            # train short memory base on the new action and state
+            self.train_short_memory(self.state_old, self.final_move, reward, state_new)
+            # store the new data into a long term memory
+            self.remember(self.state_old, self.final_move, reward, state_new)
+
+
         # perform new move and get new state
         index = 0
         for i, item in enumerate(final_move):
@@ -166,6 +183,7 @@ class DQNSupaSoldierAI(torch.nn.Module):
             print("Attacking target, predicted by NN: {}".format(NN_predicted))
         src_target = attacks[index]
         self.performed_attacks += 1
+        self.player_areas_old = board.get_player_areas(self.player_name)
         return BattleCommand(src_target[0].get_name(), src_target[1].get_name())  
     
     def save_ai_state(self):
@@ -178,7 +196,9 @@ class DQNSupaSoldierAI(torch.nn.Module):
                 "short_memory": self.short_memory,
                 "memory": self.memory,
                 "counter_games": self.counter_games,
-                "load_weights": self.load_weights
+                "load_weights": self.load_weights,
+                "players_areas_old": self.player_areas_old,
+                "loss_vals": self.loss_vals
             }
             pickle.dump(state, config_dictionary_file)
 
@@ -233,78 +253,24 @@ class DQNSupaSoldierAI(torch.nn.Module):
 
         return np.asarray(state), attacks
 
-        """
-        Return the state.
-        The state is a numpy array of 11 values, representing:
-            - Danger 1 OR 2 steps ahead
-            - Danger 1 OR 2 steps on the right
-            - Danger 1 OR 2 steps on the left
-            - Snake is moving left
-            - Snake is moving right
-            - Snake is moving up
-            - Snake is moving down
-            - The food is on the left
-            - The food is on the right
-            - The food is on the upper side
-            - The food is on the lower side      
-    
-        state = [
-            (player.x_change == 20 and player.y_change == 0 and ((list(map(add, player.position[-1], [20, 0])) in player.position) or
-            player.position[-1][0] + 20 >= (game.game_width - 20))) or (player.x_change == -20 and player.y_change == 0 and ((list(map(add, player.position[-1], [-20, 0])) in player.position) or
-            player.position[-1][0] - 20 < 20)) or (player.x_change == 0 and player.y_change == -20 and ((list(map(add, player.position[-1], [0, -20])) in player.position) or
-            player.position[-1][-1] - 20 < 20)) or (player.x_change == 0 and player.y_change == 20 and ((list(map(add, player.position[-1], [0, 20])) in player.position) or
-            player.position[-1][-1] + 20 >= (game.game_height-20))),  # danger straight
-
-            (player.x_change == 0 and player.y_change == -20 and ((list(map(add,player.position[-1],[20, 0])) in player.position) or
-            player.position[ -1][0] + 20 > (game.game_width-20))) or (player.x_change == 0 and player.y_change == 20 and ((list(map(add,player.position[-1],
-            [-20,0])) in player.position) or player.position[-1][0] - 20 < 20)) or (player.x_change == -20 and player.y_change == 0 and ((list(map(
-            add,player.position[-1],[0,-20])) in player.position) or player.position[-1][-1] - 20 < 20)) or (player.x_change == 20 and player.y_change == 0 and (
-            (list(map(add,player.position[-1],[0,20])) in player.position) or player.position[-1][
-             -1] + 20 >= (game.game_height-20))),  # danger right
-
-             (player.x_change == 0 and player.y_change == 20 and ((list(map(add,player.position[-1],[20,0])) in player.position) or
-             player.position[-1][0] + 20 > (game.game_width-20))) or (player.x_change == 0 and player.y_change == -20 and ((list(map(
-             add, player.position[-1],[-20,0])) in player.position) or player.position[-1][0] - 20 < 20)) or (player.x_change == 20 and player.y_change == 0 and (
-            (list(map(add,player.position[-1],[0,-20])) in player.position) or player.position[-1][-1] - 20 < 20)) or (
-            player.x_change == -20 and player.y_change == 0 and ((list(map(add,player.position[-1],[0,20])) in player.position) or
-            player.position[-1][-1] + 20 >= (game.game_height-20))), #danger left
-
-
-            player.x_change == -20,  # move left
-            player.x_change == 20,  # move right
-            player.y_change == -20,  # move up
-            player.y_change == 20,  # move down
-            food.x_food < player.x,  # food left
-            food.x_food > player.x,  # food right
-            food.y_food < player.y,  # food up
-            food.y_food > player.y  # food down
-        ]
-
-        for i in range(len(state)):
-            if state[i]:
-                state[i]=1
-            else:
-                state[i]=0
-
-        return np.asarray(state)
-        """
-
     def set_reward(self, num_of_areas: int, last_num_of_areas: int):
+        
         self.reward = 0
-
         if num_of_areas < last_num_of_areas:
             self.reward = -10
         elif num_of_areas > last_num_of_areas:
-            self.reward = 50
+            self.reward = 20
 
+        # print("Reward: {}".format(self.reward))
+        # print("current areas: {}, old areas: {}".format(num_of_areas, last_num_of_areas))
         return self.reward
 
-    def remember(self, state, action, reward, next_state, done):
+    def remember(self, state, action, reward, next_state):
         """
         Store the <state, action, reward, next_state, is_done> tuple in a 
         memory buffer for replay memory.
         """
-        self.memory.append((state, action, reward, next_state, done))
+        self.memory.append((state, action, reward, next_state))
 
     def replay_new(self, memory, batch_size):
         """
@@ -316,14 +282,13 @@ class DQNSupaSoldierAI(torch.nn.Module):
         else:
             minibatch = memory
 
-        for state, action, reward, next_state, done in minibatch:
+        for state, action, reward, next_state in minibatch:
             self.train()
             torch.set_grad_enabled(True)
             target = reward
             next_state_tensor = torch.tensor(np.expand_dims(next_state, 0), dtype=torch.float32).to(DEVICE)
             state_tensor = torch.tensor(np.expand_dims(state, 0), dtype=torch.float32, requires_grad=True).to(DEVICE)
-            if not done:
-                target = reward + self.gamma * torch.max(self.forward(next_state_tensor)[0])
+            target = reward + self.gamma * torch.max(self.forward(next_state_tensor)[0])
             output = self.forward(state_tensor)
             target_f = output.clone()
             target_f[0][np.argmax(action)] = target
@@ -331,11 +296,14 @@ class DQNSupaSoldierAI(torch.nn.Module):
             self.optimizer.zero_grad()
             loss = F.mse_loss(output, target_f)
             loss.backward()
+            self.epoch_loss.append(loss.item())
             self.optimizer.step()    
 
+        self.loss_vals.append(sum(self.epoch_loss)/len(self.epoch_loss))
+        print("Loss value {}".format(self.loss_vals[-1]))
         print("Replay finished")       
 
-    def train_short_memory(self, state, action, reward, next_state, done):
+    def train_short_memory(self, state, action, reward, next_state):
         """
         Train the DQN agent on the <state, action, reward, next_state, is_done>
         tuple at the current timestep.
@@ -345,8 +313,7 @@ class DQNSupaSoldierAI(torch.nn.Module):
         target = reward
         next_state_tensor = torch.tensor(next_state.reshape((1, 30)), dtype=torch.float32).to(DEVICE)
         state_tensor = torch.tensor(state.reshape((1, 30)), dtype=torch.float32, requires_grad=True).to(DEVICE)
-        if not done:
-            target = reward + self.gamma * torch.max(self.forward(next_state_tensor[0]))
+        target = reward + self.gamma * torch.max(self.forward(next_state_tensor[0]))
         output = self.forward(state_tensor)
         target_f = output.clone()
         target_f[0][np.argmax(action)] = target
