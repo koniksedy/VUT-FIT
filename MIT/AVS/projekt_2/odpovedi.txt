@@ -1,0 +1,139 @@
+Architektury Výpočetních Systémů (AVS 2021)
+Projekt č. 2 (PMC)
+Login: xsedym02
+
+Úloha 1: Paralelizace původního řešení
+===============================================================================
+
+1) Kterou ze smyček (viz zadání) je vhodnější paralelizovat a co způsobuje 
+   neefektivitu paralelizace té druhé?
+
+   Byla paralelizována smyčka v proceduře marchCubes. Paralelizace smyčky v proceduře evaluateFieldAt nebyla efektivní.
+   Procedura evaluateFieldAt je totiž volána pouze z procedury buildCube, tedy velikost paralelizované části programu 
+   by při tomto řešení byl znatelně menší, než pro marchCubes a zbytek programu by byl vykonáván sekvenčně. Zároveň
+   při paralelizaci druhé smyčky znatelně vzrůstá doba výpočtu, což je způsobenou vysokou režií nad malou paralelní sekcí.
+
+2) Jaké plánování (rozdělení práce mezi vlákna) jste zvolili a proč? 
+
+   Při testování byl zpozorován 2-3% pokles výkonu při použití static plánování oproti guided a dynamic.
+   V implementaci bylo zvoleno plánování dynamic, protože každá iterace může vytvořit jiný počet trojúhelníků,
+   a tedy trvat jinak dlouho. Nejlepší výkonnosti bylo dosaženo pro velikost "chunk" 32.
+
+   Jaký vliv má velikost "chunk" při dynamickém plánování (8, 16, 32, 64)?
+
+      Během testování dosahovala nejrychlejších a nejstabilnějších výsledků velikost 32.
+      Ostatní velikosti dosahovaly horších výsledků škálování.
+
+3) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně?
+
+   Trojuhelníky se ukládají v procedůře emitTriangle. 
+   
+   Původně se jednalo o kritickou sekci, která vyžadovala direktivu #pragma omp criticall. Tato synchronizace,
+   ale významně ovlivňovala výkon. Při vyšším počtu vláken se efektivita implementace snižovala v důsledku vysoké
+   režie při vstupu do kritické sekce. Proto byly výstupy vláken odděleny.
+
+   Na začátku programu je staticky vytvořeno pole pro výstupy maximálně 64 vláken. (UPOZORNĚNÍ: Pokud bude vláken
+   více, dojde k Segmentation Fault). Každé vlákno zapisuje trojúhelníky do vektoru zpřístupněného na základě indexu,
+   který je shodný s identifikátorem vlákna. Na konci procedury marchCubes jsou všechny mezivýsledky spojeny do
+   jednoho výsledného vektoru "mTriangles".
+
+Úloha 2: Paralelní průchod stromem
+===============================================================================
+
+1) Stručně popište použití OpenMP tasků ve vašem řešení.
+
+   OpenMp tasky jsou využívány pro průchod potomků zkoumaného uzlu ve stromu.
+   Z metody "marchCubes" je volána metoda "marchCubesPerPartes". Toto volání je označeno
+   direktivou "#pragma omp parallel", umožňující pozdější vytváření tasků, a také direktivou
+   "#pragma omp single", aby se volání na nejvyšší úrovni provedlo pouze jednou. Při prvním
+   volání je metodě "marchCubesPerPartes" předána pozice kořene (jediné hlavní velké kostky).
+   V metodě "marchCubesPerPartes" je provedena kontrola, zda není prostor prázdný, pokud ano,
+   nic se zde nebude vykreslovat. Dále (pokud je neprázdný) je prostor (uzel/kostka) rozdělen
+   na 8 podprostorů. Nové podprostory (potomci uzlu) jsou zpracovány v novém tasku ("#pragma omp task"),
+   který rekurzivně zavolá proceduru "marchCubesPerPartes". Pokud prohledávání stromu dospěje
+   do listového uzlu (kostky), je zavolána metoda "buldCube". Na konci metody "marchCubesPerPartes"
+   je direktiva "#pragma omp taskwait", která zabraňuje destrukci lokálních zdrojů před dokončení
+   tasků, které zde byly vytvořeny a dané zdroje potřebují.
+
+2) Jakým způsobem jste realizovali sesbírání celkového počtu trojúhelníků?
+
+   Získání celkového počtu trojúhelníku mohlo být řešeno podobně jako v loop implementaci postupnou
+   propagací počtu trojúhelníku ve stromu zpátky směrem ke koření. Nicméně v tomto provedení byla
+   vyšší režie předávání hodnot a kontroly vstupu do atomických sekcí (totalTriange += tmp).
+   Proto byl počet vytvořených trojúhelníků získán z výsledného vektoru pomocí "mTrianges.size()".
+   Tato hodnota je poté navrácena procedurou "marchCubes".
+
+3) Jaký vliv má na vaše řešení tzv. "cut-off"? Je vhodné vytvářet nový 
+   task pro každou krychli na nejnižší úrovni?
+
+   Z výsledků testování plyne, že nejvyšší efektivity je dosaženo při vytváření tasku i pro
+   každou krychli na nejnižší úrovni. Tímto je totiž dosaženo maximálního využití vláken.
+
+4) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně?
+
+   Trojúhelníky jsou ukládány stejným způsobem jako pro loop implementaci.
+   
+   (((( viz Úloha 1. - Otázka 3. ((((((((((((((((((((((((((((((((((((((((((((((((((((
+
+   Trojuhelníky se ukládají v procedůře emitTriangle. 
+
+   Původně se jednalo o kritickou sekci, která vyžadovala direktivu #pragma omp criticall. Tato synchronizace,
+   ale významně ovlivňovala výkon. Při vyšším počtu vláken se efektivita implementace snižovala v důsledku vysoké
+   režie při vstupu do kritické sekce. Proto byly výstupy vláken odděleny.
+
+   Na začátku programu je staticky vytvořeno pole pro výstupy maximálně 64 vláken. (UPOZORNĚNÍ: Pokud bude vláken
+   více, dojde k Segmentation Fault). Každé vlákno zapisuje trojúhelníky do vektoru zpřístupněného na základě indexu,
+   který je shodný s identifikátorem vlákna. Na konci procedury marchCubes jsou všechny mezivýsledky spojeny do
+   jednoho výsledného vektoru "mTriangles".
+
+   ))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+Úloha 3: Grafy škálování všech řešení
+===============================================================================
+
+1) Stručně zhodnoťte efektivitu vytvořených řešení (na základě grafů škálování).
+
+   Celkově je tree implementace efektivnější z pohledu velikosti mřížky než loop implementace.
+   Pro malé velikosti mřížky (do 2^11) se mohou grafy křížit (bude efektivnější implementace loop).
+
+   Z grafu slabého škálování vyplývá, že tree implementace škáluje pro malé vstupy
+   a málo vláken hůře než loop implementace.
+
+   Z grafu silného škálování lze vypozorovat, že tree implementace škáluje méně 
+   konstantě než loop implementace.
+
+
+2) V jakém případě (v závislosti na počtu bodů ve vstupním souboru a velikosti 
+   mřížky) bude vaše řešení 1. úlohy neefektivní? (pokud takový případ existuje)
+
+   Takový případ neexistuje. Implementace loop je ve všech případech efektivní.
+   Při žádné konfiguraci vstupu nedochází neúměrménu zpomalení výpočtu.
+
+3) Je (nebo není) stromový algoritmus efektivnější z pohledu slabého škálování 
+   vzhledem ke vstupu?
+
+   Celkově není stromový algoritmus efektivnější z pohledu slabého škálování. Tree implementace
+   škáluje hůře pro malé vstupy nebo malý počet vláken (1,2).
+
+Úloha 4: Analýza využití jader pomocí VTune
+================================================================================
+
+1) Jaké bylo průměrné využití jader pro všechny tři implementace s omezením na 
+   18 vláken? Na kolik procent byly využity?
+   
+   ref:   0.996 ( 5.5% z 18 jader) ( 2.8% z 36 jader)
+   loop: 17.055 (94.8% z 18 jader) (47.4% z 36 jader)
+   tree: 14.594 (81.1% z 18 jader) (40.4% z 36 jader)
+
+2) Jaké bylo průměrné využití jader pro všechny tři implementace s využitím 
+   všech jader? Na kolik procent se podařilo využít obě CPU?
+   
+   ref:   0.998 ( 3.1% z 32 jader) ( 2.8% z 36 jader) 
+   loop: 28.111 (87.8% z 32 jader) (78.1% z 36 jader) 
+   tree: 21.274 (66.5% z 36 jader) (59.1% z 36 jader) 
+
+3) Jaké jsou závěry z těchto měření?
+
+   Přidávání počtu jader pro čistě sekvenční kód nemá význam. Implementace loop vždy vytížila téměř
+   všechna přidělená (limitována počtem vláken) jádra. Je vidět, že loop implementace efektivněji
+   vytěžovala jádra, což koresponduje se zvýšenou režií u tree způsobenou velkým množstvím menších tasků.

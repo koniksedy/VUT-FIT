@@ -1,0 +1,168 @@
+\documentclass[a4paper, 11pt, fleqn]{scrartcl}
+
+\usepackage[czech]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage[left=2cm, top=3cm, text={17cm, 24cm}]{geometry}
+\usepackage[unicode, colorlinks, hypertexnames=false, citecolor=red]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[shortlabels]{enumitem}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{newtxtext, newtxmath}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{changepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Makra %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\KURZ}{Složitost}
+\newcommand{\AUTOR}{Michal Šedý <xsedym02>}
+\newcommand{\NAZEV}{Úkol 1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hlavička %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancy}
+\fancyhead[L]{\AUTOR}
+\fancyhead[C]{\KURZ}
+\fancyhead[R]{\today}
+
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage\,/\,\pageref*{LastPage}}
+
+\setlength{\parindent}{0pt}
+\setlength{\mathindent}{0pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Text %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+ \begin{center}
+   {\Large \NAZEV}
+ \end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PŘÍKLAD 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ \section*{Příklad 1}
+   Navrhněte Turingův stroj, který počítá součet dvou čísel v desítkové soustavě.
+
+   \begin{itemize}\setlength\itemsep{-0.5em}
+     \item Vstup je ve tvaru $\triangle\alpha \#\beta\triangle^\omega$, kde $\alpha$ a $\beta$ jsou čísla v desítkové soustavě, $\alpha$, $\beta > 0$.
+     \item Po zastavení Turingova stroje první páska obsahuje $\triangle\alpha\#\beta\#\gamma\triangle^\omega$, kde $\gamma = \alpha + \beta$.
+     \item V případě, že navrhnete vícepáskový stroj, obsah dalších pásek může být libovolný.
+     \item Určete horní odhad časové a prostorové složitosti tohoto stroje.
+   \end{itemize}
+
+ \section*{Řešení 1}
+   Sestrojíme čtyř páskový Turingův stroj. Obsah jednotlivých pásek bude následovný.
+
+   \begin{itemize}\setlength\itemsep{-0.1em}
+     \item První páska bude obsahovat zadání ve tvaru $\triangle\alpha \#\beta\triangle^\omega$ a následně výsledek ve tvaru $\triangle\alpha\#\beta\#\gamma\triangle^\omega$.
+     \item Druhá páska bude obsahovat zkopírovanou hodnotu druhého operandu $\beta$ ve tvaru $\triangle\beta\triangle^\omega$.
+     \item Třetí páska bude obsahovat pouze jednu buňku udávající informaci o přetečení. Páska je inicializovaná na hodnotu $\triangle 0 \triangle^\omega$.
+     \item Čtvrtá páska bude obsahovat reverzi průběžného výsledku sčítání. Výsledná hodnota bude na pásce ve tvaru $\triangle\gamma^R\triangle^\omega$, kde $\gamma^R$ je reverzní řetězec k řetězci $\gamma$.
+   \end{itemize}
+
+   Nechť je dálka obsahu vstupu $n$. V nejhorším případě bude i délka největšího operandu $n-2 \sim n$. Výpočet Turingova stroje probíhá následovně. Poznamenejme, že logika pro součet dvou čísel 0--9 a carry bitu je již zakódována ve struktuře stroje.
+   \begin{enumerate}\setlength\itemsep{-0.1em}
+     \item Posuneme hlavu na 1. pásce až na MSB\footnote{Most Significant Digit (nejlevější číslice)} $\beta$. $\mathcal{O}_{time}(n + 2)$
+     \item Z 1. pásky se zkopíruje operand $\beta$ na 2 pásku. (Kopírování sestává z 3 operací: zápisu z pod hlavy na 1. pásce na 2. pásku, posunu hlavy na 1. pásce doprava a posunu hlavy na 2. pásce doprava). $\mathcal{O}_{time}(3n)$
+     \item Posuneme hlavu na 1. pásce z koncového znaku $\triangle$ na LSD\footnote{Least Significant Digit (nejpravější číslici)} operandu $\alpha$. $\mathcal{O}_{time}(n + 2)$
+     \item Přesuneme hlavu na 2. pásce z koncového znaku $\triangle$ na LSD operandu $\beta$. $\mathcal{O}_{time}(1)$
+     \item Přesuneme hlavu na 3. pásce z počátečního znaku $\triangle$ doprava na hodnotu 0. $\mathcal{O}_{time}(1)$
+     \item Přesuneme čtecí hlavu na 4. pásce z počátečního znaku $\triangle$ doprava. $\mathcal{O}_{time}(1)$
+     \item Sečteme hodnoty pod hlavami na 1. ($\alpha$), 2. ($\beta$) a 3. (carry) pásce. Pokud je čtecí hlava na první, nebo druhé pásce na znaku $\triangle$, pak se tento znak interpretuje jako 0. Pokud je výsledek součtu z intervalu $\langle 0,9 \rangle$, pak se zapíše na 4. pásku a na 3. pásku se zapíše 0. Pokud je výsledek z intervalu $\langle 10, 19\rangle$, pak se zapíše hodnota na místě jednotek na 4. pásku a na 3. pásku se zapíše hodnota 1. $\mathcal{O}_{time}(2)$
+     \item Pokud je pod hlavou na 1. pásce znak různý od $\triangle$, pak se posune hlava doleva. $\mathcal{O}_{time}(1)$
+     \item Pokud je pod hlavou na 2. pásce znak různý od $\triangle$, pak se posune hlava doleva. $\mathcal{O}_{time}(1)$
+     \item Na 4. pásce se posune hlava doprava. $\mathcal{O}_{time}(1)$
+     \item Pokud se pod alespoň pod jednou z hlav z 1., nebo 2. pásky vyskytuje znak různý od $\triangle$, tak se výpočet vrací na bod 7, jinak pokračuje.
+     \item Pokud se pod hlavou na 3. pásce nachází 1, tak se překopíruje na 4. pásku a potom se posune hlava na pásce 4 doprava. $\mathcal{O}_{time}(2)$
+     \item Posuň hlavu na 1. pásce na první pravý $\triangle$. $\mathcal{O}_{time}(n)$
+     \item Zapiš na 1. pásku znak $\#$ a posuň hlavu doprava. $\mathcal{O}_{time}(2)$
+     \item Posuň hlavu na 4. pásce doleva (na MSD výsledku). $\mathcal{O}_{time}(1)$
+     \item Postupně obráceně kopíruj reverzní výsledek z 4. pásky na konec 1. pásky. (Kopírování vyžaduje tři operace.) $\mathcal{O}(3n)$
+     \item Výsledek sčítání je na 1. pásce ve tvaru $\triangle\alpha\#\beta\#\gamma\triangle^\omega$.\\
+   \end{enumerate}
+
+   Horní odhad časové složitosti navrženého Turingova stroje je $\mathcal{O}_{time}\big((n+2)+(3n)+(n+2)+(3)+n\cdot(5)+(2)+(n)+(3)+(3n)\big) = \mathcal{O}_{time}(n)$.\\
+
+   Horní odhad prostorové složitosti navrženého Turingova stroje je $\mathcal{O}_{space}\big((2+2n+1)+(2+n)+(2)+(2+n+1)\big) = \mathcal{O}_{space}(n)$.\\
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PŘÍKLAD 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \section*{Příklad 2}
+    Navrhněte RAM program, který pro vstupní vektor $I = (n_1 , n_2)$ vypočítá hodnotu $n_1$ \textit{mod} $n_2$ (předpokládejme, že $n_1 , n 2 > 0$). Po provedení instrukce \textit{HALT} bude v registru $r_0$ číslo $a = n_1$ \textit{mod} $n_2$. (Pozn: Není třeba implementovat optimální algoritmus.)
+    \begin{itemize}\setlength\itemsep{-0.1em}
+      \item Analyzujte uniformní (jednotkovou) časovou a prostorovou složitost tohoto RAM programu a uveďte horní odhady.
+      \item Analyzujte logaritmickou časovou a prostorovou složitost tohoto RAM programu a uveďte horní odhady.
+    \end{itemize}
+
+
+  \section*{Řešení 2}
+    RAM program $\Pi$, který prování operaci $n_1$ \textit{mod} $n_2$ na vstupním vektoru $I = (n_1 , n_2)$ vypadá následovně.\\
+
+    \texttt{1: READ~~~1\\
+    2: STORE~~1\\
+    3: READ~~~0\\
+    4: SUB~~~~r1\\
+    5: JPOS~~~4\\
+    6: JZERO~~4\\
+    7: ADD~~~~r1\\
+    8: HALT\\
+   }
+
+   Uniformní časová složitost stroje je dána počtem vykonaných iterací, kterých je v nejhorším případě $n_1$ (pro $n_2 = 1$). Při jednotkové ceně instrukce je $\mathcal{O}^{uni}_{time}(2^n)$. Uniformní prostorová složitost stroje je dána délkou vstupu a počtem použitých registrů, $\mathcal{O}^{uni}_{space}(4) = \mathcal{O}^{uni}_{space}(1)$.\\
+
+   Při logaritmické časové složitosti je cena instrukce $\textit{log}_2(2^n)$. Výsledná logaritmická časová složitost je $\mathcal{O}^{log}_{time}(2^n\cdot n)$. Logaritmická prostorová složitost stroje je dána také počtem bitů potřebných k uložení hodnoty, tedy $\mathcal{O}^{log}_{space}(4*n) = \mathcal{O}^{log}_{space}(n)$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PŘÍKLAD 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ \section*{Příklad 3}
+   Nechť $L$ je libovolný regulární jazyk. Určete funkce $f(n)$ a $g(n)$ takové, že $L \in \textit{DTIME}(f(n))$ a $L \in \textit{DSPACE}(g(n))$. Svoje tvrzení dokažte.
+
+ \section*{Řešení 3}
+   Pro libovolný jazyk $L \in \mathcal{L}_3$ platí, že existuje Turingův stroj $M$, který přijímá přechodem do koncového stavu, pro který platí, $L \equiv L(M)$ a jehož časová a prostorová složitost je lineární. Tedy $L \in \textit{DTIME}(n)$ a $L \in \textit{DSPACE}(n)$.
+
+   \begin{proof}
+     Pro každý $L \in \mathcal{L}_3$ exituje deterministický konečný automat $A$ ve tvaru $A = (Q_A, \Sigma_A, \delta_A, i_A, F_A)$, který daný jazyk přijímá. $Q_A$ je konečná množina stavů automatu, $\Sigma_A$ je konečná vstupní abeceda automatu, $\delta_A$ je přechodová funkce tvaru $\delta_A: Q_A \times \Sigma \longrightarrow Q$, dále $i_A \in Q$ je počáteční stav a $F_A \subseteq Q_A$ množina koncových stavů. Pro takovýto automat $A$ můžeme sestrojit jednopáskový Turingův stroj $M$ ve tvaru $M = (Q_M, \Sigma_M, \Gamma_M, \delta_M, i_M, f_M)$, který přijímá jazyk $L$, kde $Q_M$ je konečná množina stavů, $\Sigma_M \subset \Gamma_M$ je vstupní abeceda, $\Gamma_M$ je pásková abeceda, $\delta_M$ je přechodová funkce ve tvaru $\delta_M: Q_M \times \Gamma \longrightarrow Q \times (\Gamma \cup \{R, L\})$, kde $R$ je posun hlavy doprava a $L$ je posun hlavy doleva, $i_M \in Q_M$ je počáteční stav a $f_M \in Q_M$ je koncový stav.\\
+
+     Turingův stroj $M = (Q_M, \Sigma_M, \Gamma_M, \delta_M, i_M, f_M)$ je z automatu $A = (Q_A, \Sigma_A, \delta_A, i_A, F_A)$ zkonstruován následovně.
+     \begin{itemize}
+       \item $Q_M = Q_A \cup \{f_M, i_M\}$, kde $f_M, i_M \notin Q_A$
+       \item $\Sigma_M = \Sigma_A$
+       \item $\Gamma_M = \Sigma_A \cup \{\triangle\}$
+       \item $\delta_M(q, a) =
+       \begin{cases}
+         (i_A, R) & q = i_M \land a = \triangle\\
+         (\delta(q, a), R) & q \in Q_A \land a \in \Sigma_A \\
+         (f_M, \triangle)  & q \in F_A \land a = \triangle
+       \end{cases}
+       $
+       \item $i_M \in Q_M$ je počáteční stav stroje
+       \item $f_M \in Q_M$ je koncový stav stroje
+     \end{itemize}
+
+     Ze struktury přechodové funkce Turingova stroje $M$ lze vidět, že pro $w \in L$ o délce $n \in \mathbb{N}$, které je zapsáno na pásce, musí stroj po $1+n+1$ krocích přijmout v koncovém stavu $f_M$, nebo zhavarovat v kroku $m \leq n+2$. Turingův stroj tedy provede maximálně $n+2$ kroků, z čehož vyplývá, že jeho časová složitost je $\mathcal{O}_{time}(n+2) = \mathcal{O}_{time}(n)$. Protože při kontrole slova $w$ musí stroj $M$ projít právě buňky pásky, na kterých se slovo nachází, je jeho prostorová složitost $\mathcal{O}_{space}(n+2) = \mathcal{O}_{time}(n)$.\\
+
+     Bylo tedy dokázáno, že pro libovolný jazyk $L \in \mathcal{L}_3$ platí $L \in \textit{DTIME}(n)$ a $L \in \textit{DSPACE}(n)$.
+   \end{proof}
+\end{document}
+

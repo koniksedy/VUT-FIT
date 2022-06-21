@@ -1,0 +1,40 @@
+Autor: Michal Šedý <xsedym02@stud.fit.vutbr.cz>
+
+
+#### Stručně odpovězte na následující otázky: ######
+
+1. Proč je nutné určovat, zda má výpočet pokračovat?
+==============================================================================
+Prvním důvodem je, že výpočet Mandelbrotovy množiny musí být zastaven při iteraci i ve které došlo k dosažení podmínky |z_i| > 2, kde i je vráceno jako výsledek.
+
+Dalším důvodem, je zamezit zbytečnému provádění výpočtů. Výpočet má tendenci běžet až do hodnoty limit. Na základě měření, je ale výsledku průměrně dosaženo do 65-té iterace. Po dosažení hraniční podmínky |z_i| > 2 již nemá smysl dále ve výpočtu pokračovat (úspora času).
+
+
+2. Byla "Line" vektorizace efektivní? Proč?
+==============================================================================
+Ano, implementace Line byla v průměru 3x efektivnější, než referenční implementace. Důvodem zrychlení bylo využití vektorizace, která umožnila provádění více výpočtů současně. Pro umožnění vektorizace byly prohozen cyklus průchodu po řádku s cyklem iterací přes jednu buňku matice. Dále byla detekována shoda ukončení všech iterací ve všech buňkách řádku, která umožňovala zabránit novému průchod (iteraci) řádkem před limitem a přejít k výpočtu nového řádku.
+
+
+3. Jaká byla dosažena výkonnost v Intel Advisoru pro jednotlivé implementace 
+(v GFLOPS)?
+==============================================================================
+Ref   -  2.3 GFLOPS
+Line  - 19.1 GFLOPS
+Batch - 20.9 GFLOPS
+
+
+
+4. Jaká část kódu byla vektorizovaná v "Line" implementaci? Vyčteme tuto 
+informaci i u batch kalkulátoru?
+==============================================================================
+U obou implementací byla vektorizovaná smyčka inicializující pole reálných a imaginárních složek.
+V Line implementaci byla vektorizovaná smyčka procházející přes celý řádek matice (jedná se o poslední cyklus po prohození).
+U Batch implementace byla vektorizovaná smyčka procházející přes část (dávku) řádku matice.
+
+
+
+5. Co vyčteme z Roofline modelu pro obě vektorizované implementace?
+==============================================================================
+Line - Data jsou v L2 chache. To je způsobeno opakujícími se průchody dlouhých řádků matice, které se nevejdou celé do L1 chache. Tedy rychlost provádění je limitována rychlosti L2 chache.
+
+Batch - Celkově je Batch implementace trošku efektivnější než Line. Rychlejší čas výpočtu je v hlavní míře způsoben průchodem řádku po částech a tedy dřívější nalezení schody ve všech buňkách pro ukončení iterací přes tento blok. Provádíme tedy operace pořád stejně pomalu, ale je jich méně. I přesto lze ale vypozorovat, že současná implementace se již vejde do L1 cache a zvýšení počtu výpočtu by již mohlo přinést vyšší efektivitu programu.

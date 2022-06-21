@@ -1,0 +1,297 @@
+\documentclass[a4paper, 11pt, fleqn]{scrartcl}
+
+\usepackage[czech]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage[left=2cm, top=3cm, text={17cm, 24cm}]{geometry}
+\usepackage[unicode, colorlinks, hypertexnames=false, citecolor=red]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[shortlabels]{enumitem}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{newtxtext}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{changepage}
+\usepackage{tikz}
+\usetikzlibrary{calc, automata, positioning, arrows}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Makra %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\KURZ}{Složitost}
+\newcommand{\AUTOR}{Michal Šedý <xsedym02>}
+\newcommand{\NAZEV}{Úkol 3}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hlavička %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancy}
+\fancyhead[L]{\AUTOR}
+\fancyhead[C]{\KURZ}
+\fancyhead[R]{\today}
+
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage\,/\,\pageref*{LastPage}}
+
+\setlength{\parindent}{0pt}
+\setlength{\mathindent}{0pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Text %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+ \begin{center}
+   {\Large \NAZEV}
+ \end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PŘÍKLAD 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \section*{Příklad 1}
+    Consider the following modification of the $\mathit{(GEOGRAPHY) GAME}$:
+
+    \vspace{0.2cm}
+
+    \begin{adjustwidth}{2em}{2em}
+      A \textit{parity game} is a quadruple $(V, E, s, \alpha)$ where $(V, E)$ is a directed graph (with vertices $V$ and edges $E \subseteq V \times V$), $s \in V$ is an initial vertex and $\alpha : V \rightarrow \mathbb{N}$ is the weight function. The game is played by two players (Player 1, who starts, and Player 2), who alternate in moving a token along the vertices of the graph according to the graph edges. Each vertex can be visited at most once. The game ends when it is not possible to make a move. The winner is Player 1 iff the smallest weight encountered along the game is odd and Player 2 if it is even (note that it does not matter whose turn it was when the game ended).
+    \end{adjustwidth}
+
+    \vspace{0.2cm}
+
+    $\mathit{PARITY~GAME}$ asks whether, given a parity game $g$, Player 1 has a winning strategy for $g$.
+
+    Prove that $\mathit{PARITY~GAME}$ is \footnotesize$\mathit{PSPACE}$\normalsize-complete.
+
+    \vspace{0.2cm}
+
+    \textit{Hint}: modify the proof that $\mathit{GEOGRAPHY~GAME}$ is \footnotesize$\mathit{PSPACE}$\normalsize-complete from the book of Papadimitriou (an excerpt from the book with the proof can be found here: \url{http://www.fit.vutbr.cz/~lengal/slo-2022/geography-pspace-complete.pdf}).
+
+  \section*{Řešení 1}
+    \begin{proof}
+      Důkaz \footnotesize$\mathit{PSPACE}$\normalsize-úplnosti $\mathit{PARITY~GAME}$ rozdělíme do dvou částí. Nejprve ukážeme, příslušnost do  \footnotesize$\mathit{PSPACE}$\normalsize~a~poté, že existuje redukce ze známého \footnotesize$\mathit{PSPACE}$\normalsize-úplného problému.
+
+      \vspace{0.5cm}
+
+      Důkaz náležitosti do \footnotesize$\mathit{PSPACE}$\normalsize:
+
+        \begin{adjustwidth}{1em}{0em}
+          Uvažujme 3 páskový deterministický Turingův stroj $M$, který rozhoduje problém $\mathit{PARITY~GAME}$. Vstupní páska stroje má tvar $\triangle\langle V \rangle\#\langle E \rangle\#\langle s \rangle\#\langle \alpha \rangle \triangle \triangle^\omega$, kde $\langle V \rangle$ je kód množiny vrcholů, $\langle E \rangle$ je kód množiny hran, $\langle s \rangle$ je kód počátečního vrcholu, $\langle \alpha \rangle$ je kód váhové funkce. Průběh hry $\mathit{PARITY~GAME}$ je možné charakterizovat \textit{AND/OR} stromem, kde Hráč 1 využívá \textit{OR} uzly a Hráč 2 používá \textit{AND} uzly. Průchod stromem do hloubky je simulován na druhé pásce. Strom hry je generován po částech. Prohledané větve se odstraní. Na třetí pásce se uchovává sekvence hodnot navštívený vrcholů dle váhové funkce $\alpha$. V listovém uzlu stromu hry na pásce 2 je vyhodnoceno, zda je nejmenší šíslo na třetí pásce liché, pak je list ohodnocen jako \textit{\textbf{true}}, v opačném případě jako \textit{\textbf{false}}. Lze vidět, že $\mathit{PARITY~GAME} \in~$\footnotesize$\mathit{PSPACE}$\normalsize.
+        \end{adjustwidth}
+
+      \vspace{0.5cm}
+
+      Redukce $\mathit{QSAT}$ na $\mathit{PARITY~GAME}$:
+
+        \begin{adjustwidth}{1em}{0em}
+          Redukci ukážeme na příkladu. Je zřejmé, že redukce funguje i pro jeho zobecnění. Mějme instanci $\mathit{QSAT}$:
+          $$\exists x \forall y \exists z : \bigl( (\neg x \lor \neg y) \land (y \lor z) \land (y \lor \neg z)\bigr)$$
+
+          Pro každou proměnnou vytvoříme diamant v grafu, kde všechny vrchly budou mít váhu 3.
+
+          \begin{figure}[h]
+            \centering
+            \begin{tikzpicture}
+              \node[state, minimum size=0.3cm] (q1) {\scriptsize3\normalsize};
+              \node[state, below right of=q1, minimum size=0.3cm] (q2) {\scriptsize3\normalsize};
+              \node[state, below left of=q1, minimum size=0.3cm] (q3) {\scriptsize3\normalsize};
+              \node[state, below right of=q3, minimum size=0.3cm] (q4) {\scriptsize3\normalsize};
+              \node[right=0.3cm of q2] (v2) {$x = \mathbf{true}$};
+              \node[left=0.3 of q3] (v3) {$x = \mathbf{false}$};
+
+              \draw[->]   (q1) edge[above right] node{} (q2)
+                      (q1) edge[above left] node{} (q3)
+                      (q2) edge[below right ] node{} (q4)
+                      (q3) edge[below left] node{} (q4);
+
+            \end{tikzpicture}
+            \caption{Diamant pro proměnnou $x$.}
+          \end{figure}
+
+          Vytvořené diamanty propojíme hranami v pořadí odpovídajícímu pořadí kvantifikátoru ve formuli. K poslednímu uzlu sekvence přiřadíme tolik nových \textit{konjunkčních} uzlů s váhou 3, kolik obsahuje formule konjunkcí (v našem případě tři). Z těchto uzlů vedeme hrany k uzlů odpovídajícím disjunkcím ve vybrané konjunkci (pro ($\neg x \lor \neg y$) vedeme hrany do uzlů $x = \mathbf{false}$ a $y = \mathbf{false}$). Dále vytvoříme jeden \textit{fail} uzel s váhou 2, do kterého povedou hrany ze všech \textit{konjunkčních} uzlů vytvořených v předešlém kroku.
+
+          \begin{figure}[h]
+            \centering
+            \begin{tikzpicture}
+              \node[state, minimum size=0.3cm] (xq1) {\scriptsize3\normalsize};
+              \node[state, below right of=xq1, minimum size=0.3cm] (xq2) {\scriptsize3\normalsize};
+              \node[state, below left of=xq1, minimum size=0.3cm] (xq3) {\scriptsize3\normalsize};
+              \node[state, below right of=xq3, minimum size=0.3cm] (xq4) {\scriptsize3\normalsize};
+              \node[right=0.3cm of xq2] (xv2) {$x = \mathbf{true}$};
+              \node[left=0.3 of xq3] (xv3) {$x = \mathbf{false}$};
+
+              \node[state, minimum size=0.3cm, below of=xq4] (yq1) {\scriptsize3\normalsize};
+              \node[state, below right of=yq1, minimum size=0.3cm] (yq2) {\scriptsize3\normalsize};
+              \node[state, below left of=yq1, minimum size=0.3cm] (yq3) {\scriptsize3\normalsize};
+              \node[state, below right of=yq3, minimum size=0.3cm] (yq4) {\scriptsize3\normalsize};
+              \node[right=0.3cm of yq2] (yv2) {$y = \mathbf{true}$};
+              \node[left=0.3 of yq3] (yv3) {$y = \mathbf{false}$};
+
+              \node[state, minimum size=0.3cm, below of=yq4] (zq1) {\scriptsize3\normalsize};
+              \node[state, below right of=zq1, minimum size=0.3cm] (zq2) {\scriptsize3\normalsize};
+              \node[state, below left of=zq1, minimum size=0.3cm] (zq3) {\scriptsize3\normalsize};
+              \node[state, below right of=zq3, minimum size=0.3cm] (zq4) {\scriptsize3\normalsize};
+              \node[right=0.3cm of zq2] (zv2) {$z = \mathbf{true}$};
+              \node[left=0.3 of zq3] (zv3) {$z = \mathbf{false}$};
+
+              \node[state, below of=zq4, minimum size=0.3cm] (c2) {\scriptsize3\normalsize};
+              \node[state, right=1cm of c2, minimum size=0.3cm] (c3) {\scriptsize3\normalsize};
+              \node[state, left=1cm of c2, minimum size=0.3cm] (c1) {\scriptsize3\normalsize};
+              \node[state, below of=c2, minimum size=0.3cm] (fail) {\scriptsize2\normalsize};
+
+              \draw[->]   (xq1) edge[above right] node{} (xq2)
+                          (xq1) edge[above left] node{} (xq3)
+                          (xq2) edge[below right ] node{} (xq4)
+                          (xq3) edge[below left] node{} (xq4)
+                          (xq4) edge[right] node{} (yq1)
+                          (yq1) edge[above right] node{} (yq2)
+                          (yq1) edge[above left] node{} (yq3)
+                          (yq2) edge[below right ] node{} (yq4)
+                          (yq3) edge[below left] node{} (yq4)
+                          (yq4) edge[right] node{} (zq1)
+                          (zq1) edge[above right] node{} (zq2)
+                          (zq1) edge[above left] node{} (zq3)
+                          (zq2) edge[below right ] node{} (zq4)
+                          (zq3) edge[below left] node{} (zq4)
+                          (zq4) edge[right] node{} (c1)
+                          (c1)  edge[bend left=90, left] node{} (xq3)
+                          (c1)  edge[bend left=90, left] node{} (yq3)
+                          (zq4) edge[right] node{} (c2)
+                          (c2)  edge[bend right=90, above left] node{} (yq2)
+                          (c2)  edge[bend left=90, above left] node{} (zq3)
+                          (zq4) edge[right] node{} (c3)
+                          (c3)  edge[bend right=90, right] node{} (yq2)
+                          (c3)  edge[bend right, above] node{} (zq2)
+                          (c1)  edge[right] node{} (fail)
+                          (c2)  edge[right] node{} (fail)
+                          (c3)  edge[right] node{} (fail);
+
+            \end{tikzpicture}
+            \caption{Formule reprezentovaná grafem v $\mathit{PARITY~GAME}$}
+          \end{figure}
+
+          Každá cesta v grafu vždy vybere jednu stranu každého diamantu. Hráč 1 reprezentuje existenční kvantifikátory a Hráč 2 univerzální. Lze vidět, že pokud je cesta zvolena tak, že existenční hráč (Hráč 1) nemůže provést poslední krok do uzlu s hodnotou 3, protože cílový uzel již byl navštíven, pak musí zvolit přechod do uzlu s váhou 2 a prohrává, protože podle $\mathit{PARITY~GAME}$ musí být nejnižší navštívená váha lichá, aby Hráč 1 vyhrál.
+        \end{adjustwidth}
+
+        \vspace{0.5cm}
+
+        Bylo tedy dokázáno, že problém $\mathit{PARITY~GAME}$ je \footnotesize$\mathit{PSPACE}$\normalsize-úplný.
+    \end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PŘÍKLAD 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \section*{Příklad 2}
+    Let $G = (V, E)$ be a finite undirected graph, i.e., $E \subseteq \{\{u, v\}\, |\, u, v \in V, u \neq v\}$. A set of vertices $S \subseteq V$ is a~\textit{k-clique} of $G$ iff $|S| = k$ and $\{\{i, j\} \, |\, i, j \in S, i \neq j\} \subseteq V$ . The problem $\oplus\mathit{CLIQUE}$ is defined as follows:
+    $$\oplus\mathit{CLIQUE} = \{((V, E), k)\, :\, |\{S \subseteq V : S\textnormal{ is a }\textit{k-clique}\textnormal{ of }G\}|\, \mathit{mod}\, 2 = 1\},$$
+
+    i.e., it is the set of graphs that have an \textit{odd} number of \textit{k-cliques}. Show that $\oplus\mathit{CLIQUE}$ and $\mathit{co}\oplus\mathit{CLIQUE}$ are \footnotesize$\mathit{PSPACE}$\normalsize-interreducible (i.e., that there is a polynomial reduction in both directions).
+
+  \section*{Řešení 2}
+    Víme, že $\#\mathit{CLIQUE}$ je známý problém v \footnotesize$\mathit{PSPACE}$\normalsize. $\oplus\mathit{CLIQUE}$ pouze k výsledku $\#\mathit{CLIQUE}$ přidává kontrolu na modulo, takže lze vidět, že i  $\oplus\mathit{CLIQUE}$ je v \footnotesize$\mathit{PSPACE}$\normalsize. Důkaz interreducibility $\oplus\mathit{CLIQUE}$ a $\mathit{co}\oplus\mathit{CLIQUE}$ ukážeme ve dvou krocích. Nejprvé provedeme redukci z $\oplus\mathit{CLIQUE}$ na $\mathit{co}\oplus\mathit{CLIQUE}$ a poté v opačném směru.
+
+    \begin{proof}
+      Pro důkaz předpokládejme, že se nemusí jednat o souvislý draf. (K zobecnění důkazu pro libovolný graf by bylo potřeba propojit pouze jeden nově přidaný vrchol s libovolným vrcholem dosavadního grafu. Navíc pro případ $k = 2$ by se musel přidat pouze jeden nový vrchol a nikoliv 2.)
+
+      \vspace{0.5cm}
+
+      Redukce $\oplus\mathit{CLIQUE}$ na $\mathit{co}\oplus\mathit{CLIQUE}$:
+
+        \begin{adjustwidth}{1em}{0em}
+          Mějme redukční funkci $f$, která je definovaná následovně:
+          $$ f(\langle V \rangle \# \langle E \rangle \# \langle k \rangle) = \langle V' \rangle \# \langle E' \rangle \# \langle k' \rangle$$
+
+          Pokud je $\langle V \rangle \# \langle E \rangle \# \langle k \rangle$ neplatnou instancí $\oplus\mathit{CLIQUE}$, pak:
+          \begin{itemize}
+            \item $V' = \{a, b\}$
+            \item $E' = \{\{a, b\}\}$
+            \item $k' = 2$.
+          \end{itemize}
+
+          Jinak:
+          \begin{itemize}
+            \item $V' = V \cup V_k$, kde $V \cap V_k = \emptyset$ a $|V_k| = k$, $V_k$ je množina nových vrcholů
+            \item $E' = E \cup \{\{u, v\}\,|\, u, v \in V_k, u \neq v\}$
+            \item $k' = k$.
+          \end{itemize}
+        \end{adjustwidth}
+
+        \vspace{0.5cm}
+
+        Redukce $\mathit{co}\oplus\mathit{CLIQUE}$ na $\oplus\mathit{CLIQUE}$:
+
+        \begin{adjustwidth}{1em}{0em}
+          Mějme redukční funkci $f$, která je definovaná následovně:
+          $$ f(\langle V \rangle \# \langle E \rangle \# \langle k \rangle) = \langle V' \rangle \# \langle E' \rangle \# \langle k' \rangle$$
+
+          Pokud je $\langle V \rangle \# \langle E \rangle \# \langle k \rangle$ neplatnou instancí $\mathit{co}\oplus\mathit{CLIQUE}$, pak:
+          \begin{itemize}
+            \item $V' = \emptyset$
+            \item $E' = \emptyset$
+            \item $k' = 2$.
+          \end{itemize}
+
+          Jinak:
+          \begin{itemize}
+            \item $V' = V \cup V_k$, kde $V \cap V_k = \emptyset$ a $|V_k| = k$, $V_k$ je množina nových vrcholů
+            \item $E' = E \cup \{\{u, v\}\,|\, u, v \in V_k, u \neq v\}$
+            \item $k' = k$.
+          \end{itemize}
+        \end{adjustwidth}
+
+        \vspace{0.5cm}
+
+        Lze vidět, že redunkční funkce $f$ použita v obou případech je polynomiální, protože kontrolu správnosti vstupu lze provést v $\mathcal{O}(n^2)$ (provádíme také kontrolu, zda vrcholy hran existují v množině všech vrcholů) a vytvoření nové kliky lze také provést v $\mathcal{O}(n^2)$ (propojíme každý vrchol s každým).
+
+        \vspace{0.5cm}
+
+        Bylo dokázáno, že $\oplus\mathit{CLIQUE}$ a $\mathit{co}\oplus\mathit{CLIQUE}$ jsou \footnotesize$\mathit{PSPACE}$\normalsize-interreducibilní.
+    \end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PŘÍKLAD 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  \section*{Příklad 3}
+    Let $\Sigma = \{0, 1\}$ and $f : \Sigma^* \rightarrow \Sigma^*$ be a one-way function such that $\forall x \in \Sigma^* : |f(x)| = |x|$. Consider the following language $L_f$:
+    $$L_f = \{(x, y, c) \in \Sigma^* \times \Sigma^* \times \mathbb{N} : |x| = |y| \land \exists z \in \Sigma^{|y|} : f(z) = y \land \mathit{popcount}(x \oplus z) \leq c\},$$
+
+    where $x \oplus y$ denotes the XOR of binary strings $x$ and $y$ and $\mathit{popcount}(x)$ denotes the number of occurrences of the symbol “1” in $x$.
+
+    Prove that $L_f \in UP \setminus P$.
+
+  \section*{Řešení 3}
+    Pro důkaz je potřeba ukázat, že $L_f \in \mathit{UP}$ a $L_f \notin \mathit{P}$.
+
+    \begin{proof}
+      Důkaz $L_f \in \mathit{UP}$:
+
+      \begin{adjustwidth}{1em}{0em}
+        Existuje jednoznačný TM $M$ (protože funkce $f$ je injektivní), který pro vstup $(x, y, c)$ nedeterministicky uhádne $z$ délky $|y|$ a zkontroluje, jestli $f(z) = y$ a $\mathit{popcount}(x \oplus z) \leq c$. Pokud ano, pak $M$ akceptuje, jinak zamítne.
+      \end{adjustwidth}
+
+      \vspace{0.5cm}
+
+      Důkaz $L_f \notin \mathit{P}$:
+
+      \begin{adjustwidth}{1em}{0em}
+        Důkaz povedeme sporem. Předpokládejme, že pro $L_f$ existuje polynomiální algoritmus, potom můžeme invertovat na základě $x$ a $c$ funkci $f$ za použití například binárního prohledávání, to by ale znamenalo, že funkce $f$ není jednosměrná, což je spor s předpokladem, tedy nemůže existovat polynomiální algoritmus pro $L_f$.
+      \end{adjustwidth}
+
+      Bylo dokázáno, že $L_f \in UP\setminus P$.
+
+    \end{proof}
+
+\end{document}

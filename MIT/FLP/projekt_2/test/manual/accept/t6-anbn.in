@@ -1,0 +1,14 @@
+S # L R
+L # F #
+L a M #
+M # A R
+A a A R
+A b B R
+B b B R
+B # N L
+N b O #
+O # R L
+R a R L
+R b R L
+R # L R
+#aaaaaabbbbbb

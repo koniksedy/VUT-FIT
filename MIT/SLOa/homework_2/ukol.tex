@@ -1,0 +1,174 @@
+\documentclass[a4paper, 11pt, fleqn]{scrartcl}
+
+\usepackage[czech]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage[left=2cm, top=3cm, text={17cm, 24cm}]{geometry}
+\usepackage[unicode, colorlinks, hypertexnames=false, citecolor=red]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[shortlabels]{enumitem}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{newtxtext}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{changepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Makra %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\KURZ}{Složitost}
+\newcommand{\AUTOR}{Michal Šedý <xsedym02>}
+\newcommand{\NAZEV}{Úkol 2}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hlavička %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancy}
+\fancyhead[L]{\AUTOR}
+\fancyhead[C]{\KURZ}
+\fancyhead[R]{\today}
+
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage\,/\,\pageref*{LastPage}}
+
+\setlength{\parindent}{0pt}
+\setlength{\mathindent}{0pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Text %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+ \begin{center}
+   {\Large \NAZEV}
+ \end{center}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PŘÍKLAD 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ \section*{Příklad 1}
+  Mějme problém $\mathit{MOD-SUMBSETSUM}$ definovaný následovně: Vstupem je konečná množina položek $S$, váhová funkce $v : S \rightarrow \mathbb{N}$ a přirozená čísla $k, m \in \mathbb{N}$ taková, že $k < m$. Problém se ptá, zda existuje množina $A \subseteq S$ taková, že:
+  $$ \left(\, \sum_{i \in A}v(i)\,\right)\; mod\; m = k $$
+
+  \vspace{0.2cm}
+  Dokažte, že $\mathit{MOD-SUMBSETSUM}$ je $\mathbf{NP}$--úplný problém.\\
+  \textit{Nezapomeňte, že důkaz NP--úplnosti se skládá ze dvou částí.}
+
+ \section*{Řešení 1}
+
+  \begin{proof}
+    Definice $\mathbf{NP}$--úplného problému říká: $L$ je $\mathbf{NP}$--úplný, pokud $L \in \mathbf{NP}$ a zároveň existuje známý $\mathbf{NP}$--úplný problém $L'$ ($\mathit{MOD-SUMBSETSUM}$), pro který platí $L' \leq_p L$. Proto rozdělíme důkaz na dvě části. V první ukážeme, že $\mathit{MOD-SUMBSETSUM} \in \mathbf{NP}$ a v druhé, že $\mathit{SUMBSETSUM}$ lze polynomiálně redukovat na $\mathit{MOD-SUMBSETSUM}$. \\
+
+    Důkaz náležitosti do $\mathbf{NP}$:
+
+      \begin{adjustwidth}{1em}{0em}
+        Uvažujme vícepáskový nedeterministický turingův stroj $M$, který rozhoduje $\mathit{MOD-SUMBSETSUM}$ v polynomiálním čase. Vstupní páska stroje má tvar $\triangle\langle S \rangle \# \langle v \rangle \# \langle m \rangle \# \langle k \rangle \triangle \triangle^\omega$, kde $\langle S \rangle$ je kód množiny $S$, $\langle v \rangle$ je kód funkce $v$, $\langle m \rangle$ a $\langle k \rangle$ jsou kódy čísel $m, k \in \mathbb{N}$. Nejprve $M$ zkontroluje validitu vstupní pásky, to dokáže v čase $\mathcal{O}(n)$. Pokud je obsah pásky nevalidní, zamítne, jinak pokračuje. Dále $M$ nedeterministicky vygeneruje množinu $S' \subseteq S$ na druhou pásku, to lze provést v čase $\mathcal{O}(n)$. Na třetí zapíše číselné hodnoty prvků z druhé pásky na základě váhové funkce $v$, tento přepis lze uskutečnit v čase $\mathcal{O}(n^2)$ (pro každý prvek z $S'$ je potřeba vyhledat jeho cenu v první pásce). $M$ sečte celou třetí pásku a výsledek zapíše na čtvrtou pásku, sčítání provede v čase $\mathcal{O}(n)$. Na pátou pásku zapíše hodnotu uloženou na čtvrté pásce \textit{modulo} $m$, operaci modulo provede v čase $\mathcal{O}(n^2)$. Pokud se číslo uložené na páté pásce shoduje s $k$, pak příjme, jinak odmítne. Je vidět, že časová složitost nedeterministického vícepáskového stroje je $\mathcal{O}(n^2)$, tedy $\mathit{MOD-SUMBSETSUM} \in \mathbf{NP}$.
+      \end{adjustwidth}
+
+    \vspace{0.3cm}
+    Důkaz $\mathbf{NP}$--těžkosti:
+
+      \begin{adjustwidth}{1em}{0em}
+        Pro důkaz $\mathbf{NP}$--těžkosti využijeme polynomiální redukci z problému $\mathit{SUMBSETSUM}$, který je $\mathbf{NP}$--úplný. Problém $\mathit{SUMBSETSUM}$ je trojice ($S$, $v$, $k$), kde $S$ je množina položek, $v : S \rightarrow \mathbb{N}$ váhová funkce a $k \in \mathbb{N}$. Problém se ptá, zda existuje množina $A \subseteq S$ taková, že:
+        $$ \left(\, \sum_{i \in A}v(i)\,\right) = k $$\\
+
+        Polynomiální redukční funkci $f$ definujeme takto:\\
+        $$f(\langle S \rangle \# \langle v \rangle \# \langle k \rangle) = \langle S' \rangle \# \langle v' \rangle \# \langle m' \rangle \# \langle k' \rangle$$
+
+        Pokud není $\langle S \rangle \# \langle v \rangle \# \langle k \rangle$ korektní instancí $\mathit{SUMBSETSUM}$, pak funkce $f$ vrací řetězec, pro který $S' = \emptyset$, $v' = \emptyset$ $m' = 2$, $k' = 1$. Určitě neexistuje vhodná kombinace elementů (žádné neexistují), aby jejich celková hodnota $\textit{mod}$ 2 byla~1.
+
+        \newpage
+        Pokud je $\langle S \rangle \# \langle v \rangle \# \langle k \rangle$ korektní instancí $\mathit{SUMBSETSUM}$, funkce $f$ vrací řetězec, pro který:
+        \begin{itemize}
+          \item $S' = S$
+          \item $v' = v$
+          \item $m' = \left( \sum_{i \in S}v(i) \right) + 1$
+          \item $k' = k$
+        \end{itemize}
+
+        Víme (z předchozího kroku), že výpočet $m'$ má časovou složitost $\mathcal{O}(n^2)$, tedy funkce $f$ je polynomiální redukční funkcí.
+      \end{adjustwidth}
+
+      Protože $\mathit{MOD-SUMBSETSUM} \in \mathbf{NP}$ a $\mathit{SUMBSETSUM} \leq_p \mathit{MOD-SUMBSETSUM}$, pak je $\mathit{MOD-}$ $\mathit{SUMBSETSUM}$ $\mathbf{NP}$--úplný.
+  \end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PŘÍKLAD 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ \section*{Příklad 2}
+  Mějme jazyk $L_t = \{0\}$ nad abecedou $\{0,1\}$.\\
+
+  Dokažte (popište základní myšlenky důkazu) následující tvrzení $\mathbf{P} = \mathbf{NP} \implies$ $L_t$ je $\mathbf{NP}$--úplný.\\
+  \textit{Nápověda: uvědomte si, jakým způsobem je definován pojem redukce a pojem NP--úplnosti.}
+
+ \section*{Řešení 2}
+  \begin{proof}
+    Jazyk $L_t \in \mathbf{P}$, protože pro jazyk $L_t$ můžeme sestrojit deterministický turingův stroj, který jej rozhoduje v $\mathcal{O}(1)$. Dále mějme předpoklad $\mathbf{P} = \mathbf{NP}$, pak tedy $L_t \in \mathbf{NP}$. Tímto je splněna jedna ze dvou podmínek pro $\mathbf{NP}$--úplné jazyky. Nyní zbývá dokázat, že každý jazyk $L' \in \mathbf{NP}$ lze na $L_t$ redukovat polynomiální redukcí.
+
+    Díky předpokladu $\mathbf{P} = \mathbf{NP}$ víme, že pro každý jazyk $L' \in \mathbf{NP}$ platí $L' \in \mathbf{P}$. Polynomiální redukci libovolného jazyka $L'$ provádí funkce $f$ následovně:
+    $$ f(\langle w \rangle) = \begin{cases}
+                              \langle 0 \rangle & w \in L'\\
+                              \langle 1 \rangle & \textnormal{jinak}
+                              \end{cases} $$
+    Lze vidět, že funkce je vyčíslitelná v polynomiálním čase, protože pro každý $L'$ platí $L' \in \mathbf{P}$. Bylo tedy dokázáno, že $\mathbf{P} = \mathbf{NP} \implies$ $L_t$ je $\mathbf{NP}$--úplný.
+
+  \end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PŘÍKLAD 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ \section*{Příklad 3}
+  Zdůvodněte, proč z tvrzení v bodu 3 plyne, že: $\mathbf{P} = \mathbf{NP} \implies$ každý jazyk $L$ $\in$ $\mathbf{NP}$ je $\mathbf{NP}$--úplný\footnote{\label{footnote}Toto tvrzení neplatí pro prázdný a universální jazyk.}.
+
+ \section*{Řešení 3}
+  \begin{proof}
+    V důkazu nebudeme brát v úvahu prázdný a univerzální jazyk. Pro ně tvrzení neplatí. Mějme předpoklad $\mathbf{P} = \mathbf{NP}$, pak víme, že pro každý jazyk $L \in \mathbf{NP}$ platí, $L \in \mathbf{P}$. Z toho vyplývá, že pro každý jazyk $L \in \mathbf{NP}$ existuje deterministický turingův stroj $M$, který jej rozhoduje v polynomiálním čase. A proto je možné pro každou dvojici jazyků $L, L' \in \mathbf{NP}$ provést polynomiální redukci $L' \leq_p L$. Mějme následující řetězce $y \in L$ a $r \notin L$. Polynomiální redukce je definována funkci $f$ následovně:
+    $$ f(\langle w \rangle) = \begin{cases}
+                                \langle y \rangle & w \in L'\\
+                                \langle r \rangle & \textnormal{jinak}
+                              \end{cases} $$
+    Lze vidět, že funkce je vyčíslitelná v polynomiálním čase, protože platí $L' \in \mathbf{P}$. Bylo tedy dokázáno, že: $\mathbf{P} = \mathbf{NP} \implies$ každý jazyk $L$ $\in$ $\mathbf{NP}$ je $\mathbf{NP}$--úplný\footref{footnote}.
+  \end{proof}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PŘÍKLAD 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ \section*{Příklad 4}
+  Uvažujme problém $\mathit{GRAPH\_COLORING}$ definovaný ve slidech (série č. 5).\\
+
+  Dále definujme optimalizační problém $\mathit{OPT\_GRAPH\_COLORING}$ následovně: Pro graf $G(V, E)$ a konečnou množinu barev $C$, přípustné řešení je libovolná funkce $A : V \rightarrow C$. Cena tohoto řešení je definována jako $c(A) = |\{(v_1 , v_2) \in E\, |\, A (v_1) = A(v_2)\}|$, tedy počet hran, jejichž oba vrcholy jsou obarvené stejnou barvou. Optimální řešení je to s minimální cenou. Dokažte, že pokud $\mathbf{P} \neq \mathbf{NP}$, tak neexistuje absolutní aproximační algoritmus pro problém $\mathit{OPT\_GRAPH\_COLORING}$.
+
+ \section*{Řešení 4}
+  \begin{proof}
+    Důkaz neexistence absolutního aproximačního algoritmu povedeme sporem. Nejprvé definujeme $m$--tou mocninu graph $G$, značenou $G^m$. Takovýto graf získáme, pokud vezmeme $m$ kopií grafu $G$ a hranou spojíme každou dvojici vrcholů, které nenáleží stejné kopii. Lehce lze ověřit, že pokud je k obarvení grafu $G$ zapotřebí $i$ barev, pak pro obarvení grafu $G^m$ bude zapotřebí $im$ barev, protože žádná dvojice vrcholů z různých kopií grafu $G$ nemůže mít stejnou barvu.
+
+    Předpokládejme, že pro problém $\mathit{OPT\_GRAPH\_COLORING}$ existuje absolutní aproximační algoritmus $P$, jehož výstupem je funkce $A : V \rightarrow C$, s absolutní chybou $k \in \mathbb{N}$. Potom optimální řešení problému $\mathit{OPT\_GRAPH\_COLORING}$ lze získat simulací $P$ na vstupu $G^{k+1}$. Tedy platí:
+
+    $$ |c(P(G^{k+1})) - OPT(G^{k+i})| \leq k $$
+
+    Lze vidět, že pokud dokážeme obarvit graf $G^{m}$ za pomocí $i$ barev, pak graf $G$ dokážeme obarvit $\frac{i}{m}$ barvami v polynomiálním čase, to ale znamená, že dokážeme obarvit graf $G$ tak, že:
+
+    $$ |c(P(G)) - OPT(G)| \leq \frac{k}{k+1} $$
+
+    Protože jsou hodnoty $c(P(G))$ a $OPT(G)$ celočíselné, pak musí být $k = 0$, což je ale spor s $k \in \mathbb{N}$, tedy pro $\mathit{OPT\_GRAPH\_COLORING}$ neexistuje absolutní aproximační algoritmus.
+
+  \end{proof}
+
+\end{document}
+
