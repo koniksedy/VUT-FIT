@@ -1,0 +1,10 @@
+Autor: Michal Šedý <xsedym02>
+
+Funkčnost   (F) - 5b
+Přístup     (E) - 1b
+Kvalita     (Q) - 3b
+Prezentace  (P) - 1b
+Dokumentace (D) - 4b
+======================
+Celkové hodnocení: 14b
+

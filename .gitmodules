@@ -1,0 +1,3 @@
+[submodule "BIT/IIS/IIS-Hospital"]
+	path = BIT/IIS/IIS-Hospital
+	url = https://github.com/koniksedy/IIS-Hospital
