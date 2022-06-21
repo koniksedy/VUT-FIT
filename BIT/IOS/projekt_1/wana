@@ -1,0 +1,322 @@
+#!/bin/sh
+
+# wana
+# Autor: Michal Šedý
+# Datum: 23.3.2019
+# Popis: Skript filtruje a provádí příkazy nad záznamy vebových logů
+
+POSSIXLY_CORRECT=yes
+
+FILE=""			# zde se budou uchovávat logy
+LOADING=0		# hodnota kontrolující, zda byl zadán soubor
+COMMAND=0		# hodnoty udává druh příkazu
+FILTER_A=0		# zda se má vykonat filtr AFTER
+FILTER_B=0		# zda se má vykonat filtr BEFORE
+FILTER_URI=0	# zda se má vykonat filtr URI
+FILTER_IP=0		# zda se má vykonat filtr IP
+DATETIME_A=0	# casový údaj pro filtr AFTER
+DATETIME_B=0	# casový údaj pro filtr BEFORE
+IPADDR=""		# filtrovaná ip adresa
+URI=""			# filtrované uri
+
+# FCE pro výpis chybové hlášky a ukovčení scriptu s hodnotou 1
+# Vstup: $1 -Chybová hláška
+error_exit()
+{
+	echo "CHYBA: $1"
+	exit 1
+}
+
+# FCE pro testování správné souslednost příkazů,
+# pokud nebyla dodržena, volá fci error_exit
+# Vstup: ---
+test_sequence()
+{
+	if test $COMMAND -ne 0 || test "$LOADING" -ne 0; then
+		error_exit "Nesprávné pořadí argumentů. Dodržujte [FILTR] [PŘÍKAZ] [LOG [LOG2 [...]]]"
+	fi
+}
+
+# FCE pro testování zda nebyl daný filtr zadán vícekrát,
+# pokud ano, volá fci error_exit
+# Vstup: $1 - kontrolni hodnota filtru (1-nastaven, 0-nenastaven)
+#		 $2 - vazev filtru
+test_unique()
+{	
+	if test "$1" -ne 0; then
+		error_exit "Filtr $2 byt zadán vícekrát."
+	fi
+}
+
+# FCE pro testování, zda nenastal konec načítání
+# pokud ano volá fci error_exit
+# Vstup: $1 - počet zbývajících parametrů
+#		 $2 - název filtru, který vyžaduje dalčí parametr
+test_notend()
+{
+	if test $1 -eq 0; then
+	error_exit "Filtr $2 vyžaduje specifikaci."
+	fi
+}
+
+# FCE pro konkatenaci dvou položek, které budou oddělena \n
+# Vstup: $1 - první položka
+#		 $2 - druhá položka
+# Výstup: Výsledek po sloučení.
+concatenate()
+{
+	printf "%s\n" "$1"
+	printf "%s\n" "$2"
+}
+
+# FCE pro převedení data na velké číslo ve formátu YYYYMMDDhhmmss,
+# kontroluje zda se jedná o datum v platném formátu, pokud ne, volá funkci error_exit.
+# Nahrazuje příkaz date, který je na některých strojích kvůli své syntaxi v daném použití nevhodný
+# Vstup: $1 - datum na zpracování
+#		 $2 - udává formát data
+# Výstup: Číslo vzniké převedením data
+get_date()
+{	
+	case "$2" in
+		1)
+			DATE="`printf "%s" "$1" |sed 's/\:/\//g' | awk -F "/" '{m=(match("JanFebMarAprMayJunJulAugSepOctNovDec",$2)+2)/3; printf "%s/%02d/%s/%s/%s/%s\n",$3,m,$1,$4,$5,$6}'`"
+			;;
+		2)
+			DATE="`printf "%s" "$1" | sed 's/-/\//g' | sed 's/ /:/g'`"
+			;;
+	esac
+	DATE="`printf "%s" "$DATE" | sed 's/\:/\//g'`"
+	KONTROLA="`printf "%s" "$DATE" | grep "^[0-9\/]*$"`"
+	if test -z "$KONTROLA"; then
+			return 1
+	fi
+	
+	YYYY="`printf "%s" "$DATE" | awk -F"/" '{print $1}'`"
+	MM="`printf "%s" "$DATE" | awk -F"/" '{print $2}'`"
+	DD="`printf "%s" "$DATE" | awk -F"/" '{print $3}'`"
+	hh="`printf "%s" "$DATE" | awk -F"/" '{print $4}'`"
+	mm="`printf "%s" "$DATE" | awk -F"/" '{print $5}'`"
+	ss="`printf "%s" "$DATE" | awk -F"/" '{print $6}'`"
+	if test -z "$YYYY" || test -z "$MM" || test -z "$DD"; then
+		return 1
+	fi
+	if test -z "$hh"; then
+	    hh=0
+	fi
+	if test -z "$mm"; then
+	    mm=0
+	fi
+	if test -z "$ss"; then
+	    ss=0
+	fi
+	if test $MM -gt 12 || test $MM -lt 1 || test $DD -gt 31 || test $DD -lt 1; then
+		return 1
+	fi
+	if test $hh -gt 23 || test $hh -lt 0 || test $mm -gt 59 || test $mm -lt 0 || test $ss -gt 59 || test $ss -lt 0; then
+		return 1
+	fi
+	printf "%g%02g%02g%02g%02g%02g" $YYYY $MM $DD $hh $mm $ss
+}
+
+# FCE pro přefiltrování date ve FILE podle fitru after nabo before.
+# Pokud bylo nalezeno nepladné datum, bude řádek vyřazen.
+# Výstup se prování přez příkaz sed, aby nedocházelo k interpretaci dat.
+# Vstup: $1 - přepínač mezi filtrem after a before
+# Výstup: Přefiltrované data
+filter_date()
+{
+	COUNTER=1
+	printf "%s\n" "$FILE" | while read LINE; do
+		ACTUAL="`printf "%s\n" "$LINE" | awk '{print $4}' | cut -d'[' -f2`"
+		ACTUAL=$(get_date "$ACTUAL" 1)
+		if test $? -ne 0; then
+			COUNTER=`expr $COUNTER + 1`
+			continue
+		fi
+			case "$1" in
+				-a)
+					if test "$ACTUAL" -gt $DATETIME_A; then
+					printf "%s\n" "$FILE" | sed $COUNTER'q;d'
+					fi
+					;;
+				-b)
+					if test "$ACTUAL" -lt $DATETIME_B;then
+					printf "%s\n" "$FILE" | sed $COUNTER'q;d'
+					fi
+					;;
+			esac
+		COUNTER=`expr $COUNTER + 1`
+	done
+}
+
+# Načítání príkazů ,filtrů a logů.
+# [FILTR] [PŘÍKAZ] [LOG [LOG2 [...]]
+# Příkaz může být zadán pouze jeden a pouze po filtrech.
+# Filty můžou být načteny všechny
+while test $# -gt 0; do
+	case $1 in
+		list-ip)
+			test_sequence
+			COMMAND=1
+			;;
+		list-hosts)
+			test_sequence
+			COMMAND=2
+			;;
+		list-uri)
+			test_sequence
+			COMMAND=3
+			;;
+		hist-ip)
+			test_sequence
+			COMMAND=4
+			;;
+		hist-load)
+			test_sequence
+			COMMAND=5
+			;;
+		-a)
+			test_sequence
+			test_unique $FILTER_A "-a"
+			FILTER_A=1
+			shift
+			test_notend $# "-a"
+			DATETIME_A=$(get_date "$1" 2)
+			if test $? -ne 0; then
+				error_exit "Datum $1 není ve správném formátu"
+			fi
+			;;
+		-b)
+			test_sequence
+			test_unique $FILTER_B "-b"
+			FILTER_B=1
+			shift
+			test_notend $# "-b"
+			DATETIME_B=$(get_date "$1" 2)
+			if test $? -ne 0; then
+				error_exit "Datum $1 není ve správném formátu"
+			fi
+			;;
+		-ip)
+			test_sequence
+			test_unique $FILTER_IP "-ip"
+			FILTER_IP=1
+			shift
+			test_notend $# "-ip"
+			IPADDR="`printf "%s" "$1" | grep '^[0-9.]*$\|^[0-9:a-f]*$'`"
+			if test -z "$IPADDR"; then
+				error_exit "$1 je neplatná adresa."
+			fi
+			;;
+		-uri)
+			test_sequence
+			test_unique $FILTER_URI "-uri"
+			FILTER_URI=1
+			shift
+			test_notend $# "-uri"
+			URI=$1
+			;;
+		*)
+			if test -r $1; then
+				case "$1" in
+					*.gz)
+						if test -n "$FILE"; then
+							FILE=$(concatenate "$FILE" "`gunzip -c $1`")
+						else
+							FILE="`gunzip -c $1`"
+						fi
+						LOADING=1
+						;;
+					*)
+						if test -n "$FILE"; then
+							FILE=$(concatenate "$FILE" "`cat $1`")
+						else
+							FILE="`cat $1`"
+						fi
+						LOADING=1
+					esac
+			else
+			error_exit "Neplatný příkaz $1"
+			fi
+	esac
+	shift
+done
+
+# Pokud nebylo nebyl dosud načten žádný soubor, bude text načítán z klávesnice do Ctrl-D
+if test $LOADING -eq 0; then
+	FILE=$(while read input; do
+		printf %s"\n" "$input"
+		done)
+fi
+
+# FILTR AFTER, vybere pouze záznamy po dateu zadaném ve formatu
+# YYYY-MM-DD HH:MM:SS
+if test $FILTER_A -eq 1; then
+	FILE=$(filter_date "-a")
+fi
+
+# FILTR BEFORE, vybere pouze záznamy před datem zadaným ve formátu
+# YYYY-MM-DD HH:MM:SS
+if test $FILTER_B -eq 1; then
+	FILE=$(filter_date "-b")
+fi
+
+# FILTR IP, vybere pouze záznamy, odpovídající požadavkům na IP
+if test $FILTER_IP -eq 1; then
+	FILE="`printf "%s" "$FILE" | grep "$IPADDR"`"
+fi
+
+# FILTR URI, vybere poute záznamy odpovídající požadavkům na uri
+# uri je základní regulární výraz
+if test $FILTER_URI -eq 1; then
+	FILE="`printf "%s" "$FILE" | grep " "$URI" "`"
+fi
+
+# LIST-IP, provede výpis zdrojových IP adres
+if test $COMMAND -eq 1; then
+	FILE="`printf "%s" "$FILE" | awk '{print $1}' | grep '^[0-9.]*$\|^[0-9:a-f]*$'`"
+fi
+
+# LIST-HOSTS, provede výpis seznamu zdrojových doméhových jmen
+if test $COMMAND -eq 2; then
+	FILE="`printf "%s" "$FILE" | awk '{print $1}' | grep '^[0-9.]*$\|^[0-9:a-f]*$'`"
+	FILE=$(printf "%s" "$FILE" | while read LINE; do
+		TMP=`host "$LINE"`
+		if test $? -eq 1; then
+			printf "%s\n" "$LINE"
+		else
+			printf "%s\n" "$(printf %s "$TMP" | awk '{print $NF}')"
+		fi
+	done)
+fi
+
+# LIST-URI, výpis seznamu sílových zdrojů (URI)
+if test $COMMAND -eq 3; then
+	FILE="`printf "%s" "$FILE" | awk '{print $7}' | sed '/^\//!d'`"
+fi
+
+# HIST-IP, výpis histogramu četnosti dotazů podle zdrojových IP
+if test $COMMAND -eq 4; then
+	FILE="`printf "%s" "$FILE" | awk '{print $1}' | grep '^[0-9.]*$\|^[0-9:a-f]*$' | sort | uniq -c | sort -nr`"
+	printf "%s" "$FILE" | awk '{tmp=$1; s=""; while ($1-->0) s=s"#";printf "%s (%s): %s\n",$2,tmp,s }'
+	exit 0
+fi
+
+# HIST-LOAD, výpis histogramu zátěže v hodinových intervalech
+if test $COMMAND -eq 5; then
+	FILE="`printf "%s" "$FILE" | awk -F "[" '{print $2}' |awk '{print $1}'`"
+	FILE="`printf "%s" "$FILE" | sed 's/\//-/g' | sed 's/^\([^-]*\)\(-[^-]*-\)\([^:]*\):\([^:]*\).*/\3\2\1 \4:00/'`"
+	FILE="`printf "%s" "$FILE" | awk -F "-" '{m=(match("JanFebMarAprMayJunJulAugSepOctNovDec",$2)+2)/3; printf "%s-%02d-%s\n",$1,m,$3}'`"
+	FILE="`printf "%s" "$FILE" | sort | uniq -c`"
+	printf "%s" "$FILE" | awk '{tmp=$1; s=""; while ($1-->0) s=s"#"; printf "%s %s (%s): %s\n",$2,$3,tmp,s}'
+	exit 0
+fi
+
+# Výpis
+if test -n "$FILE"; then
+	if test $COMMAND -eq 0; then
+		printf "%s\n" "$FILE"
+	else
+		printf "%s\n" "$FILE" | sort -u
+	fi
+fi
