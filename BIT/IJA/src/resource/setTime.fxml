@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="153.0" prefWidth="146.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.Main_controller">
+   <children>
+      <TextField fx:id="hoursField" layoutX="31.0" layoutY="69.0" prefHeight="25.0" prefWidth="34.0" />
+      <TextField fx:id="minsField" layoutX="80.0" layoutY="69.0" prefHeight="25.0" prefWidth="34.0" />
+      <Label layoutX="39.0" layoutY="52.0" text="HH" />
+      <Label layoutX="87.0" layoutY="52.0" text="MM" />
+      <Label layoutX="71.0" layoutY="73.0" prefHeight="17.0" prefWidth="0.0" text=":" />
+      <Button layoutX="16.0" layoutY="114.0" mnemonicParsing="false" onAction="#clickCancel" text="Cancel" />
+      <Button layoutX="98.0" layoutY="114.0" mnemonicParsing="false" onAction="#clickOk" text="OK" />
+      <Label layoutX="21.0" layoutY="14.0" prefHeight="30.0" prefWidth="111.0" text="Změna času" textAlignment="CENTER">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

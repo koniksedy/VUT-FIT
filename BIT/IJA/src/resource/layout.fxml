@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ija.Main_controller">
+   <center>
+      <ScrollPane pannable="true" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <content>
+            <Pane accessibleRole="IMAGE_VIEW">
+               <children>
+                  <Group>
+                     <children>
+                        <Pane fx:id="content" cache="true" cacheHint="SCALE" layoutX="-6.0" onScroll="#onZoom" prefHeight="1000.0" prefWidth="2000.0">
+                           <cursor>
+                              <Cursor fx:constant="DEFAULT" />
+                           </cursor>
+                        </Pane>
+                     </children></Group>
+               </children>
+            </Pane>
+         </content>
+      </ScrollPane>
+   </center>
+   <right>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <ChoiceBox fx:id="percentage" layoutX="16.0" layoutY="70.0" onKeyPressed="#onTimeScaleChange" prefHeight="26.0" prefWidth="107.0" />
+            <Button layoutX="126.0" layoutY="70.0" mnemonicParsing="false" onAction="#onTimeScaleChange" text="Confirm" />
+            <Line endX="100.0" layoutX="102.0" layoutY="495.0" startX="-100.0" />
+            <Text fill="RED" layoutX="16.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Speed:" />
+            <Text fx:id="text_pole" layoutX="18.0" layoutY="159.0" strokeType="OUTSIDE" strokeWidth="0.0" text="No street selected" wrappingWidth="136.0" />
+            <Text fill="RED" layoutX="18.0" layoutY="142.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Street Name:" />
+            <Text fill="RED" layoutX="18.0" layoutY="186.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Stops on street:" wrappingWidth="84.8125" />
+            <Text fx:id="text_stops" layoutX="18.0" layoutY="203.0" strokeType="OUTSIDE" strokeWidth="0.0" text=" -" wrappingWidth="144.13671875" />
+            <Text fill="RED" layoutX="18.0" layoutY="221.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lines on street:" wrappingWidth="91.8125" />
+            <Text fx:id="text_lines" layoutX="18.0" layoutY="238.0" strokeType="OUTSIDE" strokeWidth="0.0" text=" -" wrappingWidth="176.13671875" />
+            <Line endX="100.0" layoutX="97.0" layoutY="367.0" startX="-100.0" />
+            <Text layoutX="75.0" layoutY="123.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Street">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <Text layoutX="83.0" layoutY="393.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Line">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <Text fill="RED" layoutX="19.0" layoutY="411.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Line to display:" />
+            <ChoiceBox fx:id="line_selector" layoutX="19.0" layoutY="418.0" prefHeight="25.0" prefWidth="108.0" />
+            <Button layoutX="133.0" layoutY="418.0" mnemonicParsing="false" onAction="#onLineChange" text="Confirm" />
+            <Text fx:id="linka_vypsat" layoutX="19.0" layoutY="483.0" strokeType="OUTSIDE" strokeWidth="0.0" text="None" />
+            <Text fill="RED" layoutX="19.0" layoutY="466.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number of busses" />
+            <Text layoutX="79.0" layoutY="518.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Stop">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <Text fill="RED" layoutX="104.0" layoutY="541.0" strokeType="OUTSIDE" strokeWidth="0.0" text="On street" wrappingWidth="56.8125" />
+            <Text fx:id="stop_text" layoutX="104.0" layoutY="558.0" strokeType="OUTSIDE" strokeWidth="0.0" text="None" />
+            <Line endX="100.0" layoutX="100.0" layoutY="103.0" startX="-100.0" />
+            <Line endX="100.0" layoutX="100.0" layoutY="566.0" startX="-100.0" />
+            <Text layoutX="84.0" layoutY="586.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Bus">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Text>
+            <Text fill="RED" layoutX="20.0" layoutY="600.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Number:" wrappingWidth="91.8125" />
+            <Text fx:id="bus_name" layoutX="20.0" layoutY="617.0" strokeType="OUTSIDE" strokeWidth="0.0" text="None" />
+            <Button layoutX="105.0" layoutY="15.0" mnemonicParsing="false" onAction="#runSetTime" text="Change Time" />
+            <Text fx:id="actualTimeString" layoutX="11.0" layoutY="35.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="RIGHT" wrappingWidth="74.13671875">
+               <font>
+                  <Font size="18.0" />
+               </font></Text>
+            <Spinner fx:id="traficSpinner" layoutX="18.0" layoutY="259.0" prefHeight="25.0" prefWidth="52.0" />
+            <Text fill="RED" layoutX="18.0" layoutY="254.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Trafick" />
+            <Button layoutX="76.0" layoutY="259.0" mnemonicParsing="false" onAction="#setTraficSpinner" prefHeight="25.0" prefWidth="111.0" text="Set traffic density" />
+            <Button layoutX="19.0" layoutY="306.0" mnemonicParsing="false" onAction="#closeStreetAdd" prefHeight="25.0" prefWidth="69.0" text="Close" />
+            <Button layoutX="91.0" layoutY="306.0" mnemonicParsing="false" onAction="#detourStreetAdd" prefHeight="25.0" prefWidth="98.0" text="Add To Detour" />
+            <Button layoutX="114.0" layoutY="335.0" mnemonicParsing="false" onAction="#setDetour" prefHeight="25.0" prefWidth="75.0" text="Set Detour" />
+            <Button layoutX="19.0" layoutY="335.0" mnemonicParsing="false" onAction="#cancelDetour" text="Cancel Detour" />
+            <Text fill="RED" layoutX="18.0" layoutY="301.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Close street and set detour" />
+            <Button fx:id="pause_button" layoutX="105.0" layoutY="41.0" mnemonicParsing="false" onMousePressed="#onPressPause" prefHeight="18.0" prefWidth="86.0" text="PAUSE" textFill="RED" />
+            <Button layoutX="118.0" layoutY="466.0" mnemonicParsing="false" onMousePressed="#ShowTimeTable" prefHeight="21.0" prefWidth="76.0" text="Time table" />
+            <Button layoutX="122.0" layoutY="594.0" mnemonicParsing="false" onMousePressed="#ShowBusTimeTable" text="Time table" />
+            <Text fill="RED" layoutX="21.0" layoutY="634.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Delay:" wrappingWidth="38.13671875" />
+            <Text fx:id="timeDelayString" layoutX="58.0" layoutY="635.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0 min 0 sec" />
+            <Text fill="RED" layoutX="19.0" layoutY="543.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Name" />
+            <Text fx:id="stopNameString" layoutX="19.0" layoutY="559.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="80.13671875" />
+         </children>
+      </AnchorPane>
+   </right>
+</BorderPane>

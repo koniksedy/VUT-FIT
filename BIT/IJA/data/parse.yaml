@@ -1,0 +1,2329 @@
+stops:
+  -
+    &lCzA
+    id: "Fikukova"
+    coords:
+      x: 200
+      y: 920
+  -
+    &lCzB
+    id: "Kořískova"
+    coords:
+      x: 200
+      y: 720
+  -
+    &lCzC
+    id: "Hudcova"
+    coords:
+      x: 480
+      y: 640
+  -
+    &lCzD
+    id: "Tylova"
+    coords:
+      x: 720
+      y: 520
+  -
+    &lCzE
+    id: "Semilaso"
+    coords:
+      x: 880
+      y: 440
+  -
+    &lCzF
+    id: "Husitská"
+    coords:
+      x: 760
+      y: 320
+  -
+    &lCzG
+    id: "Jungmanova"
+    coords:
+      x: 760
+      y: 160
+  -
+    &lCzH
+    id: "Kartouzská"
+    coords:
+      x: 1000
+      y: 120
+  -
+    &lCzI
+    id: "Šumavská"
+    coords:
+      x: 1080
+      y: 240
+  -
+    &lEzA
+    id: "Pionýrská"
+    coords:
+      x: 80
+      y: 360
+  -
+    &lEzB
+    id: "Antonínská"
+    coords:
+      x: 240
+      y: 280
+  -
+    &lEzC
+    id: "Moravské náměstí"
+    coords:
+      x: 560
+      y: 240
+  -
+    &lEzD
+    id: "Hlavní nádraží"
+    coords:
+      x: 680
+      y: 400
+  -
+    &lEzE
+    id: "Hybešova"
+    coords:
+      x: 720
+      y: 640
+  -
+    &lEzF
+    id: "Václavská"
+    coords:
+      x: 800
+      y: 720
+  -
+    &lEzG
+    id: "Lipová zastávka"
+    coords:
+      x: 960
+      y: 640
+  -
+    &lEzH
+    id: "Pisárky"
+    coords:
+      x: 1040
+      y: 560
+  -
+    &lEzI
+    id: "Bráfova"
+    coords:
+      x: 1120
+      y: 480
+  -
+    &lEzJ
+    id: "Stránského"
+    coords:
+      x: 1200
+      y: 400
+  -
+    &lEzK
+    id: "Branka"
+    coords:
+      x: 1360
+      y: 320
+  -
+    &lAzA
+    id: "Podlesí"
+    coords:
+      x: 80
+      y: 80
+  -
+    &lAzB
+    id: "Kamenolom"
+    coords:
+      x: 240
+      y: 200
+  -
+    &lAzC
+    id: "Přístaviště"
+    coords:
+      x: 320
+      y: 360
+  -
+    &lAzD
+    id: "Mostecká"
+    coords:
+      x: 520
+      y: 440
+  -
+    &lAzE
+    id: "Česká"
+    coords:
+      x: 640
+      y: 560
+  -
+    &lAzF
+    id: "Cacovická"
+    coords:
+      x: 1000
+      y: 560
+  -
+    &lAzG
+    id: "Zelný trh"
+    coords:
+      x: 1040
+      y: 680
+  -
+    &lAzH
+    id: "Všetičkova"
+    coords:
+      x: 1040
+      y: 800
+  -
+    &lAzI
+    id: "Úvoz"
+    coords:
+      x: 1160
+      y: 880
+  -
+    &lAzJ
+    id: "Hrnčířská"
+    coords:
+      x: 1320
+      y: 760
+
+streets:
+  -
+    &u1
+    id: "Borecká"
+    coords:
+      - x: 80
+        y: 80
+      - x: 240
+        y: 80
+    stops:
+      - *lAzA
+  -
+    &u2
+    id: "Habrová"
+    coords:
+      - x: 240
+        y: 80
+      - x: 240
+        y: 240
+    stops:
+      - *lAzB
+  -
+    &u3
+    id: "Lesní"
+    coords:
+      - x: 80
+        y: 360
+      - x: 240
+        y: 360
+    stops:
+      - *lEzA
+  -
+    &u4
+    id: "Lipová"
+    coords:
+      - x: 240
+        y: 240
+      - x: 240
+        y: 360
+    stops:
+      - *lEzB
+  -
+    &u5
+    id: "Luční"
+    coords:
+      - x: 240
+        y: 240
+      - x: 440
+        y: 240
+    stops: []
+  -
+    &u6
+    id: "Nová"
+    coords:
+      - x: 440
+        y: 240
+      - x: 440
+        y: 120
+    stops: []
+  -
+    &u7
+    id: "U Kaple"
+    coords:
+      - x: 440
+        y: 240
+      - x: 440
+        y: 360
+    stops: []
+  -
+    &u8
+    id: "Příčná"
+    coords:
+      - x: 240
+        y: 360
+      - x: 360
+        y: 360
+    stops:
+      - *lAzC
+  -
+    &u9
+    id: "Vládní"
+    coords:
+      - x: 360
+        y: 360
+      - x: 360
+        y: 520
+    stops: []
+  -
+    &u10
+    id: "Dubinky"
+    coords:
+      - x: 360
+        y: 360
+      - x: 440
+        y: 360
+    stops: []
+  -
+    &u11
+    id: "Budín"
+    coords:
+      - x: 440
+        y: 360
+      - x: 520
+        y: 360
+    stops: []
+  -
+    &u12
+    id: "Bradla"
+    coords:
+      - x: 520
+        y: 360
+      - x: 520
+        y: 400
+    stops: []
+  -
+    &u13
+    id: "Dvojitá"
+    coords:
+      - x: 520
+        y: 400
+      - x: 640
+        y: 400
+    stops: []
+  -
+    &u14
+    id: "Nádražní"
+    coords:
+      - x: 440
+        y: 240
+      - x: 640
+        y: 240
+    stops:
+      - *lEzC
+  -
+    &u15
+    id: "Obora"
+    coords:
+      - x: 640
+        y: 240
+      - x: 640
+        y: 120
+    stops: []
+  -
+    &u16
+    id: "Okružní"
+    coords:
+      - x: 640
+        y: 120
+      - x: 760
+        y: 120
+    stops: []
+  -
+    &u17
+    id: "Osma"
+    coords:
+      - x: 760
+        y: 120
+      - x: 760
+        y: 40
+    stops: []
+  -
+    &u18
+    id: "Polní"
+    coords:
+      - x: 760
+        y: 120
+      - x: 880
+        y: 120
+    stops: []
+  -
+    &u19
+    id: "Svislá"
+    coords:
+      - x: 760
+        y: 120
+      - x: 760
+        y: 240
+    stops:
+      - *lCzG
+  -
+    &u20
+    id: "Zářečí"
+    coords:
+      - x: 880
+        y: 120
+      - x: 880
+        y: 240
+    stops: []
+  -
+    &u21
+    id: "V Aleji"
+    coords:
+      - x: 880
+        y: 120
+      - x: 1080
+        y: 120
+    stops:
+      - *lCzH
+  -
+    &u22
+    id: "Husova"
+    coords:
+      - x: 1080
+        y: 120
+      - x: 1080
+        y: 240
+    stops:
+      - *lCzI
+  -
+    &u23
+    id: "Gernická"
+    coords:
+      - x: 1080
+        y: 240
+      - x: 880
+        y: 240
+    stops: []
+  -
+    &u24
+    id: "Johnova"
+    coords:
+      - x: 880
+        y: 240
+      - x: 880
+        y: 360
+    stops: []
+  -
+    &u25
+    id: "Poruba"
+    coords:
+      - x: 760
+        y: 240
+      - x: 760
+        y: 360
+    stops:
+      - *lCzF
+  -
+    &u26
+    id: "Rezek"
+    coords:
+      - x: 640
+        y: 240
+      - x: 640
+        y: 400
+    stops: []
+  -
+    &u27
+    id: "Zelená"
+    coords:
+      - x: 640
+        y: 400
+      - x: 720
+        y: 400
+    stops:
+      - *lEzD
+  -
+    &u28
+    id: "Rolní"
+    coords:
+      - x: 720
+        y: 400
+      - x: 720
+        y: 480
+    stops: []
+  -
+    &u29
+    id: "Dvorní"
+    coords:
+      - x: 760
+        y: 360
+      - x: 880
+        y: 360
+    stops: []
+  -
+    &u30
+    id: "U Lesa"
+    coords:
+      - x: 880
+        y: 360
+      - x: 880
+        y: 480
+    stops:
+      - *lCzE
+  -
+    &u31
+    id: "Školní"
+    coords:
+      - x: 880
+        y: 360
+      - x: 1040
+        y: 360
+    stops: []
+  -
+    &u32
+    id: "Zářečická"
+    coords:
+      - x: 1040
+        y: 360
+      - x: 1040
+        y: 480
+    stops: []
+  -
+    &u33
+    id: "Rovná"
+    coords:
+      - x: 880
+        y: 480
+      - x: 1040
+        y: 480
+    stops: []
+  -
+    &u34
+    id: "Foltova"
+    coords:
+      - x: 720
+        y: 480
+      - x: 880
+        y: 480
+    stops: []
+  -
+    &u35
+    id: "Hájková"
+    coords:
+      - x: 720
+        y: 560
+      - x: 880
+        y: 560
+    stops: []
+  -
+    &u36
+    id: "Havraní"
+    coords:
+      - x: 720
+        y: 480
+      - x: 720
+        y: 560
+    stops:
+      - *lCzD
+  -
+    &u37
+    id: "Hradčany"
+    coords:
+      - x: 520
+        y: 480
+      - x: 720
+        y: 480
+    stops: []
+  -
+    &u38
+    id: "Moravská"
+    coords:
+      - x: 520
+        y: 480
+      - x: 520
+        y: 400
+    stops:
+      - *lAzD
+  -
+    &u39
+    id: "Nerudova"
+    coords:
+      - x: 520
+        y: 480
+      - x: 520
+        y: 560
+    stops: []
+  -
+    &u40
+    id: "Zámecká"
+    coords:
+      - x: 520
+        y: 560
+      - x: 600
+        y: 560
+    stops: []
+  -
+    &u41
+    id: "Družstevní"
+    coords:
+      - x: 600
+        y: 560
+      - x: 720
+        y: 560
+    stops:
+      - *lAzE
+  -
+    &u42
+    id: "Vedřelova"
+    coords:
+      - x: 720
+        y: 560
+      - x: 720
+        y: 720
+    stops:
+      - *lEzE
+  -
+    &u43
+    id: "Jezerní"
+    coords:
+      - x: 720
+        y: 720
+      - x: 600
+        y: 720
+    stops: []
+  -
+    &u44
+    id: "Dubina"
+    coords:
+      - x: 600
+        y: 720
+      - x: 600
+        y: 640
+    stops: []
+  -
+    &u45
+    id: "Borova"
+    coords:
+      - x: 600
+        y: 640
+      - x: 400
+        y: 640
+    stops:
+      - *lCzC
+  -
+    &u46
+    id: "Cihlářská"
+    coords:
+      - x: 400
+        y: 640
+      - x: 400
+        y: 800
+    stops: []
+  -
+    &u47
+    id: "Boční"
+    coords:
+      - x: 400
+        y: 800
+      - x: 560
+        y: 800
+    stops: []
+  -
+    &u48
+    id: "Dolní"
+    coords:
+      - x: 400
+        y: 800
+      - x: 200
+        y: 800
+    stops: []
+  -
+    &u49
+    id: "Dvorská"
+    coords:
+      - x: 400
+        y: 640
+      - x: 200
+        y: 640
+    stops: []
+  -
+    &u50
+    id: "Dubová"
+    coords:
+      - x: 200
+        y: 640
+      - x: 200
+        y: 480
+    stops: []
+  -
+    &u51
+    id: "Kladská"
+    coords:
+      - x: 200
+        y: 640
+      - x: 40
+        y: 640
+    stops: []
+  -
+    &u52
+    id: "Jižní"
+    coords:
+      - x: 200
+        y: 640
+      - x: 200
+        y: 800
+    stops:
+      - *lCzB
+  -
+    &u53
+    id: "Hrdého"
+    coords:
+      - x: 200
+        y: 800
+      - x: 200
+        y: 920
+    stops:
+      - *lCzA
+  -
+    &u54
+    id: "Jedlova"
+    coords:
+      - x: 720
+        y: 720
+      - x: 800
+        y: 720
+    stops:
+      - *lEzF
+  -
+    &u55
+    id: "Mokrá"
+    coords:
+      - x: 800
+        y: 720
+      - x: 880
+        y: 720
+    stops: []
+  -
+    &u56
+    id: "Hannova"
+    coords:
+      - x: 880
+        y: 720
+      - x: 880
+        y: 640
+    stops: []
+  -
+    &u57
+    id: "K Orlici"
+    coords:
+      - x: 800
+        y: 720
+      - x: 800
+        y: 880
+    stops: []
+  -
+    &u58
+    id: "Jindrova"
+    coords:
+      - x: 880
+        y: 720
+      - x: 1040
+        y: 720
+    stops: []
+  -
+    &u59
+    id: "Ječná"
+    coords:
+      - x: 880
+        y: 640
+      - x: 1040
+        y: 640
+    stops:
+      - *lEzG
+  -
+    &u60
+    id: "Lužická"
+    coords:
+      - x: 880
+        y: 560
+      - x: 1040
+        y: 560
+    stops:
+      - *lAzF
+  -
+    &u61
+    id: "Malá"
+    coords:
+      - x: 880
+        y: 560
+      - x: 880
+        y: 480
+    stops: []
+  -
+    &u62
+    id: "Hálkova"
+    coords:
+      - x: 1040
+        y: 560
+      - x: 1040
+        y: 480
+    stops:
+      - *lEzH
+  -
+    &u63
+    id: "Mýtská"
+    coords:
+      - x: 1040
+        y: 560
+      - x: 1040
+        y: 640
+    stops: []
+  -
+    &u64
+    id: "Ležáky"
+    coords:
+      - x: 1040
+        y: 640
+      - x: 1200
+        y: 640
+    stops: []
+  -
+    &u65
+    id: "Ledova"
+    coords:
+      - x: 1040
+        y: 640
+      - x: 1040
+        y: 720
+    stops:
+      - *lAzG
+  -
+    &u66
+    id: "Husovská"
+    coords:
+      - x: 1040
+        y: 720
+      - x: 1040
+        y: 880
+    stops:
+      - *lAzH
+  -
+    &u67
+    id: "Obecní"
+    coords:
+      - x: 1040
+        y: 880
+      - x: 1200
+        y: 880
+    stops:
+      - *lAzI
+  -
+    &u68
+    id: "Písečná"
+    coords:
+      - x: 1200
+        y: 880
+      - x: 1200
+        y: 760
+    stops: []
+  -
+    &u69
+    id: "Raisova"
+    coords:
+      - x: 1200
+        y: 760
+      - x: 1320
+        y: 760
+    stops:
+      - *lAzJ
+  -
+    &u70
+    id: "Skupova"
+    coords:
+      - x: 1200
+        y: 760
+      - x: 1200
+        y: 640
+    stops: []
+  -
+    &u71
+    id: "Rusecká"
+    coords:
+      - x: 1040
+        y: 480
+      - x: 1200
+        y: 480
+    stops:
+      - *lEzI
+  -
+    &u72
+    id: "Polnice"
+    coords:
+      - x: 1200
+        y: 480
+      - x: 1200
+        y: 320
+    stops:
+      - *lEzJ
+  -
+    &u73
+    id: "Široká"
+    coords:
+      - x: 1200
+        y: 480
+      - x: 1360
+        y: 480
+    stops: []
+  -
+    &u74
+    id: "Točna"
+    coords:
+      - x: 1200
+        y: 320
+      - x: 1360
+        y: 320
+    stops:
+      - *lEzK
+  -
+    &u75
+    id: "Vážní"
+    coords:
+      - x: 1200
+        y: 320
+      - x: 1200
+        y: 200
+    stops: []
+  -
+    &u76
+    id: "Důlní"
+    coords:
+      - x: 600
+        y: 640
+      - x: 600
+        y: 560
+    stops: []
+
+
+
+buses:
+  -
+    &bA1
+    id: "A1"
+    position:
+      x: 80
+      y: 80
+    startTime: "08:00:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 80
+          y: 80
+        - x: 240
+          y: 80
+    streets:
+      - *u1
+      - *u2
+      - *u4
+      - *u8
+      - *u10
+      - *u11
+      - *u12
+      - *u38
+      - *u39
+      - *u40
+      - *u41
+      - *u35
+      - *u60
+      - *u63
+      - *u65
+      - *u66
+      - *u67
+      - *u68
+      - *u69
+    stops:
+      - *lAzA
+      - *lAzB
+      - *lAzC
+      - *lAzD
+      - *lAzE
+      - *lAzF
+      - *lAzG
+      - *lAzH
+      - *lAzI
+      - *lAzJ
+  -
+    &bA2
+    id: "A2"
+    position:
+      x: 80
+      y: 80
+    startTime: "08:07:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 80
+          y: 80
+        - x: 240
+          y: 80
+    streets:
+      - *u1
+      - *u2
+      - *u4
+      - *u8
+      - *u10
+      - *u11
+      - *u12
+      - *u38
+      - *u39
+      - *u40
+      - *u41
+      - *u35
+      - *u60
+      - *u63
+      - *u65
+      - *u66
+      - *u67
+      - *u68
+      - *u69
+    stops:
+      - *lAzA
+      - *lAzB
+      - *lAzC
+      - *lAzD
+      - *lAzE
+      - *lAzF
+      - *lAzG
+      - *lAzH
+      - *lAzI
+      - *lAzJ
+  -
+    &bA3
+    id: "A3"
+    position:
+      x: 80
+      y: 80
+    startTime: "08:14:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 80
+          y: 80
+        - x: 240
+          y: 80
+    streets:
+      - *u1
+      - *u2
+      - *u4
+      - *u8
+      - *u10
+      - *u11
+      - *u12
+      - *u38
+      - *u39
+      - *u40
+      - *u41
+      - *u35
+      - *u60
+      - *u63
+      - *u65
+      - *u66
+      - *u67
+      - *u68
+      - *u69
+    stops:
+      - *lAzA
+      - *lAzB
+      - *lAzC
+      - *lAzD
+      - *lAzE
+      - *lAzF
+      - *lAzG
+      - *lAzH
+      - *lAzI
+      - *lAzJ
+  -
+    &bA4
+    id: "A4"
+    position:
+      x: 80
+      y: 80
+    startTime: "08:21:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 80
+          y: 80
+        - x: 240
+          y: 80
+    streets:
+      - *u1
+      - *u2
+      - *u4
+      - *u8
+      - *u10
+      - *u11
+      - *u12
+      - *u38
+      - *u39
+      - *u40
+      - *u41
+      - *u35
+      - *u60
+      - *u63
+      - *u65
+      - *u66
+      - *u67
+      - *u68
+      - *u69
+    stops:
+      - *lAzA
+      - *lAzB
+      - *lAzC
+      - *lAzD
+      - *lAzE
+      - *lAzF
+      - *lAzG
+      - *lAzH
+      - *lAzI
+      - *lAzJ
+  -
+    &bA5
+    id: "A5"
+    position:
+      x: 80
+      y: 80
+    startTime: "08:28:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 80
+          y: 80
+        - x: 240
+          y: 80
+    streets:
+      - *u1
+      - *u2
+      - *u4
+      - *u8
+      - *u10
+      - *u11
+      - *u12
+      - *u38
+      - *u39
+      - *u40
+      - *u41
+      - *u35
+      - *u60
+      - *u63
+      - *u65
+      - *u66
+      - *u67
+      - *u68
+      - *u69
+    stops:
+      - *lAzA
+      - *lAzB
+      - *lAzC
+      - *lAzD
+      - *lAzE
+      - *lAzF
+      - *lAzG
+      - *lAzH
+      - *lAzI
+      - *lAzJ
+  -
+    &bB1
+    id: "B1"
+    position:
+      x: 1320
+      y: 760
+    startTime: "08:00:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1320
+          y: 760
+        - x: 1200
+          y: 760
+    streets:
+      - *u69
+      - *u68
+      - *u67
+      - *u66
+      - *u65
+      - *u63
+      - *u60
+      - *u35
+      - *u41
+      - *u40
+      - *u39
+      - *u38
+      - *u12
+      - *u11
+      - *u10
+      - *u8
+      - *u4
+      - *u2
+      - *u1
+    stops:
+      - *lAzJ
+      - *lAzI
+      - *lAzH
+      - *lAzG
+      - *lAzF
+      - *lAzE
+      - *lAzD
+      - *lAzC
+      - *lAzB
+      - *lAzA
+  -
+    &bB2
+    id: "B2"
+    position:
+      x: 1320
+      y: 760
+    startTime: "08:07:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1320
+          y: 760
+        - x: 1200
+          y: 760
+    streets:
+      - *u69
+      - *u68
+      - *u67
+      - *u66
+      - *u65
+      - *u63
+      - *u60
+      - *u35
+      - *u41
+      - *u40
+      - *u39
+      - *u38
+      - *u12
+      - *u11
+      - *u10
+      - *u8
+      - *u4
+      - *u2
+      - *u1
+    stops:
+      - *lAzJ
+      - *lAzI
+      - *lAzH
+      - *lAzG
+      - *lAzF
+      - *lAzE
+      - *lAzD
+      - *lAzC
+      - *lAzB
+      - *lAzA
+  -
+    &bB3
+    id: "B3"
+    position:
+      x: 1320
+      y: 760
+    startTime: "08:14:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1320
+          y: 760
+        - x: 1200
+          y: 760
+    streets:
+      - *u69
+      - *u68
+      - *u67
+      - *u66
+      - *u65
+      - *u63
+      - *u60
+      - *u35
+      - *u41
+      - *u40
+      - *u39
+      - *u38
+      - *u12
+      - *u11
+      - *u10
+      - *u8
+      - *u4
+      - *u2
+      - *u1
+    stops:
+      - *lAzJ
+      - *lAzI
+      - *lAzH
+      - *lAzG
+      - *lAzF
+      - *lAzE
+      - *lAzD
+      - *lAzC
+      - *lAzB
+      - *lAzA
+  -
+    &bB4
+    id: "B4"
+    position:
+      x: 1320
+      y: 760
+    startTime: "08:21:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1320
+          y: 760
+        - x: 1200
+          y: 760
+    streets:
+      - *u69
+      - *u68
+      - *u67
+      - *u66
+      - *u65
+      - *u63
+      - *u60
+      - *u35
+      - *u41
+      - *u40
+      - *u39
+      - *u38
+      - *u12
+      - *u11
+      - *u10
+      - *u8
+      - *u4
+      - *u2
+      - *u1
+    stops:
+      - *lAzJ
+      - *lAzI
+      - *lAzH
+      - *lAzG
+      - *lAzF
+      - *lAzE
+      - *lAzD
+      - *lAzC
+      - *lAzB
+      - *lAzA
+  -
+    &bB5
+    id: "B5"
+    position:
+      x: 1320
+      y: 760
+    startTime: "08:28:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1320
+          y: 760
+        - x: 1200
+          y: 760
+    streets:
+      - *u69
+      - *u68
+      - *u67
+      - *u66
+      - *u65
+      - *u63
+      - *u60
+      - *u35
+      - *u41
+      - *u40
+      - *u39
+      - *u38
+      - *u12
+      - *u11
+      - *u10
+      - *u8
+      - *u4
+      - *u2
+      - *u1
+    stops:
+      - *lAzJ
+      - *lAzI
+      - *lAzH
+      - *lAzG
+      - *lAzF
+      - *lAzE
+      - *lAzD
+      - *lAzC
+      - *lAzB
+      - *lAzA
+  -
+    &bC1
+    id: "C1"
+    position:
+      x: 200
+      y: 920
+    startTime: "08:00:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 200
+          y: 920
+        - x: 200
+          y: 800
+    streets:
+      - *u53
+      - *u52
+      - *u49
+      - *u45
+      - *u76
+      - *u41
+      - *u36
+      - *u34
+      - *u30
+      - *u29
+      - *u25
+      - *u19
+      - *u18
+      - *u21
+      - *u22
+    stops:
+      - *lCzA
+      - *lCzB
+      - *lCzC
+      - *lCzD
+      - *lCzE
+      - *lCzF
+      - *lCzG
+      - *lCzH
+      - *lCzI
+  -
+    &bC2
+    id: "C2"
+    position:
+      x: 200
+      y: 920
+    startTime: "08:07:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 200
+          y: 920
+        - x: 200
+          y: 800
+    streets:
+      - *u53
+      - *u52
+      - *u49
+      - *u45
+      - *u76
+      - *u41
+      - *u36
+      - *u34
+      - *u30
+      - *u29
+      - *u25
+      - *u19
+      - *u18
+      - *u21
+      - *u22
+    stops:
+      - *lCzA
+      - *lCzB
+      - *lCzC
+      - *lCzD
+      - *lCzE
+      - *lCzF
+      - *lCzG
+      - *lCzH
+      - *lCzI
+  -
+    &bC3
+    id: "C3"
+    position:
+      x: 200
+      y: 920
+    startTime: "08:14:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 200
+          y: 920
+        - x: 200
+          y: 800
+    streets:
+      - *u53
+      - *u52
+      - *u49
+      - *u45
+      - *u76
+      - *u41
+      - *u36
+      - *u34
+      - *u30
+      - *u29
+      - *u25
+      - *u19
+      - *u18
+      - *u21
+      - *u22
+    stops:
+      - *lCzA
+      - *lCzB
+      - *lCzC
+      - *lCzD
+      - *lCzE
+      - *lCzF
+      - *lCzG
+      - *lCzH
+      - *lCzI
+  -
+    &bC4
+    id: "C4"
+    position:
+      x: 200
+      y: 920
+    startTime: "08:21:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 200
+          y: 920
+        - x: 200
+          y: 800
+    streets:
+      - *u53
+      - *u52
+      - *u49
+      - *u45
+      - *u76
+      - *u41
+      - *u36
+      - *u34
+      - *u30
+      - *u29
+      - *u25
+      - *u19
+      - *u18
+      - *u21
+      - *u22
+    stops:
+      - *lCzA
+      - *lCzB
+      - *lCzC
+      - *lCzD
+      - *lCzE
+      - *lCzF
+      - *lCzG
+      - *lCzH
+      - *lCzI
+  -
+    &bC5
+    id: "C5"
+    position:
+      x: 200
+      y: 920
+    startTime: "08:28:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 200
+          y: 920
+        - x: 200
+          y: 800
+    streets:
+      - *u53
+      - *u52
+      - *u49
+      - *u45
+      - *u76
+      - *u41
+      - *u36
+      - *u34
+      - *u30
+      - *u29
+      - *u25
+      - *u19
+      - *u18
+      - *u21
+      - *u22
+    stops:
+      - *lCzA
+      - *lCzB
+      - *lCzC
+      - *lCzD
+      - *lCzE
+      - *lCzF
+      - *lCzG
+      - *lCzH
+      - *lCzI
+  -
+    &bD1
+    id: "D1"
+    position:
+      x: 1080
+      y: 240
+    startTime: "08:00:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1080
+          y: 240
+        - x: 1080
+          y: 120
+    streets:
+      - *u22
+      - *u21
+      - *u18
+      - *u19
+      - *u25
+      - *u29
+      - *u30
+      - *u34
+      - *u36
+      - *u41
+      - *u76
+      - *u45
+      - *u49
+      - *u52
+      - *u53
+    stops:
+      - *lCzI
+      - *lCzH
+      - *lCzG
+      - *lCzF
+      - *lCzE
+      - *lCzD
+      - *lCzC
+      - *lCzB
+      - *lCzA
+  -
+    &bD2
+    id: "D2"
+    position:
+      x: 1080
+      y: 240
+    startTime: "08:07:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1080
+          y: 240
+        - x: 1080
+          y: 120
+    streets:
+      - *u22
+      - *u21
+      - *u18
+      - *u19
+      - *u25
+      - *u29
+      - *u30
+      - *u34
+      - *u36
+      - *u41
+      - *u76
+      - *u45
+      - *u49
+      - *u52
+      - *u53
+    stops:
+      - *lCzI
+      - *lCzH
+      - *lCzG
+      - *lCzF
+      - *lCzE
+      - *lCzD
+      - *lCzC
+      - *lCzB
+      - *lCzA
+  -
+    &bD3
+    id: "D3"
+    position:
+      x: 1080
+      y: 240
+    startTime: "08:14:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1080
+          y: 240
+        - x: 1080
+          y: 120
+    streets:
+      - *u22
+      - *u21
+      - *u18
+      - *u19
+      - *u25
+      - *u29
+      - *u30
+      - *u34
+      - *u36
+      - *u41
+      - *u76
+      - *u45
+      - *u49
+      - *u52
+      - *u53
+    stops:
+      - *lCzI
+      - *lCzH
+      - *lCzG
+      - *lCzF
+      - *lCzE
+      - *lCzD
+      - *lCzC
+      - *lCzB
+      - *lCzA
+  -
+    &bD4
+    id: "D4"
+    position:
+      x: 1080
+      y: 240
+    startTime: "08:21:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1080
+          y: 240
+        - x: 1080
+          y: 120
+    streets:
+      - *u22
+      - *u21
+      - *u18
+      - *u19
+      - *u25
+      - *u29
+      - *u30
+      - *u34
+      - *u36
+      - *u41
+      - *u76
+      - *u45
+      - *u49
+      - *u52
+      - *u53
+    stops:
+      - *lCzI
+      - *lCzH
+      - *lCzG
+      - *lCzF
+      - *lCzE
+      - *lCzD
+      - *lCzC
+      - *lCzB
+      - *lCzA
+  -
+    &bD5
+    id: "D5"
+    position:
+      x: 1080
+      y: 240
+    startTime: "08:28:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1080
+          y: 240
+        - x: 1080
+          y: 120
+    streets:
+      - *u22
+      - *u21
+      - *u18
+      - *u19
+      - *u25
+      - *u29
+      - *u30
+      - *u34
+      - *u36
+      - *u41
+      - *u76
+      - *u45
+      - *u49
+      - *u52
+      - *u53
+    stops:
+      - *lCzI
+      - *lCzH
+      - *lCzG
+      - *lCzF
+      - *lCzE
+      - *lCzD
+      - *lCzC
+      - *lCzB
+      - *lCzA
+  -
+    &bE1
+    id: "E1"
+    position:
+      x: 80
+      y: 360
+    startTime: "08:00:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 80
+          y: 360
+        - x: 240
+          y: 360
+    streets:
+      - *u3
+      - *u4
+      - *u5
+      - *u14
+      - *u26
+      - *u27
+      - *u28
+      - *u36
+      - *u42
+      - *u54
+      - *u55
+      - *u56
+      - *u59
+      - *u63
+      - *u62
+      - *u71
+      - *u72
+      - *u74
+    stops:
+      - *lEzA
+      - *lEzB
+      - *lEzC
+      - *lEzD
+      - *lEzE
+      - *lEzF
+      - *lEzG
+      - *lEzH
+      - *lEzI
+      - *lEzJ
+      - *lEzK
+  -
+    &bE2
+    id: "E2"
+    position:
+      x: 80
+      y: 360
+    startTime: "08:07:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 80
+          y: 360
+        - x: 240
+          y: 360
+    streets:
+      - *u3
+      - *u4
+      - *u5
+      - *u14
+      - *u26
+      - *u27
+      - *u28
+      - *u36
+      - *u42
+      - *u54
+      - *u55
+      - *u56
+      - *u59
+      - *u63
+      - *u62
+      - *u71
+      - *u72
+      - *u74
+    stops:
+      - *lEzA
+      - *lEzB
+      - *lEzC
+      - *lEzD
+      - *lEzE
+      - *lEzF
+      - *lEzG
+      - *lEzH
+      - *lEzI
+      - *lEzJ
+      - *lEzK
+  -
+    &bE3
+    id: "E3"
+    position:
+      x: 80
+      y: 360
+    startTime: "08:14:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 80
+          y: 360
+        - x: 240
+          y: 360
+    streets:
+      - *u3
+      - *u4
+      - *u5
+      - *u14
+      - *u26
+      - *u27
+      - *u28
+      - *u36
+      - *u42
+      - *u54
+      - *u55
+      - *u56
+      - *u59
+      - *u63
+      - *u62
+      - *u71
+      - *u72
+      - *u74
+    stops:
+      - *lEzA
+      - *lEzB
+      - *lEzC
+      - *lEzD
+      - *lEzE
+      - *lEzF
+      - *lEzG
+      - *lEzH
+      - *lEzI
+      - *lEzJ
+      - *lEzK
+  -
+    &bE4
+    id: "E4"
+    position:
+      x: 80
+      y: 360
+    startTime: "08:21:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 80
+          y: 360
+        - x: 240
+          y: 360
+    streets:
+      - *u3
+      - *u4
+      - *u5
+      - *u14
+      - *u26
+      - *u27
+      - *u28
+      - *u36
+      - *u42
+      - *u54
+      - *u55
+      - *u56
+      - *u59
+      - *u63
+      - *u62
+      - *u71
+      - *u72
+      - *u74
+    stops:
+      - *lEzA
+      - *lEzB
+      - *lEzC
+      - *lEzD
+      - *lEzE
+      - *lEzF
+      - *lEzG
+      - *lEzH
+      - *lEzI
+      - *lEzJ
+      - *lEzK
+  -
+    &bE5
+    id: "E5"
+    position:
+      x: 80
+      y: 360
+    startTime: "08:28:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 80
+          y: 360
+        - x: 240
+          y: 360
+    streets:
+      - *u3
+      - *u4
+      - *u5
+      - *u14
+      - *u26
+      - *u27
+      - *u28
+      - *u36
+      - *u42
+      - *u54
+      - *u55
+      - *u56
+      - *u59
+      - *u63
+      - *u62
+      - *u71
+      - *u72
+      - *u74
+    stops:
+      - *lEzA
+      - *lEzB
+      - *lEzC
+      - *lEzD
+      - *lEzE
+      - *lEzF
+      - *lEzG
+      - *lEzH
+      - *lEzI
+      - *lEzJ
+      - *lEzK
+  -
+    &bF1
+    id: "F1"
+    position:
+      x: 1360
+      y: 320
+    startTime: "08:00:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1360
+          y: 320
+        - x: 1200
+          y: 320
+    streets:
+      - *u74
+      - *u72
+      - *u71
+      - *u62
+      - *u63
+      - *u59
+      - *u56
+      - *u55
+      - *u54
+      - *u42
+      - *u36
+      - *u28
+      - *u27
+      - *u26
+      - *u14
+      - *u5
+      - *u4
+      - *u3
+    stops:
+      - *lEzK
+      - *lEzJ
+      - *lEzI
+      - *lEzH
+      - *lEzG
+      - *lEzF
+      - *lEzE
+      - *lEzD
+      - *lEzC
+      - *lEzB
+      - *lEzA
+  -
+    &bF2
+    id: "F2"
+    position:
+      x: 1360
+      y: 320
+    startTime: "08:07:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1360
+          y: 320
+        - x: 1200
+          y: 320
+    streets:
+      - *u74
+      - *u72
+      - *u71
+      - *u62
+      - *u63
+      - *u59
+      - *u56
+      - *u55
+      - *u54
+      - *u42
+      - *u36
+      - *u28
+      - *u27
+      - *u26
+      - *u14
+      - *u5
+      - *u4
+      - *u3
+    stops:
+      - *lEzK
+      - *lEzJ
+      - *lEzI
+      - *lEzH
+      - *lEzG
+      - *lEzF
+      - *lEzE
+      - *lEzD
+      - *lEzC
+      - *lEzB
+      - *lEzA
+  -
+    &bF3
+    id: "F3"
+    position:
+      x: 1360
+      y: 320
+    startTime: "08:14:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1360
+          y: 320
+        - x: 1200
+          y: 320
+    streets:
+      - *u74
+      - *u72
+      - *u71
+      - *u62
+      - *u63
+      - *u59
+      - *u56
+      - *u55
+      - *u54
+      - *u42
+      - *u36
+      - *u28
+      - *u27
+      - *u26
+      - *u14
+      - *u5
+      - *u4
+      - *u3
+    stops:
+      - *lEzK
+      - *lEzJ
+      - *lEzI
+      - *lEzH
+      - *lEzG
+      - *lEzF
+      - *lEzE
+      - *lEzD
+      - *lEzC
+      - *lEzB
+      - *lEzA
+  -
+    &bF4
+    id: "F4"
+    position:
+      x: 1360
+      y: 320
+    startTime: "08:21:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1360
+          y: 320
+        - x: 1200
+          y: 320
+    streets:
+      - *u74
+      - *u72
+      - *u71
+      - *u62
+      - *u63
+      - *u59
+      - *u56
+      - *u55
+      - *u54
+      - *u42
+      - *u36
+      - *u28
+      - *u27
+      - *u26
+      - *u14
+      - *u5
+      - *u4
+      - *u3
+    stops:
+      - *lEzK
+      - *lEzJ
+      - *lEzI
+      - *lEzH
+      - *lEzG
+      - *lEzF
+      - *lEzE
+      - *lEzD
+      - *lEzC
+      - *lEzB
+      - *lEzA
+  -
+    &bF5
+    id: "F5"
+    position:
+      x: 1360
+      y: 320
+    startTime: "08:28:00"
+    pendelTimes: 14
+    path:
+      path:
+        - x: 1360
+          y: 320
+        - x: 1200
+          y: 320
+    streets:
+      - *u74
+      - *u72
+      - *u71
+      - *u62
+      - *u63
+      - *u59
+      - *u56
+      - *u55
+      - *u54
+      - *u42
+      - *u36
+      - *u28
+      - *u27
+      - *u26
+      - *u14
+      - *u5
+      - *u4
+      - *u3
+    stops:
+      - *lEzK
+      - *lEzJ
+      - *lEzI
+      - *lEzH
+      - *lEzG
+      - *lEzF
+      - *lEzE
+      - *lEzD
+      - *lEzC
+      - *lEzB
+      - *lEzA
+lines:
+  -
+    id: "Černá"
+    streets:
+      - *u1
+      - *u2
+      - *u4
+      - *u8
+      - *u10
+      - *u11
+      - *u12
+      - *u38
+      - *u39
+      - *u40
+      - *u41
+      - *u35
+      - *u60
+      - *u63
+      - *u65
+      - *u66
+      - *u67
+      - *u68
+      - *u69
+    stops:
+      - *lAzA
+      - *lAzB
+      - *lAzC
+      - *lAzD
+      - *lAzE
+      - *lAzF
+      - *lAzG
+      - *lAzH
+      - *lAzI
+      - *lAzJ
+    buses:
+      - *bA1
+      - *bA2
+      - *bA3
+      - *bA4
+      - *bA5
+      - *bB1
+      - *bB2
+      - *bB3
+      - *bB4
+      - *bB5
+  -
+    id: "Modrá"
+    streets:
+      - *u53
+      - *u52
+      - *u49
+      - *u45
+      - *u76
+      - *u41
+      - *u36
+      - *u34
+      - *u30
+      - *u29
+      - *u25
+      - *u19
+      - *u18
+      - *u21
+      - *u22
+    stops:
+      - *lCzA
+      - *lCzB
+      - *lCzC
+      - *lCzD
+      - *lCzE
+      - *lCzF
+      - *lCzG
+      - *lCzH
+      - *lCzI
+    buses:
+      - *bC1
+      - *bC2
+      - *bC3
+      - *bC4
+      - *bC5
+      - *bD1
+      - *bD2
+      - *bD3
+      - *bD4
+      - *bD5
+  -
+    id: "Červená"
+    streets:
+      - *u3
+      - *u4
+      - *u5
+      - *u14
+      - *u26
+      - *u27
+      - *u28
+      - *u36
+      - *u42
+      - *u54
+      - *u55
+      - *u56
+      - *u59
+      - *u63
+      - *u62
+      - *u71
+      - *u72
+      - *u74
+    stops:
+      - *lEzA
+      - *lEzB
+      - *lEzC
+      - *lEzD
+      - *lEzE
+      - *lEzF
+      - *lEzG
+      - *lEzH
+      - *lEzI
+      - *lEzJ
+      - *lEzK
+    buses:
+      - *bE1
+      - *bE2
+      - *bE3
+      - *bE4
+      - *bE5
+      - *bF1
+      - *bF2
+      - *bF3
+      - *bF4
+      - *bF5

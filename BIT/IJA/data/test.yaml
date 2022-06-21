@@ -1,0 +1,423 @@
+stops:
+  -
+    &lTz1
+    id: "Z0"
+    coords:
+      x: 100
+      y: 10
+  -
+    &lTz2
+    id: "Z1"
+    coords:
+      x: 200
+      y: 10
+  -
+    &lTz3
+    id: "Z2"
+    coords:
+      x: 300
+      y: 10
+  -
+    &lTz4
+    id: "Z3"
+    coords:
+      x: 400
+      y: 10
+  -
+    &lTz5
+    id: "Z4"
+    coords:
+      x: 500
+      y: 10
+
+streets:
+  -
+    &u0
+    id: "Zahradní"
+    coords:
+      - x: 0
+        y: 10
+      - x: 500
+        y: 10
+    stops:
+      - *lTz1
+      - *lTz2
+      - *lTz3
+      - *lTz4
+      - *lTz5
+  -
+    &u1
+    id: "Dalsi"
+    coords:
+      - x: 500
+        y: 10
+      - x: 500
+        y: 500
+    stops: []
+  -
+    &u2
+    id: "Jes"
+    coords:
+      - x: 500
+        y: 500
+      - x: 500
+        y: 600
+    stops: []
+  -
+    &u3
+    id: "TROLO"
+    coords:
+      - x: 500
+        y: 600
+      - x: 800
+        y: 600
+    stops: []
+  -
+    &u4
+    id: "TROLO2"
+    coords:
+      - x: 800
+        y: 600
+      - x: 800
+        y: 800
+    stops: []
+  -
+    &u5
+    id: "Test street"
+    coords:
+      - x: 100
+        y: 100
+      - x: 500
+        y: 100
+    stops: []
+  -
+    &u6
+    id: "zaloha1"
+    coords:
+      - x: 500
+        y: 10
+      - x: 800
+        y: 10
+    stops: []
+  - &u7
+    id: "zaloha2"
+    coords:
+      - x: 800
+        y: 10
+      - x: 800
+        y: 600
+    stops: []
+
+buses:
+  -
+    &b1
+    id: "B1"
+    position:
+      x: 0
+      y: 10
+    startTime: "12:00:00"
+    pendelTimes: 2
+    path:
+      path:
+        - x: 0
+          y: 10
+        - x: 500
+          y: 10
+    streets:
+      - *u0
+      - *u1
+      - *u2
+      - *u3
+      - *u4
+    stops:
+      - *lTz1
+      - *lTz2
+      - *lTz3
+      - *lTz4
+      - *lTz5
+#  -
+#    &b2
+#    id: "B2"
+#    position:
+#      x: 0
+#      y: 10
+#    startTime: "12:02:00"
+#    pendelTimes: 1
+#    path:
+#      path:
+#        - x: 0
+#          y: 10
+#        - x: 500
+#          y: 10
+#    streets:
+#      - *u0
+#      - *u1
+#      - *u2
+#      - *u3
+#      - *u4
+#    stops:
+#      - *lTz1
+#      - *lTz2
+#      - *lTz3
+#      - *lTz4
+#      - *lTz5
+#  -
+#    &b3
+#    id: "B3"
+#    position:
+#      x: 0
+#      y: 10
+#    startTime: "12:04:00"
+#    pendelTimes: 1
+#    path:
+#      path:
+#        - x: 0
+#          y: 10
+#        - x: 500
+#          y: 10
+#    streets:
+#      - *u0
+#      - *u1
+#      - *u2
+#      - *u3
+#      - *u4
+#    stops:
+#      - *lTz1
+#      - *lTz2
+#      - *lTz3
+#      - *lTz4
+#      - *lTz5
+  -
+    &b4
+    id: "B4"
+    position:
+      x: 800
+      y: 800
+    startTime: "12:00:00"
+    pendelTimes: 2
+    path:
+      path:
+        - x: 800
+          y: 800
+        - x: 800
+          y: 600
+
+    streets:
+      - *u4
+      - *u3
+      - *u2
+      - *u1
+      - *u0
+    stops:
+      - *lTz5
+      - *lTz4
+      - *lTz3
+      - *lTz2
+      - *lTz1
+#  -
+#    &b5
+#    id: "B5"
+#    position:
+#      x: 0
+#      y: 10
+#    delay: 40
+#    path:
+#      path:
+#        - x: 0
+#          y: 10
+#        - x: 500
+#          y: 10
+#    streets:
+#      - *u0
+#      - *u1
+#      - *u2
+#      - *u3
+#      - *u4
+#      - *u5
+#    stops:
+#      - *lTz1
+#      - *lTz2
+#      - *lTz3
+#      - *lTz4
+#      - *lTz5
+#  -
+#    &b6
+#    id: "B6"
+#    position:
+#      x: 0
+#      y: 10
+#    delay: 50
+#    path:
+#      path:
+#        - x: 0
+#          y: 10
+#        - x: 500
+#          y: 10
+#    streets:
+#      - *u0
+#      - *u1
+#      - *u2
+#      - *u3
+#      - *u4
+#      - *u5
+#    stops:
+#      - *lTz1
+#      - *lTz2
+#      - *lTz3
+#      - *lTz4
+#      - *lTz5
+#  -
+#    &b7
+#    id: "B7"
+#    position:
+#      x: 0
+#      y: 10
+#    delay: 60
+#    path:
+#      path:
+#        - x: 0
+#          y: 10
+#        - x: 500
+#          y: 10
+#    streets:
+#      - *u0
+#      - *u1
+#      - *u2
+#      - *u3
+#      - *u4
+#      - *u5
+#    stops:
+#      - *lTz1
+#      - *lTz2
+#      - *lTz3
+#      - *lTz4
+#      - *lTz5
+#  -
+#    &b8
+#    id: "B8"
+#    position:
+#      x: 0
+#      y: 10
+#    delay: 70
+#    path:
+#      path:
+#        - x: 0
+#          y: 10
+#        - x: 500
+#          y: 10
+#    streets:
+#      - *u0
+#      - *u1
+#      - *u2
+#      - *u3
+#      - *u4
+#      - *u5
+#    stops:
+#      - *lTz1
+#      - *lTz2
+#      - *lTz3
+#      - *lTz4
+#      - *lTz5
+#  -
+#    &b9
+#    id: "B9"
+#    position:
+#      x: 0
+#      y: 10
+#    delay: 80
+#    path:
+#      path:
+#        - x: 0
+#          y: 10
+#        - x: 500
+#          y: 10
+#    streets:
+#      - *u0
+#      - *u1
+#      - *u2
+#      - *u3
+#      - *u4
+#      - *u5
+#    stops:
+#      - *lTz1
+#      - *lTz2
+#      - *lTz3
+#      - *lTz4
+#      - *lTz5
+#  -
+#    &b10
+#    id: "B10"
+#    position:
+#      x: 0
+#      y: 10
+#    delay: 90
+#    path:
+#      path:
+#        - x: 0
+#          y: 10
+#        - x: 500
+#          y: 10
+#    streets:
+#      - *u0
+#      - *u1
+#      - *u2
+#      - *u3
+#      - *u4
+#    stops:
+#      - *lTz1
+#      - *lTz2
+#      - *lTz3
+#      - *lTz4
+#      - *lTz5
+#  -
+#    &b99
+#    id: "B99"
+#    position:
+#      x: 100
+#      y: 100
+#    startTime: "12:00:00"
+#    pendelTimes: 2
+#    path:
+#      path:
+#        - x: 100
+#          y: 100
+#        - x: 500
+#          y: 100
+#    streets:
+#      - *u5
+#    stops: []
+
+
+lines:
+  -
+    id: "Hlavni"
+    streets:
+      - *u0
+      - *u1
+      - *u2
+      - *u3
+      - *u4
+    stops:
+      - *lTz1
+      - *lTz2
+      - *lTz3
+      - *lTz4
+      - *lTz5
+    buses:
+      - *b1
+#      - *b2
+#      - *b3
+      - *b4
+#      - *b5
+#      - *b6
+#      - *b7
+#      - *b8
+#      - *b9
+#      - *b10
+#  -
+#    id: "Test"
+#    streets:
+#      - *u5
+#    stops: []
+#    buses:
+#      - *b99
