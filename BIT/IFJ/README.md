@@ -1,9 +1,9 @@
 # Překladač
 Implementace překladače imperativního jazyka IFJ19
 ## Spolupracovali
-- Michal Šedý (xsedym02)
-- Ondřej Pavlacký (xpavla15)
-- Radek Sedlář (xsedla1j)
+- Michal Šedý
+- Ondřej Pavlacký
+- Radek Sedlář
 ## Hodnocení
 - program 14/15
 - dokumentace 2/5
