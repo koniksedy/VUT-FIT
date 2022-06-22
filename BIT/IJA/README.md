@@ -35,8 +35,8 @@ Soubory obsahující zdrojové kódy se nacházejí v adresáři scr/ija/.
 Soubory .fxml definující grafický vzhled aplikace jsou umístěny ve složce src/resource/.
 
 ## Spolupracovali
-- Michal Šedý (xsedym02)
-- Ondřej Pavlacký (xpavla15)
+- Michal Šedý
+- Ondřej Pavlacký
 
 ## Hodnocení
 Hodnocení: 80/80
