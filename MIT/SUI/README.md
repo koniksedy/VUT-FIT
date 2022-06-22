@@ -1,8 +1,8 @@
 # Válka kostek
 
 ## Spolupracovali
-- Michal Rein (xreinm00)
-- Michla Šedý (xsedym02)
-- Ondřej Pavlacký (xpavle15)
+- Michal Rein
+- Michla Šedý
+- Ondřej Pavlacký
 
 Hodnocení: 13.5/20
