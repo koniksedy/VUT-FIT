@@ -1,5 +1,5 @@
 # VUT FIT projekty
 
-Projekty z bakalářského (2018-2021) a magisterského (2021 - ...)  studia.
+Projekty z bakalářského (2018-2021) a magisterského (2021 - ...) studia na VUT FIT.
 
 Slouží pouze pro inspiraci. Silně nedoporučuji přejímat kód pro školní projekty.
