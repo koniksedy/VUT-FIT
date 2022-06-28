@@ -1,4 +1,6 @@
-# Válka kostek
+# SUI - Umělá inteligence a strojové učení
+
+## Válka kostek
 
 ## Spolupracovali
 - Michal Rein

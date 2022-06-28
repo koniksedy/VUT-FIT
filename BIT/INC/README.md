@@ -1,4 +1,6 @@
-# Přístupový terminál
+# INC - Návrh číslicových systémů
+
+## Přístupový terminál
 Vytvořte přístupový terminál pro FitKit, který potvrdí/zamítne přístup po zadání hesla.
 
 Hodnocení: 20/20

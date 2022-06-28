@@ -1,0 +1,1 @@
+# SLOa - Složitost (v angličtině)

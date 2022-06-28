@@ -1,4 +1,6 @@
-# Simulátor jízdy autobusů
+# IJA - Seminář Java
+
+## Simulátor jízdy autobusů
 
 Aplikace ja napsána v jazyce Java verze 8.
 

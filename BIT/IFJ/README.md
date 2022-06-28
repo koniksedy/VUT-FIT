@@ -1,4 +1,6 @@
-# Překladač
+# IFJ - Formální jazyky a překladače
+
+## Překladač
 Implementace překladače imperativního jazyka IFJ19
 ## Spolupracovali
 - Michal Šedý

@@ -1,7 +1,6 @@
-# IDS
-Databázové systémy
+# IDS - Databázové systémy
 
-# Lékárna
+## Lékárna
 Vytvořte databázový systém lékárny.
 ## Spolupracovali
 - Michal Šedý (xsedym02)
