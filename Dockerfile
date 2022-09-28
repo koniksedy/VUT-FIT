@@ -6,7 +6,7 @@
 # Last change: 28.09.2022
 
 
-# Ubuntu 22.04 is not yet supported. 
+# Ubuntu 22.04 is not yet supported.
 FROM ubuntu:20.04
 
 # Install MongoDB

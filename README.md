@@ -1,11 +1,40 @@
 # UPA projekt
 
-Projekt do předmětu UPA.
+Projekt do předmětu UPA sestávající ze tří částí. Cílem projektu je uložit data jízdních řádů veřejné dopravy do NoSQL databáze. Databáze bude dotazována na vyhledání spoje mezi dvěma stanicemi v zadaný čas.
 
 Autoři:
 * Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
 * Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
 * Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
+
+
+## Implementační technologie
+
+Aplikace jízdních řádů je implementována v jazyce Python (3.10.6) s využitím NoSQL databáze MongoDB (6.0). Databáze je nasazena v [Docker](https://docs.docker.com/engine/install/ubuntu/) (20.10.18) kontejneru.
+
+Pro zobrazení obsahu mongo databáze je možné využít nástroj [MongoDB Compass](https://www.mongodb.com/try/download/compass).
+
+## Obsluha databáze v docker
+
+### Vytvoření docker image s použitím Dockerfile
+`docker build -t upa_image .`
+
+### Spuštění kontejneru
+`docker run -d -p 27017:27017 --name upa_container upa_image`
+
+Mongo databáze by měla být přístupná z *mongodb://localhost:27017*.
+
+### Zastavení kontejneru
+`docker stop upa_conteiner`
+
+### Znovuspuštění kontejneru
+`docker restart upa_conteiner`
+
+### Odstranění kontejneru
+`docker rm upa_conteiner`
+
+### Odstranění image
+`docker rmi upa_image`
 
 
 ## Zadání 1. části
@@ -28,7 +57,7 @@ Autoři:
 
    * získat z distribučního portálu příslušné datové soubory, tyto případně předzpracovat, a poté nahrát do NoSQL databáze připravené v předchozích krocích vč. konstrukce a nahrání obsahu pomocných datových struktur a aniž by musel být obsah databáze předtím smazán (nahráváme tedy dílčí data pomocí vkládání či aktualizace vhodně identifikovaných jednotlivých záznamů, tzv. UPSERT, nebo záznamy mažeme, což bude zejména v případě pomocných struktur a dat);
 
-   * vyhledávat spojení z pojmenovaných stanic `odkud` a `kam` v zadané `datum_a_cas` dle následujícího algoritmu, který pracuje nad původními zdrojovými XML daty (bude potřeba upravit na použitou NoSQL databázi): 
+   * vyhledávat spojení z pojmenovaných stanic `odkud` a `kam` v zadané `datum_a_cas` dle následujícího algoritmu, který pracuje nad původními zdrojovými XML daty (bude potřeba upravit na použitou NoSQL databázi):
 
        * najdeme platné datové položky (tj. nenahrazené či nezrušené elementy `CZCanceledPTTMessage` a `RelatedPlannedTransportIdentifiers`, vizte výše), které mají neprázdný průnik uzavřeného intervalu `/CZPTTCISMessage/CZPTTInformation/PlannedCalendar/ValidityPeriod` se zadaným `datum_a_cas`, přičemž bereme v potaz pouze dny daného intervalu (ignorujeme časovou hodnout) vybrané bitovou maskou `/CZPTTCISMessage/CZPTTInformation/PlannedCalendar/BitmapDays` (vlak jede v daný den),
 
