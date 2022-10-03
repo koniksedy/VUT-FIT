@@ -49,10 +49,10 @@ class Downloader:
 
     @staticmethod
     def _get_files(dir: str) -> list:
-        """Iterates recursively over dirrectory and returns all founded file paths.
+        """Iterates recursively over directory and returns all founded file paths.
 
         Args:
-            dir (str): Dirrectory.
+            dir (str): Directory.
 
         Returns:
             list: Paths of the files in the dir. 
@@ -90,7 +90,7 @@ class Downloader:
 
     def _unzip(self, files: set) -> None:
         """Unzips all given files from folder self.folder_zip
-        and saves tham into the folder self.folder_xml with 
+        and saves them into the folder self.folder_xml with 
         the same directory hierarchy.
 
         Args:
@@ -101,7 +101,7 @@ class Downloader:
             pathlib.Path(out_folder).mkdir(parents=True, exist_ok=True)
             if file_name.endswith(".xml.zip"):
                 # Zips can be of two different types, gzip or zip.
-                # It is impossible to determinie exact type, you just need to try it.
+                # It is impossible to determine the exact type, therefore you need to try it.
                 try:
                     out_name = f"{file_name.split('/')[-1][:-8]}.xml"
                     with gzip.open(f"{self.folder_zip}/{file_name}", "rb") as fd_in:
@@ -120,13 +120,12 @@ class Downloader:
         Extracted files are in the folder specified by self.folder_xml.
 
         Args:
-            except_links (set, optional): A set of links that are allready downloaded. 
-                                          Defaults to empty set.
+            except_links (set, optional): A set of links that are already downloaded. 
+                                          Defaults to the empty set.
 
         Returns:
             set: A set of links of downloaded files.
         """
-
         # Get remote file links
         print("Initializing...          ", file=sys.stderr, end="")
         sys.stderr.flush()
