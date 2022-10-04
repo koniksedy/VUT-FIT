@@ -130,9 +130,9 @@ class Downloader:
         print("Initializing...          ", file=sys.stderr, end="")
         sys.stderr.flush()
         downloaded_links = self._get_links(self.url).difference(except_links)
+        print("Done", file=sys.stderr)
 
         # Download
-        print("Done", file=sys.stderr)
         for link in tqdm.tqdm(downloaded_links, desc="Downloading...", ascii=False, ncols=75, file=sys.stderr):
             file_name = link.split("/")[-1]
             folder_name = "/".join(link[32:].split("/")[:-1])
@@ -144,11 +144,14 @@ class Downloader:
         zip_paths = set(map(lambda x: x[32:], downloaded_links))
         originals = set(filter(lambda x: "oprava" not in x, zip_paths))
         updates = zip_paths.difference(originals)
+
         print("Unzipping originals...   ", end="", file=sys.stderr)
         sys.stderr.flush()
         self._unzip(originals)
         print("Done", file=sys.stderr)
+        
         print("Unzipping updates...     ", end="", file=sys.stderr)
+        sys.stderr.flush()
         self._unzip(updates)
         print("Done", file=sys.stderr)
 
