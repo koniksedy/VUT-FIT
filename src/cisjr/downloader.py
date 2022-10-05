@@ -23,7 +23,7 @@ class Downloader:
     def __init__(self, url: str, workdir: str = None) -> None:
         self.url = url
         self.portal = url.split("://")[0] + "://" + url.split("://")[1].split("/")[0]
-        
+
         if workdir is None:
             self.workdir = tempfile.mkdtemp(prefix="cisjr")
         else:
@@ -55,7 +55,7 @@ class Downloader:
             dir (str): Directory.
 
         Returns:
-            list: Paths of the files in the dir. 
+            list: Paths of the files in the dir.
         """
         files = list()
         for name in os.listdir(dir):
@@ -85,12 +85,12 @@ class Downloader:
                 links.update(self._get_links(self.portal + link["href"]))
             else:
                 links.add(link["href"])
-        
+
         return links
 
     def _unzip(self, files: set) -> None:
         """Unzips all given files from folder self.folder_zip
-        and saves them into the folder self.folder_xml with 
+        and saves them into the folder self.folder_xml with
         the same directory hierarchy.
 
         Args:
@@ -120,7 +120,7 @@ class Downloader:
         Extracted files are in the folder specified by self.folder_xml.
 
         Args:
-            except_links (set, optional): A set of links that are already downloaded. 
+            except_links (set, optional): A set of links that are already downloaded.
                                           Defaults to the empty set.
 
         Returns:
@@ -149,7 +149,7 @@ class Downloader:
         sys.stderr.flush()
         self._unzip(originals)
         print("Done", file=sys.stderr)
-        
+
         print("Unzipping updates...     ", end="", file=sys.stderr)
         sys.stderr.flush()
         self._unzip(updates)
@@ -173,4 +173,3 @@ class Downloader:
 if __name__ == "__main__":
     d = Downloader("https://portal.cisjr.cz/pub/draha/celostatni/szdc/2022/", workdir="data")
     d.download()
-    
