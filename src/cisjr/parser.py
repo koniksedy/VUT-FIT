@@ -9,6 +9,7 @@ Last change: 05.10.2022
 # TODO remove exceptions (Exceptions are only suitable for testing.)
 
 
+import os
 import sys
 import tqdm
 import xml.etree.ElementTree as ET
@@ -37,17 +38,24 @@ class Parser:
         CZPTTCISMessage_list = list()
         CZCanceledPTTMessage_list = list()
 
-        for xml_f in tqdm.tqdm(xml_files, desc="Parsing...", ascii=False, ncols=75, file=sys.stderr):
+        for xml_f in tqdm.tqdm(xml_files,
+                               desc="Parsing...",
+                               ascii=False,
+                               ncols=os.get_terminal_size().columns,
+                               file=sys.stderr):
             tree = ET.parse(xml_f)
             root = tree.getroot()
             if root.tag == "CZPTTCISMessage":
-                CZPTTCISMessage_list.append(self._parse_CZPTTCISMessage(root))
+                message = self._parse_CZPTTCISMessage(root)
+                CZPTTCISMessage_list.append(message)
             elif root.tag == "CZCanceledPTTMessage":
-                CZCanceledPTTMessage_list.append(self._parse_CZCanceledPTTMessage(root))
+                message = self._parse_CZCanceledPTTMessage(root)
+                CZCanceledPTTMessage_list.append(message)
             else:
                 raise ValueError(f"Unsupported xml tag {root.tag}")
 
         Location_list = list(self.Locations_dict.values())
+
         return CZPTTCISMessage_list, CZCanceledPTTMessage_list, Location_list
 
     def _parse_CZPTTCISMessage(self, xml_root: ET.Element) -> dict:
@@ -125,7 +133,6 @@ class Parser:
         o_type = None
         for child in xml_root:
             if child.tag == "ObjectType":
-                out["ObjectType"] = child.text
                 o_type = child.text
             elif child.tag == "Company":
                 out["Company"] = int(child.text)
@@ -181,7 +188,7 @@ class Parser:
                 raise ValueError(f"Unsupported xml tag {child.tag}")
         return out
 
-    def _parse_Location(self, xml_root: ET.Element) -> int:
+    def _parse_Location(self, xml_root: ET.Element) -> dict:
         data = dict()
         for child in xml_root:
             if child.tag == "CountryCodeISO":
@@ -202,14 +209,14 @@ class Parser:
             data["_id"] = len(self.Locations_dict)
             self.Locations_dict[(name, code, track)] = data
 
-        return self.Locations_dict[(name, code, track)]["_id"]
+        return {"location_id": self.Locations_dict[(name, code, track)]["_id"], "name": name}
 
     @staticmethod
     def _parse_PlannedCalendar(xml_root: ET.Element) -> dict:
         out = dict()
         for child in xml_root:
             if child.tag == "BitmapDays":
-                out["BitmapDays"] = list(map(lambda x: int(x), child.text))
+                out["BitmapDays"] = list(child.text) #[x == "1" for x in child.text]
             elif child.tag == "ValidityPeriod":
                 out["ValidityPeriod"] = Parser._parse_ValidityPeriod(child)
             else:
@@ -283,10 +290,7 @@ class Parser:
         out = dict()
         for child in xml_root:
             if child.tag == "Time":
-                dt = datetime.strptime(child.text[:8], "%H:%M:%S")
-                ts = dt - datetime(1971, 1, 1)
-                out["Time"] = int(ts.total_seconds())
-                # out["Time"] = child.text
+                out["Time"] = child.text
             elif child.tag == "Offset":
                 out["Offset"] = int(child.text)
             else:
@@ -296,6 +300,4 @@ class Parser:
     @staticmethod
     def _parse_date_time(string: str) -> int:
         dt = datetime.strptime(string, "%Y-%m-%dT%H:%M:%S")
-        ts = dt - datetime(1971, 1, 1)
-        return int(ts.total_seconds())
-        # return string
+        return dt

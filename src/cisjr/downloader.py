@@ -133,7 +133,11 @@ class Downloader:
         print("Done", file=sys.stderr)
 
         # Download
-        for link in tqdm.tqdm(downloaded_links, desc="Downloading...", ascii=False, ncols=75, file=sys.stderr):
+        for link in tqdm.tqdm(downloaded_links,
+                              desc="Downloading...",
+                              ascii=False,
+                              ncols=os.get_terminal_size().columns,
+                              file=sys.stderr):
             file_name = link.split("/")[-1]
             folder_name = "/".join(link[32:].split("/")[:-1])
             if not os.path.exists(folder_name):
