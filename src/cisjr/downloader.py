@@ -133,10 +133,14 @@ class Downloader:
         print("Done", file=sys.stderr)
 
         # Download
+        try:
+            terminal_w = os.get_terminal_size().columns
+        except Exception:
+            terminal_w = 80
         for link in tqdm.tqdm(downloaded_links,
                               desc="Downloading...",
                               ascii=False,
-                              ncols=os.get_terminal_size().columns,
+                              ncols=terminal_w,
                               file=sys.stderr):
             file_name = link.split("/")[-1]
             folder_name = "/".join(link[32:].split("/")[:-1])

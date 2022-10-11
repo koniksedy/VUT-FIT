@@ -13,7 +13,7 @@ import os
 import sys
 import tqdm
 import xml.etree.ElementTree as ET
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 class Parser:
@@ -38,10 +38,15 @@ class Parser:
         CZPTTCISMessage_list = list()
         CZCanceledPTTMessage_list = list()
 
+        try:
+            terminal_w = os.get_terminal_size().columns
+        except Exception:
+            terminal_w = 80
+
         for xml_f in tqdm.tqdm(xml_files,
                                desc="Parsing...",
                                ascii=False,
-                               ncols=os.get_terminal_size().columns,
+                               ncols=terminal_w,
                                file=sys.stderr):
             tree = ET.parse(xml_f)
             root = tree.getroot()
@@ -155,6 +160,7 @@ class Parser:
                 out["CZPTTLocation"].append(self._parse_CZPTTLocation(child))
             elif child.tag == "PlannedCalendar":
                 out["PlannedCalendar"] = self._parse_PlannedCalendar(child)
+                out["PlannedCalendar"]["Canceled"] = list()
             else:
                 raise ValueError(f"Unsupported xml tag {child.tag}")
         return out
@@ -213,14 +219,29 @@ class Parser:
 
     @staticmethod
     def _parse_PlannedCalendar(xml_root: ET.Element) -> dict:
-        out = dict()
+        data = dict()
         for child in xml_root:
             if child.tag == "BitmapDays":
-                out["BitmapDays"] = list(child.text) #[x == "1" for x in child.text]
+                data["BitmapDays"] = [x == "1" for x in child.text]
             elif child.tag == "ValidityPeriod":
-                out["ValidityPeriod"] = Parser._parse_ValidityPeriod(child)
+                data["ValidityPeriod"] = Parser._parse_ValidityPeriod(child)
             else:
                 raise ValueError(f"Unsupported xml tag {child.tag}")
+
+        d: datetime = data["ValidityPeriod"]["StartDateTime"]
+        de = data["ValidityPeriod"]["StartDateTime"]
+
+        out = dict()
+        out["ValidityPeriod"] = data["ValidityPeriod"]
+        out["Valid"] = list()
+        i = 0
+        while d <= de:
+            if data["BitmapDays"][i]:
+                out["Valid"].append(d.strftime("%Y%m%d"))
+
+            d += timedelta(days=1)
+            i += 1
+
         return out
 
     @staticmethod
@@ -290,7 +311,7 @@ class Parser:
         out = dict()
         for child in xml_root:
             if child.tag == "Time":
-                out["Time"] = child.text
+                out["Time"] = datetime.strptime(child.text[:8], "%H:%M:%S")
             elif child.tag == "Offset":
                 out["Offset"] = int(child.text)
             else:

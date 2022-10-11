@@ -7,6 +7,7 @@ Last change: 05.10.2022
 """
 
 import os
+from symbol import term
 import sys
 import tqdm
 import parser
@@ -31,37 +32,25 @@ class Uploader:
             [
                 {
                     "$match": {
-                        "Identifiers.PlannedTransportIdentifiers": message["PlannedTransportIdentifiers"],
-                        "CZPTTInformation.PlannedCalendar.ValidityPeriod.StartDateTime": {
-                                "$lte": message["PlannedCalendar"]["ValidityPeriod"]["StartDateTime"]
-                            },
-                        "CZPTTInformation.PlannedCalendar.ValidityPeriod.EndDateTime": {
-                                "$gte": message["PlannedCalendar"]["ValidityPeriod"]["EndDateTime"]
-                            }
+                        "Identifiers.PlannedTransportIdentifiers": message["PlannedTransportIdentifiers"]
                     }
                 }
             ]
         )
 
         for data in data_cursor:
-            date_start = data["CZPTTInformation"]["PlannedCalendar"]["ValidityPeriod"]["EndDateTime"].date()
-            date_cancel = message["PlannedCalendar"]["ValidityPeriod"]["StartDateTime"].date()
-            date_offset = (date_cancel - date_start).days
+            d = message["PlannedCalendar"]["ValidityPeriod"]["StartDateTime"].strftime("%Y%m%d")
+            de = message["PlannedCalendar"]["ValidityPeriod"]["EndDateTime"].strftime("%Y%m%d")
 
-            bitmap = data["CZPTTInformation"]["PlannedCalendar"]["BitmapDays"]
-            bitmap_closed = message["PlannedCalendar"]["BitmapDays"]
-            for i in range(len(bitmap_closed)):
-                j = i + date_offset
-                if bitmap[j] == "1" and bitmap_closed[i] == "1":
-                    bitmap[j] = "2"
-                elif bitmap[j] == "2" and bitmap_closed[i] == "0":
-                    bitmap[j] = "1"
+            canceled_new = message["PlannedCalendar"]["Valid"]
+            canceled_old = list(filter(lambda x: x < d or x > de, data["CZPTTInformation"]["PlannedCalendar"]["Canceled"]))
+            canceled_update = canceled_old + canceled_new
 
             self.db["CZPTTCISMessage"].update_one({"_id": data["_id"]},
                                                   {
                                                       "$set":
                                                           {
-                                                              "CZPTTInformation.PlannedCalendar.BitmapDays": bitmap
+                                                              "CZPTTInformation.PlannedCalendar.Canceled": canceled_update
                                                           }
                                                   })
 
@@ -75,24 +64,33 @@ class Uploader:
 
         CZPTTCISMessage_list, CZCanceledPTTMessage_list, Location_list = parser_ob.parse(xml_files)
 
+        # Uploading Location
         print("Uploading Location...  ", end="", file=sys.stderr)
         sys.stderr.flush()
         if Location_list:
             self.db["Location"].insert_many(Location_list)
         print("Done", file=sys.stderr)
 
+        # Uploading CZPTTCISMessage
         print("Uploading CZPTTCISMessage...  ", end="", file=sys.stderr)
         sys.stderr.flush()
         if CZPTTCISMessage_list:
             self.db["CZPTTCISMessage"].insert_many(CZPTTCISMessage_list)
         print("Done", file=sys.stderr)
 
+        # Sending CZCanceledPTTMessage_list
+
+        try:
+            terminal_w = os.get_terminal_size().columns
+        except Exception:
+            terminal_w = 80
+
         if CZCanceledPTTMessage_list:
             CZCanceledPTTMessage_list.sort(key=lambda x: x["CZPTTCancelation"])
             for message in tqdm.tqdm(CZCanceledPTTMessage_list,
                                      desc="Sending CZCanceledPTTMessage...",
                                      ascii=False,
-                                     ncols=os.get_terminal_size().columns,
+                                     ncols=terminal_w,
                                      file=sys.stderr):
                 self.send_CZCanceledPTTMessage(message)
 
