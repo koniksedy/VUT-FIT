@@ -1,9 +1,12 @@
 """
 downloader.py
-Module for data downloading from cisjr.
+Executable module for data downloading from cisjr.
+Data can be downloaded in parallel.
 UPA project
-Authors: Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 03.10.2022
+Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
+         Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
+         Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
+Last change: 12.11.2022
 """
 
 import os
@@ -26,9 +29,13 @@ class Downloader:
 
         if workdir is None:
             self.workdir = tempfile.mkdtemp(prefix="cisjr")
+            # If set to true, the data folder will be deleted.
+            self._clear_at_exit = True
         else:
             pathlib.Path(workdir).mkdir(parents=True, exist_ok=True)
             self.workdir = workdir
+            # If set to true, the data folder will be deleted.
+            self._clear_at_exit = False
 
         self.folder_zip = f"{self.workdir}/data"
         if not os.path.exists(self.folder_zip):
@@ -37,8 +44,7 @@ class Downloader:
         if not os.path.exists(self.folder_xml):
             os.mkdir(self.folder_xml)
 
-        # If set to true, the data folder will be deleted.
-        self._clear_at_exit = False
+        self.process_bar = None
 
     def __enter__(self):
         return self
@@ -114,7 +120,14 @@ class Downloader:
                 with zipfile.ZipFile(f"{self.folder_zip}/{file_name}", "r") as zip_d:
                         zip_d.extractall(out_folder)
 
-    def download(self, except_links: set = set()) -> set:
+    def _parallel_download(self, link: list) -> None:
+        file_name = link.split("/")[-1]
+        folder_name = "/".join(link[32:].split("/")[:-1])
+        if not os.path.exists(folder_name):
+            pathlib.Path(f"{self.folder_zip}/{folder_name}").mkdir(parents=True, exist_ok=True)
+            urllib.request.urlretrieve(self.portal + link, f"{self.folder_zip}/{folder_name}/{file_name}")
+
+    def download(self, except_links: set = set(), n_threads: int = 1) -> set:
         """The method downloads and extracts *.xml.zip data from self.url.
         Raw data are in the folder specified by self.folder_zip.
         Extracted files are in the folder specified by self.folder_xml.
@@ -122,9 +135,10 @@ class Downloader:
         Args:
             except_links (set, optional): A set of links that are already downloaded.
                                           Defaults to the empty set.
-
+            n_threads (int, optional): If greater than 1, the parallel downloading with
+                                       n_threads is performed. Defaults 1.
         Returns:
-            set: A set of links of downloaded files.
+            set: A of set of links of downloaded files.
         """
         # Get remote file links
         print("Initializing...          ", file=sys.stderr, end="")
@@ -132,21 +146,22 @@ class Downloader:
         downloaded_links = self._get_links(self.url).difference(except_links)
         print("Done", file=sys.stderr)
 
-        # Download
-        try:
-            terminal_w = os.get_terminal_size().columns
-        except Exception:
-            terminal_w = 80
-        for link in tqdm.tqdm(downloaded_links,
-                              desc="Downloading...",
-                              ascii=False,
-                              ncols=terminal_w,
-                              file=sys.stderr):
-            file_name = link.split("/")[-1]
-            folder_name = "/".join(link[32:].split("/")[:-1])
-            if not os.path.exists(folder_name):
-                pathlib.Path(f"{self.folder_zip}/{folder_name}").mkdir(parents=True, exist_ok=True)
-                urllib.request.urlretrieve(self.portal + link, f"{self.folder_zip}/{folder_name}/{file_name}")
+        # Downloading (can be done in parallel)
+        if n_threads > 1:
+            from pqdm.processes import pqdm
+            print("Parallel downloading...", file=sys.stderr)
+            pqdm(downloaded_links, self._parallel_download, n_jobs=n_threads)
+            print("Downloading done.", file=sys.stderr)
+        else:
+            for link in tqdm.tqdm(downloaded_links,
+                                desc="Downloading...",
+                                ascii=False,
+                                file=sys.stderr):
+                file_name = link.split("/")[-1]
+                folder_name = "/".join(link[32:].split("/")[:-1])
+                if not os.path.exists(folder_name):
+                    pathlib.Path(f"{self.folder_zip}/{folder_name}").mkdir(parents=True, exist_ok=True)
+                    urllib.request.urlretrieve(self.portal + link, f"{self.folder_zip}/{folder_name}/{file_name}")
 
         # Unzip
         zip_paths = set(map(lambda x: x[32:], downloaded_links))
@@ -178,6 +193,44 @@ class Downloader:
         self._clear_at_exit = True
 
 
+def main():
+    import pymongo
+    from argparse import ArgumentParser
+
+    # Parse args
+    opt_parser = ArgumentParser()
+    opt_parser.add_argument("-p", "--parallel", type=int, metavar="N_THR", default=1,
+                            help=("Download data in 0 < N_THREADS parallel threads.\n" +
+                                  "WARNING high number can lead to the lag in QUEUEING TASKS"))
+    opt_parser.add_argument("-f", "--force", action="store_true",
+                            help="Downloads already downloaded files.")
+    opt_parser.add_argument("workdir", nargs="?",
+                            help="Name of a working directory. (default /tmp).")
+    args = opt_parser.parse_args()
+
+    # Connect to DB
+    connection_string = f"mongodb://localhost:27017"
+    client = pymongo.MongoClient(connection_string)
+    db = client["cisjr"]
+
+    # Get existing links
+    except_links = set()
+    if not args.force:
+        for link in db["Downloaded"].find():
+            except_links.add(link["Link"])
+    else:
+        db.drop_collection("Downloaded")
+
+    # Downloading
+    down = Downloader("https://portal.cisjr.cz/pub/draha/celostatni/szdc/2022/", workdir=args.workdir)
+    downloaded_links = down.download(except_links=except_links, n_threads=args.parallel)
+
+    # Save downloaded links to DB
+    if downloaded_links:
+        db["Downloaded"].insert_many([{"Link": link} for link in downloaded_links])
+
+    client.close()
+
+
 if __name__ == "__main__":
-    d = Downloader("https://portal.cisjr.cz/pub/draha/celostatni/szdc/2022/", workdir="data")
-    d.download()
+    main()

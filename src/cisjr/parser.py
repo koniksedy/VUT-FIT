@@ -2,14 +2,15 @@
 parser.py
 Module parses xml data.
 UPA project
-Authors: Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 05.10.2022
+Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
+         Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
+         Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
+Last change: 12.10.2022
 """
 
 # TODO remove exceptions (Exceptions are only suitable for testing.)
 
 
-import os
 import sys
 import tqdm
 import xml.etree.ElementTree as ET
@@ -20,33 +21,58 @@ class Parser:
     def __init__(self) -> None:
         self.Locations_dict = dict()
 
-
-    def parse(self, xml_files: str) -> tuple:
+    def parse_single(self, xml_file: str) -> tuple:
         """Parses given xml file according to CIS structure.
         And returns a tuple of lists with parsed objects.
 
         Args:
-            xml_files (str): xml file to parse.
+            xml_file (str): xml file to parse.
 
         Raises:
             ValueError: Unsupported tag. Just for testing.
 
         Returns:
-            Tuple[list, list, list]: Return tuple of three lists.
+            tuple: Return triple of elements.
+                   CZPTTCISMessage, CZCanceledPTTMessage, Locations
+        """
+        CZPTTCISMessage = None
+        CZCanceledPTTMessage = None
+
+        tree = ET.parse(xml_file)
+        root = tree.getroot()
+        if root.tag == "CZPTTCISMessage":
+            message = self._parse_CZPTTCISMessage(root)
+            CZPTTCISMessage = message
+        elif root.tag == "CZCanceledPTTMessage":
+            message = self._parse_CZCanceledPTTMessage(root)
+            CZCanceledPTTMessage = message
+        else:
+            raise ValueError(f"Unsupported xml tag {root.tag}")
+
+        Locations = list(self.Locations_dict.items()) if self.Locations_dict else None
+
+        return CZPTTCISMessage, CZCanceledPTTMessage, Locations
+
+    def parse(self, xml_files: list) -> tuple:
+        """Parses given xml files according to CIS structure.
+        And returns a tuple of lists with parsed objects.
+
+        Args:
+            xml_files (list): xml file to parse.
+
+        Raises:
+            ValueError: Unsupported tag. Just for testing.
+
+        Returns:
+            Tuple[list, list, list]: Return triple of lists.
                                      CZPTTCISMessage, CZCanceledPTTMessage, Locations
         """
         CZPTTCISMessage_list = list()
         CZCanceledPTTMessage_list = list()
 
-        try:
-            terminal_w = os.get_terminal_size().columns
-        except Exception:
-            terminal_w = 80
-
         for xml_f in tqdm.tqdm(xml_files,
                                desc="Parsing...",
                                ascii=False,
-                               ncols=terminal_w,
                                file=sys.stderr):
             tree = ET.parse(xml_f)
             root = tree.getroot()
@@ -59,9 +85,9 @@ class Parser:
             else:
                 raise ValueError(f"Unsupported xml tag {root.tag}")
 
-        Location_list = list(self.Locations_dict.values())
+        Locations = list(self.Locations_dict.items())
 
-        return CZPTTCISMessage_list, CZCanceledPTTMessage_list, Location_list
+        return CZPTTCISMessage_list, CZCanceledPTTMessage_list, Locations
 
     def _parse_CZPTTCISMessage(self, xml_root: ET.Element) -> dict:
         out = dict()
@@ -196,6 +222,7 @@ class Parser:
 
     def _parse_Location(self, xml_root: ET.Element) -> dict:
         data = dict()
+        data["LocationSubsidiaryIdentification"] = None
         for child in xml_root:
             if child.tag == "CountryCodeISO":
                 data["CountryCodeISO"] = child.text
@@ -210,12 +237,14 @@ class Parser:
 
         name = data["PrimaryLocationName"]
         code = data["LocationPrimaryCode"]
-        track = data["LocationSubsidiaryIdentification"]["LocationSubsidiaryCode"] if "LocationSubsidiaryIdentification" in data else None
+        track = data["LocationSubsidiaryIdentification"]["LocationSubsidiaryCode"] if data["LocationSubsidiaryIdentification"] is not None else None
         if (name, code, track) not in self.Locations_dict:
-            data["_id"] = len(self.Locations_dict)
+            # data["_id"] = len(self.Locations_dict)
             self.Locations_dict[(name, code, track)] = data
 
-        return {"location_id": self.Locations_dict[(name, code, track)]["_id"], "name": name}
+        placeholder = (name, code, track)
+
+        return {"Location_id": placeholder, "Name": name}
 
     @staticmethod
     def _parse_PlannedCalendar(xml_root: ET.Element) -> dict:

@@ -2,16 +2,20 @@
 uploader.py
 Module uploads xml data to MonodBD database.
 UPA project
-Authors: Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 05.10.2022
+Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
+         Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
+         Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
+Last change: 12.10.2022
 """
 
-import os
-from symbol import term
 import sys
 import tqdm
-import parser
 import pymongo
+
+if __name__ == "__main__":
+    import parser
+else:
+    from . import parser
 
 
 class Uploader:
@@ -27,15 +31,17 @@ class Uploader:
     def __exit__(self) -> None:
         self.close()
 
-    def send_CZCanceledPTTMessage(self, message: dict) -> None:
+    def _send_CZCanceledPTTMessage(self, message: dict) -> None:
         data_cursor = self.db["CZPTTCISMessage"].aggregate(
             [
                 {
                     "$match": {
-                        "Identifiers.PlannedTransportIdentifiers": message["PlannedTransportIdentifiers"]
+                        "Identifiers.PlannedTransportIdentifiers.PA.Core": message["PlannedTransportIdentifiers"]["PA"]["Core"],
+                        "Identifiers.PlannedTransportIdentifiers.TR.Core": message["PlannedTransportIdentifiers"]["TR"]["Core"]
                     }
                 }
             ]
+
         )
 
         for data in data_cursor:
@@ -54,50 +60,119 @@ class Uploader:
                                                           }
                                                   })
 
-    def upload(self, xml_files: list) -> None:
+    def upload(self, xml_files: list, force=False, n_threads: int = 1) -> None:
         """Calls parser and uploads all file in xml_files to mongo database.
 
         Args:
             xml_files (list): List of xml_files.
+            force (bool, optional): Parse only new files if False. Defaults False.
+            n_threads (int, optional): If greater than 1, the parallel downloading with
+                                       n_threads is performed. Defaults 1.
         """
-        parser_ob = parser.Parser()
 
-        CZPTTCISMessage_list, CZCanceledPTTMessage_list, Location_list = parser_ob.parse(xml_files)
+        # Parsing (can be done in parallel)
+        if n_threads == 1:
+            parser_ob = parser.Parser()
+            CZPTTCISMessage_list, CZCanceledPTTMessage_list, Location_list = parser_ob.parse(xml_files)
+        else:
+            from pqdm.processes import pqdm
+            print("Parallel parsing...", file=sys.stderr)
+            parallel_results = pqdm(xml_files, parser.Parser().parse_single, n_jobs=n_threads)
+            CZPTTCISMessage_list = [x[0] for x in parallel_results if x[0] is not None]
+            CZCanceledPTTMessage_list = [x[1] for x in parallel_results if x[1] is not None]
+            Location_list = {y[0]: y[1] for x in parallel_results if x[2] is not None for y in x[2]}.items()
+            print("Parallel parsing done.", file=sys.stderr)
 
-        # Uploading Location
-        print("Uploading Location...  ", end="", file=sys.stderr)
-        sys.stderr.flush()
+        # Uploading Location and generating location _ids.
+        Location_ids = dict()
         if Location_list:
-            self.db["Location"].insert_many(Location_list)
-        print("Done", file=sys.stderr)
+            for key, location in tqdm.tqdm(Location_list,
+                                           desc="Uploading Location...",
+                                           ascii=False,
+                                           file=sys.stderr):
+                if location["LocationSubsidiaryIdentification"] is None:
+                    orig_location = self.db["Location"].find_one(
+                        {
+                            "PrimaryLocationName": location["PrimaryLocationName"],
+                            "LocationPrimaryCode" : location["LocationPrimaryCode"],
+                            "LocationSubsidiaryIdentification": location["LocationSubsidiaryIdentification"]
+                        }
+                    )
+                else:
+                    orig_location = self.db["Location"].find_one(
+                        {
+                            "PrimaryLocationName": location["PrimaryLocationName"],
+                            "LocationPrimaryCode" : location["LocationPrimaryCode"],
+                            "LocationSubsidiaryIdentification.LocationSubsidiaryCode": location["LocationSubsidiaryIdentification"]["LocationSubsidiaryCode"]
+                        }
+                    )
+                if orig_location is not None:
+                    Location_ids[key] = orig_location["_id"]
+                else:
+                    r = self.db["Location"].insert_one(location)
+                    Location_ids[key] = r.inserted_id
 
         # Uploading CZPTTCISMessage
-        print("Uploading CZPTTCISMessage...  ", end="", file=sys.stderr)
-        sys.stderr.flush()
         if CZPTTCISMessage_list:
-            self.db["CZPTTCISMessage"].insert_many(CZPTTCISMessage_list)
-        print("Done", file=sys.stderr)
+            CZPTTCISMessage_list.sort(key=lambda x: x["CZPTTCreation"])
+            result = self.db["DBInfo"].find_one({"_id": "LastUpdate"})
+            last_update = None if result is None else result["Date"]
+            for message in tqdm.tqdm(CZPTTCISMessage_list,
+                                     desc="Uploading CZPTTCISMessage...",
+                                     ascii=False,
+                                     file=sys.stderr):
+
+                for location in message["CZPTTInformation"]["CZPTTLocation"]:
+                    old_id = location["Location"]["Location_id"]
+                    location["Location"]["Location_id"] = Location_ids[old_id]
+
+                if force or (last_update is not None and last_update >= message["CZPTTCreation"]):
+                    # Update only newly created records or it the force is set.
+                    self.db["CZPTTCISMessage"].update_one(
+                        {
+                            "Identifiers": message["Identifiers"],
+                            "CZPTTInformation.PlannedCalendar.ValidityPeriod": message["CZPTTInformation"]["PlannedCalendar"]["ValidityPeriod"]
+                        }, {
+                            "$set": {},
+                            "$setOnInsert": message
+                        }, upsert=True
+                    )
+                else:
+                    last_update = message["CZPTTCreation"]
+                    self.db["CZPTTCISMessage"].insert_one(message)
+            self.db["DBInfo"].update_one({"_id": "LastUpdate"}, {"$set": {"Date": last_update}}, upsert=True)
 
         # Sending CZCanceledPTTMessage_list
-
-        try:
-            terminal_w = os.get_terminal_size().columns
-        except Exception:
-            terminal_w = 80
-
         if CZCanceledPTTMessage_list:
             CZCanceledPTTMessage_list.sort(key=lambda x: x["CZPTTCancelation"])
             for message in tqdm.tqdm(CZCanceledPTTMessage_list,
                                      desc="Sending CZCanceledPTTMessage...",
                                      ascii=False,
-                                     ncols=terminal_w,
                                      file=sys.stderr):
-                self.send_CZCanceledPTTMessage(message)
+                self._send_CZCanceledPTTMessage(message)
+
+
+def main():
+    import downloader
+    from argparse import ArgumentParser
+
+    # Parse args
+    opt_parser = ArgumentParser()
+    opt_parser.add_argument("workdir",
+                            help="Name of a working directory with a folder /zips to upload.")
+    opt_parser.add_argument("-p", "--parallel", type=int, metavar="N_THR", default=1,
+                            help=("Parse data in 0 < N_THREADS parallel threads.\n" +
+                                  "WARNING high number can lead to the lag in QUEUEING TASKS"))
+    opt_parser.add_argument("-f", "--force", action="store_true",
+                            help="Updates already uploaded files.")
+    args = opt_parser.parse_args()
+
+    # Parsing + Uploading
+    down = downloader.Downloader("https://portal.cisjr.cz/pub/draha/celostatni/szdc/2022/", workdir=args.workdir)
+    xml_files = down.get()
+    upl = Uploader()
+    upl.upload(xml_files, force=args.force, n_threads=args.parallel)
 
 
 if __name__ == "__main__":
-    import downloader
-    dwnl = downloader.Downloader("https://portal.cisjr.cz/pub/draha/celostatni/szdc/2022/", workdir="data")
-    xml_files = dwnl.get()
-    upl = Uploader()
-    upl.upload(xml_files)
+    main()
