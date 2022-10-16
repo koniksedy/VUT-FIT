@@ -291,7 +291,7 @@ class Parser:
             if child.tag == "StartLocation":
                 out["StartLocation"] = self._parse_Location(child)
             elif child.tag == "EndLocation":
-                out["EndLocation"] = self._parse_Location()
+                out["EndLocation"] = self._parse_Location(child)
             else:
                 raise ValueError(f"Unsupported xml tag {child.tag}")
         return out

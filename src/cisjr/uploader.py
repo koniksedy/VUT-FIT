@@ -28,7 +28,10 @@ class Uploader:
     def close(self) -> None:
         self._client.close()
 
-    def __exit__(self) -> None:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback) -> None:
         self.close()
 
     def _send_CZCanceledPTTMessage(self, message: dict) -> None:

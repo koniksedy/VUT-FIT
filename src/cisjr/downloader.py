@@ -46,10 +46,7 @@ class Downloader:
 
         self.process_bar = None
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self) -> None:
+    def __del__(self) -> None:
         if self._clear_at_exit:
             shutil.rmtree(self.workdir)
 
