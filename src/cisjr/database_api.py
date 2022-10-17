@@ -24,7 +24,8 @@ class Database:
         return self.database[collection_name].aggregate(query)
 
     def api_update_one(self, collection_name: str, *args, **kwargs):
-        mongo_filter = kwargs['filter']
+        if 'mongo_filter' in kwargs:
+            mongo_filter = kwargs['mongo_filter']
         query = kwargs['query']
 
         if 'upsert' in kwargs:
@@ -36,7 +37,7 @@ class Database:
 
     def api_insert_one(self, collection_name: str, **kwargs):
         data = kwargs['data']
-        self.database[collection_name].insert_one(data)
+        return self.database[collection_name].insert_one(data)
 
     def api_find_one(self, collection_name: str, *args, **kwargs):
         query = kwargs['query']

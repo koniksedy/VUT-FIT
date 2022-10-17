@@ -20,7 +20,8 @@ import gzip
 import zipfile
 import requests
 import urllib.request
-import database_api
+from src.cisjr import database_api
+
 
 
 class Downloader:

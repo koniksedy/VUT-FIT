@@ -10,7 +10,8 @@ Last change: 12.11.2022
 """
 
 from argparse import ArgumentParser
-from cisjr import downloader, uploader, database_api
+from cisjr import downloader, uploader
+from src.cisjr import database_api
 
 
 def main():

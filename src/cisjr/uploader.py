@@ -11,7 +11,7 @@ Last change: 12.10.2022
 import sys
 import tqdm
 import pymongo
-import database_api
+from src.cisjr import database_api
 
 if __name__ == "__main__":
     import parser
@@ -47,7 +47,7 @@ class Uploader:
             }
         ]
 
-        data_cursor = self.db.api_aggregate("CZPTTCISMessage", aggregation_string)
+        data_cursor = self.db.api_aggregate("CZPTTCISMessage", query=aggregation_string)
 
         # TODO Remove when functionality verified
         '''data_cursor = self.db["CZPTTCISMessage"].aggregate(
@@ -71,15 +71,15 @@ class Uploader:
                 filter(lambda x: x < d or x > de, data["CZPTTInformation"]["PlannedCalendar"]["Canceled"]))
             canceled_update = canceled_old + canceled_new
 
-            database_query = {
+            mongo_query = {
                 "$set":
                     {
                         "CZPTTInformation.PlannedCalendar.Canceled": canceled_update
                     }
             }
 
-            data = {"_id": data["_id"]}
-            self.db.api_update_one("CZPTTCISMessage", database_query, data)
+            mongo_filter = {"_id": data["_id"]}
+            self.db.api_update_one("CZPTTCISMessage", query=mongo_query, mongo_filter=mongo_filter)
 
             # TODO Remove when functionality verified
             '''self.db["CZPTTCISMessage"].update_one({"_id": data["_id"]},
