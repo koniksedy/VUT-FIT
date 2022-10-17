@@ -10,8 +10,7 @@ Last change: 12.11.2022
 """
 
 from argparse import ArgumentParser
-import pymongo
-from cisjr import downloader, uploader
+from cisjr import downloader, uploader, database_api
 
 
 def main():
@@ -31,17 +30,22 @@ def main():
 
 
     # Connect to Database
-    connection_string = "mongodb://localhost:27017"
-    client = pymongo.MongoClient(connection_string)
-    db = client["cisjr"]
+    # Uses database_api
+    connection_string = f"mongodb://localhost:27017"
+    db = database_api.Database("cisjr", connection_string)
 
     # Get existing links
+    # Uses database_api
     except_links = set()
     if not args.force:
-        for link in db["Downloaded"].find():
+        # TODO Remove when functionality verified
+        # for link in db["Downloaded"].find():
+        for link in db.api_find("Downloaded"):
             except_links.add(link["Link"])
     else:
-        db.drop_collection("Downloaded")
+        # TODO Remove when functionality verified
+        # db.drop_collection("Downloaded")
+        db.api_drop_collection("Downloaded")
 
     # Download (can be done in parallel)
     donw = downloader.Downloader("https://portal.cisjr.cz/pub/draha/celostatni/szdc/2022/", workdir=args.workdir)
@@ -49,7 +53,9 @@ def main():
 
     # Save downloaded links to DB
     if downloaded_links:
-        db["Downloaded"].insert_many([{"Link": link} for link in downloaded_links])
+        # TODO Remove when functionality verified
+        # db["Downloaded"].insert_many([{"Link": link} for link in downloaded_links])
+        db.api_insert_many("Downloaded", insert_data=[{"Link": link} for link in downloaded_links])
 
     # Parse + Upload
     xml_paths = donw.get()
@@ -57,7 +63,8 @@ def main():
     up.upload(xml_paths, force=args.force, n_threads=args.parallel_parse)
 
     # Close DB client
-    client.close()
+    # Uses database_api
+    db.close()
 
 if __name__ == "__main__":
     main()

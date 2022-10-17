@@ -20,6 +20,7 @@ import gzip
 import zipfile
 import requests
 import urllib.request
+import database_api
 
 
 class Downloader:
@@ -191,7 +192,6 @@ class Downloader:
 
 
 def main():
-    import pymongo
     from argparse import ArgumentParser
 
     # Parse args
@@ -206,27 +206,36 @@ def main():
     args = opt_parser.parse_args()
 
     # Connect to DB
+    # Uses database API
     connection_string = f"mongodb://localhost:27017"
-    client = pymongo.MongoClient(connection_string)
-    db = client["cisjr"]
+    db = database_api.Database("cisjr", connection_string)
 
     # Get existing links
+    # Uses database API
+
     except_links = set()
     if not args.force:
-        for link in db["Downloaded"].find():
+        # TODO Remove when functionality verified
+        # for link in db["Downloaded"].find():
+        for link in db.api_find("Downloaded"):
             except_links.add(link["Link"])
     else:
-        db.drop_collection("Downloaded")
+        db.api_drop_collection("Downloaded")
 
     # Downloading
     down = Downloader("https://portal.cisjr.cz/pub/draha/celostatni/szdc/2022/", workdir=args.workdir)
     downloaded_links = down.download(except_links=except_links, n_threads=args.parallel)
 
     # Save downloaded links to DB
+    # Uses database API.
     if downloaded_links:
-        db["Downloaded"].insert_many([{"Link": link} for link in downloaded_links])
 
-    client.close()
+        # TODO Remove when functionality verified
+        #db["Downloaded"].insert_many([{"Link": link} for link in downloaded_links])
+        db.api_insert_many("Downloaded", insert_data=[{"Link": link} for link in downloaded_links])
+
+    # Close db (Database Class) client member
+    db.close()
 
 
 if __name__ == "__main__":
