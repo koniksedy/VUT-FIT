@@ -6,12 +6,12 @@ UPA project
 Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
          Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
          Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 12.11.2022
+Last change: 18.11.2022
 """
 
 from argparse import ArgumentParser
 from cisjr import downloader, uploader
-from src.cisjr import database_api
+from cisjr import database_api
 
 
 def main():
@@ -31,7 +31,6 @@ def main():
 
 
     # Connect to Database
-    # Uses database_api
     connection_string = f"mongodb://localhost:27017"
     db = database_api.Database("cisjr", connection_string)
 
@@ -58,7 +57,6 @@ def main():
     up.upload(xml_paths, force=args.force, n_threads=args.parallel_parse)
 
     # Close DB client
-    # Uses database_api
     db.close()
 
 if __name__ == "__main__":

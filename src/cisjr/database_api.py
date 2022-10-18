@@ -5,7 +5,7 @@ UPA project
 Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
          Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
          Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 12.11.2022
+Last change: 18.11.2022
 """
 
 import pymongo
@@ -20,7 +20,6 @@ class Database:
         return self.database.drop_collection(collection_name)
 
     def api_aggregate(self, collection_name: str, *args, **kwargs):
-        ##query = kwargs['query']
         return self.database[collection_name].aggregate(*args, **kwargs)
 
     def api_update_one(self, collection_name: str, *args, **kwargs):
@@ -38,5 +37,14 @@ class Database:
     def api_insert_many(self, collection_name: str, *args, **kwargs):
         return self.database[collection_name].insert_many(*args, **kwargs)
 
-    def close(self):
+    def api_replace_one(self, collection_name: str, *args, **kwargs):
+        return self.database[collection_name].replace_one(*args, **kwargs)
+
+    def api_create_index(self, collection_name: str, *args, **kwargs) -> str:
+        return self.database[collection_name].create_index(*args, **kwargs)
+
+    def api_drop_index(self, collection_name: str, *args, **kwargs) -> None:
+        self.database[collection_name].drop_index(*args, **kwargs)
+
+    def close(self) -> None:
         self.client.close()

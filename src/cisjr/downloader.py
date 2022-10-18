@@ -6,7 +6,7 @@ UPA project
 Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
          Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
          Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 12.11.2022
+Last change: 18.11.2022
 """
 
 import os
@@ -20,8 +20,7 @@ import gzip
 import zipfile
 import requests
 import urllib.request
-from src.cisjr import database_api
-
+from . import database_api
 
 
 class Downloader:
@@ -140,7 +139,7 @@ class Downloader:
             set: A of set of links of downloaded files.
         """
         # Get remote file links
-        print("Initializing...          ", file=sys.stderr, end="")
+        print("Initializing... ", file=sys.stderr, end="")
         sys.stderr.flush()
         downloaded_links = self._get_links(self.url).difference(except_links)
         print("Done", file=sys.stderr)
@@ -167,12 +166,12 @@ class Downloader:
         originals = set(filter(lambda x: "oprava" not in x, zip_paths))
         updates = zip_paths.difference(originals)
 
-        print("Unzipping originals...   ", end="", file=sys.stderr)
+        print("Unzipping originals... ", end="", file=sys.stderr)
         sys.stderr.flush()
         self._unzip(originals)
         print("Done", file=sys.stderr)
 
-        print("Unzipping updates...     ", end="", file=sys.stderr)
+        print("Unzipping updates... ", end="", file=sys.stderr)
         sys.stderr.flush()
         self._unzip(updates)
         print("Done", file=sys.stderr)
@@ -207,17 +206,12 @@ def main():
     args = opt_parser.parse_args()
 
     # Connect to DB
-    # Uses database API
     connection_string = f"mongodb://localhost:27017"
     db = database_api.Database("cisjr", connection_string)
 
     # Get existing links
-    # Uses database API
-
     except_links = set()
     if not args.force:
-        # TODO Remove when functionality verified
-        # for link in db["Downloaded"].find():
         for link in db.api_find("Downloaded"):
             except_links.add(link["Link"])
     else:
@@ -228,12 +222,8 @@ def main():
     downloaded_links = down.download(except_links=except_links, n_threads=args.parallel)
 
     # Save downloaded links to DB
-    # Uses database API.
     if downloaded_links:
-
-        # TODO Remove when functionality verified
-        db["Downloaded"].insert_many([{"Link": link} for link in downloaded_links])
-        #db.api_insert_many("Downloaded", insert_data=[{"Link": link} for link in downloaded_links])
+        db.api_insert_many("Downloaded", [{"Link": link} for link in downloaded_links])
 
     # Close db (Database Class) client member
     db.close()

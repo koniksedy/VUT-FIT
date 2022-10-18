@@ -5,11 +5,8 @@ UPA project
 Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
          Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
          Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 12.10.2022
+Last change: 18.10.2022
 """
-
-# TODO remove exceptions (Exceptions are only suitable for testing.)
-
 
 import sys
 import tqdm
@@ -46,8 +43,6 @@ class Parser:
         elif root.tag == "CZCanceledPTTMessage":
             message = self._parse_CZCanceledPTTMessage(root)
             CZCanceledPTTMessage = message
-        else:
-            raise ValueError(f"Unsupported xml tag {root.tag}")
 
         Locations = list(self.Locations_dict.items()) if self.Locations_dict else None
 
@@ -82,8 +77,6 @@ class Parser:
             elif root.tag == "CZCanceledPTTMessage":
                 message = self._parse_CZCanceledPTTMessage(root)
                 CZCanceledPTTMessage_list.append(message)
-            else:
-                raise ValueError(f"Unsupported xml tag {root.tag}")
 
         Locations = list(self.Locations_dict.items())
 
@@ -105,8 +98,7 @@ class Parser:
                 if "NetworkSpecificParameter" not in out:
                     out["NetworkSpecificParameter"] = list()
                 out["NetworkSpecificParameter"].append(self._parse_NetworkSpecificParameter(child))
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return out
 
     def _parse_CZCanceledPTTMessage(self, xml_root: ET.Element) -> dict:
@@ -123,8 +115,7 @@ class Parser:
                 out["CZDeactivatedSection"] = self._parse_CZDeactivatedSection(child)
             elif child.tag == "PlannedCalendar":
                 out["PlannedCalendar"] = self._parse_PlannedCalendar(child)
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return out
 
     def _parse_CZPTTHeader(self, xml_root: ET.Element) -> dict:
@@ -134,8 +125,7 @@ class Parser:
                 out["CZForeignOriginLocation"] = self._parse_Location(child)
             elif child.tag == "CZForeignDestinationLocation":
                 out["ForeignDestinationLocation"] = self._parse_Location(child)
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         if not out:
             return None
         return out
@@ -154,8 +144,7 @@ class Parser:
                 out["RelatedPlannedTransportIdentifiers"] = dict()
                 key, val = Parser._parse_TransportIdentifiers(child)
                 out["RelatedPlannedTransportIdentifiers"][key] = val
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return out
 
     @staticmethod
@@ -173,8 +162,7 @@ class Parser:
                 out["Variant"] = child.text
             elif child.tag == "TimetableYear":
                 out["TimetableYear"] = int(child.text)
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return o_type, out
 
     def _parse_CZPTTInformation(self, xml_root: ET.Element) -> dict:
@@ -187,8 +175,7 @@ class Parser:
             elif child.tag == "PlannedCalendar":
                 out["PlannedCalendar"] = self._parse_PlannedCalendar(child)
                 out["PlannedCalendar"]["Canceled"] = list()
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return out
 
     def _parse_CZPTTLocation(self, xml_root: ET.Element) -> dict:
@@ -216,8 +203,7 @@ class Parser:
                 if "NetworkSpecificParameter" not in out:
                     out["NetworkSpecificParameter"] = list()
                 out["NetworkSpecificParameter"].append(self._parse_NetworkSpecificParameter(child))
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return out
 
     def _parse_Location(self, xml_root: ET.Element) -> dict:
@@ -232,14 +218,11 @@ class Parser:
                 data["PrimaryLocationName"] = child.text
             elif child.tag == "LocationSubsidiaryIdentification":
                 data["LocationSubsidiaryIdentification"] = self._parse_LocationSubsidiaryIdentification(child)
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
 
         name = data["PrimaryLocationName"]
         code = data["LocationPrimaryCode"]
         track = data["LocationSubsidiaryIdentification"]["LocationSubsidiaryCode"] if data["LocationSubsidiaryIdentification"] is not None else None
         if (name, code, track) not in self.Locations_dict:
-            # data["_id"] = len(self.Locations_dict)
             self.Locations_dict[(name, code, track)] = data
 
         placeholder = (name, code, track)
@@ -254,11 +237,9 @@ class Parser:
                 data["BitmapDays"] = [x == "1" for x in child.text]
             elif child.tag == "ValidityPeriod":
                 data["ValidityPeriod"] = Parser._parse_ValidityPeriod(child)
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
 
         d: datetime = data["ValidityPeriod"]["StartDateTime"]
-        de = data["ValidityPeriod"]["StartDateTime"]
+        de = data["ValidityPeriod"]["EndDateTime"]
 
         out = dict()
         out["ValidityPeriod"] = data["ValidityPeriod"]
@@ -281,8 +262,7 @@ class Parser:
                 out["Name"] = child.text
             elif child.tag == "Value":
                 out["Value"] = child.text
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return out
 
     def _parse_CZDeactivatedSection(self, xml_root: ET.Element) -> dict:
@@ -292,8 +272,7 @@ class Parser:
                 out["StartLocation"] = self._parse_Location(child)
             elif child.tag == "EndLocation":
                 out["EndLocation"] = self._parse_Location(child)
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return out
 
     @staticmethod
@@ -317,8 +296,7 @@ class Parser:
                 out["AllocationCompany"] = child.text
             elif child.tag == "LocationSubsidiaryName":
                 out["LocationSubsidiaryName"] = child.text
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return out
 
     @staticmethod
@@ -331,8 +309,7 @@ class Parser:
                 out["ALD"] = Parser._parse_Timing(child)
             elif child.tag == "DwellTime":
                 out["DwellTime"] = int(float(child.text)*60)
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return out
 
     @staticmethod
@@ -343,8 +320,7 @@ class Parser:
                 out["Time"] = datetime.strptime(child.text[:8], "%H:%M:%S")
             elif child.tag == "Offset":
                 out["Offset"] = int(child.text)
-            else:
-                raise ValueError(f"Unsupported xml tag {child.tag}")
+
         return out
 
     @staticmethod

@@ -5,18 +5,13 @@ UPA project
 Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
          Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
          Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 12.10.2022
+Last change: 18.10.2022
 """
 
 import sys
 import tqdm
-import pymongo
-from src.cisjr import database_api
-
-if __name__ == "__main__":
-    import parser
-else:
-    from . import parser
+from . import database_api
+from . import parser
 
 
 class Uploader:
@@ -34,14 +29,11 @@ class Uploader:
         self.close()
 
     def _send_CZCanceledPTTMessage(self, message: dict) -> None:
-
         aggregation_string = [
             {
                 "$match": {
-                    "Identifiers.PlannedTransportIdentifiers.PA.Core": message["PlannedTransportIdentifiers"]["PA"][
-                        "Core"],
-                    "Identifiers.PlannedTransportIdentifiers.TR.Core": message["PlannedTransportIdentifiers"]["TR"][
-                        "Core"]
+                    "Identifiers.PlannedTransportIdentifiers.TR": message["PlannedTransportIdentifiers"]["TR"],
+                    "Identifiers.PlannedTransportIdentifiers.PA": message["PlannedTransportIdentifiers"]["PA"]
                 }
             }
         ]
@@ -50,16 +42,21 @@ class Uploader:
 
         for data in data_cursor:
             d = message["PlannedCalendar"]["ValidityPeriod"]["StartDateTime"].strftime("%Y%m%d")
+            ds = d
             de = message["PlannedCalendar"]["ValidityPeriod"]["EndDateTime"].strftime("%Y%m%d")
 
+            canceled_old = list(filter(lambda x: x < ds or x > de, data["CZPTTInformation"]["PlannedCalendar"]["Canceled"]))
+            canceled_unvalid = list(filter(lambda x: ds <= x and x >= de, data["CZPTTInformation"]["PlannedCalendar"]["Canceled"]))
             canceled_new = message["PlannedCalendar"]["Valid"]
-            canceled_old = list(
-                filter(lambda x: x < d or x > de, data["CZPTTInformation"]["PlannedCalendar"]["Canceled"]))
             canceled_update = canceled_old + canceled_new
+
+            running_set = set(data["CZPTTInformation"]["PlannedCalendar"]["Valid"])
+            running_set.update(canceled_unvalid)
+            running_set.difference_update(canceled_new)
 
             mongo_query = {
                 "$set":
-                    {
+                    {   "CZPTTInformation.PlannedCalendar.Valid": list(running_set),
                         "CZPTTInformation.PlannedCalendar.Canceled": canceled_update
                     }
             }
@@ -67,12 +64,35 @@ class Uploader:
             mongo_filter = {"_id": data["_id"]}
             self.db.api_update_one("CZPTTCISMessage", mongo_filter, mongo_query)
 
-    def upload(self, xml_files: list, force=False, n_threads: int = 1) -> None:
+    def _generate_CZCanceledPTTMessage(self, message: dict) -> list:
+        canceled_messages = list()
+        if "RelatedPlannedTransportIdentifiers" not in message["Identifiers"]:
+            return canceled_messages
+
+        mongo_query = {
+            "Identifiers.PlannedTransportIdentifiers.PA": message["Identifiers"]["RelatedPlannedTransportIdentifiers"]["PA"]
+        }
+        cursor = self.db.api_find("CZPTTCISMessage", mongo_query)
+
+        for m in cursor:
+            pti = m["Identifiers"]["PlannedTransportIdentifiers"]
+            creation_date = m["CZPTTCreation"]
+            calendar = m["CZPTTInformation"]["PlannedCalendar"]
+
+            cancel_message = {
+                "PlannedTransportIdentifiers": pti,
+                "CZPTTCancelation": creation_date,
+                "PlannedCalendar": calendar
+            }
+            canceled_messages.append(cancel_message)
+
+        return canceled_messages
+
+    def upload(self, xml_files: list, n_threads: int = 1) -> None:
         """Calls parser and uploads all file in xml_files to mongo database.
 
         Args:
             xml_files (list): List of xml_files.
-            force (bool, optional): Parse only new files if False. Defaults False.
             n_threads (int, optional): If greater than 1, the parallel downloading with
                                        n_threads is performed. Defaults 1.
         """
@@ -91,7 +111,6 @@ class Uploader:
             print("Parallel parsing done.", file=sys.stderr)
 
         # Uploading Location and generating location _ids.
-        # Uses database_api.
         Location_ids = dict()
         if Location_list:
             for key, location in tqdm.tqdm(Location_list,
@@ -123,12 +142,16 @@ class Uploader:
                     r = self.db.api_insert_one("Location", location)
                     Location_ids[key] = r.inserted_id
 
+        # Create CZPTTCISMessage indexes
+        print("Creating CZPTTCISMessage indexes... ", file=sys.stderr, end="")
+        sys.stderr.flush()
+        self.db.api_create_index("CZPTTCISMessage", "Identifiers.PlannedTransportIdentifiers.TR")
+        self.db.api_create_index("CZPTTCISMessage", "Identifiers.PlannedTransportIdentifiers.PA")
+        print("Done", file=sys.stderr)
+
         # Uploading CZPTTCISMessage
         if CZPTTCISMessage_list:
             CZPTTCISMessage_list.sort(key=lambda x: x["CZPTTCreation"])
-            mongo_query = {"_id": "LastUpdate"}
-            result = self.db.api_find_one("DBInfo", mongo_query)
-            last_update = None if result is None else result["Date"]
             for message in tqdm.tqdm(CZPTTCISMessage_list,
                                      desc="Uploading CZPTTCISMessage...",
                                      ascii=False,
@@ -138,27 +161,20 @@ class Uploader:
                     old_id = location["Location"]["Location_id"]
                     location["Location"]["Location_id"] = Location_ids[old_id]
 
-                if force or (last_update is not None and last_update >= message["CZPTTCreation"]):
+                mongo_filter = {
+                                    "Identifiers.PlannedTransportIdentifiers.TR": message["Identifiers"]["PlannedTransportIdentifiers"]["TR"],
+                                    "Identifiers.PlannedTransportIdentifiers.PA": message["Identifiers"]["PlannedTransportIdentifiers"]["PA"]
+                                }
+                self.db.api_replace_one("CZPTTCISMessage", mongo_filter, message, upsert=True)
 
-                    # Update only newly created records or it the force is set.
-                    # Uses database_api.
-                    mongo_query = {
-                                      "$set": {},
-                                      "$setOnInsert": message
-                                  }
-                    mongo_filter = {
-                                      "Identifiers": message["Identifiers"],
-                                      "CZPTTInformation.PlannedCalendar.ValidityPeriod":
-                                          message["CZPTTInformation"]["PlannedCalendar"]["ValidityPeriod"]
-                                  }
-                    self.db.api_update_one("CZPTTCISMessage", mongo_filter, mongo_query, True)
-                else:
-                    last_update = message["CZPTTCreation"]
-                    self.db.api_insert_one("CZPTTCISMessage", message)
-
-            mongo_filter = {"_id": "LastUpdate"}
-            mongo_query = {"$set": {"Date": last_update}}
-            self.db.api_update_one("DBInfo", mongo_filter, mongo_query, True)
+        # Generate missing CZCanceledPTTMessages
+        for message in tqdm.tqdm(CZPTTCISMessage_list,
+                                 desc="Generating CZCanceledPTTMessages...",
+                                 ascii=False,
+                                 file=sys.stderr):
+            cancel_message = self._generate_CZCanceledPTTMessage(message)
+            if cancel_message:
+                CZCanceledPTTMessage_list.extend(cancel_message)
 
         # Sending CZCanceledPTTMessage_list
         if CZCanceledPTTMessage_list:
@@ -169,9 +185,15 @@ class Uploader:
                                      file=sys.stderr):
                 self._send_CZCanceledPTTMessage(message)
 
+        # Create CZPTTCISMessage location indexes
+        print("Creating CZPTTCISMessage location indexes... ", file=sys.stderr, end="")
+        sys.stderr.flush()
+        self.db.api_create_index("CZPTTCISMessage", "CZPTTInformation.CZPTTLocation.Location.Name")
+        print("Done", file=sys.stderr)
+
 
 def main():
-    import downloader
+    from . import downloader
     from argparse import ArgumentParser
 
     # Parse args
@@ -180,16 +202,14 @@ def main():
                             help="Name of a working directory with a folder /zips to upload.")
     opt_parser.add_argument("-p", "--parallel", type=int, metavar="N_THR", default=1,
                             help=("Parse data in 0 < N_THREADS parallel threads.\n" +
-                                  "WARNING high number can lead to the lag in QUEUEING TASKS"))
-    opt_parser.add_argument("-f", "--force", action="store_true",
-                            help="Updates already uploaded files.")
+                                  "WARNING high number can lead to the lag QUEUEING TASKS"))
     args = opt_parser.parse_args()
 
     # Parsing + Uploading
     down = downloader.Downloader("https://portal.cisjr.cz/pub/draha/celostatni/szdc/2022/", workdir=args.workdir)
     xml_files = down.get()
     upl = Uploader()
-    upl.upload(xml_files, force=args.force, n_threads=args.parallel)
+    upl.upload(xml_files, n_threads=args.parallel)
 
 
 if __name__ == "__main__":
