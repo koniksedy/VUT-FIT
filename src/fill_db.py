@@ -39,13 +39,9 @@ def main():
     # Uses database_api
     except_links = set()
     if not args.force:
-        # TODO Remove when functionality verified
-        # for link in db["Downloaded"].find():
         for link in db.api_find("Downloaded"):
             except_links.add(link["Link"])
     else:
-        # TODO Remove when functionality verified
-        # db.drop_collection("Downloaded")
         db.api_drop_collection("Downloaded")
 
     # Download (can be done in parallel)
@@ -54,9 +50,7 @@ def main():
 
     # Save downloaded links to DB
     if downloaded_links:
-        # TODO Remove when functionality verified
-        # db["Downloaded"].insert_many([{"Link": link} for link in downloaded_links])
-        db.api_insert_many("Downloaded", insert_data=[{"Link": link} for link in downloaded_links])
+        db.api_insert_many("Downloaded", [{"Link": link} for link in downloaded_links])
 
     # Parse + Upload
     xml_paths = donw.get()

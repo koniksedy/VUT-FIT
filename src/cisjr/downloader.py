@@ -232,8 +232,8 @@ def main():
     if downloaded_links:
 
         # TODO Remove when functionality verified
-        #db["Downloaded"].insert_many([{"Link": link} for link in downloaded_links])
-        db.api_insert_many("Downloaded", insert_data=[{"Link": link} for link in downloaded_links])
+        db["Downloaded"].insert_many([{"Link": link} for link in downloaded_links])
+        #db.api_insert_many("Downloaded", insert_data=[{"Link": link} for link in downloaded_links])
 
     # Close db (Database Class) client member
     db.close()

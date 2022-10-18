@@ -17,44 +17,26 @@ class Database:
         self.database = self.client[database_name]
 
     def api_drop_collection(self, collection_name: str):
-        self.database.drop_collection(collection_name)
+        return self.database.drop_collection(collection_name)
 
     def api_aggregate(self, collection_name: str, *args, **kwargs):
-        query = kwargs['query']
-        return self.database[collection_name].aggregate(query)
+        ##query = kwargs['query']
+        return self.database[collection_name].aggregate(*args, **kwargs)
 
     def api_update_one(self, collection_name: str, *args, **kwargs):
-        if 'mongo_filter' in kwargs:
-            mongo_filter = kwargs['mongo_filter']
-        query = kwargs['query']
+        return self.database[collection_name].update_one(*args, **kwargs)
 
-        if 'upsert' in kwargs:
-            upsert = kwargs['upsert']
-        else:
-            upsert = False
-
-        self.database[collection_name].update_one(mongo_filter, query, upsert)
-
-    def api_insert_one(self, collection_name: str, **kwargs):
-        data = kwargs['data']
-        return self.database[collection_name].insert_one(data)
+    def api_insert_one(self, collection_name: str, *args, **kwargs):
+        return self.database[collection_name].insert_one(*args, **kwargs)
 
     def api_find_one(self, collection_name: str, *args, **kwargs):
-        query = kwargs['query']
-        return self.database[collection_name].find_one(query)
+        return self.database[collection_name].find_one(*args, **kwargs)
 
-    def api_find(self, collection_name: str, **kwargs):
-        if 'query' in kwargs:
-            query = kwargs['query']
-        return self.database[collection_name].find()
+    def api_find(self, collection_name: str, *args, **kwargs):
+        return self.database[collection_name].find(*args, **kwargs)
 
-    def api_insert_many(self, collection_name: str, **kwargs):
-        data = kwargs['insert_data']
-        self.database[collection_name].insert_many(data)
-
-    def print(self, collection_name: str, **kwargs):
-        collection = self.database[collection_name]
-        print(collection.find_one())
+    def api_insert_many(self, collection_name: str, *args, **kwargs):
+        return self.database[collection_name].insert_many(*args, **kwargs)
 
     def close(self):
         self.client.close()
