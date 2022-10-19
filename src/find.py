@@ -64,6 +64,7 @@ def find(from_st: str, to_st: str, date: str):
                                         "as": "location",
                                         "in": {
                                             "Name": "$$location.Location.Name",
+                                            "Activity": "$$location.TrainActivity",
                                             "ALD":  {
                                                 "$dateToString": {
                                                     "format": "%H:%M:%S",
