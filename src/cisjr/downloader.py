@@ -6,7 +6,7 @@ UPA project
 Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
          Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
          Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 18.11.2022
+Last change: 19.11.2022
 """
 
 import os
@@ -198,12 +198,17 @@ def main():
     opt_parser = ArgumentParser()
     opt_parser.add_argument("-p", "--parallel", type=int, metavar="N_THR", default=1,
                             help=("Download data in 0 < N_THREADS parallel threads.\n" +
-                                  "WARNING high number can lead to the lag in QUEUEING TASKS"))
+                                  "WARNING high number can lead to the lag in QUEUEING TASKS\n" +
+                                  "Workdir must be specified."))
     opt_parser.add_argument("-f", "--force", action="store_true",
                             help="Downloads already downloaded files.")
     opt_parser.add_argument("workdir", nargs="?",
                             help="Name of a working directory. (default /tmp).")
     args = opt_parser.parse_args()
+
+    if args.parallel > 1 and args.workdir is None:
+        print("A workdir must be specified when parallelizing.", file=sys.stderr)
+        sys.exit(1)
 
     # Connect to DB
     connection_string = f"mongodb://localhost:27017"

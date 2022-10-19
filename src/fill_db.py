@@ -9,6 +9,7 @@ Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
 Last change: 18.11.2022
 """
 
+import sys
 from argparse import ArgumentParser
 from cisjr import downloader, uploader
 from cisjr import database_api
@@ -29,6 +30,9 @@ def main():
                             help="Name of a working directory. (default /tmp).")
     args = opt_parser.parse_args()
 
+    if args.parallel_download > 1 and args.workdir is None:
+        print("A workdir must be specified when parallelizing.", file=sys.stderr)
+        sys.exit(1)
 
     # Connect to Database
     connection_string = f"mongodb://localhost:27017"
@@ -54,7 +58,7 @@ def main():
     # Parse + Upload
     xml_paths = donw.get()
     up = uploader.Uploader()
-    up.upload(xml_paths, force=args.force, n_threads=args.parallel_parse)
+    up.upload(xml_paths, n_threads=args.parallel_parse)
 
     # Close DB client
     db.close()

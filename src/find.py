@@ -6,7 +6,7 @@ UPA project
 Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
          Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
          Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 18.11.2022
+Last change: 19.11.2022
 """
 
 import sys
@@ -47,64 +47,109 @@ def find(from_st: str, to_st: str, date: str) -> list:
         {
             "$match": {
                 "$expr": {
-                    "$lt": [
-                        {
-                            "$indexOfArray": [
-                                "$CZPTTInformation.CZPTTLocation.Location.Name", from_st
-                            ]
+                    "$let": {
+                        "vars": {
+                            "locationFiltered": {
+                                "$filter": {
+                                    "input": "$CZPTTInformation.CZPTTLocation",
+                                    "as": "locationArray" ,
+                                    "cond": {"$eq": ["0001", "$$locationArray.TrainActivity"]}
+                                    # "cond": {
+                                    #     "$or": [
+                                    #         {"$eq": ["0001", "$$locationArray.TrainActivity"]},
+                                    #         {"$eq": ["0033", "$$locationArray.TrainActivity"]}
+                                    #     ]
+                                    # }
+                                }
+                            }
                         },
-                        {
-                            "$indexOfArray": [
-                                "$CZPTTInformation.CZPTTLocation.Location.Name", to_st
+                        "in": {
+                            "$and": [
+                                {
+                                    "$in": [from_st, "$$locationFiltered.Location.Name"]
+                                },
+                                {
+                                    "$lt": [
+                                        {
+                                            "$indexOfArray": [
+                                                "$$locationFiltered.Location.Name", from_st
+                                            ]
+                                        },
+                                        {
+                                            "$indexOfArray": [
+                                                "$$locationFiltered.Location.Name", to_st
+                                            ]
+                                        }
+                                    ]
+                                }
                             ]
                         }
-                    ]
+                    }
                 }
             }
         },
         {
             "$project": {
-                "_id": 0,
+                "_id": 1,
                 "Locations": {
                     "$let": {
                         "vars": {
-                            "a": {
-                                "$indexOfArray": [
-                                    "$CZPTTInformation.CZPTTLocation.Location.Name", from_st
-                                ]
-                            },
-                            "b": {
-                                "$indexOfArray": [
-                                    "$CZPTTInformation.CZPTTLocation.Location.Name", to_st
-                                ]
+                            "locationFiltered": {
+                                "$filter": {
+                                    "input": "$CZPTTInformation.CZPTTLocation",
+                                    "as": "locationArray" ,
+                                    "cond": {"$eq": ["0001", "$$locationArray.TrainActivity"]}
+                                    # "cond": {
+                                    #     "$or": [
+                                    #         {"$eq": ["0001", "$$locationArray.TrainActivity"]},
+                                    #         {"$eq": ["0033", "$$locationArray.TrainActivity"]}
+                                    #     ]
+                                    # }
+                                }
                             }
                         },
                         "in": {
-                            "$slice" : [
-                                {
-                                    "$map": {
-                                        "input": "$CZPTTInformation.CZPTTLocation",
-                                        "as": "location",
-                                        "in": {
-                                            "Name": "$$location.Location.Name",
-                                            "Activity": "$$location.TrainActivity",
-                                            "ALD":  {
-                                                "$dateToString": {
-                                                    "format": "%H:%M:%S",
-                                                    "date": "$$location.TimingAtLocation.ALD.Time"
-                                                }
-                                            },
-                                            "ALA": {
-                                                "$dateToString": {
-                                                    "format": "%H:%M:%S",
-                                                    "date": "$$location.TimingAtLocation.ALA.Time"
-                                                }
-                                            }
-                                        }
+                            "$let": {
+                                "vars": {
+                                    "a": {
+                                        "$indexOfArray": [
+                                            "$$locationFiltered.Location.Name", from_st
+                                        ]
+                                    },
+                                    "b": {
+                                        "$indexOfArray": [
+                                            "$$locationFiltered.Location.Name", to_st
+                                        ]
                                     }
                                 },
-                                "$$a", {"$subtract": [{"$add": [1, "$$b"]}, "$$a"]}
-                            ]
+                                "in": {
+                                    "$slice" : [
+                                        {
+                                            "$map": {
+                                                "input": "$$locationFiltered",
+                                                "as": "location",
+                                                "in": {
+                                                    "Name": "$$location.Location.Name",
+                                                    # "Activity": "$$location.TrainActivity",
+                                                    "ALD":  {
+                                                        "$dateToString": {
+                                                            "format": "%H:%M:%S",
+                                                            "date": "$$location.TimingAtLocation.ALD.Time"
+                                                        }
+                                                    },
+                                                    "ALA": {
+                                                        "$dateToString": {
+                                                            "format": "%H:%M:%S",
+                                                            "date": "$$location.TimingAtLocation.ALA.Time"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "$$a", {"$subtract": [{"$add": [1, "$$b"]}, "$$a"]}
+                                    ]
+                                }
+                            }
                         }
                     }
                 }
@@ -127,7 +172,7 @@ def main():
         print("  TO            A Name of the destination station. A name with spaces must be", file=sys.stderr)
         print("                enclosed in quotation marks.", file=sys.stderr)
         print("  DATE_TIME     Date and time in the format yyyymmddHHMMSS", file=sys.stderr)
-        print("                or yyyymmdd", file=sys.stderr)
+        print("                or %y-%m-%d", file=sys.stderr)
         sys.exit(0)
 
     if len(sys.argv) != 4:
@@ -146,10 +191,12 @@ def main():
 
     # TODO visualizer
     total_l = find(from_st, to_st, date)
-    for l in total_l:
+    for l in sorted(total_l, key=lambda x: x["Locations"][0]["ALD"]):
+        # print(l["_id"])
         for t in l["Locations"]:
             print(t)
         print("-"*80)
+    print(len(total_l))
 
 
 if __name__ == "__main__":

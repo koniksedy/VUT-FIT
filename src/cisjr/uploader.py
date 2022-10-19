@@ -5,7 +5,7 @@ UPA project
 Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
          Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
          Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 18.10.2022
+Last change: 19.10.2022
 """
 
 import sys
@@ -32,7 +32,9 @@ class Uploader:
         aggregation_string = [
             {
                 "$match": {
-                    "Identifiers.PlannedTransportIdentifiers.TR": message["PlannedTransportIdentifiers"]["TR"],
+                    "Identifiers.PlannedTransportIdentifiers.TR": message["PlannedTransportIdentifiers"]["TR"]
+                },
+                "$match": {
                     "Identifiers.PlannedTransportIdentifiers.PA": message["PlannedTransportIdentifiers"]["PA"]
                 }
             }
@@ -41,23 +43,26 @@ class Uploader:
         data_cursor = self.db.api_aggregate("CZPTTCISMessage", aggregation_string)
 
         for data in data_cursor:
-            d = message["PlannedCalendar"]["ValidityPeriod"]["StartDateTime"].strftime("%Y%m%d")
-            ds = d
+            ds = message["PlannedCalendar"]["ValidityPeriod"]["StartDateTime"].strftime("%Y%m%d")
             de = message["PlannedCalendar"]["ValidityPeriod"]["EndDateTime"].strftime("%Y%m%d")
 
-            canceled_old = list(filter(lambda x: x < ds or x > de, data["CZPTTInformation"]["PlannedCalendar"]["Canceled"]))
-            canceled_unvalid = list(filter(lambda x: ds <= x and x >= de, data["CZPTTInformation"]["PlannedCalendar"]["Canceled"]))
-            canceled_new = message["PlannedCalendar"]["Valid"]
-            canceled_update = canceled_old + canceled_new
+            cancel_message = set(message["PlannedCalendar"]["Valid"])
+            cancel = set(data["CZPTTInformation"]["PlannedCalendar"]["Canceled"])
+            valid = set(data["CZPTTInformation"]["PlannedCalendar"]["Valid"])
+            focused_cancel = set(filter(lambda x: ds <= x and x <= de, cancel))
 
-            running_set = set(data["CZPTTInformation"]["PlannedCalendar"]["Valid"])
-            running_set.update(canceled_unvalid)
-            running_set.difference_update(canceled_new)
+            if "Generated" not in message:
+                # Reset cancel data in a period
+                valid.update(focused_cancel)
+                cancel.difference_update(focused_cancel)
+
+            valid.difference_update(cancel_message)
+            cancel.update(cancel_message)
 
             mongo_query = {
                 "$set":
-                    {   "CZPTTInformation.PlannedCalendar.Valid": list(running_set),
-                        "CZPTTInformation.PlannedCalendar.Canceled": canceled_update
+                    {   "CZPTTInformation.PlannedCalendar.Valid": list(valid),
+                        "CZPTTInformation.PlannedCalendar.Canceled": list(cancel)
                     }
             }
 
@@ -72,17 +77,16 @@ class Uploader:
         mongo_query = {
             "Identifiers.PlannedTransportIdentifiers.PA": message["Identifiers"]["RelatedPlannedTransportIdentifiers"]["PA"]
         }
-        cursor = self.db.api_find("CZPTTCISMessage", mongo_query)
 
-        for m in cursor:
-            pti = m["Identifiers"]["PlannedTransportIdentifiers"]
-            creation_date = m["CZPTTCreation"]
-            calendar = m["CZPTTInformation"]["PlannedCalendar"]
-
+        for data in self.db.api_find("CZPTTCISMessage", mongo_query):
             cancel_message = {
-                "PlannedTransportIdentifiers": pti,
-                "CZPTTCancelation": creation_date,
-                "PlannedCalendar": calendar
+                "PlannedTransportIdentifiers": data["Identifiers"]["PlannedTransportIdentifiers"],
+                "Generated": True,
+                "CZPTTCancelation": message["CZPTTCreation"],
+                "PlannedCalendar": {
+                    "Valid": message["CZPTTInformation"]["PlannedCalendar"]["Valid"],
+                    "ValidityPeriod": message["CZPTTInformation"]["PlannedCalendar"]["ValidityPeriod"]
+                }
             }
             canceled_messages.append(cancel_message)
 
@@ -153,7 +157,7 @@ class Uploader:
         if CZPTTCISMessage_list:
             CZPTTCISMessage_list.sort(key=lambda x: x["CZPTTCreation"])
             for message in tqdm.tqdm(CZPTTCISMessage_list,
-                                     desc="Uploading CZPTTCISMessage...",
+                                     desc="Uploading CZPTTCISMessages...",
                                      ascii=False,
                                      file=sys.stderr):
 
@@ -172,17 +176,17 @@ class Uploader:
                                  desc="Generating CZCanceledPTTMessages...",
                                  ascii=False,
                                  file=sys.stderr):
-            cancel_message = self._generate_CZCanceledPTTMessage(message)
-            if cancel_message:
-                CZCanceledPTTMessage_list.extend(cancel_message)
+            cancel_messages = self._generate_CZCanceledPTTMessage(message)
+            if cancel_messages:
+                CZCanceledPTTMessage_list.extend(cancel_messages)
 
         # Sending CZCanceledPTTMessage_list
         if CZCanceledPTTMessage_list:
             CZCanceledPTTMessage_list.sort(key=lambda x: x["CZPTTCancelation"])
             for message in tqdm.tqdm(CZCanceledPTTMessage_list,
-                                     desc="Sending CZCanceledPTTMessage...",
-                                     ascii=False,
-                                     file=sys.stderr):
+                                        desc="Sending CZCanceledPTTMessages...",
+                                        ascii=False,
+                                        file=sys.stderr):
                 self._send_CZCanceledPTTMessage(message)
 
         # Create CZPTTCISMessage location indexes
