@@ -14,6 +14,13 @@ Aplikace jízdních řádů je implementována v jazyce Python (3.10.6) s využi
 
 Pro zobrazení obsahu mongo databáze je možné využít nástroj [MongoDB Compass](https://www.mongodb.com/try/download/compass).
 
+## Instalace závislostí
+```bash
+python3 -m venv upa-env
+source ./upa-env/bin/activate
+pip3 install -r requirements.txt
+```
+
 ## Obsluha databáze v docker
 
 ### Vytvoření docker image s použitím Dockerfile
