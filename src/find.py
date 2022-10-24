@@ -6,25 +6,30 @@ UPA project
 Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
          Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
          Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
-Last change: 19.11.2022
+Last change: 24.10.2022
 """
 
 import sys
+from datetime import datetime
 from cisjr import database_api
 
 
-def find(from_st: str, to_st: str, date: str) -> list:
+
+def find(from_st: str, to_st: str, date_time: datetime) -> list:
     """Returns list of trains going from the origin station from to the destination
         station to in a specified date.
 
     Args:
         from_st (str): Origin station.
         to_st (str): Destination station.
-        date (str): Departure date.
+        date (datetime): Departure datetime.
 
     Returns:
         list: List of trains.
     """
+
+    date = date_time.strftime("%Y%m%d")
+    time = date_time.strftime("%H:%M:%S")
 
     db = database_api.Database("cisjr", "mongodb://localhost:27017")
 
@@ -157,7 +162,8 @@ def find(from_st: str, to_st: str, date: str) -> list:
         }
     ])
 
-    data = list(cursor)
+    data = list(filter(lambda x: x["Locations"][0]["ALD"] >= time,
+                       sorted(cursor, key=lambda x: x["Locations"][0]["ALD"])))
     db.close()
 
     return data
@@ -171,8 +177,7 @@ def main():
         print("                enclosed in quotation marks.", file=sys.stderr)
         print("  TO            A Name of the destination station. A name with spaces must be", file=sys.stderr)
         print("                enclosed in quotation marks.", file=sys.stderr)
-        print("  DATE_TIME     Date and time in the format yyyymmddHHMMSS", file=sys.stderr)
-        print("                or %y-%m-%d", file=sys.stderr)
+        print("  DATE_TIME     Date and time in the format yyyy-mm-ddTHH:MM:SS", file=sys.stderr)
         sys.exit(0)
 
     if len(sys.argv) != 4:
@@ -187,16 +192,20 @@ def main():
 
     from_st = sys.argv[1]
     to_st = sys.argv[2]
-    date = sys.argv[3][:8]
+    try:
+        date_time = datetime.strptime(sys.argv[3], "%Y-%m-%dT%H:%M:%S")
+    except ValueError:
+        print("Bad date time format.", file=sys.stderr)
+        exit(1)
 
     # TODO visualizer
-    total_l = find(from_st, to_st, date)
-    for l in sorted(total_l, key=lambda x: x["Locations"][0]["ALD"]):
+    total_l = find(from_st, to_st, date_time)
+    for l in total_l:
         # print(l["_id"])
         for t in l["Locations"]:
             print(t)
         print("-"*80)
-    print(len(total_l))
+    # print(len(total_l))
 
 
 if __name__ == "__main__":
