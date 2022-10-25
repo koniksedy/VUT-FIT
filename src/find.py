@@ -199,15 +199,15 @@ def main():
         print("Bad date time format.", file=sys.stderr)
         exit(1)
 
-    # TODO visualizer
     total_l = find(from_st, to_st, date_time)
     p = printer.Printer(total_l)
     p.remove_duplicates()
     p.print_all()
     html = p.get_html()
 
-    with open("output.html", "w") as text_file:
+    with open("results.html", "w") as text_file:
         text_file.write(html)
+
 
 if __name__ == "__main__":
     main()

@@ -15,10 +15,19 @@ class Printer:
 
         """
         for station in path:
-            if station == path[0] or station == path[-1]:
-                print('{: >25} {: >50}'.format(station['Name'], station['ALA']))
+            if 'ALD' in station and station['ALD'] is not None:
+                time = station['ALD']
+            elif 'ALA' in station and station['ALA'] is not None:
+                time = station['ALA']
             else:
-                print('{: >50} {: >20}'.format(station['Name'], station['ALA']))
+                time = ''
+
+            if station == path[0]:
+                print('{: >25} {: >50}'.format(station['Name'], time))
+            elif station == path[-1]:
+                print('{: >25} {: >50}'.format(station['Name'], time))
+            else:
+                print('{: >50} {: >20}'.format(station['Name'], time))
 
     def print_all(self):
         for i in range(len(self.paths)):
@@ -55,7 +64,7 @@ class Printer:
             with a.head():
                 a.meta(charset="utf-8")
                 a.title(_t="Vysledky")
-                a.link(rel="stylesheet", href="style.css")
+                a.link(rel="stylesheet", type="text/css", href="style.css")
 
             with a.body():
                 # Start station
@@ -69,7 +78,10 @@ class Printer:
                                         with a.div(klass="column"):
                                             a(first['Name'])
                                         with a.div(klass="column"):
-                                            a(first['ALD'])
+                                            if 'ALD' in first and first['ALD'] is not None:
+                                                a(first['ALD'])
+                                            elif 'ALA' in first and first['ALA'] is not None:
+                                                a(first['ALA'])
                                     with a.details(style="background:#9dc8ff"):
                                         with a.summary():
                                             pass
@@ -79,20 +91,26 @@ class Printer:
                                                 with a.div(klass="inner-column"):
                                                     a(station['Name'])
                                                 with a.div(klass="inner-column"):
-                                                    a(station['ALA'])
+                                                    if 'ALD' in station and station['ALD'] is not None:
+                                                        a(station['ALD'])
+                                                    elif 'ALA' in station and station['ALA'] is not None:
+                                                        a(station['ALA'])
                                     last = self.get_last(path['Locations'])
                                     with a.div(klass="row"):
                                         with a.div(klass="column"):
                                             a(last['Name'])
                                         with a.div(klass="column"):
-                                            a(last['ALA'])
+                                            if 'ALA' in last and last['ALA'] is not None:
+                                                a(last['ALA'])
+                                            elif 'ALD' in last and last['ALD'] is not None:
+                                                a(last['ALD'])
 
         return str(a)
 
 
 if __name__ == "__main__":
     # TODO: use list of list of dicts, from result
-    paths = [{'Locations': [{'Name':'Praha hl.n', 'ALA': '10:30', 'ALD': '10:31'}, {'Name':'name', 'ALA':'cas'}, {'Name':'name', 'ALA':'cas'}]}, {'Locations': [{'Name':'Praha hl.n', 'ALA': '10:30', 'ALD': '10:31'}, {'Name':'name', 'ALA':'cas'}, {'Name':'name', 'ALA':'cas'}]}]
+    paths = []
     printer = Printer(paths)
     printer.remove_duplicates()
     printer.print_all()

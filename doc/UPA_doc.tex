@@ -234,8 +234,11 @@ Pričom jednotlivé prepínače znamenajú:
 \newline
 \par \verb|workdir|  - Pracovná zložka, do ktorej sa budú ukladať stiahnuté a extrahované archívy. Pokiaľ nie je uvedené, bude vytvorená dočasná zložka v /tmp, ktorá bude po dokončení odstránená. Pri použití --parallel-download musí byť zložka workdir špecifikovaná.
 
-\subsubsection*{find.py}
-\par Nájde spoje medzi zadanými stanicami v daný dátum a čas. Vypíše ich na príkazový riadok a taktiež vygeneruje HTML \verb|results.html|, pre lepšie zobrazenie nájdených spojov. Mená staníc obsahujúce biele znaky musia byť uzatvorené do "úvodzoviek". Formát dátumu a času je yyyy-ddTHH:MM:SS. \newline \newline
+\subsubsection*{printer.py}
+\par Trieda, využívaná na formátovanie výsledkov. Vypisuje nájdené spoje na príkazový riadok a generuje HTML súbor \verb|results.html|, ktorý zobrazuje výsledky prehľadne.
+
+\subsubsection*{find.py}\label{printer}
+\par Nájde spoje medzi zadanými stanicami v daný dátum a čas. Následne ich pomocou jednoduchého vizualizéru \ref{printer} zobrazí. Mená staníc obsahujúce biele znaky musia byť uzatvorené do "úvodzoviek". Formát dátumu a času je yyyy-ddTHH:MM:SS. \newline \newline
 Použitie: \verb|find.py FROM TO DATE_TIME|
 \newline \newline
 Pričom:
