@@ -12,6 +12,7 @@ Last change: 24.10.2022
 import sys
 from datetime import datetime
 from cisjr import database_api
+import printer
 
 
 
@@ -200,13 +201,13 @@ def main():
 
     # TODO visualizer
     total_l = find(from_st, to_st, date_time)
-    for l in total_l:
-        # print(l["_id"])
-        for t in l["Locations"]:
-            print(t)
-        print("-"*80)
-    # print(len(total_l))
+    p = printer.Printer(total_l)
+    p.remove_duplicates()
+    p.print_all()
+    html = p.get_html()
 
+    with open("output.html", "w") as text_file:
+        text_file.write(html)
 
 if __name__ == "__main__":
     main()
