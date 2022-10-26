@@ -1,6 +1,6 @@
 # UPA projekt
 
-Projekt do předmětu UPA sestávající ze tří částí. Cílem projektu je uložit data jízdních řádů veřejné dopravy do NoSQL databáze. Databáze bude dotazována na vyhledání spoje mezi dvěma stanicemi v zadaný čas.
+Projekt 1 do předmětu UPA sestávající. Cílem projektu je uložit data jízdních řádů veřejné dopravy do NoSQL databáze. Databáze bude dotazována na vyhledání spoje mezi dvěma stanicemi v zadaný čas.
 
 Autoři:
 * Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
