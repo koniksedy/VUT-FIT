@@ -7,6 +7,7 @@ Last change: 01.11.2022
 """
 
 import numpy as np
+import random
 from bidict import bidict
 
 
@@ -18,11 +19,23 @@ class DiGraph:
         vertex_cname (bidict): Two-way dictionary with id (key) of vertex and original name (value).
         edges_mx (np.array): Two dimensional boolean incident matrix.
     """
-    def __init__(self) -> None:
-        self.vertices = set()
-        self.vertices_cnt = 0
-        self.vertex_cname = bidict()
-        self.edges_mx = np.array([], dtype=bool)
+    def __init__(self, graph=None) -> None:
+        """DiGraph constructor.
+
+        Args:
+            graph (DiGraph, optional): If not None, then the graph will be created as a copy.
+                                       Defaults to None.
+        """
+        if graph is None:
+            self.vertices = set()
+            self.vertices_cnt = 0
+            self.vertex_cname = bidict()
+            self.edges_mx = np.array([], dtype=bool)
+        else:
+            self.vertices = set(graph.vertices)
+            self.vertices_cnt = graph.vertices_cnt
+            self.vertex_cname = bidict(graph.vertex_cname)
+            self.edges_mx = np.copy(graph.edges_mx)
 
     def __eq__(self, __o: object) -> bool:
         if not isinstance(self, __o):
@@ -43,6 +56,50 @@ class DiGraph:
     def __repr__(self) -> str:
         return str(self.edges_mx)
 
+    @staticmethod
+    def create_complete_graph(vertices_cnt: int):
+        """Creates complete graph.
+
+        Args:
+            vertices_cnt (int): Number of vertices in the complete graph.
+
+        Returns:
+            DiGraph: Complete graph.
+        """
+        graph = DiGraph()
+        graph.vertices_cnt = vertices_cnt
+        graph.vertices = set(range(graph.vertices_cnt))
+        graph.vertex_cname = bidict({v: v for v in graph.vertices})
+        graph.edges_mx = np.ones((graph.vertices_cnt, graph.vertices_cnt), dtype=bool)
+        return graph
+
+    @staticmethod
+    def create_multicycle_graph(vertices_cnt: int, additional_edges_cnt: int):
+        """Create cyclic graph with additional edges.
+
+        Args:
+            vertices_cnt (int): Number to vertices.
+            additional_edges_cnt (int): Number to additional edges.
+
+        Returns:
+            DiGraph: Multi cycle graph.
+        """
+        graph = DiGraph()
+        graph.set_vertices(set(range(vertices_cnt)))
+        # Create cyclic graph
+        for u in graph.vertices:
+            v = (u + 1) % graph.vertices_cnt
+            graph.edges_mx[u][v] = True
+        # Add additional edges
+        possible_uv = np.argwhere(graph.edges_mx == False)
+        edges_cnt = min(possible_uv.size // 2, additional_edges_cnt)
+        uv = random.sample(possible_uv.tolist(), edges_cnt)
+        for (u, v) in uv:
+            graph.edges_mx[u][v]= True
+
+        return graph
+
+
     def set_vertices(self, vertices: set) -> None:
         """Prepare graph for given vertices. The previous graph data will be deleted.
 
@@ -50,7 +107,7 @@ class DiGraph:
             vertices (set): Vertices
         """
         self.vertices_cnt = len(vertices)
-        self.vertices = set(range(self.vertices_cnt))
+        self.vertices = set(vertices)
         self.vertex_cname = bidict({i: v for i, v in zip(self.vertices, vertices)})
         self.edges_mx = np.zeros((self.vertices_cnt, self.vertices_cnt), dtype=bool)
 
