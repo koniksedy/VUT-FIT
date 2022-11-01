@@ -10,7 +10,7 @@ from queue import Queue
 import networkx as nx
 from . import digraph
 
-def __get_cycles_nx(graph) -> list():
+def __get_cycles_nx(graph: digraph.DiGraph) -> list():
     """Enumerates all cycles (elementary circuits) in a graph.
     It uses a nonrecursive, iterator/generator version of
     Johnson's algorithm [Finding all the elementary circuits of

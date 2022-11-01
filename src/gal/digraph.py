@@ -55,16 +55,22 @@ class DiGraph:
     def __repr__(self) -> str:
         return str(self.edges_mx)
 
-    def create_complete_graph(self, vertices_cnt: int) -> None:
+    @staticmethod
+    def create_complete_graph(vertices_cnt: int):
         """Creates complete graph.
 
         Args:
             vertices_cnt (int): Number of vertices in the complete graph.
+
+        Returns:
+            DiGraph: Complete graph.
         """
-        self.vertices_cnt = vertices_cnt
-        self.vertices = set(range(self.vertices_cnt))
-        self.vertex_cname = bidict({v: v for v in self.vertices})
-        self.edges_mx = np.ones((self.vertices_cnt, self.vertices_cnt), dtype=bool)
+        graph = DiGraph()
+        graph.vertices_cnt = vertices_cnt
+        graph.vertices = set(range(graph.vertices_cnt))
+        graph.vertex_cname = bidict({v: v for v in graph.vertices})
+        graph.edges_mx = np.ones((graph.vertices_cnt, graph.vertices_cnt), dtype=bool)
+        return graph
 
     def set_vertices(self, vertices: set) -> None:
         """Prepare graph for given vertices. The previous graph data will be deleted.
