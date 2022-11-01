@@ -1,15 +1,6 @@
 import sys
 from gal.parser import Parser
-
+from gal.algorithms import get_cycles
 
 graph = Parser.parse(sys.argv[1])
-print("Before")
-print("-"*80)
-print(graph)
-print("#"*80)
-graph.prune_single_scc()
-for g in graph.get_scc():
-    print("After")
-    print("-"*80)
-    print(g)
-    print("#"*80)
+print(get_cycles(graph, "hj"))

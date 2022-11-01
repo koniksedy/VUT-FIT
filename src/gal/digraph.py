@@ -18,11 +18,23 @@ class DiGraph:
         vertex_cname (bidict): Two-way dictionary with id (key) of vertex and original name (value).
         edges_mx (np.array): Two dimensional boolean incident matrix.
     """
-    def __init__(self) -> None:
-        self.vertices = set()
-        self.vertices_cnt = 0
-        self.vertex_cname = bidict()
-        self.edges_mx = np.array([], dtype=bool)
+    def __init__(self, graph=None) -> None:
+        """DiGraph constructor.
+
+        Args:
+            graph (DiGraph, optional): If not None, then the graph will be created as a copy.
+                                       Defaults to None.
+        """
+        if graph is None:
+            self.vertices = set()
+            self.vertices_cnt = 0
+            self.vertex_cname = bidict()
+            self.edges_mx = np.array([], dtype=bool)
+        else:
+            self.vertices = set(graph.vertices)
+            self.vertices_cnt = graph.vertices_cnt
+            self.vertex_cname = bidict(graph.vertex_cname)
+            self.edges_mx = np.copy(graph.edges_mx)
 
     def __eq__(self, __o: object) -> bool:
         if not isinstance(self, __o):
@@ -42,6 +54,17 @@ class DiGraph:
 
     def __repr__(self) -> str:
         return str(self.edges_mx)
+
+    def create_complete_graph(self, vertices_cnt: int) -> None:
+        """Creates complete graph.
+
+        Args:
+            vertices_cnt (int): Number of vertices in the complete graph.
+        """
+        self.vertices_cnt = vertices_cnt
+        self.vertices = set(range(self.vertices_cnt))
+        self.vertex_cname = bidict({v: v for v in self.vertices})
+        self.edges_mx = np.ones((self.vertices_cnt, self.vertices_cnt), dtype=bool)
 
     def set_vertices(self, vertices: set) -> None:
         """Prepare graph for given vertices. The previous graph data will be deleted.
