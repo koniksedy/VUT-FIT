@@ -7,6 +7,7 @@ Last change: 01.11.2022
 """
 
 import numpy as np
+import random
 from bidict import bidict
 
 
@@ -72,6 +73,33 @@ class DiGraph:
         graph.edges_mx = np.ones((graph.vertices_cnt, graph.vertices_cnt), dtype=bool)
         return graph
 
+    @staticmethod
+    def create_multicycle_graph(vertices_cnt: int, additional_edges_cnt: int):
+        """Create cyclic graph with additional edges.
+
+        Args:
+            vertices_cnt (int): Number to vertices.
+            additional_edges_cnt (int): Number to additional edges.
+
+        Returns:
+            DiGraph: Multi cycle graph.
+        """
+        graph = DiGraph()
+        graph.set_vertices(set(range(vertices_cnt)))
+        # Create cyclic graph
+        for u in graph.vertices:
+            v = (u + 1) % graph.vertices_cnt
+            graph.edges_mx[u][v] = True
+        # Add additional edges
+        possible_uv = np.argwhere(graph.edges_mx == False)
+        edges_cnt = min(possible_uv.size // 2, additional_edges_cnt)
+        uv = random.sample(possible_uv.tolist(), edges_cnt)
+        for (u, v) in uv:
+            graph.edges_mx[u][v]= True
+
+        return graph
+
+
     def set_vertices(self, vertices: set) -> None:
         """Prepare graph for given vertices. The previous graph data will be deleted.
 
@@ -79,7 +107,7 @@ class DiGraph:
             vertices (set): Vertices
         """
         self.vertices_cnt = len(vertices)
-        self.vertices = set(range(self.vertices_cnt))
+        self.vertices = set(vertices)
         self.vertex_cname = bidict({i: v for i, v in zip(self.vertices, vertices)})
         self.edges_mx = np.zeros((self.vertices_cnt, self.vertices_cnt), dtype=bool)
 
