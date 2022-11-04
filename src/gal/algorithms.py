@@ -103,9 +103,9 @@ def __get_cycles_book(input_graph: digraph.DiGraph) -> list():
                         #If cycle is found, add it to list and forbid this edge from further search
                         H[curr_path[-1]][succ] = True
                         temp_path = list(curr_path)
-                        temp_path.append(succ)
-                        cycles.append(temp_path)
+                        cycles.append([int(graph.vertex_cname[v]) for v in temp_path])
                         curr_vertex = curr_path.pop(-1)
+
                     else:
                         curr_vertex = succ
                     break
