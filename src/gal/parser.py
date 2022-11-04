@@ -5,8 +5,8 @@ Authors: Bc. Jan Bíl
          Bc. Michal Šedý
 Last change: 31.10.2022
 """
-
-from .digraph import DiGraph
+from src.gal.digraph import DiGraph
+from src.gal.algorithms import get_cycles
 
 
 class Parser:
@@ -40,7 +40,10 @@ class Parser:
 
 def main():
     import sys
-    print(Parser.parse(sys.argv[1]))
+    g = Parser.parse(sys.argv[1])
+    g.prune_single_scc()
+    get_cycles(g, "book")
+    print(g)
 
 
 if __name__ == "__main__":
