@@ -3,7 +3,7 @@ algorithms.py
 A module with algorithms for cycles enumeration.
 Authors: Bc. Jan Bíl
          Bc. Michal Šedý
-Last change: 02.11.2022
+Last change: 08.11.2022
 """
 
 import networkx as nx
@@ -80,24 +80,81 @@ def __get_cycles_hj(input_graph: digraph.DiGraph) -> list():
 
     return cycles
 
-def __get_cycle_wein(input_graph: digraph.DiGraph):
-    def concat(is_recursive: bool, TT: list, P: list) -> None:
-        def get_tail(L: list, item) -> list:
-            t = list()
-            found = False
-            for v in L:
-                if found:
-                    t.append(v)
-                if v == item:
-                    found = True
-            return t
+def __get_cycle_wein(input_graph: digraph.DiGraph) -> list:
+    """Enumerates all cycles (elementary circuits) in a graph.
+    It uses Herbert Winblatt's algorithm with backtracking.
+    [Herbert Weinblatt. 1972. A New Search Algorithm for Finding
+    the Simple Cycles of a Finite Directed Graph. J. ACM 19,
+    1 (Jan. 1972), 43–56. https://doi.org/10.1145/321679.321684]
+    The time complexity is O((n + m)*(c + 1)) for n nodes, m edges
+    and c elementary circuits.
 
+    Args:
+        input_graph (DiGraph): DiGraph.
+
+    Returns:
+        list: List of cycles.
+    """
+    def get_tail(L: list, node: int, is_cycle=False) -> list:
+        """Returns a tail of given path with respect to the node.
+        The time complexity is O(n) for n nodes.
+
+        Args:
+            L (list): Path
+            node (int): graph node
+            is_cycle (bool, optional): If True, the the first node of
+                                       a path is ignored. Defaults to False.
+
+        Returns:
+            list: Path tail with respect to the vertex.
+        """
+        try:
+            return L[1 + L.index(node, 1 if is_cycle else 0):]
+        except ValueError:
+            return list()
+
+    def get_suitable_edge(TT: list) -> int|None:
+        """Returns suitable successor of the path end.
+        The time complexity is O(n) for n nodes.
+
+        Args:
+            TT (list): Path.
+
+        Returns:
+            int|None: Returns suitable successor of the path end.
+        """
+        u = TT[-1]
+        for v in graph.edges[u]:
+            if S_e[u][v] == 0:
+                return v
+
+        return None
+
+    def concat(is_top_recursive_call: bool, TT: list, P: list) -> list:
+        """Recursively creates new cycles as a combination of subsections
+        of existing cycles with a examined path P.
+        The time complexity is O(TODO).
+
+        Args:
+            is_top_recursive_call (bool): If True, than the function was called
+                                          from examine. Otherwise the function
+                                          was called recursively.
+            TT (list): Examined path.
+            P (list): Recursively constructed path.
+
+        Returns:
+            list: The function returns a list of cycles to add (when called
+                  recursively; can contains duplicates), or a list of added cycles.
+        """
+        # Init
         cycle_tails = list()
         to_add = list()
-
+        added = list()
         v = P[-1]
+
+        # Test subsections of all cycles.
         for c in cycles:
-            tail = get_tail(c, v)
+            tail = get_tail(c, v, True)
             if not tail or tail in cycle_tails:
                 continue
             cycle_tails.append(tail)
@@ -106,74 +163,89 @@ def __get_cycle_wein(input_graph: digraph.DiGraph):
                 continue
 
             if S_v[c[-1]] == 2:
-                to_add.extend(concat(True, TT, P + tail))
+                to_add.extend(concat(False, TT, P + tail))
                 continue
             else:
-                assert S_v[[c[-1]]] == 1
-                new_c = [c[-1]] + get_tail(TT, c[-1]) + P + get_tail(c, P[-1])
-                if is_recursive:
+                new_c = [c[-1]] + get_tail(TT, c[-1], False) + P + get_tail(c, P[-1], True)
+                if is_top_recursive_call:
+                    # The function was called from examine (non-recursively).
+                    # Add a new cycle to the list of found cycles.
+                    # if new_c not in added:
                     cycles.append(new_c)
+                    added.append(new_c)
                 else:
+                    # The function was called recursively.
+                    # Only marks the cycle for addition (to avoid duplicates).
                     to_add.append(new_c)
 
-        if is_recursive:
-            for c in set(to_add):
-                cycles.append(c)
+        if is_top_recursive_call:
+            # Examine cycles founded by recursively called functions.
+            # It only looks for duplicates within cycles created since last external call.
+            for c in to_add:
+                if c not in added:
+                    assert c not in cycles, c
+                    cycles.append(c)
+                    added.append(c)
+            return added
 
         return to_add
 
     def examine(TT: list, v: int) -> None:
+        """Controls it the TT and edge to the node v can be path
+        of some cycle.
+        """
         if S_v[v] == 0:
             S_v[v] = 1
+            TT.append(v)
             # go back to extend
         elif S_v[v] == 1:
-            cycles.append(TT)
-            TT.pop(-1)
-            # go back to extend and if TT is empty, than go to main funciton
+            new_c = [v] + get_tail(TT, v) + [v]
+            assert new_c not in cycles, new_c
+            cycles.append(new_c)
+            # go back to extend and if TT is empty, than go to the main cycle
         else:
-            concat(False, TT, [v])
-            TT.pop(-1)
-            # go back to extend and if TT is empty, than go to main funciton
-
-    def get_suitable_vertex(TT: list):
-        u = TT[-1]
-        for v in graph.edges[u]:
-            if S_e[u][v] == 0:
-                return v
-
-        return None
+            concat(True, TT, [v])
+            # go back to extend and if TT is empty, than go to the main cycle
 
     def extend(TT: list) -> None:
+        """Extends path TT with a suitable edge.
+        """
         while TT:
             u = TT[-1]
-            v = get_suitable_vertex(TT)
+            v = get_suitable_edge(TT)
             if v is None:
                 S_v[u] = 2
                 TT.pop(-1)
             else:
                 S_e[u][v] = 2
-                TT.append(v)
                 examine(TT, v)
 
     # Simplify graph
     graph = digraph.DiGraph(input_graph)
     graph.prune_single_scc()
 
-    cycles = list()
-
     # Init
-    S_v = [0] * graph.vertices_cnt
-    S_e = np.zeros((graph.vertices_cnt, graph.vertices_cnt), dtype=int)
+    cycles = list()
     TT = list()
+    # S_e[u][v] == 0  ->  The edge (u, v) has never been on the TT.
+    # S_e[u][v] == 2  ->  The edge (u, v) has been on the TT (and may still be).
+    S_e = np.zeros((graph.vertices_cnt, graph.vertices_cnt), dtype=int)
+    # S_v[v] == 0  ->  The node v has never been on the TT.
+    # S_v[v] == 1  ->  The node v is now on the TT.
+    # S_v[v] == 2  ->  The node v has been on the TT, but has been removed.
+    S_v = [0] * graph.vertices_cnt
 
     # Calculation
-    TT = []
     for v in graph.vertices:
         if S_v[v] == 0:
             S_v[v] = 1
             TT = [v]
             extend(TT)
 
+    # Projects node ids from simplified graph to node ids of the original graph.
+    # The time complexity is O(n * c), where n is a number of nodes and c is a number of cycles.
+    return cycles
+    # return [[input_graph.vertex_cname.inv[graph.vertex_cname[v]] for v in c[:-1]] for c in cycles]
 
 def get_cycles(input_graph: digraph.DiGraph, algo="nx") -> list:
     """Enumerates all cycles (elementary circuits) in a graph.
