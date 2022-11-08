@@ -34,7 +34,49 @@
 % ======================================================================
 \usepackage{url}
 \usepackage{lipsum}
+\usepackage{amsthm}
+\usepackage[ruled,linesnumbered]{algorithm2e}
 
+% Makra
+% ======================================================================
+\newcounter{DTcounter}
+\counterwithin{DTcounter}{section}
+\newenvironment{theorem}
+  {
+    \refstepcounter{DTcounter}
+    \stepcounter{figure}
+    \stepcounter{equation}
+    \bigskip
+    \noindent\textbf{Theorem~\theDTcounter}\begin{itshape}
+      }
+      {
+      \end{itshape}
+      \leavevmode
+  }
+\newenvironment{definition}
+  {
+      \refstepcounter{DTcounter}
+      \stepcounter{figure}
+      \stepcounter{equation}
+      \bigskip
+      \noindent\textbf{Definition~\theDTcounter}\begin{itshape}
+  }
+  {
+      \end{itshape}
+      \leavevmode
+  }
+\newenvironment{lemma}
+  {
+      \refstepcounter{DTcounter}
+      \stepcounter{figure}
+      \stepcounter{equation}
+      \bigskip
+      \noindent\textbf{Lemma~\theDTcounter}\begin{itshape}
+  }
+  {
+      \end{itshape}
+      \leavevmode
+  }
 
 % =======================================================================
 % balíček "hyperref" vytváří klikací odkazy v pdf, pokud tedy použijeme pdflatex

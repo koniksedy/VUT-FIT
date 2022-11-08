@@ -2,33 +2,207 @@
 % Tex soubor s jednotlivými kapitolami pro dokumentaci k projektu do předmětu GAL
 % Autoři: Bc. Jan Bíl
 %         Bc. Michal Šedý
-% Poslední úprava: 30.10.2022
+% Poslední úprava: 08.11.2022
 
 \chapter{Úvod}
-    \lipsum[2-4]
+    Orientovaný graf je struktura popisující množinu bodů (uzlů), jenž jsou mezi sebou propojeny orientovanými hranami. Cyklus v orientovaném grafu představuje takovou spojitou posloupnost uzlů, že se žádný uzel s výjimkou prvního a posledního v sekvenci neopakuje a zároveň pro dvojici sousedících uzlů v posloupnosti $\dots u_m u_n \dots$ platí, že existuje orientovaná hrana vedoucí z uzlu $u_m$ do uzlu $u_n$. Pato práce se zabývá popisem algoritmů pro získání seznamu všech existujících cyklů v zadaném grafu.
 
-    Nějaká citace\cite{appleby}.
+    Vyhledávání všech (výčet) cyklů v grafu je využíváno v mnoha odvětvích teorie grafů. Tato informace je používána k optimalizaci počítačových programů \cite{Program_optimization}, při analýze booleovských sítí využívaných pro modelování biologických sítí nebo sítí genových regulátorů \cite{Biology}, při návrhu, vývoji \cite{How_loopy_is_your_network} nebo ověření spolehlivosti a fault-tolerance komunikačních systému \cite{Network_Reliability}, atd.
+
+    Tato páce porovnávající tři algoritmy pro výčet všech cyklů v grafu byla vytvořena v rámci projektu "Porovnání - Hledání cyklů"~do předmětu GAL (grafové algoritmy). Text na úvod definuje potřebné pojmy dále využívané v algoritmech. V následujících kapitolách jsou uvedeny jednotlivé implementované algoritmy. Kapitola \ref{chapter:Algo1} popisuje přímočarý algoritmus \cite[str. 287]{Book_algo}, který postupně generuje různé kandidáty cest, a ti jsou následně ověřování. Algoritmus, který navrhl Herbert Weinblatt využívající zpětné navrácení \cite{A_new_search_algorithm} je uveden v kapitole \ref{chapter:Algo2}. Kapitola \ref{chapter:Algo3} popisuje algoritmus Hongbo Liu a Jiaxin Wangův algoritmus využívající frontu \cite{A_new_way_to_enumerate_cycles_in_graph}. Tyto algoritmy byly implementovány v jazyce Python3. Popis návrhu implementace aplikace a její používání jsou uvedeny v kapitolách \ref{chapter:Design} a \ref{chapter:Help}. Experimenty porovnávající efektivitu jednotlivých postupů výčtu všech cyklů včetně grafové knihovny Networkx\footnote{Dostupné z \url{https://networkx.org/}} jsou uvedeny v kapitole \ref{chapter:Experiments}.
 
 \chapter{Prerekvizity}
-    \lipsum
+    \label{chapter:Intro}
+    Tato kapitola poskytuje základní definice pro orientované grafy, jakými jsou základní definice grafu, sledu, cesty a cyklů. Dále jsou popsány základní algoritmy pro práci s grafy, kterými jsou prohledávání do hloubky (DFS) a topologické uspořádání, které jsou využívány pro zjednodušení výčtu cyklů grafů. Tato kapitola je převzata z \cite{Prezentace}.
+
+    \section{Orientovaný graf}
+        \begin{definition}
+            \textbf{Orientovaný graf} je uspořádaná dvojice $G = (V, E)$, kde $V$ je množina uzlů grafu a $E \subseteq V \times V$ je množina orientovaných hran, kde hrana $(u, v) \in E$ znamená, že v grafu $G$ vede hrana z uzlu $u$ do uzlu $v$ (uzly $u, v$ jsou incidentní).\\
+        \end{definition}
+
+        Orientovaný graf $G = (V, E)$ je možno v algoritmech reprezentovat dvěma způsoby. Nechť $u, v \in V$. 1) jako pole $Adj$ seznamů sousedů, pro které platí $v \in Adj[u] \iff (u, v) \in E$. 2) jako matici souslednosti $Adj_M$, kde $Adj_M[u][v] = 1 \iff (u, v) \in E \land Adj_M[u][v] = 0 \iff (u, v) \notin E$. Pro účely této práce byl zvolen první přístup, kterým je pole seznamů sousedů.
+
+        \begin{definition}
+            Nechť $G = (V, E)$. \textbf{Transponovaný graf} $G^T = (V, E^T)$, kde $E^T = \{(v, u)\,|\, (u, v) \in E\}$.
+        \end{definition}
+
+        \begin{definition}
+            \textbf{Vstupní stupeň uzlu} je dán funkcí $d_+ : V \rightarrow \mathbb{N}_0$, která udává počet přechodu vstupujících do uzlu.
+        \end{definition}
+
+        \begin{definition}
+            \textbf{Vstupní stupeň uzlu} je dán funkcí $d_- : V \rightarrow \mathbb{N}_0$, která udává počet přechodu vstupujících do uzlu.\\
+        \end{definition}
+
+        Lze snadno ukázat, že pokud má uzel $u \in V$ hodnotu $d_-(u) = 0$ nebo $d_+(u) = 0$, pak nemůže být součástí žádného cyklu, pro každý stav obsažný v cyklu musí platit, že jeho vstupní i výstupní stupeň je nenulový. Tyto uzly s nulovým stupněm mohou být v části přípravy algoritmů pro výčet cyklů zanedbány (odstraněny). Toto zanedbání uzlu může snížit hodnotu vstupních nebo vstupních stupňů uzlů incidentních s uzlem $u$ na nulu. V~takovém případě jsou dále rekurzivně zanedbány také tyto uzly.
+
+        \begin{definition}
+            \textbf{Sled} je posloupnost vrcholů $\langle v_0 \dots v_n\rangle$, kde $n \in \mathbb{N}$, $v_i \in V$ pro $0 \leq i \leq n$, a $(v_{j-1}, v_j) \in E$ pro $1 \leq j \leq n$.
+        \end{definition}
+
+        \begin{definition}
+            \textbf{Cesta} (otevřený cesta) je sled, ve kterém se neopakují uzly.
+        \end{definition}
+
+        \begin{definition}
+            \textbf{Cyklus} je cesta, ve které shodují první a poslední uzel.
+        \end{definition}
+
+    \section{Prohledávání do hloubky}
+        Algoritmus prohledávání do hloubky (DFS) je základním algoritmem pro práci s grafy. DFS postupně prochází všechny uzly grafu $G = (V, E)$ a vytváří strom prohledávání do hloubky.
+
+        \begin{definition}
+            Nechť $G = (V, E)$ a $\pi$ pole předchůdců, kde $u \in \pi[v] \implies (u, v) \in E$. \textbf{Strom prohledávání do hloubky} je $G_\pi = (V, E_\pi)$, kde $E_\pi = \{(u, v) \in E\,|\, u = \pi[v]\}$.\\
+        \end{definition}
+
+        Během výpočtu se vytváří pole barev uzlů $color[u] \in \{WHITE, GRAY, BLACK\}$, pole časů prvního prozkoumání $d[u] \in \mathbb{N}$, pole časů dokončení prozkoumávání seznamu sousedů $f[u] \in \mathbb{N}$ a pole předchůdců $\pi[u] \subseteq V$.
+
+        \begin{algorithm}
+            \DontPrintSemicolon
+            \caption{DFS}
+            \KwIn{$G := (V, E)$}
+            \KwOut{$\pi, d, f$}
+            \vspace*{0.5em}
+
+            \SetKwProg{myalg}{Procedure}{}{}
+                \myalg{\textnormal{DFS--VISIT(v)}}{
+                    $color[u] \leftarrow GRAY$\;
+                    $d[u] \leftarrow time \leftarrow time + 1$\;
+                    \For{$v \in Adj$}
+                    {
+                        \If{$color[v] = WHITE$}
+                        {
+                            $\textnormal{DFS--VISIT}(v)$\;
+                        }
+                    }
+
+                }{\textbf{end}}
+            \vspace*{0.5em}
+
+            \For{$u \in V$}
+            {
+                $color[u] \leftarrow WHITE$\;
+                $\pi[u] \leftarrow NIL$\;
+            }
+            \vspace*{0.5em}
+
+            $time \leftarrow 0$\;
+            \For{$u \in V$}
+            {
+                \If{$color[u] = WHITE$}
+                {
+                    $\textnormal{DFS--VISIT}(u)$\;
+                }
+            }
+            \vspace*{0.5em}
+
+            \KwRet{$\pi, d, f$}
+
+        \end{algorithm}
+
+        \vspace*{-1.5em}
+
+        \begin{theorem}
+            Časová složitost algoritmu DFS je $\mathcal{O}(|V| + |E|)$.
+        \end{theorem}
+
+        \begin{proof}
+            Inicializační část 10--13 má časovou obtížnost $\mathcal{O}(|V|)$. Hlavní cyklus 15--19 je prováděn maximálně $|V|$-krát, tedy časová obtížnost je $\mathcal{O}(|V|)$. Funkce DFS-VISIT je spouště na pouze pro bílé uzly, tedy $|V|$-krát a cyklus v proceduře 4--8 je proveden maximálně $|Adj[v]|$-krát. Protože $\sum_{v \in V}|Adj[v]| = |E|$ je časová obtížnost cyklu 4--8 $\mathcal{O}(|E|)$. Celková složitost je tedy $\mathcal{O}(|V| + |E|)$.
+        \end{proof}
+
+    \section{Topologické uspořádání}
+        \begin{definition}
+            \textbf{Topologické uspořádání} orientovaného grafu $G = (V, E)$ je lineární uspořádání všech uzlů tak, že pokud $(u, v) \in E$, pak $u$ předchází $v$ v daném uspořádání.\\
+        \end{definition}
+
+        Pokud graf $G$ obsahuje cykly, poté není možné určit topologické uspořádání. Nicméně algoritmus lze spustit. Výsledkem bude \textit{pseudo-topologické uspořádání}, ve kterém bude platit, že pokud $(u, v) \in E$ a zároveň se $u$ nenachází v~žádném cyklu, pak $u$ předchází $v$~v~daném uspořádání.
+
+        \begin{algorithm}
+            \DontPrintSemicolon
+            \caption{Topological-sort}
+            \KwIn{$G := (V, E)$}
+            \KwOut{$L$}
+            \vspace*{0.5em}
+
+            zavolej DFS($G$) pro výpočet hodnot $f[v]$\;
+            každý dokončený uzel zařaď na začátek seznamu uzlů $L$\;
+            \vspace*{0.5em}
+
+            \KwRet{$L$}
+        \end{algorithm}
+
+        \begin{theorem}
+            Protože výpočet topologického uspořádání využívá pouze DFS v časovou složitostí $\mathcal{O}(|V| + |E|)$ a operaci vložení na začátek seznamu, která má konstantní časovou složitost, je časová složitost topologického uspořádání $\mathcal{O}(|V| + |E|)$.
+        \end{theorem}
+
+    \section{Zanedbání stavů}
+        \begin{algorithm}
+            \DontPrintSemicolon
+            \caption{Zanedbání stavů}
+            \KwIn{$G := (V, E)$}
+            \KwOut{$G_{simply}$}
+            \vspace*{0.5em}
+
+            \SetKwProg{myalg}{Procedure}{}{}
+                \myalg{\textnormal{Pruning($G_p:= (V_p, E_p)$)}}{
+                    \For{$u \in \textnormal{Topological-sort}(G_p)$}
+                    {
+                        \If{$d_{p+}[u] = 0$}
+                        {
+                            \For{$v \in Adj_p[u]$}
+                            {
+                                $d_{p+}[v] \leftarrow d_{p+}[v] - 1$\;
+                            }
+                            $V_p.remove(u)$\;
+                        }
+                    }
+                }{\textbf{end}}
+            \vspace*{0.5em}
+
+            $G_t \leftarrow G^T$ \tcp*{Transponujeme graf $G$.}
+            Pruning$(G_t)$ \tcp*{Smažeme zanedbatelné stavy v grafu $G_t$}
+            $G_{simply} \leftarrow G_t^T$ \tcp*{Transponujeme graf $G_t$}
+            Pruning$(G_{simply})$ \tcp*{Smažeme zanedbatelné stavy v grafu $G_{simply}$}
+            \vspace*{0.5em}
+
+            \KwRet{$G_{simply}$}
+
+        \end{algorithm}
+
+        Jak již bylo dříve řečeno, stavy, jejichž vstupní, nebo výstupní stupeň je nulový nemohou být součástí žádného cyklu, a proto mohou být při výčtu všech cyklů grafu zanedbány (odstraněny). Při zanedbání těchto uzlů se ale mohou změnit hodnoty funkcí $d_-$ a $d_+$ tak, že budou objeveny nové stavy s nulovým vstupním nebo výstupním stupněm. K jejich kompletní eliminaci slouží následující algoritmus.
+
+        \begin{theorem}
+            Časová složitost algoritmu zanedbání stavů je $\mathcal{O}(|V| + |E|)$.
+        \end{theorem}
+
+        \begin{proof}
+            Transponování grafu má časovou složitost $\mathcal{O}(|V| + |E|)$. Topologické uspořádání má časovou složitost $\mathcal{O}(|V| + |E|)$. V proceduře Pruning se hlavní cyklus 2--9 prochází $|V|$-krát a vnitřní cyklus 4--6 se prochází $|Adj[u]|$-krát. Časová složitost procedury Pruning je tedy $\mathcal{O}(|V| + |E|)$, z čehož plyne, že časová složitost algoritmu zanedbání stavů je $\mathcal{O}(|V| + |E|)$.
+        \end{proof}
 
 \chapter{Algoritmus 1}
+    \label{chapter:Algo1}
     \lipsum
 
 \chapter{Algoritmus 2}
+    \label{chapter:Algo2}
     \lipsum
 
 \chapter{Algoritmus 3}
+    \label{chapter:Algo3}
     \lipsum
 
 \chapter{Návrh programu}
+    \label{chapter:Design}
     \lipsum
 
 \chapter{Použití programu}
+    \label{chapter:Help}
     \lipsum
 
 \chapter{Experimenty}
+    \label{chapter:Experiments}
     \lipsum
 
 \chapter{Závěr}
+    \label{chapter:Conclusion}
     \lipsum[2]
