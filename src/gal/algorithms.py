@@ -244,8 +244,7 @@ def __get_cycle_wein(input_graph: digraph.DiGraph) -> list:
 
     # Projects node ids from simplified graph to node ids of the original graph.
     # The time complexity is O(n * c), where n is a number of nodes and c is a number of cycles.
-    return cycles
-    # return [[input_graph.vertex_cname.inv[graph.vertex_cname[v]] for v in c[:-1]] for c in cycles]
+    return [[input_graph.vertex_cname.inv[graph.vertex_cname[v]] for v in c[:-1]] for c in cycles]
 
 def get_cycles(input_graph: digraph.DiGraph, algo="nx") -> list:
     """Enumerates all cycles (elementary circuits) in a graph.
