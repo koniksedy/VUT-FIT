@@ -98,6 +98,8 @@ class DiGraph:
         for u in graph.vertices:
             v = (u + 1) % graph.vertices_cnt
             graph.edges[u].append(v)
+            graph.out_degree[u] += 1
+            graph.in_degree[v] += 1
 
         # Add additional edges
         for u in random.choices(list(graph.vertices), k=additional_edges_cnt):
