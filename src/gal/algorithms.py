@@ -73,8 +73,7 @@ def __get_cycles_hj(input_graph: digraph.DiGraph) -> list():
             if v == head:
                 # Report cycle.
                 # Translace local vertex ids from scc to their ids from input_graph.
-                cycles.append(list(path))
-                # cycles.append([input_graph.vertex_cname.inv[graph.vertex_cname[v]] for v in path])
+                cycles.append([input_graph.vertex_cname.inv[graph.vertex_cname[v]] for v in path])
             elif v > min_path:
                 if v not in path:
                     q.put(path + [v])
