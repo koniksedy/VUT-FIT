@@ -183,9 +183,182 @@
     \label{chapter:Algo1}
     \lipsum
 
-\chapter{Algoritmus 2}
+\chapter{Herbert Weinbalttův algoritmus}
     \label{chapter:Algo2}
-    \lipsum
+    Tento algoritmus byl publikován v roce 1972 Herbertem Weinblattem \cite{A_new_search_algorithm}. Jeho základem je Tiernanův algoritmus \cite{Tiernan} publikovaný o dva roky dříve, který vyhodnocuje každý cyklus pouze jednou, jednalo se tedy o teoreticky nejefektivnější algoritmus, ovšem za cenu vyšších paměťových nároků. Sam Tiernan ale naznačil, že pro průměrně husté grafy s více než 100 hranami by bylo použití tohoto algoritmus neprakticky pomalé. Herbert Weinblatt ve svém článku popisuje nový přístup, který stejně jako Tiernanův vyhodnocuje každý cyklus pouze jedno, ale nově také minimalizuje množství prozkoumaných hran nutných k objevení cyklu. V důsledku toho dokázal algoritmus implementovaný v experimentálním jazyce Snobol3 na počítači IBM 7094 objevit všech 44 cyklů v grafu s 194 uzly a 294 hranami za méně než sedm sekund.
+
+    \section{Popis algoritmu}
+        Před samotným popisem algoritmu se potřeba definovat pomocné funkce $\mathit{END}$ a $\mathit{TAIL}$.
+
+        \begin{definition}
+            \textbf{END} je unární funkce, které pro cestu $\langle v_0 v_1 \dots v_n \rangle$, vrací poslední uzel cesty $v_n$.
+        \end{definition}
+
+        \begin{definition}
+            \textbf{TAIL} je binární funkce, která pro dvojici uzlu $v_k$ a otevřenou cestu $\langle v_0 v_1 \dots v_k v_{k+1} \dots v_n \rangle$, respektive cyklus $\langle v_0 v_1 \dots v_k v_{k+1} \dots v_0 \rangle$ vrací podcestu $\langle v_{k+1} \dots v_n \rangle$, respektive $\langle v_{k+1} \dots v_0 \rangle$ s ohledem k~uzlu $v_k$. V případě cyklu $\langle v_k v_{k+1} \dots v_k \rangle$ vrací prázdnou cestu $\langle \rangle$ délky 0.\\
+        \end{definition}
+
+        V průběhu výpočtu využívá algoritmus seznam $TT$, který reprezentuje aktuální zkoumanou cestu. Dále jsou udržovány dvě pomocné struktury $S_v$ a $S_e$. Kde $S_v$ je pomocné pole udržující informaci, zda již byl uzel $v \in V$ v seznamu $TT$. $S_v[v]$ může nabývat hodnot 0, 1, nebo 2, což indikuje, že uzel $v$ ještě nabyl v seznamu $TT$, uzel $v$ se momentálně nachází v seznamu $TT$, nebo že se uzel $v$ již nenachází v $TT$. Obdobná informace je udržována pro hrany. $S_e$ je matice informující, zda již byla hrana $(u, v) \in E$ v seznamu $TT$. $S_e[u][v]$ může nabývat pouze dvou hodnot, a to 0, respektive 2, což indikuje, že hrana $(u, v)$ ještě nebyla v $TT$, respektive že hrana $(u, v)$ již byla v $TT$ a stále může být.
+
+        \begin{algorithm}
+            \DontPrintSemicolon
+            \caption{Herbert Weinbalttův algoritmus}
+            \KwIn{$G := (V, E), n:= |V|$}
+            \KwOut{$L_{cycles}$}
+            \vspace*{0.5em}
+
+            \SetKwProg{myalg}{Procedure}{}{}
+                \myalg{\textnormal{CONCAT($isRecursion, Path$)}}{
+                    \tcp*[h]{Inicializace lokálních proměnných}\;
+                    $cycleTails \leftarrow  \mathit{EmptyList}$\;
+                    $toAddSave \leftarrow \mathit{EmptyList}$\;
+                    $toAddToControl \leftarrow  \mathit{EmptyList}$\;
+                    $added \leftarrow  \mathit{EmptyList}$\;
+                    $v \leftarrow \textnormal{END}(Path)$\;
+                    \vspace*{0.5em}
+
+                    \For{$cycle \in L_{cycles}$}
+                    {
+                        $tail \leftarrow \textnormal{TAIL}(v, cycle)$\;
+                        \If{$tail = \emptyset \lor tail \in L_{cycles}$}
+                        {
+                            \textbf{continue}\;
+                        }
+                        $cycleTails.append(tail)$\;
+                        \If{$\exists v_k \in tail: v_k \in Path$}
+                        {
+                            \textbf{continue}\;
+                        }
+                        $cycleEnd \leftarrow \textnormal{END}(cycle)$\;
+                        \eIf{$S_v[cycleEnd] = 2$}
+                        {
+                            $toAddToControl.extend(\textnormal{CONCAT}(\mathbf{True}, Path + tail))$\;
+                            \textbf{continue}\;
+                        }
+                        {
+                            $\begin{aligned}newCycle \leftarrow &[cycleEnd] + \textnormal{TAIL}(cycleEnd, TT) + \\[-1mm]
+                                                       &Path + \textnormal{TAIL}(\textnormal{END}(Path), cycle)\end{aligned}$\;
+                            \eIf{$isRecursion$}
+                            {
+                                $toAddToControl.append(newCycle)$\;
+                            }
+                            {
+                                $toAddSave.append(newCycle)$\;
+                            }
+                        }
+
+                    }
+                    \vspace*{0.5em}
+
+                    \eIf(){$isResursion$}
+                    {
+                        \KwRet{$toAddToControl$}
+                    }
+                    {
+                        $L_{cycles}.extend(toAddSave)$\;
+                        $added.extedn(toAddSave)$\;
+                        \For{$cycle \in toAddToControl$}
+                        {
+                            \If{$cycle \notin added$}
+                            {
+                                $L_{cycles}.append(cycle)$\;
+                                $added.append(cycle)$\;
+                            }
+                        }
+                    }
+                }{\textbf{end}}
+            \vspace*{0.5em}
+
+        \end{algorithm}
+
+        \newpage
+
+        \setlength{\algotitleheightrule}{0pt}
+        \begin{algorithm*}[!h]
+            \DontPrintSemicolon
+            \setcounter{AlgoLine}{41}
+            \SetKwProg{myalg}{Procedure}{}{}
+                \myalg{\textnormal{EXAMINE($v$)}}{
+                    \uIf{$S_v[v] = 0$}
+                    {
+                        $S_v[v] \leftarrow 1$\;
+                        $TT.append(v)$\;
+                    }
+                    \uElseIf{$S_v[v] = 1$}
+                    {
+                        $L_{cycles}.append([v] + \textnormal{TAIL}(v, TT) + [v])$\;
+                    }
+                    \uElse
+                    {
+                        CONCAT$(\mathbf{False}, [v])$\;
+                    }
+                }{\textbf{end}}
+            \vspace*{0.5em}
+
+            \SetKwProg{myalg}{Procedure}{}{}
+                \myalg{\textnormal{EXTEND}}{
+                    \While{$TT \neq \emptyset$}
+                    {
+                        $u \leftarrow \mathnormal{END}(TT)$\;
+                        $possible\_v \leftarrow \{v \in V \,|\, (u, v) \in E \land  S_e[u][v] = 0\}$\;
+                        \eIf{$possible\_v = \emptyset$}
+                        {
+                            $S_v[u] \leftarrow 2$\;
+                            $TT.removeLast()$\;
+                        }
+                        {
+                            $v \leftarrow PickOne(possible\_v)$\;
+                            $S_e[u][v] \leftarrow 2$\;
+                            EXAMINE($v$)\;
+                        }
+                    }
+                }{\textbf{end}}
+            \vspace*{0.5em}
+
+            \tcp*[h]{Inicializace globálních proměnných}\;
+            $TT \leftarrow \mathit{EmptyList}$\;
+            $S_e[0 \dots n-1][0 \dots n-1] \leftarrow 0$ \tcp*{nulová matice $n \times n$}
+            $S_v[0 \dots n-1] \leftarrow 0$\;
+            \vspace*{0.5em}
+
+            \For{$v \in V$}
+            {
+                \If{$S_v[v] = 0$}
+                {
+                    $S_v[v] \leftarrow 1$\;
+                    $TT.append(v)$\;
+                    EXTEND()\;
+                }
+            }
+
+            \KwRet{$L_{cycles}$}
+
+        \end{algorithm*}
+        \setlength{\algotitleheightrule}{\algotitleheightruledefault}
+
+        Slovní popis algoritmu TODO.
+
+    \section{Časová složitost}
+        \begin{theorem}
+            Časová složitost Herbert Weinblattova algoritmu pro výčet všech cyklů v orientovaném grafu je $\mathcal{O}((|V| + |E|)*(c + 1))$, kde $c$ je počet cyklů v grafu.
+        \end{theorem}
+
+        \begin{proof}
+            TODO.
+        \end{proof}
+
+    \section{Prostorová složitost}
+        \begin{theorem}
+            Prostorová složitost Herbert Weinblattova algoritmu pro výčet všech cyklů v orientovaném grafu je $\mathcal{O}(c * |V| + |V|^2)$, kde $c$ je počet cyklů v grafu.
+        \end{theorem}
+
+        \begin{proof}
+            Algoritmus využívá tři globální pomocné struktury. Prostorová složitost $TT$ je $\mathcal{O}(|V|)$ protože maximální délka cyklu je shora omezena na $|V| + 1$. Prostorová složitost matice $S_e$ je $\mathcal{O}(|V|^2)$. A prostorová složitost pole $S_v$ je $\mathcal{O}(|V|)$. Prostorovou složitost lokálních pomocných proměnných $added$, $cycleTails$, $toAddSave$ a $toAddToControl$ můžeme zanedbat, protože jejich data jsou obsažena v listu všech detekovaných cyklů $L_{cycles}$. Prostorová složitost listu $L_{cycles}$ je $\mathcal{O}(c * |V|)$, protože obsahuje $c$ cyklů\footnote{V případě úplného grafu je počet cyklů rovem mohutnosti symetrické grupy $|S_{|V|}| = |V|!$.}, kde délka každého cyklu může být až $|V| + 1 \simeq |V|$.
+
+            Pokud by prohledávaný graf neobsahoval žádný cyklus, potom budou vždy inicializovány globální pomocné struktury s prostorovou složitostí $\mathcal{O}(|V|^2)$.
+
+            Bylo dokázáno, že prostorová složitost Herbert Weinblattova algoritmu pro výčet všech cyklů v orientovaném grafu je $\mathcal{O}(c * |V| + |V|^2)$, kde $c$ je počet cyklů v grafu.
+        \end{proof}
 
 \chapter{Algoritmus 3}
     \label{chapter:Algo3}
