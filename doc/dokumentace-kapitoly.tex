@@ -419,7 +419,47 @@
     Algoritmus využívá frontu zkoumaných cest $P_0 \dots P_n$ pro $n \in \mathbb{N}_0$, kde pro délky cest ve frontě platí $|P_n| \leq |P_0| + 1$ a zároveň $|P_{i-1}| \leq |P_{i}|$. Díky tomu jej lze snadno využít pro výčet všech cyklů délek maximálně $k \in \mathbb{N}_0$ be z nutnosti nalezení všech cyklů.
 
     \section{Popis algoritmu}
-        TODO
+        \begin{algorithm}
+            \DontPrintSemicolon
+            \caption{Liuův a Wangův algoritmus}
+            \KwIn{$G := (V, E)$}
+            \KwOut{$L_{cycles}$}
+            \vspace*{0.5em}
+
+            \tcp*[h]{Inicializace}\;
+            $Q \leftarrow EmptyQueue$\;
+            \For{$v \in V$}
+            {
+                $ENQUEUE(Q, \langle v \rangle)$\;
+            }
+            \vspace*{0.5em}
+
+            \While{$Q \neq \emptyset$}
+            {
+                $P \leftarrow \mathit{DEQUEUE}(Q)$\;
+                $min \leftarrow arg\; min_{v \in V}\; ord(v)$\;
+                $head \leftarrow \mathit{HEAD}(P)$\;
+                $end \leftarrow \mathit{END}(P)$\;
+                \For{$v \in Adj[end]$}
+                {
+                    \uIf{$v = head$}
+                    {
+                        $L_{cycles}.append(P + \langle v \rangle)$\;
+                    }
+                    \ElseIf{$ord(v) > ord(min)$}
+                    {
+                        \If{$v \notin P$}
+                        {
+                            $\mathit{ENQUEUE}(Q, P + \langle v \rangle)$\;
+                        }
+                    }
+                }
+            }
+            \vspace*{0.5em}
+
+            \KwRet{$L_{cycles}$}
+
+        \end{algorithm}
 
     \section{Časová složitost}
         TODO
