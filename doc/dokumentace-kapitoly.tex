@@ -137,6 +137,7 @@
 
     \section{Zanedbání stavů}
         \begin{algorithm}
+            \label{algo:ZanedbaniStavu}
             \DontPrintSemicolon
             \caption{Zanedbání stavů}
             \KwIn{$G := (V, E)$}
@@ -179,11 +180,54 @@
             Transponování grafu má časovou složitost $\mathcal{O}(|V| + |E|)$. Topologické uspořádání má časovou složitost $\mathcal{O}(|V| + |E|)$. V proceduře Pruning se hlavní cyklus 2--9 prochází $|V|$-krát a vnitřní cyklus 4--6 se prochází $|Adj[u]|$-krát. Časová složitost procedury Pruning je tedy $\mathcal{O}(|V| + |E|)$, z čehož plyne, že časová složitost algoritmu zanedbání stavů je $\mathcal{O}(|V| + |E|)$.
         \end{proof}
 
-\chapter{Algoritmus 1}
+\chapter{Brute-force}
     \label{chapter:Algo1}
-    \lipsum
+    \lipsum[1]
 
-\chapter{Herbert Weinbalttův algoritmus}
+    \section{Popis algoritmu}
+        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque.
+
+        \begin{algorithm}[h]
+            \SetAlgoLined
+            \caption{Dummy Algorithm.}
+            %
+            Do something.\;
+            \For{$k=0,1,2,3, ...$}{
+                Do something.\;
+                \eIf{$x \geq y$}{
+                     Do something.\;
+                }{
+                     Do something.\;
+                     \For{$j = 1,...,10$}{
+                          Do something.\;
+                     }
+                     THIS IS THE SPOT WHERE I NEED THE PAGE BREAK.\;
+                     Do something.\;
+                }
+            }
+        \end{algorithm}
+
+        \lipsum[1-2]
+
+    \section{Časová složitost}
+        \begin{theorem}
+            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque.
+        \end{theorem}
+
+        \begin{proof}
+            \lipsum[1]
+        \end{proof}
+
+    \section{Prostorová složitost}
+        \begin{theorem}
+            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque.
+        \end{theorem}
+
+        \begin{proof}
+            \lipsum[1]
+        \end{proof}
+
+\chapter{Herbert Weinbaltt}
     \label{chapter:Algo2}
     Tento algoritmus byl publikován v roce 1972 Herbertem Weinblattem \cite{A_new_search_algorithm}. Jeho základem je Tiernanův algoritmus \cite{Tiernan} publikovaný o dva roky dříve, který vyhodnocuje každý cyklus pouze jednou, jednalo se tedy o teoreticky nejefektivnější algoritmus, ovšem za cenu vyšších paměťových nároků. Sam Tiernan ale naznačil, že pro průměrně husté grafy s více než 100 hranami by bylo použití tohoto algoritmus neprakticky pomalé. Herbert Weinblatt ve svém článku popisuje nový přístup, který stejně jako Tiernanův vyhodnocuje každý cyklus pouze jedno, ale nově také minimalizuje množství prozkoumaných hran nutných k objevení cyklu. V důsledku toho dokázal algoritmus implementovaný v experimentálním jazyce Snobol3 na počítači IBM 7094 objevit všech 44 cyklů v grafu s 194 uzly a 294 hranami za méně než sedm sekund.
 
@@ -195,10 +239,12 @@
         \end{definition}
 
         \begin{definition}
-            \textbf{TAIL} je binární funkce, která pro dvojici uzlu $v_k$ a otevřenou cestu $\langle v_0 v_1 \dots v_k v_{k+1} \dots v_n \rangle$, respektive cyklus $\langle v_0 v_1 \dots v_k v_{k+1} \dots v_0 \rangle$ vrací podcestu $\langle v_{k+1} \dots v_n \rangle$, respektive $\langle v_{k+1} \dots v_0 \rangle$ s ohledem k~uzlu $v_k$. V případě cyklu $\langle v_k v_{k+1} \dots v_k \rangle$ vrací prázdnou cestu $\langle \rangle$ délky 0.\\
+            \textbf{TAIL} je binární funkce, která pro dvojici uzlu $v_k$ a otevřenou cestu $\langle v_0 v_1 \dots v_k v_{k+1} \dots v_n \rangle$, respektive cyklus $\langle v_0 v_1 \dots v_k v_{k+1} \dots v_0 \rangle$ vrací podcestu $\langle v_{k+1} \dots v_n \rangle$, respektive $\langle v_{k+1} \dots v_0 \rangle$ s respektem k~uzlu $v_k$. V případě cyklu $\langle v_k v_{k+1} \dots v_k \rangle$ vrací prázdnou cestu $\langle \rangle$ délky 0.\\
         \end{definition}
 
         V průběhu výpočtu využívá algoritmus seznam $TT$, který reprezentuje aktuální zkoumanou cestu. Dále jsou udržovány dvě pomocné struktury $S_v$ a $S_e$. Kde $S_v$ je pomocné pole udržující informaci, zda již byl uzel $v \in V$ v seznamu $TT$. $S_v[v]$ může nabývat hodnot 0, 1, nebo 2, což indikuje, že uzel $v$ ještě nabyl v seznamu $TT$, uzel $v$ se momentálně nachází v seznamu $TT$, nebo že se uzel $v$ již nenachází v $TT$. Obdobná informace je udržována pro hrany. $S_e$ je matice informující, zda již byla hrana $(u, v) \in E$ v seznamu $TT$. $S_e[u][v]$ může nabývat pouze dvou hodnot, a to 0, respektive 2, což indikuje, že hrana $(u, v)$ ještě nebyla v $TT$, respektive že hrana $(u, v)$ již byla v $TT$ a stále může být.
+
+        Pro sjednocení dvou cest $P_1 = \langle v_1v_2 \rangle$ a $P_2 = \langle v_3v_4 \rangle$ budeme využívat operátor $+$, tedy $P_1 + P_2 = \langle v_1v_2v_3v_4 \rangle$.
 
         \begin{algorithm}
             \DontPrintSemicolon
@@ -236,7 +282,7 @@
                             \textbf{continue}\;
                         }
                         {
-                            $\begin{aligned}newCycle \leftarrow &[cycleEnd] + \textnormal{TAIL}(cycleEnd, TT) + \\[-1mm]
+                            $\begin{aligned}newCycle \leftarrow &\langle cycleEnd \rangle + \textnormal{TAIL}(cycleEnd, TT) + \\[-1mm]
                                                        &Path + \textnormal{TAIL}(\textnormal{END}(Path), cycle)\end{aligned}$\;
                             \eIf{$isRecursion$}
                             {
@@ -286,7 +332,7 @@
                     }
                     \uElseIf{$S_v[v] = 1$}
                     {
-                        $L_{cycles}.append([v] + \textnormal{TAIL}(v, TT) + [v])$\;
+                        $L_{cycles}.append(\langle v \rangle + \textnormal{TAIL}(v, TT) + \langle v \rangle)$\;
                     }
                     \uElse
                     {
@@ -336,7 +382,13 @@
         \end{algorithm*}
         \setlength{\algotitleheightrule}{\algotitleheightruledefault}
 
-        Slovní popis algoritmu TODO.
+        Před spuštěním vlastního algoritmu jsou všechny uzly, které mají hodnotu $d_+$ nebo $d_-$ rovnou nule a jejich hrany zanedbány (odstraněny) \ref{algo:ZanedbaniStavu}. Cílem tohoto kroku je eliminovat uzly, které nemohou tvořit cykly a tím snížit velikost grafu nad kterým bude prohledávání prováděno.
+
+        Algoritmus vybere jeden uzel grafu (\textit{počáteční uzel cesty}) a začne prozkoumávat všechny cesty vycházející z tohoto uzlu. Pokud se během vytváření cesty některý uzel navštíví vícekrát, je tato podcesta označena za cyklus a konstrukce cyklu se navrátí k předchozímu uzlu, pro který existují doposud neprozkoumaní následníci. Pokud již žádný takový uzel neexistuje, zvolí algoritmus nový, doposud nezvolený, \textit{počáteční uzel cesty}. V případě, že takový uzel neexistuje, algoritmus skončí.
+
+        V průběhu výpočtu je cesta vedoucí z \textit{počátečního uzlu cesty} reprezentovaná seznamem $TT$ ("trial thread"). Při návratu je odstraněn poslední uzel (nejvzdálenější od \textit{počátečního uzlu}) cesty $TT$.
+
+        Když algoritmus dospěje k uzlu $v$, který se již byl v minulosti vyhodnocen, pak před zpětným navrácením zkontroluje, zda některá z doposud vyhodnocovaných hran netvoří nový cyklus. Pokud se uzel $v$ nachází v $TT$, pak existuje právě jeden cyklus, který je tvořen sjednocením $v$ s \textit{TAIL} $TT$ s respektem z uzlu $v$. Pokud se uzel $v$ již nenachází v $TT$, pak může cyklus existovat pouze pokud byly již nějaké cykly obsahující $v$ objeveny. V takovém případě je spuštěna rekurzivní procedura $\mathnormal{CONCAT}$, která se snaží nalézt cestu, která začíná na uzlu $v$ a končí na některém uzlu $u$, který je stále na $TT$. Z každé takto nalezené cesty je vytvořen cyklus sjednocením této cesty s \textit{TAIL} $TT$ s respektem k $u$. (Nechť $C_1 = \langle v_1v_2v_1 \rangle$ a $C_2 = \langle v_2v_3v_2 \rangle$ jsou dva již objevené cykly, $TT = \langle v_1 \rangle$ a algoritmus objeví již jednou zpracovaný uzel $v_3$. A takovém případě je konkatenací podcesty $\langle v_1 \rangle$ z $TT$, podcesty $\langle v_3v_2 \rangle$ z $C_2$ a podcesty $\langle v_1 \rangle$ z $C_1$ vytvořen nový cyklus $\langle v_1v_3v_2v_1 \rangle$.)
 
     \section{Časová složitost}
         \begin{theorem}
@@ -360,9 +412,22 @@
             Bylo dokázáno, že prostorová složitost Herbert Weinblattova algoritmu pro výčet všech cyklů v orientovaném grafu je $\mathcal{O}(c * |V| + |V|^2)$, kde $c$ je počet cyklů v grafu.
         \end{proof}
 
-\chapter{Algoritmus 3}
+\chapter{Hongbo Liu a Jiaxin Wang}
     \label{chapter:Algo3}
-    \lipsum
+    V roce 2006 spolu Hongo Liu a Jiaxin Wang publikovali algoritmus \cite{A_new_way_to_enumerate_cycles_in_graph} pro výčet všech cyklů v grafu. Tento algoritmus pracuje v časové složitosti $\mathcal{O}((|V| + |E|) * (c + 1))$, kde $c$ je počet cyklů, stejně jako algoritmus Jonsona \cite{Johnson_1975}, Tiernana \cite{Tiernan} nebo zmíněného Weinblattova algoritmu \cite{A_new_search_algorithm}. V porovnáni s nimi je ale jednodušší pro porozumění, čímž jsou minimalizovány chyby v implementaci způsobené chybnou interpretací. Na druhou stranu Liuův a Wangův přístup je méně efektivní pro velké grafy. Nicméně existují případy, pro které je jejichž řešení efektivnější.
+
+    Algoritmus využívá frontu zkoumaných cest $P_0 \dots P_n$ pro $n \in \mathbb{N}_0$, kde pro délky cest ve frontě platí $|P_n| \leq |P_0| + 1$ a zároveň $|P_{i-1}| \leq |P_{i}|$. Díky tomu jej lze snadno využít pro výčet všech cyklů délek maximálně $k \in \mathbb{N}_0$ be z nutnosti nalezení všech cyklů.
+
+    \section{Popis algoritmu}
+        TODO
+
+    \section{Časová složitost}
+        TODO
+
+    \section{Prostorová složitost}
+        TODO
+
+
 
 \chapter{Návrh programu}
     \label{chapter:Design}
