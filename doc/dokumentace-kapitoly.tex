@@ -160,7 +160,7 @@
                 }{\textbf{end}}
             \vspace*{0.5em}
 
-            $G_t \leftarrow G^T$ \tcp*{Transponujeme graf $G$.}
+            $G_t \leftarrow G^T$ \tcp*{Transponujeme graf $G$}
             Pruning$(G_t)$ \tcp*{Smažeme zanedbatelné stavy v grafu $G_t$}
             $G_{simply} \leftarrow G_t^T$ \tcp*{Transponujeme graf $G_t$}
             Pruning$(G_{simply})$ \tcp*{Smažeme zanedbatelné stavy v grafu $G_{simply}$}
@@ -235,6 +235,7 @@
         Před samotným popisem algoritmu se potřeba definovat pomocné funkce $\mathit{END}$ a $\mathit{TAIL}$.
 
         \begin{definition}
+            \label{def:end}
             \textbf{END} je unární funkce, které pro cestu $\langle v_0 v_1 \dots v_n \rangle$, vrací poslední uzel cesty $v_n$.
         \end{definition}
 
@@ -382,7 +383,7 @@
         \end{algorithm*}
         \setlength{\algotitleheightrule}{\algotitleheightruledefault}
 
-        Před spuštěním vlastního algoritmu jsou všechny uzly, které mají hodnotu $d_+$ nebo $d_-$ rovnou nule a jejich hrany zanedbány (odstraněny) \ref{algo:ZanedbaniStavu}. Cílem tohoto kroku je eliminovat uzly, které nemohou tvořit cykly a tím snížit velikost grafu nad kterým bude prohledávání prováděno.
+        Před spuštěním vlastního prohledávání grafu jsou všechny uzly, které mají hodnotu $d_+$ nebo $d_-$ rovnou nule a jejich hrany zanedbány (odstraněny) algoritmem \ref{algo:ZanedbaniStavu}. Cílem tohoto kroku je eliminovat uzly, které nemohou tvořit cykly a tím snížit velikost grafu nad kterým bude prohledávání prováděno.
 
         Algoritmus vybere jeden uzel grafu (\textit{počáteční uzel cesty}) a začne prozkoumávat všechny cesty vycházející z tohoto uzlu. Pokud se během vytváření cesty některý uzel navštíví vícekrát, je tato podcesta označena za cyklus a konstrukce cyklu se navrátí k předchozímu uzlu, pro který existují doposud neprozkoumaní následníci. Pokud již žádný takový uzel neexistuje, zvolí algoritmus nový, doposud nezvolený, \textit{počáteční uzel cesty}. V případě, že takový uzel neexistuje, algoritmus skončí.
 
@@ -414,11 +415,29 @@
 
 \chapter{Hongbo Liu a Jiaxin Wang}
     \label{chapter:Algo3}
-    V roce 2006 spolu Hongo Liu a Jiaxin Wang publikovali algoritmus \cite{A_new_way_to_enumerate_cycles_in_graph} pro výčet všech cyklů v grafu. Tento algoritmus pracuje v časové složitosti $\mathcal{O}((|V| + |E|) * (c + 1))$, kde $c$ je počet cyklů, stejně jako algoritmus Jonsona \cite{Johnson_1975}, Tiernana \cite{Tiernan} nebo zmíněného Weinblattova algoritmu \cite{A_new_search_algorithm}. V porovnáni s nimi je ale jednodušší pro porozumění, čímž jsou minimalizovány chyby v implementaci způsobené chybnou interpretací. Na druhou stranu Liuův a Wangův přístup je méně efektivní pro velké grafy. Nicméně existují případy, pro které je jejichž řešení efektivnější.
+    V roce 2006 spolu Hongo Liu a Jiaxin Wang publikovali algoritmus \cite{A_new_way_to_enumerate_cycles_in_graph} pro výčet všech cyklů v grafu. Tento algoritmus pracuje v exponenciální časové složitosti oproti algoritmu Jonsona \cite{Johnson_1975}, Tiernana \cite{Tiernan} nebo zmíněného Weinblattova algoritmu \cite{A_new_search_algorithm}. V porovnáni s nimi je ale jednodušší pro porozumění, čímž jsou minimalizovány chyby v implementaci způsobené chybnou interpretací. Na druhou stranu Liuův a Wangův přístup je neefektivní pro velké grafy. Nicméně existují případy, pro které je jejichž řešení efektivnější.
 
     Algoritmus využívá frontu zkoumaných cest $P_0 \dots P_n$ pro $n \in \mathbb{N}_0$, kde pro délky cest ve frontě platí $|P_n| \leq |P_0| + 1$ a zároveň $|P_{i-1}| \leq |P_{i}|$. Díky tomu jej lze snadno využít pro výčet všech cyklů délek maximálně $k \in \mathbb{N}_0$ be z nutnosti nalezení všech cyklů.
 
     \section{Popis algoritmu}
+        Algoritmus využívá pomocné funkce $\mathit{END}$, která již byla definována dříve \ref{def:end} a $\mathit{HEAD}$.
+
+        \begin{definition}
+            \textbf{HEAD} je unární funkce, které pro cestu $\langle v_0 v_1 \dots v_n \rangle$, vrací první uzel cesty $v_0$.\\
+        \end{definition}
+
+        Pro sjednocení dvou cest $P_1 = \langle v_1v_2 \rangle$ a $P_2 = \langle v_3v_4 \rangle$ budeme využívat operátor $+$, tedy $P_1 + P_2 = \langle v_1v_2v_3v_4 \rangle$.
+
+        Aby se zabránilo duplicitní detekci cyklů, které byly generovány z jiných počátečních uzlů, ale jinak jsou si zcela ekvivalentní, je každému uzlu $v$ přiřazena různá hodnota $ord(v) \in \mathbb{N}_0$, kde pro $u, v \in V$ platí $ord(u) = ord(v) \iff u = v$. Při prohledávání cesty $P$ v grafu pak může být uzel $v$ připojen na konec cesty $P$ pouze pokud $ord(v) > ord(END(P))$.
+
+        Před spuštěním prohledávání grafu jsou všechny uzly, které mají hodnotu $d_+$ nebo $d_-$ rovnou nule a jejich hrany zanedbány (odstraněny) algoritmem \ref{algo:ZanedbaniStavu}. Cílem tohoto kroku je eliminovat uzly, které nemohou tvořit cykly a tím snížit velikost grafu nad kterým bude prohledávání prováděno.
+
+        Při inicializaci proměnných (1--4) jsou všechny cesty délek 0 vloženy do fronty cest $Q$. V hlavním cyklu (5--19) se algoritmus snaží vytvořit cykly délky $k$ pro cesty délek $k-1$. Cyklus délky $k$ je tvořen sjednocením cesty $P$ délky $k-1$ a hrany $(END(P), HEAD(P))$. Dále z cesty $P$ na základě přechodů vedoucích z $END(P)$ generuje nové cesty $P + \langle v \rangle$ pro $v \in \{v \in Adj[END(P)] \,|\, v \notin P \land ord(v) > ord(HEAD(P))\}$ a vkládá je do fronty cest $Q$.
+
+        Pokud je fronta cest $Q$ prázdná (nebylo již možné vygenerovat další cesty), je algoritmus ukončen a všechny objevené cykly jsou vráceny v seznamu $L_{cycles}$.
+
+        \newpage
+
         \begin{algorithm}
             \DontPrintSemicolon
             \caption{Liuův a Wangův algoritmus}
@@ -437,7 +456,6 @@
             \While{$Q \neq \emptyset$}
             {
                 $P \leftarrow \mathit{DEQUEUE}(Q)$\;
-                $min \leftarrow arg\; min_{v \in V}\; ord(v)$\;
                 $head \leftarrow \mathit{HEAD}(P)$\;
                 $end \leftarrow \mathit{END}(P)$\;
                 \For{$v \in Adj[end]$}
@@ -446,7 +464,7 @@
                     {
                         $L_{cycles}.append(P + \langle v \rangle)$\;
                     }
-                    \ElseIf{$ord(v) > ord(min)$}
+                    \ElseIf{$ord(v) > ord(head)$}
                     {
                         \If{$v \notin P$}
                         {
@@ -462,10 +480,26 @@
         \end{algorithm}
 
     \section{Časová složitost}
-        TODO
+        \begin{theorem}
+            Časová složitost algoritmu, který publikovali Hongo Liu a Jiaxin Wang je $\mathcal{O}(2^{|V|})$.
+        \end{theorem}
+
+        \begin{proof}
+            Inicializace a naplnění fronty (1--4) $Q$ má časovou složitost $\mathcal{O}(|V|)$. V hlavním cyklu (5--18) jsou postupně vygenerovány všechny cesty $P$, pro které platí $\forall v \in P: ord(v) \geq ord(HEAD(P))$. Takových to cest je až $\sum_{k=1}^{n:= |V|} {n \choose k} = 2^n - 1$. Celková časová složitost algoritmu je tedy $\mathcal{O}(2^{|V|})$.
+        \end{proof}
 
     \section{Prostorová složitost}
-        TODO
+        \begin{theorem}
+            Prostorová složitost algoritmu, který publikovali Hongo Liu a Jiaxin Wang je $\mathcal{O}(2^{|V|})$.
+        \end{theorem}
+
+        \begin{proof}
+            Prostorová složitost výstupního seznamu $L_{cycles}$ je $\mathcal{O}(c * |V|)$, protože délka cyklu může být až $|V| + 1 \simeq 1$.
+
+            Do fronty $Q$ se postupně ukládají všechny cesty v grafu, kde pro každý uzel $v$ cesty $P$ musí platit $ord(v) \geq HEAD(P)$. Algoritmem ude celkem zpracováno až $\sum_{k=1}^{n:= |V|} {n \choose k}$. Hodnota této funkce dosahuje maxima pro $k = \ceil[\big]{n/2} =: k_{0.5}$. Tedy prostorová složitost fronty $Q$ je $\mathcal{O}({n \choose k_{0.5}}) \in \mathcal{O}(2^{|V|})$.
+
+            Celková prostorová složitost algoritmu je $\mathcal{O}(2^{|V|})$.
+        \end{proof}
 
 
 
