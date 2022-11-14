@@ -84,6 +84,21 @@ def __get_cycles_hj(input_graph: digraph.DiGraph) -> list():
     return cycles
 
 def __get_cycles_book(input_graph: digraph.DiGraph) -> list():
+    """Enumerates all cycles (elementary circuits) in a graph.
+        It uses algorithm proposed in a book by Narsingh Deo
+        (page 287 Alg. 5), which is systematic and exhaustive
+        search for directive circuits. [Deo, Narsingh. Graph
+        Theory with Applications to Engineering and Computer
+        Science. 1st ed. Dover Publications, 2017. Web. 14 Oct. 2022.]
+        The time complexity is todo for n nodes, m edges
+        and c elementary circuits.
+
+        Args:
+            input_graph (DiGraph): DiGraph.
+
+        Returns:
+            list: List of cycles.
+        """
     graph = digraph.DiGraph(input_graph)
     graph.prune_single_scc()
     cycles = list()
