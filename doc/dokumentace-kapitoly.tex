@@ -397,7 +397,11 @@
         \end{theorem}
 
         \begin{proof}
-            TODO.
+            Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Hlavní cyklus (68--74) a zavolání procedury $\mathnormal{EXTEND}$ bude provedeno nejvýše $|V|$-krát. Cyklus (62--63) v proceduře $\mathnormal{EXTEND}$ a vykonání procedury $\mathnormal{EXAMINE}$ bude provedeno nejvýše $|E|$-krát, protože podmínkou pro neprázdnost $possible\_v$ je, že existuje přechod $(u, v) \in E$, pro který je $S_e[u][v] = 0$. Pro takovýto přechod je následně nastaveno $S_e[u][v]$ na hodnotu $2$. Časová složitost bez procedury $\mathnormal{CONCAT}$ $\mathcal{O}(|V| + |E|)$.
+
+            Nerekurzivní volání procedury $\mathnormal{CONCAT}$ (49) je uskutečněno maximálně $|E|$-krát, protože je provedeno z procedury $\mathnormal{EXAMINE}$. Hlavní cyklus (7--28) procedury CONCAT je proveden pro každý cyklus stejně jako cyklus pro odstranění duplikátů (34--39). Nerekurzivní volání procedury CONCAT má časovou složitost $\mathcal{O}(c*|E|)$. Procedura CONCAT může být volána rekurzivně pro každý vrchol nejvýše jednou kvůli podmínce (17) $S_v[cycleEnd] = 2$. Rekurzivní volání procedury CONCAT má časovou složitost $\mathcal{O}(c * |V|)$.
+
+            Celková složitost algoritmu je tedy $\mathcal{O}(|V| + |E| + c*|V| + c*|E|) = \mathcal{O}((|V| + |E|) * (c + 1))$.
         \end{proof}
 
     \section{Prostorová složitost}
@@ -485,7 +489,7 @@
         \end{theorem}
 
         \begin{proof}
-            Inicializace a naplnění fronty (1--4) $Q$ má časovou složitost $\mathcal{O}(|V|)$. V hlavním cyklu (5--18) jsou postupně vygenerovány všechny cesty $P$, pro které platí $\forall v \in P: ord(v) \geq ord(HEAD(P))$. Takových to cest je až $\sum_{k=1}^{n:= |V|} {n \choose k} = 2^n - 1$. Celková časová složitost algoritmu je tedy $\mathcal{O}(2^{|V|})$.
+            Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Inicializace a naplnění fronty (1--4) $Q$ má časovou složitost $\mathcal{O}(|V|)$. V hlavním cyklu (5--18) jsou postupně vygenerovány všechny cesty $P$, pro které platí $\forall v \in P: ord(v) \geq ord(HEAD(P))$. Takovýchto otevřených cest je až $\sum_{k=1}^{n:= |V|} {n \choose k} = 2^n - 1$. Celková časová složitost algoritmu je tedy $\mathcal{O}(2^{|V|})$.
         \end{proof}
 
     \section{Prostorová složitost}
@@ -494,14 +498,10 @@
         \end{theorem}
 
         \begin{proof}
-            Prostorová složitost výstupního seznamu $L_{cycles}$ je $\mathcal{O}(c * |V|)$, protože délka cyklu může být až $|V| + 1 \simeq 1$.
-
-            Do fronty $Q$ se postupně ukládají všechny cesty v grafu, kde pro každý uzel $v$ cesty $P$ musí platit $ord(v) \geq HEAD(P)$. Algoritmem ude celkem zpracováno až $\sum_{k=1}^{n:= |V|} {n \choose k}$. Hodnota této funkce dosahuje maxima pro $k = \ceil[\big]{n/2} =: k_{0.5}$. Tedy prostorová složitost fronty $Q$ je $\mathcal{O}({n \choose k_{0.5}}) \in \mathcal{O}(2^{|V|})$.
+            Prostorová složitost výstupního seznamu $L_{cycles}$ je $\mathcal{O}(c * |V|)$, protože délka cyklu může být až $|V| + 1 \simeq 1$. Do fronty $Q$ se postupně ukládají všechny cesty v grafu, kde pro každý uzel $v$ otevřené cesty $P$ musí platit $ord(v) \geq HEAD(P)$. Algoritmem bude celkem zpracováno až $\sum_{k=1}^{n:= |V|} {n \choose k}$ otevřených cest. Hodnota této funkce dosahuje maxima pro $k = \ceil[\big]{n/2} =: k_{0.5}$. Tedy prostorová složitost fronty $Q$ je $\mathcal{O}({n \choose k_{0.5}}) \in \mathcal{O}(2^{|V|})$.
 
             Celková prostorová složitost algoritmu je $\mathcal{O}(2^{|V|})$.
         \end{proof}
-
-
 
 \chapter{Návrh programu}
     \label{chapter:Design}
