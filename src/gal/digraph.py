@@ -75,7 +75,7 @@ class DiGraph:
         graph.vertices_cnt = vertices_cnt
         graph.vertices = set(range(graph.vertices_cnt))
         graph.vertex_cname = bidict({v: v for v in graph.vertices})
-        graph.edges = [list() for _ in range(graph.vertices_cnt)]
+        graph.edges = [list(graph.vertices) for _ in range(graph.vertices_cnt)]
         graph.in_degree = [graph.vertices_cnt] * graph.vertices_cnt
         graph.out_degree = [graph.vertices_cnt] * graph.vertices_cnt
         return graph
@@ -98,12 +98,14 @@ class DiGraph:
         for u in graph.vertices:
             v = (u + 1) % graph.vertices_cnt
             graph.edges[u].append(v)
+            graph.out_degree[u] += 1
+            graph.in_degree[v] += 1
 
         # Add additional edges
-        for u in random.sample(graph.vertices, additional_edges_cnt):
+        for u in random.choices(list(graph.vertices), k=additional_edges_cnt):
             possible_v = graph.vertices.difference(graph.edges[u])
             if possible_v:
-                v = random.select(possible_v)
+                v = random.sample(possible_v, k=1)[0]
                 graph.edges[u].append(v)
                 graph.out_degree[u] += 1
                 graph.in_degree[v] += 1
