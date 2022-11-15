@@ -3,15 +3,16 @@ algorithms.py
 A module with algorithms for cycles enumeration.
 Authors: Bc. Jan Bíl
          Bc. Michal Šedý
-Last change: 01.11.2022
+Last change: 02.11.2022
 """
 
-from queue import Queue
-import networkx as nx
 import numpy as np
+import networkx as nx
+from queue import Queue
 from . import digraph
 
-def __get_cycles_nx(graph) -> list():
+
+def __get_cycles_nx(graph: digraph.DiGraph) -> list():
     """Enumerates all cycles (elementary circuits) in a graph.
     It uses a nonrecursive, iterator/generator version of
     Johnson's algorithm [Finding all the elementary circuits of
@@ -30,12 +31,10 @@ def __get_cycles_nx(graph) -> list():
 
     graph_nx.add_nodes_from(graph.vertices)
     for u in graph.vertices:
-        for v in graph.vertices:
-            if graph.edges_mx[u][v]:
-                graph_nx.add_edge(u, v)
+        for v in graph.edges[u]:
+            graph_nx.add_edge(u, v)
 
     return list(nx.simple_cycles(graph_nx))
-
 
 def __get_cycles_hj(input_graph: digraph.DiGraph) -> list():
     """Enumerates all cycles (elementary circuits) in a graph.
@@ -58,28 +57,25 @@ def __get_cycles_hj(input_graph: digraph.DiGraph) -> list():
     graph.prune_single_scc()
 
     cycles = list()
-    # Run for each strongly connected component separately.
-    for scc in graph.get_scc():
-        # Init
-        q = Queue()
-        for v in scc.vertices:
-            q.put([v])
+    # Init
+    q = Queue()
+    for v in graph.vertices:
+        q.put([v])
 
-        #Computation
-        while not q.empty():
-            # Get open path
-            path = q.get()
-            min_path = min(path)
-            head, last = path[0], path[-1]
-            # Test if there is an edge from last vertex of a path to its head.
-            if scc.edges_mx[last][head]:
-                # Translace local vertex ids from scc to their ids from input_graph.
-                cycles.append([input_graph.vertex_cname.inv[scc.vertex_cname[v]] for v in path])
-            # Extend existing open path.
-            for v in scc.get_successors(last):
-                if v > min_path:
-                    if v not in path:
-                        q.put(path + [v])
+    #Computation
+    while not q.empty():
+        # Get open path
+        path = q.get()
+        min_path = min(path)
+        head, last = path[0], path[-1]
+        # Extend existing open path.
+        for v in graph.edges[last]:
+            if v == head:
+                # Report cycle.
+                cycles.append(path)
+            elif v > min_path:
+                if v not in path:
+                    q.put(path + [v])
 
     return cycles
 
