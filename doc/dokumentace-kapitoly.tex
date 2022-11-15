@@ -596,7 +596,7 @@
 
 \chapter{Použití programu}
     \label{chapter:Help}
-    V této kapitole je popsána struktura složky projektu. Dále je uveden postup pro instalaci knihoven (Bidict\footnote{Bodict dostupné z: \url{https://pypi.org/project/bidict}} a Networkx\footnote{Networkx dostupné z: \url{https://networkx.org}}) používaných programem. Kapitola také uvádí nápovědu pro spuštění programu pomocí interpretu Python 3 včetně vzorového formátu vstup a výstupu. Na konci kapitoly jsou uvedeny vybrané příklady jednotlivých možností spuštění.
+    V této kapitole je popsána struktura složky projektu. Dále je uveden postup pro instalaci knihoven (Bidict\footnote{Bidict dostupné z: \url{https://pypi.org/project/bidict}} a Networkx\footnote{Networkx dostupné z: \url{https://networkx.org}}) používaných programem. Kapitola také uvádí nápovědu pro spuštění programu pomocí interpretu Python 3 včetně vzorového formátu vstup a výstupu. Na konci kapitoly jsou uvedeny vybrané příklady jednotlivých možností spuštění.
 
     \section{Struktura projektu}
         Na kořenové úrovni projektu se nachází tři složky. Složka \texttt{/src} obsahuje modul \texttt{gal} a spustitelný program \texttt{enum\_cycles.py}. Příklady grafů podporovaných programem se nachází ve složce \texttt{/graphs}. Tato dokumentace je umístěná ve složce \texttt{/doc}. Na kořenové úrovni projektu se dále nachází soubor \texttt{requirements.txt} obsahující využívané knihovny a jejich verze.
@@ -697,7 +697,11 @@
 
 \chapter{Experimenty}
     \label{chapter:Experiments}
-    \lipsum
+    Tato kapitola popisuje výsledky experimentálních měření pro studované algoritmy výčtu cyklů v orientovaných grafech. Za účelem testování byly zvoleny úplné grafy, které jsou často v důsledku své vysoké obtížnosti používané jako hlavní měřítko efektivity algoritmů pro výčet cyklů.
+
+    Dále jsou algoritmy testovány na nested grafech, které neobsahují žádný cyklus, ale jsou velice husté a obsahují velké množství otevřených cest. Tento typ grafu je použit z důvodu skutečnosti, že mnoho časová i prostorová složitost elektivních algoritmů závisí na počtu cyklů v grafu. Proto vyvstává otázka, jak moc jsou jednotlivé algoritmy efektivní, pokud se počet cyklů v grafu blíží nule.
+
+    Posledním typem grafu, na kterém budou algoritmy testovány, je multi-cyklický graf. Tento graf simuluje prohledávání nad řidkými grafy obsahujícími cykly. Hlavním cílem tohoto porovnávání bude, jak se bude měnit efektivita jednotlivých algoritmu s rostoucí hustotou (počtem přechodů) grafu pro fixní počet uzlů.
 
 \chapter{Závěr}
     \label{chapter:Conclusion}
