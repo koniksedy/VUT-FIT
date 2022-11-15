@@ -1,0 +1,4 @@
+numpy==1.23.3
+networkx==2.8.7
+bidict==0.22.0
+tqdm==4.64.1

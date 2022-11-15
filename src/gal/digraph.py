@@ -3,7 +3,7 @@ digraph.py
 DiGraph module.
 Authors: Bc. Jan Bíl
          Bc. Michal Šedý
-Last change: 02.11.2022
+Last change: 15.11.2022
 """
 
 import random
@@ -63,7 +63,7 @@ class DiGraph:
 
     @staticmethod
     def create_complete_graph(vertices_cnt: int):
-        """Creates complete graph.
+        """Creates a complete graph.
 
         Args:
             vertices_cnt (int): Number of vertices in the complete graph.
@@ -75,14 +75,14 @@ class DiGraph:
         graph.vertices_cnt = vertices_cnt
         graph.vertices = set(range(graph.vertices_cnt))
         graph.vertex_cname = bidict({v: v for v in graph.vertices})
-        graph.edges = [list() for _ in range(graph.vertices_cnt)]
+        graph.edges = [list(graph.vertices) for _ in range(graph.vertices_cnt)]
         graph.in_degree = [graph.vertices_cnt] * graph.vertices_cnt
         graph.out_degree = [graph.vertices_cnt] * graph.vertices_cnt
         return graph
 
     @staticmethod
     def create_multicycle_graph(vertices_cnt: int, additional_edges_cnt: int):
-        """Create cyclic graph with additional edges.
+        """Create a cyclic graph with additional edges.
 
         Args:
             vertices_cnt (int): Number to vertices.
@@ -98,15 +98,43 @@ class DiGraph:
         for u in graph.vertices:
             v = (u + 1) % graph.vertices_cnt
             graph.edges[u].append(v)
+            graph.out_degree[u] += 1
+            graph.in_degree[v] += 1
 
         # Add additional edges
-        for u in random.sample(graph.vertices, additional_edges_cnt):
+        for u in random.choices(list(graph.vertices), k=additional_edges_cnt):
             possible_v = graph.vertices.difference(graph.edges[u])
             if possible_v:
-                v = random.select(possible_v)
+                v = random.sample(possible_v, k=1)[0]
                 graph.edges[u].append(v)
                 graph.out_degree[u] += 1
                 graph.in_degree[v] += 1
+
+        return graph
+
+    @staticmethod
+    def create_nested_graph(vertices_cnt: int):
+        """Creates a nested graph.
+
+        Args:
+            vertices_cnt (int): Number of vertices in the nested graph.
+
+        Returns:
+            DiGraph: Nested graph.
+        """
+        graph = DiGraph()
+        graph.vertices_cnt = vertices_cnt
+        graph.vertices = set(range(graph.vertices_cnt))
+        graph.vertex_cname = bidict({v: v for v in graph.vertices})
+        graph.edges = [list() for _ in graph.vertices]
+        graph.in_degree = [0] * graph.vertices_cnt
+        graph.out_degree = [0] * graph.vertices_cnt
+
+        for u in graph.vertices:
+            for v in range(0, u):
+                graph.edges[u].append(v)
+                graph.in_degree[v] += 1
+                graph.out_degree[u] += 1
 
         return graph
 

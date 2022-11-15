@@ -34,7 +34,56 @@
 % ======================================================================
 \usepackage{url}
 \usepackage{lipsum}
+\usepackage{amsthm}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\usepackage{tikz}
+\usetikzlibrary{shapes,shapes.geometric,arrows,fit,calc,positioning,automata,}
+% \tikzset{elliptic state/.style={draw, ellipse, inner sep=1mm}}
+% \tikzset{rectangular state/.style={draw, rounded rectangle, inner sep=2mm, minimum height=0.9cm}}
+\usepackage{changepage}
 
+% Makra
+% ======================================================================
+\newcounter{DTcounter}
+\counterwithin{DTcounter}{section}
+\newenvironment{theorem}
+  {
+    \refstepcounter{DTcounter}
+    \stepcounter{figure}
+    \stepcounter{equation}
+    \bigskip
+    \noindent\textbf{Teorém~\theDTcounter}\begin{itshape}
+      }
+      {
+      \end{itshape}
+      \leavevmode
+  }
+\newenvironment{definition}
+  {
+      \refstepcounter{DTcounter}
+      \stepcounter{figure}
+      \stepcounter{equation}
+      \bigskip
+      \noindent\textbf{Definice~\theDTcounter}\begin{itshape}
+  }
+  {
+      \end{itshape}
+      \leavevmode
+  }
+\newenvironment{lemma}
+  {
+      \refstepcounter{DTcounter}
+      \stepcounter{figure}
+      \stepcounter{equation}
+      \bigskip
+      \noindent\textbf{Lemma~\theDTcounter}\begin{itshape}
+  }
+  {
+      \end{itshape}
+      \leavevmode
+  }
 
 % =======================================================================
 % balíček "hyperref" vytváří klikací odkazy v pdf, pokud tedy použijeme pdflatex
