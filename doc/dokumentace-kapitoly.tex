@@ -688,7 +688,7 @@
             \vspace*{0.5em}
             Program provede výčet všech cyklů nad multi-cyklickým grafem $G_m = (V, E)$, kde $|V| = 10$ a $|E| \rightarrow 10 + 5$ s využitím Hongbo Liu a Jiaxin Wangovým algoritmem (\ref{chapter:Algo2}).
 
-        \subsection*{Herberta Weinblatt + nested graf}
+        \subsection*{Herbert Weinblatt + nested graf}
             \texttt{python3 enum\_cycles.py -{}-bf -n 9}
 
             \vspace*{0.5em}
@@ -697,7 +697,7 @@
     \section{Automatické testy}
         Při vývoji modulu \texttt{gal} byl použit skript \texttt{run\_tests.py} s automatickými testy, který je umístěn ve složce \texttt{/tests}. Testy jsou prováděny na úplných grafech pro $|V| \in \langle 1, 6 \rangle$, multy-cyklických grafech pro kombinace $|V| \in \langle 1, 20 \rangle$ a $|E| \in \langle |V|, |V| + 20 \rangle$ a na nested grafech pro $|V| \in \langle 1, 100 \rangle$. Za referenční výsledky jsou zvoleny cykly, které jsou objeveny pomocí knihovny Networkx.
 
-        Za účelem vyžší přehlednosti je během testování tištěna informace o počtu provedených testů pomocí knihovny \texttt{tqdm}\footnote{Tqdm je dostupné z: \url{https://tqdm.github.io/}} (verze 4.64.1). Tato knihovna se souběžně instaluje se závislostmi pro program \texttt{enum\_cycles.py}.
+        Za účelem vyžší přehlednosti je během testování tištěna informace o počtu provedených testů pomocí knihovny \texttt{tqdm}\footnote{Tqdm je dostupné z: \url{https://tqdm.github.io}} (verze 4.64.1). Tato knihovna se souběžně instaluje se závislostmi pro program \texttt{enum\_cycles.py}.
 
 
 \chapter{Experimenty}
