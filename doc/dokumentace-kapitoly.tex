@@ -505,11 +505,195 @@
 
 \chapter{Návrh programu}
     \label{chapter:Design}
-    \lipsum
+    Tato kapitola popisuje jednotlivé komponenty, z nichž sestává program demonstrující zmíněné algoritmy pro výčet všech cyklů v grafu. Veškerá implementace byla provedena v~jazyce Python 3 (verze 3.8+).
+
+    \section{Moduly}
+        Za účelem zapouzdření jsou veškeré algoritmy a třídy umístěny do balíku \texttt{gal}. Ten obsahuje modul \texttt{digraph}, ve kterém se nachází definice třídy orientovaných grafů \texttt{DiGraph}, modul modul \texttt{parser} s třídou Parser, která slouží  pro získání orientovaného grafu ze vstupního souboru a modul \texttt{algorithms}, který obsahuje definice jednotlivých algoritmů pro výčet všech cyklů.
+
+        \subsection{digraph}
+            Třída grafů disponuje základními metodami pro práci s grafy, jakými jsou přidávání uzlů (\texttt{add\_vertex}), přidávání hran (\texttt{add\_edge}), transponování (\texttt{transpose}), získání indukovaného grafu (\texttt{get\_induced\_graph}), výpočet dfs lesa (\texttt{gfs}) nebo získání topologického uspořádání (\texttt{get\_topological\_sort}).
+
+            Pro zjednodušení interní reprezentace uzlů a pokrytí funkce \textit{ord} využívané v algoritmech jsou uzly reprezentovány číselnou hodnotou, kde pro dva uzly $u, v \in V$ platí $ord(u) = ord(v) \iff u = v$. Informace o původním jménu uzlu je uložena v obousměrném slovníku \texttt{vertex\_cname}.
+
+            Třída \texttt{DiGraph} poskytuje možnost generování úplných grafů (\texttt{create\_complete\_graph}), multi-cyklických grafů (\texttt{create\_multicycle\_graph}) a nested grafů (\texttt{create\_nested\_graph}). Tyto generované grafy budou použity pro získání experimentálních výsledků.
+
+            \begin{definition}
+                Nechť $G = (V, E)$ je orientovaný graf. $G$ se nazývá \textbf{úplný orientovaný graf}, pokud $E = V \times V$.
+            \end{definition}
+
+            \begin{definition}
+                Nechť $G = (V, E)$ je orientovaný graf. $G$ se nazývá \textbf{multi-cyclický orientovaný graf}, pokud $|E| > |V|$ a zároveň existuje v grafu cyklus $C = \langle v_1v_2 \dots v_n \rangle$, kde $|C| = |V| + 1$.
+            \end{definition}
+
+            \newpage
+
+            \begin{figure}
+                \centering
+                  \begin{tikzpicture}[node distance=2cm]
+                    \node[state] (v0) {$v_0$};
+                    \node[state, above right of=v0] (v1) {$v_1$};
+                    \node[state, right of=v1] (v2) {$v_2$};
+                    \node[state, below right of=v2] (v3) {$v_3$};
+                    \node[state, below right of=v0] (v5) {$v_5$};
+                    \node[state, right of=v5] (v4) {$v_4$};
+                    \draw[->]
+                        (v0) edge[] node{} (v1)
+                        (v1) edge[] node{} (v2)
+                        (v1) edge[] node{} (v3)
+                        (v2) edge[] node{} (v3)
+                        (v3) edge[] node{} (v4)
+                        (v4) edge[] node{} (v0)
+                        (v4) edge[] node{} (v5)
+                        (v5) edge[] node{} (v2)
+                        (v5) edge[] node{} (v0);
+                \end{tikzpicture}
+                \caption{Multi-cyklický graf.}
+            \end{figure}
+
+            \begin{definition}
+                Nechť $G = (V, E)$ je orientovaný graf. $G$ se nazývá \textbf{nested orientovaný graf}, pokud $E = \{(u, v) \,|\, ((u, m), (v, n)) \in (V \triangledown \mathbb{N})^2 \land n < m\}$, kde $\triangledown$ je diagonální produkt\footnote{Produkuje pouze dvojice prvků ležící na diagonále množinového produktu.}.
+            \end{definition}
+
+            \begin{figure}[!h]
+                \centering
+                  \begin{tikzpicture}[node distance=2cm]
+                    \node[state] (v3) {$v_3$};
+                    \node[state, right of=v3] (v2) {$v_2$};
+                    \node[state, right of=v2] (v1) {$v_1$};
+                    \node[state, right of=v1] (v0) {$v_0$};
+                    \draw[->]
+                        (v3) edge[] node{} (v2)
+                        (v2) edge[] node{} (v1)
+                        (v1) edge[] node{} (v0)
+
+                        (v2) edge[bend right] node{} (v0)
+                        (v3) edge[bend left=30] node{} (v1)
+                        (v3) edge[bend left=40] node{} (v0);
+                \end{tikzpicture}
+                \caption{Nested graf.}
+            \end{figure}
+
+        \subsection{parser}
+            Třída \texttt{Parser} poskytuje statickou metodu pro načítání grafů ze vstupních souborů. Tato metoda vrací instanci třídy \texttt{DiGraph}. Vstupní soubor obsahuje na každém řádku jeden přechod. Ten je reprezentován dvojici vrcholů oddělených mezerou. Jména vrcholů mohou obsahovat pouze alfanumerické znaky.\\
+
+            \noindent \underline{Příklad formátu grafu:}
+            \vspace*{0.5em}\\
+            \noindent\texttt{
+                v0 v1\\
+                v1 v2\\
+                v2 v0\\
+            }
+
+        \subsection{algorithms}
+            Modul \texttt{algorithms} obsahuje implementace jednotlivých algoritmů pro výčet cyklů v grafu. Pro porovnání je zde také použita knihovna Networkx. Jednotlivé implementace nejsou k dispozici přípo, ale přez volání funkce \texttt{get\_cycles}, která na základě specifikovaného prametru \texttt{algo} vybere, zda bude použit algoritmus z knihovny Networkx (\texttt{algo="nx"}), brute-force algorithmus (\texttt{algo="bf"}), Herbert Weinbalttův algoritmus (\texttt{algo="wein"}), nebo algoritmus Hongo Liu a Jiaxin Wanga (\texttt{algo="hj"}).
+
+    \newpage
+
+    \section{Použité knihovny}
+        Program využívá knihovny Networkx (verze 2.8.7) pro porovnánání efektivity implementovaných algoritmů pro výčet všech cyklů v grafu a knihovnu Bidict (verze 0.22.0) implementující obousměrný slovník využívaný pro obousměrný překlad jmen uzlů na jejích pořadové čísla. Tyto závislosti lza nainstalovat pomocí nástroje pip3.
+
+
 
 \chapter{Použití programu}
     \label{chapter:Help}
-    \lipsum
+    V této kapitole je popsána struktura složky projektu. Dále je uveden postup pro instalaci knihoven (Bidict\footnote{Bodict dostupné z: \url{https://pypi.org/project/bidict}} a Networkx\footnote{Networkx dostupné z: \url{https://networkx.org}}) používaných programem. Kapitola také uvádí nápovědu pro spuštění programu pomocí interpretu Python 3 včetně vzorového formátu vstup a výstupu. Na konci kapitoly jsou uvedeny vybrané příklady jednotlivých možností spuštění.
+
+    \section{Struktura projektu}
+        Na kořenové úrovni projektu se nachází tři složky. Složka \texttt{/src} obsahuje modul \texttt{gal} a spustitelný program \texttt{enum\_cycles.py}. Příklady grafů podporovaných programem se nachází ve složce \texttt{/graphs}. Tato dokumentace je umístěná ve složce \texttt{/doc}. Na kořenové úrovni projektu se dále nachází soubor \texttt{requirements.txt} obsahující využívané knihovny a jejich verze.
+
+    \section{Instalace závislostí}
+        Potřebné knihovny využívané programem lze instalovat pomocí vástroje pip3 do virtuálního prostředí následovně.
+
+        \vspace*{1em}
+        \noindent\texttt{python3 -m venv gal-env\\
+            source ./gal-env/bin/activate\\
+            pip3 install -r requirements.txt
+        }
+
+    \section{Spuštění programu}
+        Při spuštení programu lze přepínači znolit algoritmus, který bude použit pro výčet všech cyklů v zadaném grafu. Lze vybírat mezi algoritmem z knihovny Networkx, brute-force algoritmem, algoritmem Hongbo Liu a Jiaxin Wanga, nebo algoritmem Herberta Weinblatta. Musí být zadán přávě jeden přepínač určující algoritmus.
+
+        Dále lze zpracovávat graf zadaný vstupním souborem, vyhegerovaným úplným, multi-cyklickým, nebo neted grafem. Právě jeden graf musí být zadán.
+
+        \newpage
+
+        Program \texttt{enum\_cycles.py} umístěný ve složce \texttt{/src} lze po úspěšné instalaci závislostí spustit s využitím interpretu python3 (verze 3.8+) následovně:
+
+        \vspace*{1em}
+        \noindent\texttt{enum\_cycles.py (-{}-nx | -{}-bf | -{}-hj | -{}-wein) [-c N] [-m N M] [-n N] [input]\\
+        \\
+        poziční argumenty:\\
+        \hspace*{0.5em}input\hspace*{11em}Vstupní soubor s grafem.\\
+        \\
+        přepínače:
+        \vspace*{1em}\\
+        \begin{tabular}{lll}
+            -h, &-{}-help& Zobrazí tuto nápovědu.\\
+            -{}-nx&& Použije algoritmus z knihovny Networkx.\\
+            -{}-bd&& Použije brute-force algoritmus.\\
+            -{}-hj&& Použije algoritmus Hongbo Liu a Jiaxin Wanga.\\
+            -{}-wein&& Použije algoritmus Herberta Weinblatta.\\
+            -c N, &-{}-complete N& Spustí výčet cyklů nad úplným grafem s N uzly.\\
+            -m N M, &-{}-multicycle N M& Spustí výčet cyklů nad multi-cyklickým grafem\\
+            &&s N uzly a X hranami, kde X se blíží N+M.\\
+            -n N, &-{}-nested N& Spustí výčet cyklů nad nested grafem s N uzly.
+        \end{tabular}
+        }
+
+    \section{Formát vstupu}
+        \label{sec:input}
+        Vstupní soubor s příponou \texttt{.grph} obsahuje orientovaný graf. Každý řádek souboru reprezentuje jeden přechod. Uzel z kterého hrana vystupuje a uzel, do kterého vede jsou na řádku odděleny mezerou. Jména uzlu mohou sestávat z alfanumerických znaků. V tomto formátu jsou brány v úvahu pouze ty uzly grafu, pro které existuje hrana. Podpora pro izolované uzly bez hran není inplementována (tyto uzly nikdy nemohou být součástí cyklu).
+
+        \vspace*{1em}
+        \noindent \underline{Příklad vstupního grafu:}
+        \vspace*{0.5em}\\
+        \noindent\texttt{
+            v0 v0\\
+            v0 v1\\
+            v1 v2\\
+            v2 v0
+        }
+
+    \section{Formát výstupu}
+        Všechny nalezené cykly jsou vypsány na \texttt{STDOUT}. Na každém řádku se nachází právě jeden cyklus. Cyklus je reprezentován posloupností vrcholu oddělených mezerou. Poslední uzel cyklu, který je shodný s počátečním uzlem není uváděn (po vzoru knihovny Networkx).
+
+        Následující přiklad výstupu je výsledkem prohledávání grafu uvedeného v předchozí sekci \ref{sec:input}.
+
+        \vspace*{1em}
+        \noindent \underline{Příklad výstupu:}
+        \vspace*{0.5em}\\
+        \noindent\texttt{
+            v0\\
+            v0 v1 v2
+        }
+
+    \section{Příklady spuštění}
+        Tato sekce uvádí vybrané přiklady spuštění programu.
+
+        \subsection*{Networkx + vstupní soubor}
+            \texttt{python3 enum\_cycles.py -{}-nx g.grph}
+
+            \vspace*{0.5em}
+            Program provede výčet včech cyklů nad grafem uvedeném v souboru \texttt{g.grph} s využitím algoritmu z knihovny Networkx.
+
+        \subsection*{Brute-force + úplný graf}
+            \texttt{python3 enum\_cycles.py -{}-bf -c 6}
+
+            \vspace*{0.5em}
+            Program provede výčet všech cyklů nad úplným grafem $G_c = (V, E)$, kde $|V| = 6$ s využitím brute-force algoritmu (\ref{chapter:Algo1}).
+
+        \subsection*{Hongbo Liu a Jiaxin Wang + multi-cyklický graf}
+            \texttt{python3 enum\_cycles.py -{}-hj -m 10 5}
+
+            \vspace*{0.5em}
+            Program provede výčet všech cyklů nad multi-cyklickým grafem $G_m = (V, E)$, kde $|V| = 10$ a $|E| \rightarrow 10 + 5$ s využitím Hongbo Liu a Jiaxin Wangovým algoritmem (\ref{chapter:Algo2}).
+
+        \subsection*{Herberta Weinblatt + nested graf}
+            \texttt{python3 enum\_cycles.py -{}-bf -n 9}
+
+            \vspace*{0.5em}
+            Program provede výčet všech cyklů nad neted grafem $G_n = (V, E)$, kde $|V| = 9$ s využitím Herbert Weinblattova algoritmu (\ref{chapter:Algo3}).
+
 
 \chapter{Experimenty}
     \label{chapter:Experiments}
