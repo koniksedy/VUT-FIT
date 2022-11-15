@@ -3,10 +3,10 @@ parser.py
 DiGraph parsing module.
 Authors: Bc. Jan Bíl
          Bc. Michal Šedý
-Last change: 31.10.2022
+Last change: 15.11.2022
 """
-from src.gal.digraph import DiGraph
-from src.gal.algorithms import get_cycles
+
+from .digraph import DiGraph
 
 
 class Parser:
@@ -36,15 +36,3 @@ class Parser:
                 graph.add_edge(graph.vertex_cname.inverse[src], graph.vertex_cname.inverse[dst])
 
         return graph
-
-
-def main():
-    import sys
-    g = Parser.parse(sys.argv[1])
-    g.prune_single_scc()
-    get_cycles(g, "book")
-    print(g)
-
-
-if __name__ == "__main__":
-    main()
