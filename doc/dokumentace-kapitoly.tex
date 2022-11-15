@@ -596,10 +596,10 @@
 
 \chapter{Použití programu}
     \label{chapter:Help}
-    V této kapitole je popsána struktura složky projektu. Dále je uveden postup pro instalaci knihoven (Bidict\footnote{Bidict dostupné z: \url{https://bidict.readthedocs.io}}, Networkx\footnote{Networkx dostupné z: \url{https://networkx.org}} a Numpy\footnote{Numpy dostupné z: \url{https://www.numpy.org}}) využívaných programem. Kapitola také uvádí nápovědu pro spuštění programu pomocí interpretu Python 3 včetně vzorového formátu vstup a výstupu. Na konci kapitoly jsou uvedeny vybrané příklady jednotlivých možností spuštění.
+    V této kapitole je popsána struktura složky projektu. Dále je uveden postup pro instalaci knihoven (Bidict\footnote{Bidict dostupné z: \url{https://bidict.readthedocs.io}}, Networkx\footnote{Networkx dostupné z: \url{https://networkx.org}} a Numpy\footnote{Numpy dostupné z: \url{https://www.numpy.org}}) využívaných programem. Kapitola také uvádí nápovědu pro spuštění programu pomocí interpretu Python 3 včetně vzorového formátu vstup a výstupu. Po kterých následují příklady jednotlivých možností spuštění. Na závěr kapitoly jsou popsány automatické testy, který byly při implementaci použity.
 
     \section{Struktura projektu}
-        Na kořenové úrovni projektu se nachází tři složky. Složka \texttt{/src} obsahuje modul \texttt{gal} a spustitelný program \texttt{enum\_cycles.py}. Příklady grafů podporovaných programem se nachází ve složce \texttt{/graphs}. Tato dokumentace je umístěná ve složce \texttt{/doc}. Na kořenové úrovni projektu se dále nachází soubor \texttt{requirements.txt} obsahující využívané knihovny a jejich verze.
+        Na kořenové úrovni projektu se nachází tři složky. Složka \texttt{/src} obsahuje modul \texttt{gal} a spustitelný program \texttt{enum\_cycles.py}. Příklady grafů podporovaných programem se nachází ve složce \texttt{/graphs}. Tato dokumentace je umístěná ve složce \texttt{/doc}. Na kořenové úrovni projektu se také nachází soubor \texttt{requirements.txt} obsahující využívané knihovny a jejich verze. Skript s automatickými testy pro modul \texttt{gal} je umístěn ve složce \texttt{/tests}.
 
     \section{Instalace závislostí}
         Potřebné knihovny využívané programem lze instalovat pomocí vástroje pip3 do virtuálního prostředí následovně.
@@ -693,6 +693,11 @@
 
             \vspace*{0.5em}
             Program provede výčet všech cyklů nad neted grafem $G_n = (V, E)$, kde $|V| = 9$ s využitím Herbert Weinblattova algoritmu (\ref{chapter:Algo3}).
+
+    \section{Automatické testy}
+        Při vývoji modulu \texttt{gal} byl použit skript \texttt{run\_tests.py} s automatickými testy, který je umístěn ve složce \texttt{/tests}. Testy jsou prováděny na úplných grafech pro $|V| \in \langle 1, 6 \rangle$, multy-cyklických grafech pro kombinace $|V| \in \langle 1, 20 \rangle$ a $|E| \in \langle |V|, |V| + 20 \rangle$ a na nested grafech pro $|V| \in \langle 1, 100 \rangle$. Za referenční výsledky jsou zvoleny cykly, které jsou objeveny pomocí knihovny Networkx.
+
+        Za účelem vyžší přehlednosti je během testování tištěna informace o počtu provedených testů pomocí knihovny \texttt{tqdm}\footnote{Tqdm je dostupné z: \url{https://tqdm.github.io/}} (verze 4.64.1). Tato knihovna se souběžně instaluje se závislostmi pro program \texttt{enum\_cycles.py}.
 
 
 \chapter{Experimenty}
