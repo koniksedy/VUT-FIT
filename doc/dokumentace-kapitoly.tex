@@ -704,9 +704,81 @@
     \label{chapter:Experiments}
     Tato kapitola popisuje výsledky experimentálních měření pro studované algoritmy výčtu cyklů v orientovaných grafech. Za účelem testování byly zvoleny úplné grafy, které jsou často v důsledku své vysoké obtížnosti používané jako hlavní měřítko efektivity algoritmů pro výčet cyklů.
 
-    Dále jsou algoritmy testovány na nested grafech, které neobsahují žádný cyklus, ale jsou velice husté a obsahují velké množství otevřených cest. Tento typ grafu je použit z důvodu skutečnosti, že mnoho časová i prostorová složitost elektivních algoritmů závisí na počtu cyklů v grafu. Proto vyvstává otázka, jak moc jsou jednotlivé algoritmy efektivní, pokud se počet cyklů v grafu blíží nule.
+    Během implementace programu se ukázalo, že nested grafy jsou nevhodné pro porovnávání algoritmu (všechny algoritmy byly stejně efektivní). Z tohoto důvodu byly nested grafy použity pouze pro testování.
 
     Posledním typem grafu, na kterém budou algoritmy testovány, je multi-cyklický graf. Tento graf simuluje prohledávání nad řidkými grafy obsahujícími cykly. Hlavním cílem tohoto porovnávání bude, jak se bude měnit efektivita jednotlivých algoritmu s rostoucí hustotou (počtem přechodů) grafu pro fixní počet uzlů.
+
+    Měření byla prováděna na procesoru AMD Ryzen 7 5800H (3.2 GHz) s 8 jádry a 16 vláky s 16 GB RAM.
+
+    V tabulkách jsou uvedeny popuze zkratky pro jednotlivé algoritmy(NX = algoritmus knihovny networkx, BF = Brute-Force algoritmus, WEIN =  Herberta Weinblattův algoritmus, HJ = algoritmus Hongbo Liu a Jiaxin Wanga).
+
+    \section{Úplné grafy}
+        \begin{table}[!h]
+            \centering
+            \begin{tabular}{|| l | l || r | r | r | r || r | r | r | r ||}
+                \hline
+                \multicolumn{2}{|| c ||}{-----} & \multicolumn{4}{c ||}{Čas [s]} & \multicolumn{4}{c ||}{Paměť [KB]}\\
+                \hhline{==========}
+                $|V|$ & \# cyklů & NX & BF & WEIN & HJ & NX & BF & WEIN & HJ \\
+                \hhline{==========}
+                1 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                2 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                3 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                4 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                5 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                6 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                7 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                8 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                9 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                10 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+            \end{tabular}
+            \caption{Spotřebovaný čas a paměť při prohledávání úplných grafů s různou velikostí.}
+        \end{table}
+
+    \section{Mulit-cyklické grafy}
+        \begin{table}[!h]
+            \centering
+            \begin{tabular}{|| l | l || r | r | r | r || r | r | r | r ||}
+                \hline
+                \multicolumn{2}{|| c ||}{-----} & \multicolumn{4}{c ||}{Čas [s]} & \multicolumn{4}{c ||}{Paměť [KB]}\\
+                \hhline{==========}
+                $|E|$ & \# cyklů & NX & BF & WEIN & HJ & NX & BF & WEIN & HJ \\
+                \hhline{==========}
+                200 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                205 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                210 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                215 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                220 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                225 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                230 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                235 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                240 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                245 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+                250 & --- & --- & --- & --- & --- & --- & --- & --- & --- \\
+                \hline
+            \end{tabular}
+            \caption{Maximální časový limit byl 120 sekund.}
+        \end{table}
 
 \chapter{Závěr}
     \label{chapter:Conclusion}
