@@ -21,5 +21,6 @@ printf "Done\n"
 
 # Get first 20 Names and Prices
 printf "Getting names and prices... "
-head urls.txt -n 20 | python3 get_prices.py data.tsv
+head urls.txt -n 20 | python3 get_prices.py product_infos.tsv
+# cat urls.txt | python3 get_prices.py data.tsv
 printf "Done\n"
