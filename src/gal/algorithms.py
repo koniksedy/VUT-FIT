@@ -3,12 +3,11 @@ algorithms.py
 A module with algorithms for cycles enumeration.
 Authors: Bc. Jan Bíl
          Bc. Michal Šedý
-Last change: 08.11.2022
+Last change: 15.11.2022
 """
 
 import numpy as np
 import networkx as nx
-import numpy as np
 from queue import Queue
 from . import digraph
 
@@ -135,7 +134,6 @@ def __get_cycle_wein(input_graph: digraph.DiGraph) -> list:
     def concat(is_top_recursive_call: bool, TT: list, P: list) -> list:
         """Recursively creates new cycles as a combination of subsections
         of existing cycles with a examined path P.
-        The time complexity is O(TODO).
 
         Args:
             is_top_recursive_call (bool): If True, than the function was called
@@ -248,22 +246,22 @@ def __get_cycle_wein(input_graph: digraph.DiGraph) -> list:
     # The time complexity is O(n * c), where n is a number of nodes and c is a number of cycles.
     return [[input_graph.vertex_cname.inv[graph.vertex_cname[v]] for v in c[:-1]] for c in cycles]
 
-def __get_cycles_book(input_graph: digraph.DiGraph) -> list():
+def _bet_cycles_bf(input_graph: digraph.DiGraph) -> list():
     """Enumerates all cycles (elementary circuits) in a graph.
-        It uses algorithm proposed in a book by Narsingh Deo
-        (page 287 Alg. 5), which is systematic and exhaustive
-        search for directive circuits. [Deo, Narsingh. Graph
-        Theory with Applications to Engineering and Computer
-        Science. 1st ed. Dover Publications, 2017. Web. 14 Oct. 2022.]
-        The time complexity is todo for n nodes, m edges
-        and c elementary circuits.
+    It uses algorithm proposed in a book by Narsingh Deo
+    (page 287 Alg. 5), which is systematic and exhaustive
+    search for directive circuits. [Deo, Narsingh. Graph
+    Theory with Applications to Engineering and Computer
+    Science. 1st ed. Dover Publications, 2017. Web. 14 Oct. 2022.]
+    The time complexity is TODO for n nodes, m edges
+    and c elementary circuits.
 
-        Args:
-            input_graph (DiGraph): DiGraph.
+    Args:
+        input_graph (DiGraph): DiGraph.
 
-        Returns:
-            list: List of cycles.
-        """
+    Returns:
+        list: List of cycles.
+    """
     graph = digraph.DiGraph(input_graph)
     graph.prune_single_scc()
     cycles = list()
@@ -282,10 +280,10 @@ def __get_cycles_book(input_graph: digraph.DiGraph) -> list():
                     if succ == vertex:
                         #If cycle is found, add it to list and forbid this edge from further search
                         H[curr_path[-1]][succ] = True
-                        temp_path = list(curr_path)
-                        cycles.append([int(graph.vertex_cname[v]) for v in temp_path])
+                        # temp_path = list(curr_path)
+                        # cycles.append([int(graph.vertex_cname[v]) for v in temp_path])
+                        cycles.append([input_graph.vertex_cname.inv[graph.vertex_cname[v]] for v in curr_path])
                         curr_vertex = curr_path.pop(-1)
-
                     else:
                         curr_vertex = succ
                     break
@@ -306,6 +304,7 @@ def get_cycles(input_graph: digraph.DiGraph, algo="nx") -> list:
         input_graph (DiGraph): DiGraph.
         algo (str): A type of algorithm to be used.
                     nx - using networkx library
+                    bf - using brute-force
                     hj - using Hongbo Liu and Jiaxin Wang algorithm
                     wein - using Weinblatt's algorithm
 
@@ -318,7 +317,7 @@ def get_cycles(input_graph: digraph.DiGraph, algo="nx") -> list:
         return __get_cycles_hj(input_graph)
     elif algo == "wein":
         return __get_cycle_wein(input_graph)
-    elif algo == "book":
-        return __get_cycles_book(input_graph)
+    elif algo == "bf":
+        return _bet_cycles_bf(input_graph)
     else:
         raise ValueError("Unknown algorithm name.")

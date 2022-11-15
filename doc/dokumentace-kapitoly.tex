@@ -590,13 +590,13 @@
     \newpage
 
     \section{Použité knihovny}
-        Program využívá knihovny Networkx (verze 2.8.7) pro porovnánání efektivity implementovaných algoritmů pro výčet všech cyklů v grafu a knihovnu Bidict (verze 0.22.0) implementující obousměrný slovník využívaný pro obousměrný překlad jmen uzlů na jejích pořadové čísla. Tyto závislosti lza nainstalovat pomocí nástroje pip3.
+        Program využívá knihovny Networkx (verze 2.8.7) pro porovnánání efektivity implementovaných algoritmů pro výčet všech cyklů v grafu, knihovnu Bidict (verze 0.22.0) implementující obousměrný slovník využívaný pro obousměrný překlad jmen uzlů na jejích pořadové čísla a knihovnu Numpy (verze 1.23.3) k reprezentaci matic. Tyto závislosti lza nainstalovat pomocí nástroje pip3.
 
-
+        Dále je využívána knihovna Argparse, pro zpracování argumentů příkazové řádky, která je součásti stendartních knihoven python již od verze 3.2.
 
 \chapter{Použití programu}
     \label{chapter:Help}
-    V této kapitole je popsána struktura složky projektu. Dále je uveden postup pro instalaci knihoven (Bidict\footnote{Bidict dostupné z: \url{https://pypi.org/project/bidict}} a Networkx\footnote{Networkx dostupné z: \url{https://networkx.org}}) používaných programem. Kapitola také uvádí nápovědu pro spuštění programu pomocí interpretu Python 3 včetně vzorového formátu vstup a výstupu. Na konci kapitoly jsou uvedeny vybrané příklady jednotlivých možností spuštění.
+    V této kapitole je popsána struktura složky projektu. Dále je uveden postup pro instalaci knihoven (Bidict\footnote{Bidict dostupné z: \url{https://bidict.readthedocs.io}}, Networkx\footnote{Networkx dostupné z: \url{https://networkx.org}} a Numpy\footnote{Numpy dostupné z: \url{https://www.numpy.org}}) využívaných programem. Kapitola také uvádí nápovědu pro spuštění programu pomocí interpretu Python 3 včetně vzorového formátu vstup a výstupu. Na konci kapitoly jsou uvedeny vybrané příklady jednotlivých možností spuštění.
 
     \section{Struktura projektu}
         Na kořenové úrovni projektu se nachází tři složky. Složka \texttt{/src} obsahuje modul \texttt{gal} a spustitelný program \texttt{enum\_cycles.py}. Příklady grafů podporovaných programem se nachází ve složce \texttt{/graphs}. Tato dokumentace je umístěná ve složce \texttt{/doc}. Na kořenové úrovni projektu se dále nachází soubor \texttt{requirements.txt} obsahující využívané knihovny a jejich verze.
