@@ -70,7 +70,13 @@ def main():
     args = parse_arguments()
     graph = load_graph(args.input, args.complete, args.multicycle, args.nested)
     # Get cycles with an internal representation of vertices
+    # print("|V|:", len(graph.vertices))
+    # print("|E|:", sum([len(vs) for vs in graph.edges]))
     cycles_inter_repr = enumerate_cycles(graph, args.nx, args.bf, args.hj, args.wein)
+    # print("c:", len(cycles_inter_repr))
+    # with open(f"graphs/{args.multicycle[1]}-{len(cycles_inter_repr)}.grpf", "w") as fd:
+    #     print(graph, file=fd)
+    # exit(0)
     for cycle in cycles_inter_repr:
         vertex_names = map(lambda x: str(graph.vertex_cname[x]), cycle)
         print(" ".join(vertex_names))
