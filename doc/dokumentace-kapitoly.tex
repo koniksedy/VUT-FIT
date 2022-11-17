@@ -497,22 +497,39 @@
 
     \section{Časová složitost}
         \begin{theorem}
-            Časová složitost algoritmu, který publikovali Hongo Liu a Jiaxin Wang je $\mathcal{O}(2^{|V|})$.
+            Časová složitost algoritmu, který publikovali Hongo Liu a Jiaxin Wang je $\mathcal{O}(d^{|V|}*|d|!)$, kde $d = max_{v\in V}\, d_+(v)$ je maximální výstupní stupeň v grafu.
         \end{theorem}
 
         \begin{proof}
-            Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Inicializace a naplnění fronty (1--4) $Q$ má časovou složitost $\mathcal{O}(|V|)$. V hlavním cyklu (5--18) jsou postupně vygenerovány všechny cesty $P$, pro které platí $\forall v \in P: ord(v) \geq ord(HEAD(P))$. Takovýchto otevřených cest je až $\sum_{k=1}^{n:= |V|} {n \choose k} = 2^n - 1$. Celková časová složitost algoritmu je tedy $\mathcal{O}(2^{|V|})$.
+            Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Inicializace a naplnění fronty (1--4) $Q$ má časovou složitost $\mathcal{O}(|V|)$. Halvní cyklus (5--18) bude proveden tolikrát, kolik existuje cest $P$ odpovídajících podmínce  $\forall v \in P: ord(v) \geq ord(HEAD(P))$. Tatovýchto cest existuje $X$, kde:
+
+            $$
+            X = \sum_{n = 1}^{|V|}(d-1)^\alpha\cdot(\beta -1)!
+            $$
+
+            \noindent kde $\alpha = \frac{|n - d| + n - d}{2}$ a $\beta = min(d, n)$. Pokud se $d$ blíží $|V|$, pak $X \simeq |d|!$. Pokud je $d$ silně menší než $|V|$, pak $X \simeq d^{|V|}$. Časová složitost algoritmu je tedy $\mathcal{O}(d^{|V|}*|d|!)$.
+
         \end{proof}
 
     \section{Prostorová složitost}
         \begin{theorem}
-            Prostorová složitost algoritmu, který publikovali Hongo Liu a Jiaxin Wang je $\mathcal{O}(2^{|V|})$.
+            Prostorová složitost algoritmu, který publikovali Hongo Liu a Jiaxin Wang je $\mathcal{O}(d^{|V|}*|d|!)$, kde $d = max_{v\in V}\, d_+(v)$ je maximální výstupní stupeň v grafu.
         \end{theorem}
 
         \begin{proof}
-            Prostorová složitost výstupního seznamu $L_{cycles}$ je $\mathcal{O}(c * |V|)$, protože délka cyklu může být až $|V| + 1 \simeq 1$. Do fronty $Q$ se postupně ukládají všechny cesty v grafu, kde pro každý uzel $v$ otevřené cesty $P$ musí platit $ord(v) \geq HEAD(P)$. Algoritmem bude celkem zpracováno až $\sum_{k=1}^{n:= |V|} {n \choose k}$ otevřených cest. Hodnota této funkce dosahuje maxima pro $k = \ceil[\big]{n/2} =: k_{0.5}$. Tedy prostorová složitost fronty $Q$ je $\mathcal{O}({n \choose k_{0.5}}) \in \mathcal{O}(2^{|V|})$.
+            Prostorová složitost výstupního seznamu $L_{cycles}$ je $\mathcal{O}(c * |V|)$, protože délka cyklu může být až $|V| + 1 \simeq 1$. Do fronty $Q$ se postupně ukládají všechny cesty v grafu. Do fronty může být celkem uloženo $X$ cest
 
-            Celková prostorová složitost algoritmu je $\mathcal{O}(2^{|V|})$.
+            $$
+            X = \sum_{n = 1}^{|V|}(d-1)^\alpha\cdot(\beta -1)!
+            $$
+
+            \noindent kde $\alpha = \frac{|n - d| + n - d}{2}$ a $\beta = min(d, n)$. Součet všech délek všech $X$ cest je $Y$
+
+            $$
+            Y = \sum_{n = 1}^{|V|}(d-1)^\alpha*(\beta -1)! \cdot n
+            $$
+
+            \noindent Tato funkce dosahuje maxima pro $n = |V|$. Pokud se $d$ blíží $|V|$, pak $Y \simeq |d|!$. Pokud je $d$ silně menší než $|V|$, pak $Y \simeq d^{|V|}$. Prostorová složitost algoritmu tedy závisí na frontě. Prostorová složitost algoritmu je tedy $\mathcal{O}(d^{|V|}*|d|!)$.
         \end{proof}
 
 \chapter{Návrh programu}
