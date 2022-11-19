@@ -12,5 +12,5 @@ if __name__ == "__main__":
     sns.move_legend(fig, "upper center", bbox_to_anchor=(0.5, -0.01), ncol = 3, fontsize = 20)
     plt.tight_layout()
     plt.show()
-    fig.savefig("../plots/distribution_plot.png")
+    fig.savefig("../plots/distribution_plot.pdf")
     plt.close()

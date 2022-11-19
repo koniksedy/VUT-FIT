@@ -22,10 +22,17 @@ def generateViolinPlot(df, column_name: str, y_axis: str, legend: bool):
     plt.tight_layout()
     return plot
 
+def generateScatterPlot(df, column_name: str, y_axis: str, legend: bool, hue: str):
+    plot = sns.scatterplot(df, x=column_name, y=y_axis, legend=legend, hue=hue)
+    if legend:
+        sns.move_legend(plot, "upper left")
+    plt.tight_layout()
+    return plot
+
 
 def savePlot(plot, name):
     fig = plot.get_figure()
-    fig.savefig("../plots/" + name + "_plot.png")
+    fig.savefig("../plots/" + name + "_plot.pdf")
 
 
 if __name__ == "__main__":
@@ -53,6 +60,7 @@ if __name__ == "__main__":
     savePlot(plot, "studyName")
     plt.close()
 
+
     #Table Species
     # Tabulka species delí záznamy do 3 druhov pingvinov. Táto hodnota bude používaná pre kategorizovanie záznamov.
     plot = generateHistPlot(penguin_df, "Species", "Species", False, False, "layer")
@@ -72,7 +80,6 @@ if __name__ == "__main__":
     savePlot(plot, "Clutch_completion")
     plt.close()
 
-    # Skipping Date Egg
 
     # Culmen Length (mm)
     plot = generateViolinPlot(penguin_df, "Culmen Length (mm)", "Species", False)
@@ -105,12 +112,20 @@ if __name__ == "__main__":
     plt.close()
 
     # Overall statistics for Dataset
-    print(penguin_df.info())
-    print(penguin_df.describe())
+    #print(penguin_df.info())
+    #print(penguin_df.describe())
 
     # Statistics for categorical data
     newlist = [penguin_df[column] for column in penguin_df if penguin_df[column].dtype == 'object']
-    print([item.value_counts() for item in newlist])
+    #print([item.value_counts() for item in newlist])
+
+    # Date Egg
+
+
+
+
+
+
 
 
 

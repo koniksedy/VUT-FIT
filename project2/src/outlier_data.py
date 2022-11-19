@@ -21,7 +21,7 @@ if __name__ == "__main__":
     plt.show()
     plt.close()
 
-    fig1.savefig("../plots/outlier_values1.png")
+    fig1.savefig("../plots/outlier_values1.pdf")
 
     fig2, axes2 = plt.subplots(3, 1)
     fig2.suptitle("Visualisation of outlier values")
@@ -34,5 +34,5 @@ if __name__ == "__main__":
     plt.show()
     plt.close()
 
-    fig2.savefig("../plots/outlier_values2.png")
+    fig2.savefig("../plots/outlier_values2.pdf")
 
