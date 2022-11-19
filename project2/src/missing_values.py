@@ -1,3 +1,12 @@
+"""
+missing_values.py
+Program calculates the number of missing values in columns.
+Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
+         Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
+         Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
+Last change: 19.11.2022
+"""
+
 import pandas as pd
 
 if __name__ == "__main__":

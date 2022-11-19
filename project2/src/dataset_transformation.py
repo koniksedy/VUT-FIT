@@ -1,3 +1,14 @@
+"""
+dataset_transformation.py
+Program carries out outlier detection and removal, filling of missing data and
+transforms the dataset into 2 different forms - categorical and numerical
+UPA project
+Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
+         Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
+         Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
+Last change: 19.11.2022
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -122,8 +133,8 @@ if __name__ == "__main__":
     numeric_df = min_max_normalization(numeric_df, numeric_columns)
 
     # Export datasets to .csv
-    discrete_df.to_csv('discrete_dataset.csv', index=False)
-    numeric_df.to_csv('numeric_normalized_dataset.csv', index=False)
+    discrete_df.to_csv('../discrete_dataset.csv', index=False)
+    numeric_df.to_csv('../numeric_normalized_dataset.csv', index=False)
 
 
 

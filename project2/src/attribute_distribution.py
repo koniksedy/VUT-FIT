@@ -1,3 +1,14 @@
+"""
+attribute_distribution.py
+Using matrix of graphs, program visualizes the dependencies of various numerical attributes on other attributes.
+The plot is then saved in the plots folder.
+UPA project
+Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
+         Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
+         Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
+Last change: 19.11.2022
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns

@@ -1,3 +1,15 @@
+"""
+correlation.py
+Program plots a matrix of dependency scatter plots, and draws a regression line
+to visualize the dependencies between various attributes.
+The plot is then saved in the plots folder.
+UPA project
+Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
+         Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
+         Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
+Last change: 19.11.2022
+"""
+
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt

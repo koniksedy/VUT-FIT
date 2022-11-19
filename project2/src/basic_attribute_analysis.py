@@ -1,3 +1,13 @@
+"""
+basic_attribute_analysis.py
+Program carries out basic analysis of attributes and visualize them using histogram and violin plots.
+All plots are then saved in the plots folder.
+Authors: Bc. Martina Chripková <xchrip01@stud.fit.vutbr.cz>
+         Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
+         Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
+Last change: 19.11.2022
+"""
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
