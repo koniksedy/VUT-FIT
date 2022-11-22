@@ -122,12 +122,15 @@ if __name__ == "__main__":
     plt.close()
 
     # Overall statistics for Dataset
-    #print(penguin_df.info())
-    #print(penguin_df.describe())
+    print(penguin_df.info())
+    print(penguin_df.describe())
 
     # Statistics for categorical data
+    print("\n STATISTICS FOR CATEGORICAL DATA \n")
     newlist = [penguin_df[column] for column in penguin_df if penguin_df[column].dtype == 'object']
-    #print([item.value_counts() for item in newlist])
+   # print([item.value_counts() for item in newlist])
+    print([[item.nunique(),  item] for item in newlist])
+
 
     # Date Egg
 

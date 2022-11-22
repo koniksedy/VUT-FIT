@@ -79,16 +79,17 @@ if __name__ == "__main__":
     gentoo_df = transform_df[penguin_df['Species'] == 'Gentoo penguin']
     chinstrap_df = transform_df[penguin_df['Species'] == 'Chinstrap penguin']
 
-    # Doplnenie chýbajúcich hodnôt pomocou strednej hodnoty
-    # Median
-    adelie_df = fill_missing_values(adelie_df, numeric_columns)
-    gentoo_df = fill_missing_values(gentoo_df, numeric_columns)
-    chinstrap_df = fill_missing_values(chinstrap_df, numeric_columns)
-
     # Remove outlier values from dataframes
     adelie_df = remove_outliers(adelie_df, numeric_columns)
     chinstrap_df = remove_outliers(chinstrap_df, numeric_columns)
     gentoo_df = remove_outliers(gentoo_df, numeric_columns)
+
+    # Doplnenie chýbajúcich hodnôt pomocou strednej hodnoty
+    # Priemer
+    adelie_df = fill_missing_values(adelie_df, numeric_columns)
+    gentoo_df = fill_missing_values(gentoo_df, numeric_columns)
+    chinstrap_df = fill_missing_values(chinstrap_df, numeric_columns)
+
 
     # Merge dataframes
     clean_df = pd.concat([adelie_df, chinstrap_df, gentoo_df])
