@@ -3,7 +3,7 @@ run_tests.py
 An executable python3 application for automatic testing.
 Authors: Bc. Jan Bíl
          Bc. Michal Šedý
-Last change: 15.11.2022
+Last change: 24.11.2022
 """
 
 import sys
@@ -89,7 +89,7 @@ def run_nested_graph(verbose = False) -> None:
     total = 0
     results = [0, 0, 0]
     for n in tqdm.tqdm(list(range(1, 100)) * 30,
-                       desc="Testing complete graphs",
+                       desc="Testing nested graphs",
                        ascii=False,
                        file=sys.stdout):
         total += 1
