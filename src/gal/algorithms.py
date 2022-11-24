@@ -270,31 +270,37 @@ def _bet_cycles_bf(input_graph: digraph.DiGraph) -> list():
         curr_vertex = vertex
         H =  np.zeros((graph.vertices_cnt, graph.vertices_cnt), dtype=bool)
         curr_path = list()
+        curr_path.append(curr_vertex)
         while curr_vertex >= 0:
             found = False
             for succ in graph.get_successors(curr_vertex):
-                if H[curr_vertex][succ] == 0 and (succ not in curr_path or succ == vertex) and succ >= vertex:
+                if H[curr_vertex][succ] == 0 and (succ not in curr_path or (succ == vertex)) and succ >= vertex:
                     #Take first available edge
-                    curr_path.append(curr_vertex)
-                    found = True
+                    #curr_path.append(curr_vertex)
+
                     if succ == vertex:
                         #If cycle is found, add it to list and forbid this edge from further search
                         H[curr_path[-1]][succ] = True
                         # temp_path = list(curr_path)
                         # cycles.append([int(graph.vertex_cname[v]) for v in temp_path])
                         cycles.append([input_graph.vertex_cname.inv[graph.vertex_cname[v]] for v in curr_path])
-                        curr_vertex = curr_path.pop(-1)
+                        curr_vertex = curr_path[-1]
                     else:
+                        found = True
                         curr_vertex = succ
-                    break
+                        curr_path.append(curr_vertex)
+                        break
+
             if not found:
+                curr_path.pop(-1)
+                H[curr_vertex][0:graph.vertices_cnt] = False
                 # If no available edge is found, go back one step, forbid previously taken edge and continue
                 if not curr_path:
                     # If no available edge from first vertex, break the while loop
                     curr_vertex = -1
                     continue
                 H[curr_path[-1]][curr_vertex] = True
-                curr_vertex = curr_path.pop(-1)
+                curr_vertex = curr_path[-1]
     return cycles
 
 def get_cycles(input_graph: digraph.DiGraph, algo="nx") -> list:
