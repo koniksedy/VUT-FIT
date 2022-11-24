@@ -2,7 +2,7 @@
 % Tex soubor s jednotlivými kapitolami pro dokumentaci k projektu do předmětu GAL
 % Autoři: Bc. Jan Bíl
 %         Bc. Michal Šedý
-% Poslední úprava: 08.11.2022
+% Poslední úprava: 24.11.2022
 
 \chapter{Úvod}
     Orientovaný graf je struktura popisující množinu bodů (uzlů), které jsou mezi sebou propojeny orientovanými hranami. Cyklus v orientovaném grafu představuje takovou spojitou posloupnost uzlů, že se žádný uzel s výjimkou prvního a posledního v sekvenci neopakuje, a zároveň pro dvojici sousedících uzlů v posloupnosti $\dots u_m u_n \dots$ platí, že existuje orientovaná hrana vedoucí z uzlu $u_m$ do uzlu $u_n$. Tato práce se zabývá porovnáním algoritmů pro získání seznamu všech existujících cyklů v zadaném orientovaném grafu.
@@ -745,7 +745,7 @@
     \section{Úplné grafy}
         V této sekci jsou porovnány reálné časové a poměťové nároky algoritmů výčtu cyklů pro úplné grafy. Úplné grafy představují nejkomplexnější grafovou strukturu a proto jsou často používané jako hlavní měřítko efektivity algoritmů pro výčet cyklů. Úplný orientovaný graf o $|V| =: n$ vrcholech obsahuje $\sum_{i=1}^n \frac{n!}{(n-i)! \cdot i}$ cyklů.
 
-        Časová složitost algoritmu WEIN roste v porovnání s algoritmy NX a HJ mnohonásovně rychleji. Úplné grafy obsahující 8 vrcholů již není možné algoritmem WEIN prohledat v časovém limitu tří minut.
+        Časová složitost algoritmu WEIN roste v porovnání s ostatními algoritmy mnohem rychleji. Úplné grafy obsahující 8 vrcholů již není možné algoritmem WEIN prohledat v časovém limitu tří minut.
 
         Z tabulky lze vidět, že časová složitost NX a HJ je pro úplné grafy podobná, i když poměř časů HJ a NX pro úplný graf o 5-ti vrcholech je $0.48$, ale pro graf s 11-ti vrcholy již $0.66$, z čehož lze pozorovat, že od určitého počtu vrcholů/cyklů začíná časová složitost algoritmu HJ růst rychleji než NX. Obdobné tvrzení lze vyvodit i pro paměťové nároky algoritm HJ.
 
@@ -757,27 +757,27 @@
                 \hhline{==========}
                 \multicolumn{1}{|| c}{$|V|$} & \multicolumn{1}{| c ||}{\# cyklů} & \multicolumn{1}{c |}{NX} & \multicolumn{1}{c |}{BF} & \multicolumn{1}{c |}{WEIN} & \multicolumn{1}{c ||}{HJ} & \multicolumn{1}{c |}{NX} & \multicolumn{1}{c |}{BF} & \multicolumn{1}{c |}{WEIN} & \multicolumn{1}{c ||}{HJ} \\
                 \hhline{==========}
-                1 & 1 & 0.23 & --- & 0.11 & 0.11 & 68.6 & --- & 40.0 & 40.1 \\
+                1 & 1 & 0.23 & 0.11 & 0.11 & 0.11 & 68.6 & 40.0 & 40.0 & 40.1 \\
                 \hline
-                2 & 3 & 0.23 & --- & 0.11 & 0.11 & 68.3 & --- & 40.0 & 39.9 \\
+                2 & 3 & 0.23 & 0.11 & 0.11 & 0.11 & 68.3 & 39.3 & 40.0 & 39.9 \\
                 \hline
-                3 & 8 & 0.23 & --- & 0.11 & 0.11 & 68.4 & --- & 39.9 & 39.9 \\
+                3 & 8 & 0.23 & 0.11 & 0.11 & 0.11 & 68.4 & 39.3 & 39.9 & 39.9 \\
                 \hline
-                4 & 24 & 0.23 & --- & 0.11 & 0.11 & 68.7 & --- & 40.0 & 39.9 \\
+                4 & 24 & 0.23 & 0.11 & 0.11 & 0.11 & 68.7 & 40.0 & 40.0 & 39.9 \\
                 \hline
-                5 & 89 & 0.23 & --- & 0.11 & 0.11 & 68.5 & --- & 40.0 & 39.9 \\
+                5 & 89 & 0.23 & 0.12 & 0.11 & 0.11 & 68.5 & 40.0 & 40.0 & 39.9 \\
                 \hline
-                6 & 415 & 0.23 & --- & 0.14 & 0.11 & 68.4 & --- & 39.6 & 39.9 \\
+                6 & 415 & 0.23 & 0.12 & 0.14 & 0.11 & 68.4 & 40.0 & 39.6 & 39.9 \\
                 \hline
-                7 & 2'372 & 0.25 & --- & 1.54 & 0.13 & 68.6 & --- & 40.1 & 40.2 \\
+                7 & 2'372 & 0.25 & 0.16 & 1.54 & 0.13 & 68.6 & 40.3 & 40.1 & 40.2 \\
                 \hline
-                8 & 16'072 & 0.35 & --- & $>$ 180 & 0.19 & 70.1 & --- & $>$ 42.6 & 41.9 \\
+                8 & 16'072 & 0.35 & 0.45 & $>$ 180 & 0.19 & 70.1 & 42.2 & $>$ 42.6 & 41.9 \\
                 \hline
-                9 & 125'673 & 1.25 & --- &  & 0.77 & 85.8 & --- &  & 59.8 \\
+                9 & 125'673 & 1.25 & 3.12 &  & 0.77 & 85.8 & 59.2 &  & 59.8 \\
                 \hline
-                10 & 1'112'083 & 10.02 & --- &  & 6.56 & 228.1 & --- &  & 239.6 \\
+                10 & 1'112'083 & 10.02 & 29.1 &  & 6.56 & 228.1 & 236.6 &  & 239.6 \\
                 \hline
-                11 & 10'976'184 & 104.52 & --- &  & 69.04 & 1'741.6 & --- &  & 2'158.7 \\
+                11 & 10'976'184 & 104.52 & $>$ 180 &  & 69.04 & 1'741.6 & $>$ 1'656.8 &  & 2'158.7 \\
                 \hline
             \end{tabular}
             \caption{Spotřebovaný čas a paměť při prohledávání úplných grafů s rostoucím počtem vrcholů. Výpočty probíhající více než 180 sekund byly ukončeny.}
@@ -794,27 +794,27 @@
                 \hhline{==========}
                 \multicolumn{1}{|| c}{$|E|$} & \multicolumn{1}{| c ||}{\# cyklů} & \multicolumn{1}{c |}{NX} & \multicolumn{1}{c |}{BF} & \multicolumn{1}{c |}{WEIN} & \multicolumn{1}{c ||}{HJ} & \multicolumn{1}{c |}{NX} & \multicolumn{1}{c |}{BF} & \multicolumn{1}{c |}{WEIN} & \multicolumn{1}{c ||}{HJ} \\
                 \hhline{==========}
-                200 & 1 & 0.24 & --- & 0.12 & 0.17 & 69.2 & --- & 40.6 & 40.8 \\
+                200 & 1 & 0.24 & 0.20 & 0.12 & 0.17 & 69.2 & 40.6 & 40.6 & 40.8 \\
                 \hline
-                205 & 7 & 0.26 & --- & 0.12 & 0.16 & 68.8 & --- & 41.0 & 40.8 \\
+                205 & 7 & 0.26 & 0.18 & 0.12 & 0.16 & 68.8 & 40.7 & 41.0 & 40.8 \\
                 \hline
-                210 & 30 & 0.24 & --- & 0.12 & 0.24 & 69.1 & --- & 40.7 & 41.0 \\
+                210 & 30 & 0.24 & 0.29 & 0.12 & 0.24 & 69.1 & 40.9 & 40.7 & 41.0 \\
                 \hline
-                215 & 54 & 0.25 & --- & 0.12 & 0.26 & 69.0 & --- &  40.9 & 41.2 \\
+                215 & 54 & 0.25 & 0.32 & 0.12 & 0.26 & 69.0 & 40.4 &  40.9 & 41.2 \\
                 \hline
-                220 & 143 & 0.28 & --- & 0.14 & 0.56 & 69.2 & --- & 40.8 & 42.6 \\
+                220 & 143 & 0.28 & 0.71 & 0.14 & 0.56 & 69.2 & 40.3 & 40.8 & 42.6 \\
                 \hline
-                225 & 350 & 0.37 & --- & 0.27 & 1.03 & 69.2 & --- & 41.1 & 45.6 \\
+                225 & 350 & 0.37 & 1.36 & 0.27 & 1.03 & 69.2 & 40.9 & 41.1 & 45.6 \\
                 \hline
-                230 & 2'494 & 0.69 & --- & 9.88 & 2.78 & 71.1 & --- & 45.4 & 55.9 \\
+                230 & 2'494 & 0.69 & 3.67 & 9.88 & 2.78 & 71.1 & 42.9 & 45.4 & 55.9 \\
                 \hline
-                235 & 6'027 & 0.95 & --- & 46.23 & 3.73 & 75.0 & --- & 52.7 & 61.6 \\
+                235 & 6'027 & 0.95 & 4.85 & 46.23 & 3.73 & 75.0 & 46.7 & 52.7 & 61.6 \\
                 \hline
-                240 & 7'339 & 1.98 & --- & 137.43 & 8.91 &  76.1 & --- & 55.6 & 88.4 \\
+                240 & 7'339 & 1.98 & 11.27 & 137.43 & 8.91 &  76.1 & 47.9 & 55.6 & 88.4 \\
                 \hline
-                245 & 17'809 & 5.74 & --- & $>$ 180 & 24.12 & 91.3 & --- & $>$ 64.0 & 181.8 \\
+                245 & 17'809 & 5.74 & 30.97 & $>$ 180 & 24.12 & 91.3 & 65.3 & $>$ 64.0 & 181.8 \\
                 \hline
-                250 & 119'589 & 23.59 & --- &  & $>$ 180 &  177.6 & --- &  &  $>$ 1'441.5 \\
+                250 & 119'589 & 23.59 & $>$ 180 &  & $>$ 180 &  177.6 & $>$ 96.9 &  &  $>$ 1'441.5 \\
                 \hline
             \end{tabular}
             \caption{Spotřebovaný čas a paměť při prohledávání multi-cyklických grafů pro $|V|~=~200$ s rostoucím počet hran. Výpočty probíhající déle než 180 sekund byly ukončeny.}
