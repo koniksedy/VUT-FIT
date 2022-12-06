@@ -192,49 +192,83 @@
 
 \chapter{Brute-force}
     \label{chapter:Algo1}
-    \lipsum[1]
-
+    Tento algoritmus prvně publikoval S. M. Roberts a B. Flores a následně byl upraven Tiernanen \cite{Tiernan}. Finální podoba je popsána v knize od N. Deo \cite{Book_algo}. Algoritmus prohledáváním prochází všechny možnosti, jeho časová náročnost je tedy velmi vysoká a je zde prostor pro různé optimalizace.
     \section{Popis algoritmu}
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque.
+    K vrcholům vstupního grafu G jsou přiřazeny celá čísla 1,2...n. Algoritmus začíná ve vrcholu $p_1$ a prohledáváním následovníků vytváří orientovanou cestu $P=(p_1,p_2,...,p_k)$ dokud s určitými podmínkami již není možné tuto cestu dáe rozšířit. Když již cestu není možné rozšířit, algoritmus zkontroluje, zda se nachází orientovaná cesta z $p_k$ do $p_1$. Pokud ano, je nalezen cyklus $(p_1,p_2,...,p_k,p_1)$ a je zaznamenán. Poté se algoritmus vrátí o jeden vrchol do vrcholu $p_{k-1}$ a snaží se z tohoto vrcholu cestu rozšířit jinou hranou, pokud taková existuje. Vrchol $p_k$ se zakáže pro dlaší prohledávání z vrcholu $p_{k-1}$ aby se zamezilo procházení stejných cest. Tento proces je opakován, dokud se nevrátíme až do vrcholu $p_1$. Pokud jsou již všechny hrany z tohoto vrcholu zakázány, našli jsme všechny cykly začínající z vrcholu $p_1$. Celý proces je opakován se začínajícím vrcholem $p_2$. Pro toto prohledávání hledající cykly musíme zavést následující opatření:
+    \begin{itemize}
+        \item V rámci rozšiřování orientované cesty musí být zakázáno cyklení. To je zajištěno zakázáním rozšíření cesty do vrcholu, který je již obsažen v této orientované cestě.
+        \item Každý cyklus o Q vrcholech nesmí být zaznemenán q-krát (začínající v každém z vrcholů). To je zajištěno tím, že žádný vrchol $i\leq p_1$ není možné prozkoumat, pokud budovaná orientovaná cesta začíná ve vrcholu $p_1$.
+        \item Během prozkoumávání se nesmí stejná cesta procházet více než právě jedenkrát. To je zajištěno aktualizováním listu všech zakázaných vrcholů v binární matici $n \times n : H[h_{i j}]$. Hodnoty 1 pro i-tý řádek znamenají zakázané vrcholy y vrcholu i. Tedy pokud je potřeba zakázat vrchol j z vrcholu i, nastavíme $h_{ij} \leftarrow 1$. Hodnota 0 znamená, že vrchol není zakázán  aje dostupný pro prohledávání. Matice H je resetována na nuly vždy když je nový vrchol zvolený za počáteční.
+    \end{itemize}
+    V algoritmu se používá indexace pomocí záporných čísel. Taková indexace má následující význam: index -1 znamená poslední prvek listu, index -2 předposlední a tak podobně.
 
         \begin{algorithm}[h]
             \SetAlgoLined
-            \caption{Dummy Algorithm.}
+            \caption{Bruteforce algorithm}
             %
-            Do something.\;
-            \For{$k=0,1,2,3, ...$}{
-                Do something.\;
-                \eIf{$x \geq y$}{
-                     Do something.\;
-                }{
-                     Do something.\;
-                     \For{$j = 1,...,10$}{
-                          Do something.\;
-                     }
-                     THIS IS THE SPOT WHERE I NEED THE PAGE BREAK.\;
-                     Do something.\;
+            \KwIn{$G := (V, E), n:= |V|$}
+            \KwOut{$L_{cycles}$}
+            $L_{cycles} \leftarrow  \mathit{EmptyList}$\;
+            $H[0 \dots n-1][0 \dots n-1] \leftarrow 0$ \tcp*{nulová matice $n \times n$}
+            \For{$p_s \in V$}
+            {
+                $P \leftarrow  \mathit{EmptyList}$\;
+                $P.append(p_s)$\;
+                $p_{curr} \leftarrow p_s$\;
+                $isDone \leftarrow$ False\;
+                \While{True}
+                {
+                    $foundSuccessor \leftarrow$ False\;
+                    \For{$(p_{curr},p_{next}) \in E$}
+                    {
+                        \If{$H[p_{curr}][p_{next}]=0$ and $p_{next} \notin P$ and  $p_{next} > p_s$}
+                        {
+                        $P.append(p_{next}$)\;
+                        $p_{curr} \leftarrow p_{next}$\;
+                        $foundSuccessor$ = True\;
+                        break
+                        }
+                    }
+
+                    \eIf{$foundSuccessor$}
+                    {
+                        continue
+                    }
+                    {
+                        \If{$(p_{curr}, p_s) \in E$}
+                        {
+                            $L_{cycles}.append(P+p_s$)
+                        }
+                        \If{$p_{curr} = p_s$}
+                        {
+                            break
+                        }
+                        $H[P[-2]][p_{curr}$] $\leftarrow$ 1\;
+                        $H[p_{curr}][0\dots n-1$] $\leftarrow$ 0\;
+                        $p_{curr} = P[-2]$\;
+                        $P.removeLast()$
+                    }
                 }
             }
+            return $L_{cycles}$
         \end{algorithm}
-
-        \lipsum[1-2]
 
     \section{Časová složitost}
         \begin{theorem}
-            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque.
+            Časová složitost brute-force algoritmu je $\mathcal{O}(d^{|V|-d} * d!)$.
         \end{theorem}
 
         \begin{proof}
-            \lipsum[1]
+            Na prohledávání cest se můžeme dívat jako na prohledávání stromu, kde každý vnitřní uzel má právě $d$ potomků. Hloubka takového stromu může dosahovat hloubky až $|V| - 1$. Ovšem je zřejmé, že v hloubce větší než $d$, již není na výběr $d$ možností, ale s přibývající hloubkou ubývají. V hloubce $|V| -1$ již není možné cestu rozšířit. V hloubce $|V| -2$ máme právě jednu možnost. V hloubce $|V| -d$ máme $d - 1$ možností. Při počítání počtu hran v takovém stromu, což odpovídá počtu prohledaných uzlů, rozdělíme strom na 2 části: v první má každý uzel $d$ následovníků až do hloubky $|V| - d$. Počet hran je tedy $d^{|V|-d}$. V druhé části stromu přibývá $(d-1) * (d-2) * (d-3) * \dots  * 1 = (d-1)!$ hran, tedy celý strom má mohutnost $d^{|V|-d} * (d-1)!$. Časová složitost algoritmu je $\mathcal{O}(d^{|V|-d} * d!)$.
         \end{proof}
 
     \section{Prostorová složitost}
         \begin{theorem}
-            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque.
+            Prostorová složitost  brute-force algoritmu je $\mathcal{O}(|V|^{2})$.
         \end{theorem}
 
         \begin{proof}
-            \lipsum[1]
+            Prostorová složitost výstupního seznamu $L_{cycles}$ je $\mathcal{O}(c * |V|)$, protože délka cyklu může být až $|V| + 1 \simeq 1$. Vždy se musí nainicializovat matice zakázaných uzlů $H$, která obsahuje $|V| \times |V|$ prvků. Dále si algoritmus musí pamatovat cestu P, která nybývá délky maximálně $|V|-1$. Součet těchto velikostí patří do $\mathcal{O}(|V|^{2})$.
         \end{proof}
 
 \chapter{Herbert Weinbaltt}
@@ -747,6 +781,8 @@
 
         Časová složitost algoritmu WEIN roste v porovnání s ostatními algoritmy mnohem rychleji. Úplné grafy obsahující 8 vrcholů již není možné algoritmem WEIN prohledat v časovém limitu tří minut.
 
+        Časová složitost BF algoritmu je se pro úplné grafy faktoriálová a je vidět, že pro složitější problémy je významně pomalejší než algoritmy NX a HJ. Do limitu 3 minut však zvládne vypočítat více problémů než pomalejší WEIN algoritmus.
+
         Z tabulky lze vidět, že časová složitost NX a HJ je pro úplné grafy podobná, i když poměř časů HJ a NX pro úplný graf o 5-ti vrcholech je $0.48$, ale pro graf s 11-ti vrcholy již $0.66$, z čehož lze pozorovat, že od určitého počtu vrcholů/cyklů začíná časová složitost algoritmu HJ růst rychleji než NX. Obdobné tvrzení lze vyvodit i pro paměťové nároky algoritm HJ.
 
         \begin{table}[!h]
@@ -821,6 +857,8 @@
         \end{table}
 
         Znovu bylo potvrzeno, že časová složitost algoritmu WEIN roste rychleji než u ostatních algoritmů. Pro multi-cyklický graf s 200 vrcholy, 225 hranami a 350 cykly byl čas výpočtu algoritmu WEIN 0.27 sekund a algoritmu NX 0.37 sekund, ale pro graf s 200 vrcholy, 240 hranami a 7'339 cykly byl již čas výpočtu algoritmu WEIN 137.43 sekund a algoritmu NX pouhých 1.98 sekund.
+
+        Také se potvrdilo, že BF algoritmus je pomalejší, než NX a HJ algoritmy a rychlejší než WEIN algoritmus. Je však vidět, že pro řešení spotřebuje méně paměti než ostatní algoritmy.
 
         Pro úplné grafy, sice časová složitost algoritmu HJ rostla rychleji než NX, ale pro grafy do 11-ti vrcholů byl algoritmus HJ rychlejší. Toto tvrzení pro multi-cyklické grafy, které simulují řidké grafy, neplatí. Zde rostou časové nároky algoritmu HJ velice rychle. Pro porovnání: algoritmus NX nalezne všechny cykly v multi-cyklickém grafu o 200 vrcholech, 235 hranách a 6'027 cyklech za 0.95 sekund a algoritmus HJ za 3.73 sekund, ale pro 200 vrcholů, 250 hran a 119'589 cyklů, které algoritmus NX nalezne za 23.59 sekund, již algoritmus HJ nestihne doběhnout v časovém limitu tři minut. Tento problém algoritmu HJ pramení z využívání fronty, ve které jsou uloženy všechny rozpracované cesty, což vede na opakované prohledávání jednotlivých vrcholů. Další nevýhodou fronty je její vysoká (zbytečná) paměťová náročnost v případě nízkéno počtu cyklů v poměru k počtu vrcholů. Problém vysokých paměťových nároků lze vidět v případě multi-cyklického grafu s 200 vrcholy, 250 hranami a 119'589 cykly. V tomto případě algoritmus NX využil při hledání cyklů maximálně 177.6 MiB paměti, ale algoritmus HJ, který ani nestačil doběhnout, již spotřeboval 1'441.5 MiB paměti.
 
