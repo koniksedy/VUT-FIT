@@ -43,8 +43,8 @@ def __get_cycles_hj(input_graph: digraph.DiGraph) -> list():
     in graph," Advanced Int'l Conference on Telecommunications
     and Int'l Conference on Internet and Web Applications and
     Services (AICT-ICIW'06), 2006, pp. 57-57, doi: 10.1109/AICT-ICIW.2006.22.]
-    The time complexity is O((n + m)*(c + 1)) for n nodes, m edges
-    and c elementary circuits.
+    The time complexity is O(d!*d^(n-d)) where n is a number of nodes,
+    and d is maximal output degree.
 
     Args:
         input_graph (DiGraph): DiGraph.
@@ -87,7 +87,7 @@ def __get_cycle_wein(input_graph: digraph.DiGraph) -> list:
     [Herbert Weinblatt. 1972. A New Search Algorithm for Finding
     the Simple Cycles of a Finite Directed Graph. J. ACM 19,
     1 (Jan. 1972), 43–56. https://doi.org/10.1145/321679.321684]
-    The time complexity is O((n + m)*(c + 1)) for n nodes, m edges
+    The time complexity is O(n^2+mn(c+1)) for n nodes, m edges
     and c elementary circuits.
 
     Args:
@@ -253,8 +253,8 @@ def _bet_cycles_bf(input_graph: digraph.DiGraph) -> list():
     search for directive circuits. [Deo, Narsingh. Graph
     Theory with Applications to Engineering and Computer
     Science. 1st ed. Dover Publications, 2017. Web. 14 Oct. 2022.]
-    The time complexity is TODO for n nodes, m edges
-    and c elementary circuits.
+    The time complexity is O(d!*d^(n-d)) where n is a number of nodes,
+    and d is maximal output degree.
 
     Args:
         input_graph (DiGraph): DiGraph.
@@ -276,13 +276,9 @@ def _bet_cycles_bf(input_graph: digraph.DiGraph) -> list():
             for succ in graph.get_successors(curr_vertex):
                 if H[curr_vertex][succ] == 0 and (succ not in curr_path or (succ == vertex)) and succ >= vertex:
                     #Take first available edge
-                    #curr_path.append(curr_vertex)
-
                     if succ == vertex:
                         #If cycle is found, add it to list and forbid this edge from further search
                         H[curr_path[-1]][succ] = True
-                        # temp_path = list(curr_path)
-                        # cycles.append([int(graph.vertex_cname[v]) for v in temp_path])
                         cycles.append([input_graph.vertex_cname.inv[graph.vertex_cname[v]] for v in curr_path])
                         curr_vertex = curr_path[-1]
                     else:

@@ -447,9 +447,9 @@
         \end{theorem}
 
         \begin{proof}
-            Imicializace glogálních proměnných (65--67) má časovou složitost $\mathcal{O}(|V|^2)$. Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Hlavní cyklus (68--74) a zavolání procedury EXTEND bude provedeno nejvýše $|V|$-krát. Cyklus (62--63) v proceduře EXTEND a vykonání procedury EXAMINE bude provedeno nejvýše $|E|$-krát, protože podmínkou pro neprázdnost $possible\_v$ je, že existuje hrana $(u, v) \in E$, pro který je $S_e[u][v] = 0$. Pro vybranou hranu $(u, v)$ je následně nastaveno $S_e[u][v]$ na hodnotu $2$. Časová složitost bez procedury CONCAT je $\mathcal{O}(|V|^2 + |E|)$.
+            Inicializace globálních proměnných (65--67) má časovou složitost $\mathcal{O}(|V|^2)$. Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Hlavní cyklus (68--74) a zavolání procedury EXTEND bude provedeno nejvýše $|V|$-krát. Cyklus (62--63) v proceduře EXTEND a vykonání procedury EXAMINE bude provedeno nejvýše $|E|$-krát, protože podmínkou pro neprázdnost $possible\_v$ je, že existuje hrana $(u, v) \in E$, pro který je $S_e[u][v] = 0$. Pro vybranou hranu $(u, v)$ je následně nastaveno $S_e[u][v]$ na hodnotu $2$. Časová složitost bez procedury CONCAT je $\mathcal{O}(|V|^2 + |E|)$.
 
-            Nerekurzivní volání procedury CONCAT (49) je uskutečněno maximálně $|E|$-krát, protože je provedeno z procedury EXAMINE. Hlavní cyklus (7--28) procedury CONCAT stejně jako cyklus pro odstranění duplikátů (34--39) je proveden pro každý cyklus. Procedura CONCAT může být volána rekurzivně pro každý vrchol nejvýše jednou kvůli podmínce (17) $S_v[cycleEnd] = 2$. Volání procedůry CONCAT tak má časovou složitost $\mathcal{O}(c \cdot |E| \cdot |V|)$.
+            Nerekurzivní volání procedury CONCAT (49) je uskutečněno maximálně $|E|$-krát, protože je provedeno z procedury EXAMINE. Hlavní cyklus (7--28) procedury CONCAT stejně jako cyklus pro odstranění duplikátů (34--39) je proveden pro každý cyklus. Procedura CONCAT může být volána rekurzivně pro každý vrchol nejvýše jednou kvůli podmínce (17) $S_v[cycleEnd] = 2$. Volání procedury CONCAT tak má časovou složitost $\mathcal{O}(c \cdot |E| \cdot |V|)$.
 
             Celková složitost algoritmu je tedy $\mathcal{O}(|V|^2 + |E|\cdot|V|\cdot(c + 1))$. Hodnota $c + 1$ je použita pro případy, kdy $c = 0$. I v takových případech totiž bude provedeno prohledávání.
         \end{proof}
@@ -657,9 +657,9 @@
     \newpage
 
     \section{Použité knihovny}
-        Program využívá knihovnu Networkx (verze 2.8.7) pro porovnávání efektivity implementovaných algoritmů, knihovnu Bidict (verze 0.22.0) implementující obousměrný slovník využívaný pro obousměrný překlad jmen uzlů na jejích pořadová čísla a knihovnu Numpy (verze 1.23.3) k~reprezentaci matic. Tyto závislosti lza nainstalovat pomocí nástroje pip3, nebo do virtuálního prostředí \texttt{gal-env} pomocí skriptu \texttt{build.sh} unístěného v kořenové složce projektu.
+        Program využívá knihovnu Networkx (verze 2.8.7) pro porovnávání efektivity implementovaných algoritmů, knihovnu Bidict (verze 0.22.0) implementující obousměrný slovník využívaný pro obousměrný překlad jmen uzlů na jejích pořadová čísla a knihovnu Numpy (verze 1.23.3) k~reprezentaci matic. Tyto závislosti lza nainstalovat pomocí nástroje pip3, nebo do virtuálního prostředí \texttt{gal-env} pomocí skriptu \texttt{build.sh} umístěného v kořenové složce projektu.
 
-        Dále je využita knihovna Argparse, pro zpracování argumentů příkazové řádky, která je ale součásti stendartních knihoven python již od verze 3.2.
+        Dále je využita knihovna Argparse, pro zpracování argumentů příkazové řádky, která je ale součásti standardních knihoven python již od verze 3.2.
 
 \chapter{Použití programu}
     \label{chapter:Help}
@@ -669,7 +669,7 @@
         Na kořenové úrovni projektu se nachází tři složky. Složka \texttt{/src} obsahuje modul \texttt{gal} a spustitelný program \texttt{enum\_cycles.py}. Příklady grafů spolu s nulticyklickými grafy využitými při experimentech se nachází ve složce \texttt{/graphs}. Tato dokumentace je umístěná ve složce \texttt{/doc}. Na kořenové úrovni projektu se také nachází soubor \texttt{requirements.txt} obsahující využívané knihovny a skript \texttt{build.sh}, který je nainstaluje do virtuálního prostření \texttt{gal-env}. Skrip s automatickými testy pro modul \texttt{gal} je umístěn ve složce \texttt{/tests}.
 
     \section{Instalace závislostí}
-        Potřebné knihovny využívané programem lze instalovat pomocí vástroje pip3 do virtuálního prostředí \texttt{gal-env} spuštěním skriptu \texttt{build.sh}. Spuětění vistuálního prostředí lze provést příkazen \texttt{source ./gal-env/bin/activate} v kořenové úrovni projektu.
+        Potřebné knihovny využívané programem lze instalovat pomocí vástroje pip3 do virtuálního prostředí \texttt{gal-env} spuštěním skriptu \texttt{build.sh}. Spušťení virtuálního prostředí lze provést příkazem \texttt{source ./gal-env/bin/activate} v kořenové úrovni projektu.
 
     \section{Spuštění programu}
         Při spuštěni programu lze přepínači zvolit algoritmus, který bude použit pro výčet všech cyklů v zadaném grafu. Lze vybírat mezi algoritmem z knihovny Networkx, brute-force algoritmem, algoritmem Hongbo Liu a Jiaxin Wanga, nebo algoritmem Herberta Weinblatta. Musí být zadán přávě jeden přepínač určující algoritmus.
@@ -756,7 +756,7 @@
     \section{Automatické testy}
         Při vývoji modulu \texttt{gal} byl použit skript \texttt{run\_tests.py} s automatickými testy, který je umístěn ve složce \texttt{/tests}. Testy jsou prováděny na úplných grafech pro $|V| \in \langle 1, 6 \rangle$, multi-cyklických grafech pro kombinace $|V| \in \langle 1, 20 \rangle$ a $|E| \in \langle |V|, |V| + 20 \rangle$ a na nested grafech pro $|V| \in \langle 1, 100 \rangle$. Za referenční výsledky jsou zvoleny cykly, které jsou objeveny pomocí knihovny Networkx.
 
-        Za účelem vyžší přehlednosti je během testování tištěna informace o počtu provedených testů pomocí knihovny \texttt{tqdm}\footnote{Tqdm dostupné z: \url{https://tqdm.github.io}} (verze 4.64.1). Tato knihovna je zahrnuta v souboru závislostí \texttt{requirements.txt}.
+        Za účelem vyšší přehlednosti je během testování tištěna informace o počtu provedených testů pomocí knihovny \texttt{tqdm}\footnote{Tqdm dostupné z: \url{https://tqdm.github.io}} (verze 4.64.1). Tato knihovna je zahrnuta v souboru závislostí \texttt{requirements.txt}.
 
 
 \chapter{Experimenty}
@@ -765,7 +765,7 @@
 
     Úplné grafy byly vybrány z důvodu své vysoké komplexnosti, navíc jsou často používané jako hlavní měřítko efektivity algoritmů pro výčet cyklů.
 
-    Multi-cyklické grafy slouží k simulování prohledávání nad řidkými grafy obsahujícími cykly. Hlavním cílem tohoto porovnávání je zjistit, jak se bude měnit efektivita jednotlivých algoritmu s rostoucí hustotou (počtem hran) grafu pro fixní počet uzlů (200).
+    Multi-cyklické grafy slouží k simulování prohledávání nad řídkými grafy obsahujícími cykly. Hlavním cílem tohoto porovnávání je zjistit, jak se bude měnit efektivita jednotlivých algoritmu s rostoucí hustotou (počtem hran) grafu pro fixní počet uzlů (200).
 
     Měření byla prováděna na procesoru AMD Ryzen 7 3800XT (3.9 GHz) s 8 jádry a 16 vláky a 32 GB RAM.
 
@@ -857,7 +857,7 @@
 
         Znovu bylo potvrzeno, že časová složitost algoritmu WEIN roste rychleji než u ostatních algoritmů. Pro multi-cyklický graf s 200 vrcholy, 225 hranami a 350 cykly byl čas výpočtu algoritmu WEIN 0.27 sekund a algoritmu NX 0.37 sekund, ale pro graf s 200 vrcholy, 240 hranami a 7'339 cykly byl již čas výpočtu algoritmu WEIN 137.43 sekund a algoritmu NX pouhých 1.98 sekund.
 
-        Pro úplné grafy, sice časová složitost algoritmu HJ rostla rychleji než NX, ale pro grafy do 11-ti vrcholů byl algoritmus HJ rychlejší. Toto tvrzení pro multi-cyklické grafy, které simulují řidké grafy, neplatí. Zde rostou časové nároky algoritmu HJ velice rychle. Pro porovnání: algoritmus NX nalezne všechny cykly v multi-cyklickém grafu o 200 vrcholech, 235 hranách a 6'027 cyklech za 0.95 sekund a algoritmus HJ za 3.73 sekund, ale pro 200 vrcholů, 250 hran a 119'589 cyklů, které algoritmus NX nalezne za 23.59 sekund, již algoritmus HJ nestihne doběhnout v časovém limitu tři minut. Tento problém algoritmu HJ pramení z využívání fronty, ve které jsou uloženy všechny rozpracované cesty, což vede na opakované prohledávání jednotlivých vrcholů. Další nevýhodou fronty je její vysoká (zbytečná) paměťová náročnost v případě nízkéno počtu cyklů v poměru k počtu vrcholů. Problém vysokých paměťových nároků lze vidět v případě multi-cyklického grafu s 200 vrcholy, 250 hranami a 119'589 cykly. V tomto případě algoritmus NX využil při hledání cyklů maximálně 177.6 MiB paměti, ale algoritmus HJ, který ani nestačil doběhnout, již spotřeboval 1'441.5 MiB paměti.
+        Pro úplné grafy, sice časová složitost algoritmu HJ rostla rychleji než NX, ale pro grafy do 11-ti vrcholů byl algoritmus HJ rychlejší. Toto tvrzení pro multi-cyklické grafy, které simulují řidké grafy, neplatí. Zde rostou časové nároky algoritmu HJ velice rychle. Pro porovnání: algoritmus NX nalezne všechny cykly v multi-cyklickém grafu o 200 vrcholech, 235 hranách a 6'027 cyklech za 0.95 sekund a algoritmus HJ za 3.73 sekund, ale pro 200 vrcholů, 250 hran a 119'589 cyklů, které algoritmus NX nalezne za 23.59 sekund, již algoritmus HJ nestihne doběhnout v časovém limitu tři minut. Tento problém algoritmu HJ pramení z~využívání fronty, ve které jsou uloženy všechny rozpracované cesty, což vede na opakované prohledávání jednotlivých vrcholů. Další nevýhodou fronty je její vysoká (zbytečná) paměťová náročnost v případě nízkého počtu cyklů v poměru k počtu vrcholů. Problém vysokých paměťových nároků lze vidět v případě multi-cyklického grafu s 200 vrcholy, 250 hranami a 119'589 cykly. V tomto případě algoritmus NX využil při hledání cyklů maximálně 177.6 MiB paměti, ale algoritmus HJ, který ani nestačil doběhnout, již spotřeboval 1'441.5 MiB paměti.
 
 \chapter{Závěr}
     \label{chapter:Conclusion}
