@@ -264,7 +264,7 @@
         \end{theorem}
 
         \begin{proof}
-            Na prohledávání cest se můžeme dívat jako na prohledávání stromu, kde každý vnitřní uzel má až $d$ potomků. Hloubka takového stromu může dosahovat až $|V| - 1 \approx |V|$. Ovšem je zřejmé, že v hloubce větší než $|V| - d$, začíná počet možných následníků klesat. V hloubce $|V| -1$ již není možné cestu rozšířit. V hloubce $|V| -2$ máme právě jednu možnost. V hloubce $|V| - d$ máme $d - 1$ možností. Pro počet prohledaných uzlů rozdělíme strom na 2 části: v první má každý uzel $d$ následovníků až do hloubky $|V| - d$. Počet uzlů je tedy $d^{|V|-d}$. Druhá část stromu obsahuje $(d-1) \cdot (d-2) \cdot (d-3) \cdot\, \dots\, \cdot 1 = (d-1)!$ uzlů, tedy celý strom má mohutnost $d^{|V|-d} \cdot (d-1)! \in \mathcal{O}(d^{|V|-d} \cdot d!)$. Bylo dokázáno, že časová složitost algoritmu je $\mathcal{O}(d^{|V|-d} \cdot d!)$.
+            Na prohledávání cest se můžeme dívat jako na prohledávání stromu, kde každý vnitřní uzel má až $d$ potomků. Hloubka takového stromu může dosahovat až $|V| - 1 \approx |V|$. Ovšem je zřejmé, že v hloubce větší než $|V| - d$, začíná počet možných následníků klesat. V~hloubce $|V| -1$ již není možné cestu rozšířit. V hloubce $|V| -2$ máme právě jednu možnost. V hloubce $|V| - d$ máme $d - 1$ možností. Pro počet prohledaných uzlů rozdělíme strom na 2 části: v první má každý uzel $d$ následovníků až do hloubky $|V| - d$. Počet uzlů je tedy $d^{|V|-d}$. Druhá část stromu obsahuje $(d-1) \cdot (d-2) \cdot (d-3) \cdot\, \dots\, \cdot 1 = (d-1)!$ uzlů, tedy celý strom má mohutnost $d^{|V|-d} \cdot (d-1)! \in \mathcal{O}(d^{|V|-d} \cdot d!)$. Bylo dokázáno, že časová složitost algoritmu je $\mathcal{O}(d^{|V|-d} \cdot d!)$.
         \end{proof}
 
     \section{Prostorová složitost}
@@ -538,7 +538,7 @@
         \end{theorem}
 
         \begin{proof}
-            Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Inicializace a naplnění fronty (1--4) $Q$ má časovou složitost $\mathcal{O}(|V|)$. Halvní cyklus (5--18) bude proveden tolikrát, kolik existuje cest $P$ odpovídajících podmínce  $\forall v \in P: ord(v) \geq ord(HEAD(P))$. Takových cest existuje $X$, kde
+            Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Inicializace a naplnění fronty (1--4) $Q$ má časovou složitost $\mathcal{O}(|V|)$. Halvní cyklus (5--18) bude proveden tolikrát, kolik existuje cest $P$ odpovídajících podmínce  $\forall v \in P: ord(v) \geq ord(HEAD(P))$. Takových cest může být až $X$, kde
 
             $$
             X = \sum_{n = 1}^{|V|}(d-1)^\alpha\cdot(\beta -1)!
@@ -554,7 +554,7 @@
         \end{theorem}
 
         \begin{proof}
-            Do fronty $Q$ se postupně ukládají všechny cesty v grafu. Do fronty může být celkem uloženo $X$ cest, kde
+            Do fronty $Q$ se postupně ukládají všechny cesty v grafu. Do fronty může být celkem uloženo až $X$ cest, kde
 
             $$
             X = \sum_{n = 1}^{|V|}(d-1)^\alpha\cdot(\beta -1)!
@@ -739,7 +739,7 @@
             \texttt{python3 enum\_cycles.py -{}-bf -c 6}
 
             \vspace*{0.5em}
-            Program provede výčet všech cyklů nad úplným grafem $G_c = (V, E)$, kde $|V| = 6$ s využitím Brute-Force algoritmu (\ref{chapter:Algo1}).
+            Program provede výčet všech cyklů nad úplným grafem $G_c = (V, E)$, kde $|V| = 6$ s~využitím Brute-Force algoritmu (\ref{chapter:Algo1}).
 
         \subsection*{Hongbo Liu a Jiaxin Wang + multi-cyklický graf}
             \texttt{python3 enum\_cycles.py -{}-hj -m 10 5}
@@ -863,7 +863,7 @@
     \label{chapter:Conclusion}
     Tento projekt implementuje a porovnává tři různé algoritmy pro výčet všech cyklů v orientovaných grafech.
 
-    Nejpřímočařejší Brute-Force (BF) algoritmus prohledávající celý graf do hloubky má časovou složitost TODO a prostorovou složitost TODO.
+    Nejpřímočařejší Brute-Force (BF) algoritmus prohledávající celý graf do hloubky má časovou složitost $\mathcal{O}(d^{|V|-d}\cdot d!)$ a prostorovou složitost $\mathcal{O}(|V|^2)$.
 
     Algoritmus Herberta Weinblatta (WEIN) vyhledávající cykly pomocí kombinace již nalezených cyklů má časovou složitost $\mathcal{O}(|V|^2+|E|\cdot|V|\cdot(c + 1))$ a prostorovou složitost $\mathcal{O}(|V|^2)$, kde $c$ je počet cyklů.
 
