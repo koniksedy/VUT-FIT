@@ -38,7 +38,7 @@ def parse_arguments() -> Namespace:
 
     return opt_parser.parse_args()
 
-def load_graph(input_file: str|None, complete: int|None, multicycle: tuple|None, nested: int|None) -> DiGraph:
+def load_graph(input_file, complete, multicycle, nested) -> DiGraph:
     if input_file is not None:
         return Parser.parse(input_file)
     elif complete is not None:
