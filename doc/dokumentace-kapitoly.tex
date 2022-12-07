@@ -9,11 +9,11 @@
 
     Vyhledávání (výčet) všech cyklů v grafu je využíváno v mnoha oblastech teorie grafů. Tato informace je používána k optimalizaci počítačových programů \cite{Program_optimization}, při analýze booleovských sítí využívaných pro modelování biologických sítí nebo sítí genových regulátorů \cite{Biology}, při návrhu a vývoji komunikačních systému \cite{How_loopy_is_your_network} nebo ověření jejich spolehlivosti a fault-tolerance \cite{Network_Reliability}, atd.
 
-    Tato páce byla vytvořena v rámci projektu "Porovnání - Hledání cyklů"~do předmětu GAL (grafové algoritmy) a zkoumá efektivitu tři algoritmů pro výčet všech cyklů v orientovaných grafech. Na úvod jsou definovány základní pojmy a algoritmy týkající se orientovaných grafů. V následujících kapitolách jsou pak uvedeny jednotlivé algoritmy. Kapitola \ref{chapter:Algo1} popisuje přímočarý algoritmus \cite[str. 287]{Book_algo}, který postupně generuje různé kandidáty cyklů, kteří jsou následně ověřování. Algoritmus, který navrhl Herbert Weinblatt využívající zpětné navrácení \cite{A_new_search_algorithm} je uveden v kapitole \ref{chapter:Algo2}. Kapitola \ref{chapter:Algo3} popisuje algoritmus Hongbo Liu a Jiaxin Wanga \cite{A_new_way_to_enumerate_cycles_in_graph}, který využívající frontu. Všechny tyto algoritmy byly implementovány v jazyce Python 3. Popis návrhu aplikace pro výčet cyklů pomocí vybraného algoritmu, včetně jejího používání jsou uvedeny v kapitolách \ref{chapter:Design} a \ref{chapter:Help}. Experimenty porovnávající efektivitu jednotlivých postupů výčtu všech cyklů jsou uvedeny v kapitole \ref{chapter:Experiments}. Mimo již zmíněných algoritmů byl také testován Johnsonův algoritmus \cite{Johnson_1975} poskytován knihovnou Networkx\footnote{Dostupné z \url{https://networkx.org}}.
+    Tato páce byla vytvořena v rámci projektu "Porovnání - Hledání cyklů"~do předmětu GAL (grafové algoritmy) a zkoumá efektivitu tři algoritmů pro výčet všech cyklů v orientovaných grafech. Na úvod jsou definovány základní pojmy a algoritmy týkající se orientovaných grafů. V následujících kapitolách jsou pak uvedeny jednotlivé algoritmy. Kapitola \ref{chapter:Algo1} popisuje přímočarý algoritmus \cite[str. 287]{Book_algo}, který postupně prochází graf do hloubky a~ověřuje, zda nebyl objeven cyklus. Algoritmus, který navrhl Herbert Weinblatt využívající zpětné navrácení \cite{A_new_search_algorithm} je uveden v kapitole \ref{chapter:Algo2}. Kapitola \ref{chapter:Algo3} popisuje algoritmus Hongbo Liu a Jiaxin Wanga \cite{A_new_way_to_enumerate_cycles_in_graph}, který využívá frontu. Všechny tyto algoritmy byly implementovány v jazyce Python 3. Popis návrhu aplikace pro výčet cyklů s využitím uvedených algoritmů, včetně jejího používání jsou uvedeny v kapitolách \ref{chapter:Design} a \ref{chapter:Help}. Experimenty porovnávající efektivitu jednotlivých postupů výčtu všech cyklů jsou uvedeny v kapitole \ref{chapter:Experiments}. Mimo již zmíněných algoritmů byl také testován Johnsonův algoritmus \cite{Johnson_1975} poskytován knihovnou Networkx\footnote{Dostupné z \url{https://networkx.org}}.
 
 \chapter{Prerekvizity}
     \label{chapter:Intro}
-    Tato kapitola poskytuje definice pojmů spojených s orientovanými grafy, jakými jsou definice orientovaného grafu, sledu, cesty a cyklu. Dále jsou popsány základní algoritmy pro práci s grafy, kterými jsou prohledávání do hloubky (DFS) a topologické uspořádání, které jsou využívány pro zjednodušení grafů při vyhledávání cyklů. Tato kapitola je převzata z~\cite{Prezentace}.
+    Tato kapitola poskytuje definice pojmů spojených s orientovanými grafy, jakými jsou definice orientovaného grafu, sledu, cesty a cyklu. Dále jsou popsány základní algoritmy prohledávání do hloubky (DFS) a topologického uspořádání, které jsou využívány pro zjednodušení grafů při vyhledávání cyklů. Tato kapitola je převzata z~\cite{Prezentace}.
 
     \section{Orientovaný graf}
         \begin{definition}
@@ -32,7 +32,7 @@
         \end{definition}
 
         \begin{definition}
-            \textbf{Vstupní stupeň uzlu} je dán funkcí $d_- : V \rightarrow \mathbb{N}_0$, která udává počet přechodu vystupujících do daného uzlu.
+            \textbf{Výstupní stupeň uzlu} je dán funkcí $d_- : V \rightarrow \mathbb{N}_0$, která udává počet přechodu vystupujících z daného uzlu.
         \end{definition}
 
         \vspace*{1em}
@@ -47,7 +47,7 @@
         \end{definition}
 
         \begin{definition}
-            \textbf{Cyklus} je cesta, ve které shoduje první a poslední uzel.
+            \textbf{Cyklus} je cesta, ve které se shodují první a poslední uzel.
         \end{definition}
 
     \section{Prohledávání do hloubky}
@@ -58,7 +58,7 @@
         \end{definition}
 
         \vspace*{1em}
-        Během výpočtu se vytváří pole barev uzlů $color[u] \in \{WHITE, GRAY, BLACK\}$, pole časů prvního prozkoumání $d[u] \in \mathbb{N}$, pole časů dokončení prozkoumávání seznamu sousedů $f[u] \in \mathbb{N}$ a pole předchůdců $\pi[u] \subseteq V$.
+        Během výpočtu se vytváří pole barev uzlů $color[u] \in \{\mathit{WHITE, GRAY, BLACK}\}$, pole časů prvního prozkoumání $d[u] \in \mathbb{N}$, pole časů dokončení prozkoumávání seznamu sousedů $f[u] \in \mathbb{N}$ a pole předchůdců $\pi[u] \subseteq V$.
 
         \begin{algorithm}
             \DontPrintSemicolon
@@ -75,9 +75,12 @@
                     {
                         \If{$color[v] = \textit{WHITE}$}
                         {
+                            $\pi[v] \leftarrow u$\;
                             $\textnormal{DFS--VISIT}(v)$\;
                         }
                     }
+                    $f[u] \leftarrow time \leftarrow time + 1$\;
+                    $color[u] \leftarrow \textit{BLACK}$\;
 
                 }{\textbf{end}}
             \vspace*{0.5em}
@@ -110,7 +113,7 @@
         \end{theorem}
 
         \begin{proof}
-            Inicializační část (10--13) má časovou složitost $\mathcal{O}(|V|)$. Hlavní cyklus 15--19 je prováděn maximálně $|V|$-krát, tedy časová obtížnost je $\mathcal{O}(|V|)$. Funkce DFS-VISIT je spouště na pouze pro bílé uzly, tedy $|V|$-krát a cyklus v proceduře 4--8 je proveden maximálně $|Adj[v]|$-krát. Protože $\sum_{v \in V}|Adj[v]| = |E|$ je časová obtížnost cyklu 4--8 $\mathcal{O}(|E|)$. Celková složitost je tedy $\mathcal{O}(|V| + |E|)$.
+            Inicializační část (13--16) má časovou složitost $\mathcal{O}(|V|)$. Hlavní cyklus (18--22) bude proveden maximálně $|V|$-krát, tedy časová obtížnost je $\mathcal{O}(|V|)$. Procedura DFS-VISIT je spouštěna pouze pro bílé uzly, tedy $|V|$-krát a cyklus (4--8) v proceduře je proveden maximálně $|Adj[v]|$-krát. Protože $\sum_{v \in V}|Adj[v]| = |E|$, je časová obtížnost cyklu 4--8 $\mathcal{O}(|E|)$. Celková složitost je tedy $\mathcal{O}(|V| + |E|)$.
         \end{proof}
 
     \section{Topologické uspořádání}
@@ -139,12 +142,12 @@
             Časová složitost algoritmu \textit{topologického uspořádání} je $\mathcal{O}(|V| + |E|)$.
         \end{theorem}
         \begin{proof}
-            Protože výpočet topologického uspořádání využívá pouze DFS v časovou složitostí $\mathcal{O}(|V| + |E|)$ a operaci vložení na začátek seznamu, která má konstantní časovou složitost, je časová složitost topologického uspořádání $\mathcal{O}(|V| + |E|)$.
+            Protože výpočet topologického uspořádání využívá pouze DFS v časovou složitostí $\mathcal{O}(|V| + |E|)$ a operaci vložení na začátek seznamu má konstantní časovou složitost, je časová složitost topologického uspořádání $\mathcal{O}(|V| + |E|)$.
         \end{proof}
 
     \section{Zanedbání stavů}
 
-        Jak již bylo dříve řečeno, uzly, jejichž vstupní nebo výstupní stupeň je nulový, nemohou být součástí žádného cyklu, a proto mohou být při výčtu všech cyklů grafu zanedbány (odstraněny). Při zanedbání těchto uzlů se ale mohou změnit hodnoty funkcí $d_-$ a $d_+$ uzlů s nimi incidentiními tak, že budou objeveny nové uzly s nulovým vstupním nebo výstupním stupněm. Pro jejich kompletní eliminaci slouží algoritmus \ref{algo:ZanedbaniStavu}.
+        Jak již bylo dříve řečeno, uzly, jejichž vstupní nebo výstupní stupeň je nulový, nemohou být součástí žádného cyklu, a proto mohou být při výčtu všech cyklů grafu zanedbány (odstraněny). Při zanedbání těchto uzlů se ale mohou změnit hodnoty funkcí $d_-$ a $d_+$ uzlů s nimi incidentními tak, že budou objeveny nové uzly s nulovým vstupním nebo výstupním stupněm. Pro jejich kompletní eliminaci slouží algoritmus \ref{algo:ZanedbaniStavu}.
 
         \begin{theorem}
             Časová složitost algoritmu zanedbání stavů je $\mathcal{O}(|V| + |E|)$.
@@ -174,7 +177,7 @@
                             {
                                 $d_{p+}[v] \leftarrow d_{p+}[v] - 1$\;
                             }
-                            $V_p.remove(u)$\;
+                            $G_p.remove(u)$\;
                         }
                     }
                 }{\textbf{end}}
@@ -290,7 +293,7 @@
         \end{definition}
 
         \vspace*{1em}
-        V průběhu výpočtu využívá algoritmus seznam $TT$, který reprezentuje aktuální zkoumanou cestu. Dále jsou udržovány dvě pomocné struktury $S_v$ a $S_e$. Kde $S_v$ je pomocné pole udržující informaci, zda již byl uzel $v \in V$ v seznamu $TT$. $S_v[v]$ může nabývat hodnot 0, 1, nebo 2, což indikuje, že uzel $v$ ještě nebyl v seznamu $TT$, uzel $v$ se momentálně nachází v seznamu $TT$, nebo že uzel $v$ byl v $TT$, ale již se nenachází. Obdobná informace je udržována pro hrany. $S_e$ je matice informující, zda již byla hrana $(u, v) \in E$ v seznamu $TT$. $S_e[u][v]$ může nabývat pouze dvou hodnot, a to 0, respektive 2, což indikuje, že hrana $(u, v)$ ještě nebyla v $TT$, respektive že hrana $(u, v)$ již byla v $TT$ a stále může být.
+        V průběhu výpočtu využívá algoritmus seznam $TT$, který reprezentuje aktuální zkoumanou cestu. Dále jsou udržovány dvě pomocné struktury $S_v$ a $S_e$. Kde $S_v$ je pomocné pole udržující informaci, zda již byl uzel $v \in V$ v seznamu $TT$. $S_v[v]$ může nabývat hodnot 0, 1, nebo 2, což indikuje, že uzel $v$ ještě nebyl v seznamu $TT$, uzel $v$ se momentálně nachází v~seznamu $TT$, nebo že uzel $v$ byl v $TT$, ale již se nenachází. Obdobná informace je udržována pro hrany. $S_e$ je matice informující, zda již byla hrana $(u, v) \in E$ v seznamu $TT$. $S_e[u][v]$ může nabývat pouze dvou hodnot, a to 0, nebo 2, což indikuje, že hrana $(u, v)$ ještě nebyla v $TT$, respektive že hrana $(u, v)$ již byla v $TT$ a stále může být.
 
         Pro sjednocení dvou cest $P_1 = \langle v_1v_2 \rangle$ a $P_2 = \langle v_3v_4 \rangle$ bude využíván operátor $+$, tedy $P_1 + P_2 = \langle v_1v_2v_3v_4 \rangle$.
 
@@ -350,7 +353,7 @@
                     }
                     {
                         $L_{cycles}.extend(toAddSave)$\;
-                        $added.extedn(toAddSave)$\;
+                        $added.extend(toAddSave)$\;
                         \For{$cycle \in toAddToControl$}
                         {
                             \If{$cycle \notin added$}
@@ -432,7 +435,7 @@
 
         Před spuštěním prohledávání grafu jsou všechny uzly, pro které se může hodnota $d_+$ nebo $d_-$ rovnou nule zanedbány (odstraněny) algoritmem \ref{algo:ZanedbaniStavu}. Cílem tohoto kroku je eliminovat uzly, které nemohou tvořit cykly a tím snížit velikost grafu nad kterým bude prohledávání prováděno.
 
-        Algoritmus náhodně vybere jeden uzel grafu (\textit{počáteční uzel cesty}) a začne prozkoumávat všechny cesty vycházející z tohoto uzlu. Pokud se během vytváření cesty některý uzel navštíví vícekrát, je tato podcesta označena za cyklus a konstrukce cyklu se navrátí k předchozímu uzlu, pro který existují doposud neprozkoumaní následníci. Pokud již žádný takový následník neexistuje, zvolí algoritmus nový, doposud nezvolený, \textit{počáteční uzel cesty}. V případě, že takový uzel neexistuje, algoritmus skončí.
+        Algoritmus náhodně vybere jeden uzel grafu (\textit{počáteční uzel cesty}) a začne prozkoumávat všechny cesty vycházející z tohoto uzlu. Pokud se během vytváření cesty některý uzel navštíví vícekrát, je tato podcesta označena za cyklus a konstrukce cyklu se navrátí k~předchozímu uzlu, pro který existují doposud neprozkoumaní následníci. Pokud již žádný takový následník neexistuje, zvolí algoritmus nový, doposud nezvolený, \textit{počáteční uzel cesty}. V případě, že takový uzel neexistuje, algoritmus skončí.
 
         V průběhu výpočtu je cesta vedoucí z \textit{počátečního uzlu cesty} reprezentovaná seznamem $TT$ ("trial thread"). Při návratu je odstraněn poslední uzel (nejvzdálenější od \textit{počátečního uzlu}) cesty $TT$.
 
@@ -440,38 +443,36 @@
 
     \section{Časová složitost}
         \begin{theorem}
-            Časová složitost Herbert Weinblattova algoritmu pro výčet všech cyklů v orientovaném grafu je $\mathcal{O}(|V|^2 + |E|\cdot|V|\cdot(c + 1))$, kde $c$ je počet cyklů v grafu.
+            Časová složitost Herbert Weinblattova algoritmu pro výčet všech cyklů v~orientovaném grafu je $\mathcal{O}(|V|^2 + |E|\cdot|V|\cdot(c + 1))$, kde $c$ je počet cyklů v grafu.
         \end{theorem}
 
         \begin{proof}
             Imicializace glogálních proměnných (65--67) má časovou složitost $\mathcal{O}(|V|^2)$. Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Hlavní cyklus (68--74) a zavolání procedury EXTEND bude provedeno nejvýše $|V|$-krát. Cyklus (62--63) v proceduře EXTEND a vykonání procedury EXAMINE bude provedeno nejvýše $|E|$-krát, protože podmínkou pro neprázdnost $possible\_v$ je, že existuje hrana $(u, v) \in E$, pro který je $S_e[u][v] = 0$. Pro vybranou hranu $(u, v)$ je následně nastaveno $S_e[u][v]$ na hodnotu $2$. Časová složitost bez procedury CONCAT je $\mathcal{O}(|V|^2 + |E|)$.
 
-            Nerekurzivní volání procedury CONCAT (49) je uskutečněno maximálně $|E|$-krát, protože je provedeno z procedury EXAMINE. Hlavní cyklus (7--28) procedury CONCAT je proveden pro každý cyklus stejně jako cyklus pro odstranění duplikátů (34--39). Procedura CONCAT může být volána rekurzivně pro každý vrchol nejvýše jednou kvůli podmínce (17) $S_v[cycleEnd] = 2$. Volání procedůry CONCAT tak má časovou složitost $\mathcal{O}(c \cdot |E| \cdot |V|)$.
+            Nerekurzivní volání procedury CONCAT (49) je uskutečněno maximálně $|E|$-krát, protože je provedeno z procedury EXAMINE. Hlavní cyklus (7--28) procedury CONCAT stejně jako cyklus pro odstranění duplikátů (34--39) je proveden pro každý cyklus. Procedura CONCAT může být volána rekurzivně pro každý vrchol nejvýše jednou kvůli podmínce (17) $S_v[cycleEnd] = 2$. Volání procedůry CONCAT tak má časovou složitost $\mathcal{O}(c \cdot |E| \cdot |V|)$.
 
             Celková složitost algoritmu je tedy $\mathcal{O}(|V|^2 + |E|\cdot|V|\cdot(c + 1))$. Hodnota $c + 1$ je použita pro případy, kdy $c = 0$. I v takových případech totiž bude provedeno prohledávání.
         \end{proof}
 
     \section{Prostorová složitost}
         \begin{theorem}
-            Prostorová složitost Herbert Weinblattova algoritmu pro výčet všech cyklů v orientovaném grafu je $\mathcal{O}(c * |V| + |V|^2)$, kde $c$ je počet cyklů v grafu.
+            Prostorová složitost Herbert Weinblattova algoritmu pro výčet všech cyklů v orientovaném grafu je $\mathcal{O}(|V|^2)$.
         \end{theorem}
 
         \begin{proof}
-            Algoritmus využívá tři globální pomocné struktury. Prostorová složitost $TT$ je $\mathcal{O}(|V|)$ protože maximální délka cyklu je shora omezena na $|V| + 1$. Prostorová složitost matice $S_e$ je $\mathcal{O}(|V|^2)$. A prostorová složitost pole $S_v$ je $\mathcal{O}(|V|)$. Prostorovou složitost lokálních pomocných proměnných $added$, $cycleTails$, $toAddSave$ a $toAddToControl$ můžeme zanedbat, protože jejich data jsou obsažena v listu všech detekovaných cyklů $L_{cycles}$. Prostorová složitost listu $L_{cycles}$ je $\mathcal{O}(c * |V|)$, protože obsahuje $c$ cyklů, kde délka cyklu může být až $|V| + 1 \approx |V|$.
+            Algoritmus využívá tři globální pomocné struktury. Prostorová složitost $TT$ je $\mathcal{O}(|V|)$ protože maximální délka cyklu je shora omezena na $|V| + 1$. Prostorová složitost matice $S_e$ je $\mathcal{O}(|V|^2)$. A prostorová složitost pole $S_v$ je $\mathcal{O}(|V|)$. Prostorovou složitost lokálních pomocných proměnných $added$, $cycleTails$, $toAddSave$ a $toAddToControl$ nikdy nemůže překročit $\mathcal{O}(|V|^2)$, protože v proceduře CONCAT bude vytvořeno maximálně $|V|^2$ cyklů.
 
-            Pokud by prohledávaný graf neobsahoval žádný cyklus, potom budou vždy inicializovány globální pomocné struktury s prostorovou složitostí $\mathcal{O}(|V|^2)$.
-
-            Bylo dokázáno, že prostorová složitost Herbert Weinblattova algoritmu pro výčet všech cyklů v orientovaném grafu je $\mathcal{O}(c * |V| + |V|^2)$, kde $c$ je počet cyklů v grafu.
+            Bylo dokázáno, že prostorová složitost Herbert Weinblattova algoritmu pro výčet všech cyklů v orientovaném grafu je $\mathcal{O}(|V|^2)$.
         \end{proof}
 
 \chapter{Hongbo Liu a Jiaxin Wang}
     \label{chapter:Algo3}
-    V roce 2006 spolu Hongo Liu a Jiaxin Wang publikovali algoritmus \cite{A_new_way_to_enumerate_cycles_in_graph} pro výčet všech cyklů v grafech. Tento algoritmus není tak efektivní jako algoritms Johnsona \cite{Johnson_1975}. V porovnáni s nimi je ale jednodušší pro porozumění, čímž jsou minimalizovány chyby v implementaci způsobené chybnou interpretací. Na druhou stranu Liuův a Wangův přístup je neefektivní pro velké grafy. Nicméně existují případy, pro které je jejichž řešení efektivnější.
+    V roce 2006 spolu Hongo Liu a Jiaxin Wang publikovali algoritmus \cite{A_new_way_to_enumerate_cycles_in_graph} pro výčet všech cyklů v grafech. Tento algoritmus není tak efektivní jako algoritmus Johnsona \cite{Johnson_1975}. V porovnáni s~ním je ale jednodušší pro porozumění, čímž jsou minimalizovány chyby v implementaci způsobené chybnou interpretací. Na druhou stranu Liuův a Wangův přístup je neefektivní pro velké grafy. Nicméně existují případy, pro které je jejich řešení efektivnější.
 
-    Algoritmus využívá frontu zkoumaných cest $P_0 \dots P_n$ pro $n \in \mathbb{N}_0$, kde pro délky cest ve frontě platí $|P_n| \leq |P_0| + 1$ a zároveň $|P_{i-1}| \leq |P_{i}|$. Díky tomu jej lze snadno využít pro výčet všech cyklů délek maximálně $k \in \mathbb{N}_0$ be z nutnosti nalezení všech cyklů.
+    Algoritmus využívá frontu zkoumaných cest $P_0 \dots P_n$ pro $n \in \mathbb{N}_0$, kde pro délky cest ve frontě platí $|P_n| \leq |P_0| + 1$ a zároveň $|P_{i-1}| \leq |P_{i}|$. Díky tomu jej lze snadno využít pro výčet všech cyklů délek maximálně $k \in \mathbb{N}$ bez nutnosti nalezení všech cyklů.
 
     \section{Popis algoritmu}
-        Algoritmus využívá pomocné funkce \textit{END}, která již byla definována dříve \ref{def:end} a \textit{HEAD}.
+        Algoritmus využívá pomocné funkce \textit{END} (byla již definována dříve \ref{def:end}) a \textit{HEAD}.
 
         \begin{definition}
             \textbf{HEAD} je unární funkce, které pro cestu $\langle v_0 v_1 \dots v_n \rangle$, vrací první uzel cesty $v_0$.
@@ -484,7 +485,7 @@
 
         Před spuštěním prohledávání grafu jsou všechny uzly, pro které se může hodnota $d_+$ nebo $d_-$ rovnou nule zanedbány (odstraněny) algoritmem \ref{algo:ZanedbaniStavu}. Cílem tohoto kroku je eliminovat uzly, které nemohou tvořit cykly a tím snížit velikost grafu nad kterým bude prohledávání prováděno.
 
-        Při inicializaci proměnných (1--4) jsou všechny cesty délek 0 vloženy do fronty cest $Q$. V hlavním cyklu (5--19) se algoritmus snaží vytvořit cykly délky $k$ pro cesty délek $k-1$. Cyklus délky $k$ je tvořen sjednocením cesty $P$ délky $k-1$ a hrany $(\textit{END}(P), \textit{HEAD}(P))$. Z cesty $P$ jsou dále na základě přechodů vedoucích z $\textit{END}(P)$ vygenerovány nové cesty $P + \langle v \rangle$ pro $v \in \{v \in Adj[\textit{END}(P)] \,|\, v \notin P \land ord(v) > ord(\textit{HEAD}(P))\}$ vloženy do fronty cest $Q$.
+        Při inicializaci proměnných (1--4) jsou všechny cesty délek 0 vloženy do fronty cest $Q$. V hlavním cyklu (5--19) se algoritmus snaží vytvořit cykly délky $k$ pro cesty délek $k-1$. Cyklus délky $k$ je tvořen sjednocením cesty $P$ délky $k-1$ a hrany $(\textit{END}(P), \textit{HEAD}(P))$. Z cesty $P$ jsou dále na základě přechodů vedoucích z $\textit{END}(P)$ vygenerovány nové cesty $P + \langle v \rangle$ pro $v \in \{v \in Adj[\textit{END}(P)] \,|\, v \notin P \land ord(v) > ord(\textit{HEAD}(P))\}$, které jsou následně vloženy do fronty cest $Q$.
 
         Pokud je fronta cest $Q$ prázdná (nebylo již možné vygenerovat další cesty), je algoritmus ukončen a všechny objevené cykly jsou vráceny v seznamu $L_{cycles}$.
 
@@ -537,13 +538,13 @@
         \end{theorem}
 
         \begin{proof}
-            Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Inicializace a naplnění fronty (1--4) $Q$ má časovou složitost $\mathcal{O}(|V|)$. Halvní cyklus (5--18) bude proveden tolikrát, kolik existuje cest $P$ odpovídajících podmínce  $\forall v \in P: ord(v) \geq ord(HEAD(P))$. Takových cest cest existuje $X$, kde
+            Časová složitost zanedbání uzlů je $\mathcal{O}(|V| + |E|)$. Inicializace a naplnění fronty (1--4) $Q$ má časovou složitost $\mathcal{O}(|V|)$. Halvní cyklus (5--18) bude proveden tolikrát, kolik existuje cest $P$ odpovídajících podmínce  $\forall v \in P: ord(v) \geq ord(HEAD(P))$. Takových cest existuje $X$, kde
 
             $$
             X = \sum_{n = 1}^{|V|}(d-1)^\alpha\cdot(\beta -1)!
             $$
 
-            \noindent $\alpha = \frac{|n - d| + n - d}{2}$ a $\beta = min(d, n)$. Pokud se $d$ blíží $|V|$, pak $X \approx d!$. Pokud se $d$ blíží 1, pak $X \approx d^{|V|}$. Časová složitost algoritmu je tedy $\mathcal{O}(d^{|V|-d}\cdot d!)$.
+            \noindent $\alpha = \frac{|n - d| + n - d}{2}$ a $\beta = min(d, n)$. Pokud se $d$ blíží $|V|$, pak $X \approx |V|!$. Pokud se $d$ blíží 1, pak $X \approx d^{|V|}$. Časová složitost algoritmu je tedy $\mathcal{O}(d^{|V|-d}\cdot d!)$.
 
         \end{proof}
 
@@ -553,7 +554,7 @@
         \end{theorem}
 
         \begin{proof}
-            Prostorová složitost výstupního seznamu $L_{cycles}$ je $\mathcal{O}(c * |V|)$, protože délka cyklu může být až $|V| + 1 \approx |V|$. Do fronty $Q$ se postupně ukládají všechny cesty v grafu. Do fronty může být celkem uloženo $X$ cest, kde
+            Do fronty $Q$ se postupně ukládají všechny cesty v grafu. Do fronty může být celkem uloženo $X$ cest, kde
 
             $$
             X = \sum_{n = 1}^{|V|}(d-1)^\alpha\cdot(\beta -1)!
@@ -565,15 +566,15 @@
             Y = \sum_{n = 1}^{|V|}(d-1)^\alpha*(\beta -1)! \cdot n
             $$
 
-            \noindent Obsah sumy dosahuje maxima pro $n = |V|$. Pokud se $d$ blíží $|V|$, pak $Y \approx d!$. Pokud  se $d$ blíží 1, pak $Y \approx d^{|V|}$. Lze vidět, že prostorová složitost algoritmu je definována prostorovou složitostí fronty. Prostorová složitost algoritmu je tedy $\mathcal{O}(d^{|V|-d}\cdot d!)$.
+            \noindent Obsah sumy dosahuje maxima pro $n = |V|$. Pokud se $d$ blíží $|V|$, pak $Y \approx |V|!$. Pokud  se $d$ blíží 1, pak $Y \approx d^{|V|}$. Lze vidět, že prostorová složitost algoritmu je definována prostorovou složitostí fronty. Prostorová složitost algoritmu je tedy $\mathcal{O}(d^{|V|-d}\cdot d!)$.
         \end{proof}
 
 \chapter{Návrh programu}
     \label{chapter:Design}
-    Tato kapitola popisuje jednotlivé komponenty, z nichž sestává program pro výčet všech cklů v orientovaných grafech využívající zmíněné algoritmy. Veškerá implementace byla provedena v~jazyce Python 3 (verze 3.8+) s využitím knihoven (Bidict\footnote{Bidict dostupné z: \url{https://bidict.readthedocs.io}}, Networkx\footnote{Networkx dostupné z: \url{https://networkx.org}} a Numpy\footnote{Numpy dostupné z: \url{https://www.numpy.org}}).
+    Tato kapitola popisuje jednotlivé komponenty, z nichž sestává program  demonstrující výčet všech cklů v orientovaných grafech. Veškerá implementace byla provedena v~jazyce Python~3 (verze 3.8+) s využitím knihoven (Bidict\footnote{Bidict dostupné z: \url{https://bidict.readthedocs.io}}, Networkx\footnote{Networkx dostupné z: \url{https://networkx.org}} a Numpy\footnote{Numpy dostupné z: \url{https://www.numpy.org}}).
 
     \section{Moduly}
-        Za účelem zapouzdření jsou veškeré algoritmy a třídy umístěny do balíku \texttt{gal}. Ten obsahuje modul \texttt{digraph}, ve kterém se nachází definice třídy orientovaných grafů \texttt{DiGraph}, modul modul \texttt{parser} s třídou \texttt{Parser}, která slouží pro získání orientovaného grafu ze vstupního souboru a modul \texttt{algorithms}, který obsahuje definice jednotlivých algoritmů pro výčet všech cyklů.
+        Za účelem zapouzdření jsou veškeré algoritmy a třídy umístěny do balíku \texttt{gal}. Ten obsahuje modul \texttt{digraph}, ve kterém se nachází definice třídy orientovaných grafů \texttt{DiGraph}, modul \texttt{parser} s třídou \texttt{Parser}, která slouží pro získání orientovaného grafu ze vstupního souboru a modul \texttt{algorithms}, který obsahuje definice jednotlivých algoritmů pro výčet všech cyklů.
 
         \subsection{digraph}
             Třída grafů disponuje základními metodami pro práci s grafy, jakými jsou přidávání uzlů (\texttt{add\_vertex}), přidávání hran (\texttt{add\_edge}), transponování (\texttt{transpose}), získání indukovaného grafu (\texttt{get\_induced\_graph}), výpočet DFS lesa (\texttt{dfs}) nebo získání topologického uspořádání (\texttt{get\_topological\_sort}).
@@ -656,7 +657,7 @@
     \newpage
 
     \section{Použité knihovny}
-        Program využívá knihovny Networkx (verze 2.8.7) pro porovnánání efektivity implementovaných algoritmů pro výčet všech cyklů v grafu, knihovnu Bidict (verze 0.22.0) implementující obousměrný slovník využívaný pro obousměrný překlad jmen uzlů na jejích pořadové čísla a knihovnu Numpy (verze 1.23.3) k reprezentaci matic. Tyto závislosti lza nainstalovat pomocí nástroje pip3.
+        Program využívá knihovnu Networkx (verze 2.8.7) pro porovnávání efektivity implementovaných algoritmů, knihovnu Bidict (verze 0.22.0) implementující obousměrný slovník využívaný pro obousměrný překlad jmen uzlů na jejích pořadová čísla a knihovnu Numpy (verze 1.23.3) k~reprezentaci matic. Tyto závislosti lza nainstalovat pomocí nástroje pip3, nebo do virtuálního prostředí \texttt{gal-env} pomocí skriptu \texttt{build.sh} unístěného v kořenové složce projektu.
 
         Dále je využita knihovna Argparse, pro zpracování argumentů příkazové řádky, která je ale součásti stendartních knihoven python již od verze 3.2.
 
@@ -665,23 +666,17 @@
     V této kapitole je popsána struktura složky projektu. Dále je uveden postup pro instalaci knihoven (Bidict\footnote{Bidict dostupné z: \url{https://bidict.readthedocs.io}}, Networkx\footnote{Networkx dostupné z: \url{https://networkx.org}} a Numpy\footnote{Numpy dostupné z: \url{https://www.numpy.org}}) využívaných programem. Kapitola také uvádí nápovědu pro spuštění programu pomocí interpretu Python 3 včetně vzorového formátu vstup a výstupu, po kterých následují příklady jednotlivých možností spuštění. Na závěr kapitoly jsou popsány automatické testy, který byly při implementaci použity.
 
     \section{Struktura projektu}
-        Na kořenové úrovni projektu se nachází tři složky. Složka \texttt{/src} obsahuje modul \texttt{gal} a spustitelný program \texttt{enum\_cycles.py}. Příklady grafů spolu s nulticyklickými grafy využitými při experimentech se nachází ve složce \texttt{/graphs}. Tato dokumentace je umístěná ve složce \texttt{/doc}. Na kořenové úrovni projektu se také nachází soubor \texttt{requirements.txt} obsahující využívané knihovny a jejich verze. Skript s automatickými testy pro modul \texttt{gal} je umístěn ve složce \texttt{/tests}.
+        Na kořenové úrovni projektu se nachází tři složky. Složka \texttt{/src} obsahuje modul \texttt{gal} a spustitelný program \texttt{enum\_cycles.py}. Příklady grafů spolu s nulticyklickými grafy využitými při experimentech se nachází ve složce \texttt{/graphs}. Tato dokumentace je umístěná ve složce \texttt{/doc}. Na kořenové úrovni projektu se také nachází soubor \texttt{requirements.txt} obsahující využívané knihovny a skript \texttt{build.sh}, který je nainstaluje do virtuálního prostření \texttt{gal-env}. Skrip s automatickými testy pro modul \texttt{gal} je umístěn ve složce \texttt{/tests}.
 
     \section{Instalace závislostí}
-        Potřebné knihovny využívané programem lze instalovat pomocí vástroje pip3 do virtuálního prostředí následovně.
-
-        \vspace*{1em}
-        \noindent\texttt{python3 -m venv gal-env\\
-            source ./gal-env/bin/activate\\
-            pip3 install -r requirements.txt
-        }
+        Potřebné knihovny využívané programem lze instalovat pomocí vástroje pip3 do virtuálního prostředí \texttt{gal-env} spuštěním skriptu \texttt{build.sh}. Spuětění vistuálního prostředí lze provést příkazen \texttt{source ./gal-env/bin/activate} v kořenové úrovni projektu.
 
     \section{Spuštění programu}
-        Při spuštení programu lze přepínači zvolit algoritmus, který bude použit pro výčet všech cyklů v zadaném grafu. Lze vybírat mezi algoritmem z knihovny Networkx, brute-force algoritmem, algoritmem Hongbo Liu a Jiaxin Wanga, nebo algoritmem Herberta Weinblatta. Musí být zadán přávě jeden přepínač určující algoritmus.
+        Při spuštěni programu lze přepínači zvolit algoritmus, který bude použit pro výčet všech cyklů v zadaném grafu. Lze vybírat mezi algoritmem z knihovny Networkx, brute-force algoritmem, algoritmem Hongbo Liu a Jiaxin Wanga, nebo algoritmem Herberta Weinblatta. Musí být zadán přávě jeden přepínač určující algoritmus.
 
-        Dále lze zpracovávat graf zadaný vstupním souborem, nebo vygenerovaný (úplný, multi-cyklický, nebo nested) třídou \texttt{DiGraph}. Právě jeden vstupní graf musí být zadán.
+        Dále lze zpracovávat graf zadaný vstupním souborem, nebo vygenerovaný (úplný, multi-cyklický, nebo nested). Právě jeden vstupní graf musí být zadán.
 
-        Program \texttt{enum\_cycles.py} umístěný ve složce \texttt{/src} lze po úspěšné instalaci závislostí spustit s využitím interpretu python3 (verze 3.8+) následovně:
+        Program \texttt{enum\_cycles.py} umístěný ve složce \texttt{/src} lze po úspěšné instalaci závislostí spustit ve virtuálním prostředí \texttt{gal-env} s využitím interpretu python3 (verze 3.8+):
 
         \vspace*{1em}
         \noindent\texttt{enum\_cycles.py (-{}-nx | -{}-bf | -{}-hj | -{}-wein) [-c N] [-m N M] [-n N] [input]\\
@@ -706,7 +701,7 @@
 
     \section{Formát vstupu}
         \label{sec:input}
-        Vstupní soubor s příponou \texttt{.grph} obsahuje orientovaný graf. Každý řádek souboru reprezentuje jednu hranu. Uzel z kterého hrana vystupuje a uzel, do kterého vede jsou na řádku odděleny mezerou. Jména uzlu mohou sestávat z alfanumerických znaků. V tomto formátu jsou brány v úvahu pouze ty uzly grafu, pro které existuje hrana. Podpora pro izolované uzly bez hran není inplementována (tyto uzly nikdy nemohou být součástí cyklu).
+        Vstupní soubor s příponou \texttt{.grph} obsahuje orientovaný graf. Každý řádek souboru reprezentuje jednu hranu. Uzel z kterého hrana vystupuje a uzel, do kterého vede jsou na řádku odděleny mezerou. Jména uzlu mohou sestávat z alfanumerických znaků. V tomto formátu jsou brány v úvahu pouze ty uzly grafu, pro které existuje hrana. Podpora pro izolované uzly bez hran není implementována (tyto uzly nikdy nemohou být součástí cyklu).
 
         \vspace*{1em}
         \noindent \underline{Příklad vstupního grafu:}
@@ -719,9 +714,9 @@
         }
 
     \section{Formát výstupu}
-        Všechny nalezené cykly jsou vypsány na \texttt{STDOUT}. Na každém řádku se nachází právě jeden cyklus. Cyklus je reprezentován posloupností vrcholu oddělených mezerou. Poslední uzel cyklu, který je shodný s počátečním uzlem není uváděn (po vzoru knihovny Networkx).
+        Všechny nalezené cykly jsou vypsány na \texttt{STDOUT}. Na každém řádku se nachází právě jeden cyklus. Cyklus je reprezentován posloupnosti vrcholů oddělených mezerou. Poslední uzel cyklu, který je shodný s počátečním uzlem není uváděn (po vzoru knihovny Networkx).
 
-        Následující přiklad výstupu je výsledkem prohledávání grafu uvedeného v předchozí sekci \ref{sec:input}.
+        Následující příklad výstupu je výsledkem prohledávání grafu uvedeného v předchozí sekci \ref{sec:input}.
 
         \vspace*{1em}
         \noindent \underline{Příklad výstupu:}
@@ -744,24 +739,24 @@
             \texttt{python3 enum\_cycles.py -{}-bf -c 6}
 
             \vspace*{0.5em}
-            Program provede výčet všech cyklů nad úplným grafem $G_c = (V, E)$, kde $|V| = 6$ s využitím brute-force algoritmu (\ref{chapter:Algo1}).
+            Program provede výčet všech cyklů nad úplným grafem $G_c = (V, E)$, kde $|V| = 6$ s využitím Brute-Force algoritmu (\ref{chapter:Algo1}).
 
         \subsection*{Hongbo Liu a Jiaxin Wang + multi-cyklický graf}
             \texttt{python3 enum\_cycles.py -{}-hj -m 10 5}
 
             \vspace*{0.5em}
-            Program provede výčet všech cyklů nad multi-cyklickým grafem $G_m = (V, E)$, kde $|V| = 10$ a $|E| \rightarrow 10 + 5$ s využitím Hongbo Liu a Jiaxin Wangovým algoritmem (\ref{chapter:Algo2}).
+            Program provede výčet všech cyklů nad multi-cyklickým grafem $G_m = (V, E)$, kde $|V| = 10$ a $|E| \rightarrow 10 + 5$ s~využitím Hongbo Liu a Jiaxin Wangovým algoritmem (\ref{chapter:Algo2}).
 
         \subsection*{Herbert Weinblatt + nested graf}
             \texttt{python3 enum\_cycles.py -{}-bf -n 9}
 
             \vspace*{0.5em}
-            Program provede výčet všech cyklů nad nested grafem $G_n = (V, E)$, kde $|V| = 9$ s využitím Herbert Weinblattova algoritmu (\ref{chapter:Algo3}). Výsledkem tohoto prohledávání musí být vždy 0 cyklů.
+            Program provede výčet všech cyklů nad nested grafem $G_n = (V, E)$, kde $|V| = 9$ s~využitím Herbert Weinblattova algoritmu (\ref{chapter:Algo3}). Výsledkem tohoto prohledávání musí být vždy 0 cyklů.
 
     \section{Automatické testy}
-        Při vývoji modulu \texttt{gal} byl použit skript \texttt{run\_tests.py} s automatickými testy, který je umístěn ve složce \texttt{/tests}. Testy jsou prováděny na úplných grafech pro $|V| \in \langle 1, 6 \rangle$, multy-cyklických grafech pro kombinace $|V| \in \langle 1, 20 \rangle$ a $|E| \in \langle |V|, |V| + 20 \rangle$ a na nested grafech pro $|V| \in \langle 1, 100 \rangle$. Za referenční výsledky jsou zvoleny cykly, které jsou objeveny pomocí knihovny Networkx.
+        Při vývoji modulu \texttt{gal} byl použit skript \texttt{run\_tests.py} s automatickými testy, který je umístěn ve složce \texttt{/tests}. Testy jsou prováděny na úplných grafech pro $|V| \in \langle 1, 6 \rangle$, multi-cyklických grafech pro kombinace $|V| \in \langle 1, 20 \rangle$ a $|E| \in \langle |V|, |V| + 20 \rangle$ a na nested grafech pro $|V| \in \langle 1, 100 \rangle$. Za referenční výsledky jsou zvoleny cykly, které jsou objeveny pomocí knihovny Networkx.
 
-        Za účelem vyžší přehlednosti je během testování tištěna informace o počtu provedených testů pomocí knihovny \texttt{tqdm}\footnote{Tqdm dostupné z: \url{https://tqdm.github.io}} (verze 4.64.1). Tato knihovna se souběžně instaluje se závislostmi pro program \texttt{enum\_cycles.py}.
+        Za účelem vyžší přehlednosti je během testování tištěna informace o počtu provedených testů pomocí knihovny \texttt{tqdm}\footnote{Tqdm dostupné z: \url{https://tqdm.github.io}} (verze 4.64.1). Tato knihovna je zahrnuta v souboru závislostí \texttt{requirements.txt}.
 
 
 \chapter{Experimenty}
@@ -774,16 +769,16 @@
 
     Měření byla prováděna na procesoru AMD Ryzen 7 3800XT (3.9 GHz) s 8 jádry a 16 vláky a 32 GB RAM.
 
-    Experimenty se zaměřovaly na množství času a paměti spotřebované jednotlivými algoritmy. Tyto hodnoty jsou zobrazeny v následujících tabulkách, kde jsou uvedeny pouze zkratky pro jednotlivé algoritmy (NX pro algoritmus knihovny Networkx, BF pro Brute-Force algoritmus, WEIN pro Herberta Weinblattův algoritmus, HJ pro algoritmus Hongbo Liu a Jiaxin Wanga).
+    Experimenty se zaměřovaly na množství času a paměti spotřebované jednotlivými algoritmy. Tyto hodnoty jsou zobrazeny v následujících tabulkách, kde jsou uvedeny pouze zkratky pro jednotlivé algoritmy (NX pro algoritmus knihovny Networkx, BF pro Brute-Force algoritmus, WEIN pro Herbert Weinblattův algoritmus, HJ pro algoritmus Hongbo Liu a Jiaxin Wanga).
 
     Pokud zkoumaný algoritmus nedokázal vyhledat všechny cykly v zadaném orientovaném grafu do 3 minut, byl ukončen a další testování na obtížnějších grafech již nebylo prováděno (prázdné buňky tabulek).
 
     \section{Úplné grafy}
-        V této sekci jsou porovnány reálné časové a poměťové nároky algoritmů výčtu cyklů pro úplné grafy. Úplné grafy představují nejkomplexnější grafovou strukturu a proto jsou často používané jako hlavní měřítko efektivity algoritmů pro výčet cyklů. Úplný orientovaný graf o $|V| =: n$ vrcholech obsahuje $\sum_{i=1}^n \frac{n!}{(n-i)! \cdot i}$ cyklů.
+        V této sekci jsou porovnány reálné časové a paměťové nároky algoritmů výčtu cyklů pro úplné grafy. Úplné grafy představují nejkomplexnější grafovou strukturu a proto jsou často používané jako hlavní měřítko efektivity algoritmů pro výčet cyklů. Úplný orientovaný graf o $|V| =: n$ vrcholech obsahuje $\sum_{i=1}^n \frac{n!}{(n-i)! \cdot i}$ cyklů.
 
-        Časová složitost algoritmu WEIN roste v porovnání s ostatními algoritmy mnohem rychleji. Úplné grafy obsahující 8 vrcholů již není možné algoritmem WEIN prohledat v časovém limitu tří minut.
+        Lze vidět, že čas spotřebovaný algoritmem BF prudce roste pro úplné grafy s více než 10-ti vrcholy. Pro graf o 11-ti vrcholech by algoritmus BF potřeboval více než 180 sekund k nalezení všech cyklů. Naměřená paměťová náročnost tohoto algoritmu je pro úplné grafy ekvivalentní s ostatními algoritmy.
 
-        Časová složitost BF algoritmu je se pro úplné grafy faktoriálová a je vidět, že pro složitější problémy je významně pomalejší než algoritmy NX a HJ. Do limitu 3 minut však zvládne vypočítat více problémů než pomalejší WEIN algoritmus.
+        Časová složitost algoritmu WEIN roste v porovnání s ostatními algoritmy mnohem rychleji. Úplné grafy obsahující 8 vrcholů již není možné algoritmem WEIN prohledat v~časovém limitu tří minut.
 
         Z tabulky lze vidět, že časová složitost NX a HJ je pro úplné grafy podobná, i když poměř časů HJ a NX pro úplný graf o 5-ti vrcholech je $0.48$, ale pro graf s 11-ti vrcholy již $0.66$, z čehož lze pozorovat, že od určitého počtu vrcholů/cyklů začíná časová složitost algoritmu HJ růst rychleji než NX. Obdobné tvrzení lze vyvodit i pro paměťové nároky algoritm HJ.
 
@@ -822,7 +817,7 @@
         \end{table}
 
     \section{Multi-cyklické grafy}
-        Pro testování algoritmů vyhledávání všech cyklů v řidkých orientovaných grafech byly vygenerované multi-cyklické grafy s o 200 vrcholech a 200 až 250 hranách (simulace rostoucí hustoty grafu). Tyto grafy jsou k dispozici ve složce \texttt{/graphs/multicycle}.
+        Pro testování algoritmů vyhledávání všech cyklů v řídkých orientovaných grafech byly vygenerované multi-cyklické grafy s o 200 vrcholech a 200 až 250 hranách (simulace rostoucí hustoty grafu). Tyto grafy jsou k dispozici ve složce \texttt{/graphs/multicycle}.
 
         \begin{table}[!h]
             \centering
@@ -858,12 +853,20 @@
             \caption{Spotřebovaný čas a paměť při prohledávání multi-cyklických grafů pro $|V|~=~200$ s rostoucím počet hran. Výpočty probíhající déle než 180 sekund byly ukončeny.}
         \end{table}
 
-        Znovu bylo potvrzeno, že časová složitost algoritmu WEIN roste rychleji než u ostatních algoritmů. Pro multi-cyklický graf s 200 vrcholy, 225 hranami a 350 cykly byl čas výpočtu algoritmu WEIN 0.27 sekund a algoritmu NX 0.37 sekund, ale pro graf s 200 vrcholy, 240 hranami a 7'339 cykly byl již čas výpočtu algoritmu WEIN 137.43 sekund a algoritmu NX pouhých 1.98 sekund.
+        Poměr spotřebovaného času algoritmem BF k ostatním algoritmům byl pro multi-cyklické grafy podobný jako pro úplné grafy. Z tabulky lze vypozorovat, že paměťová obtížnost algoritmu BF rostla pomaleji než u algoritmů WEIN a HJ, ale rychleji než pro algoritmus NX.
 
-        Také se potvrdilo, že BF algoritmus je pomalejší, než NX a HJ algoritmy a rychlejší než WEIN algoritmus. Je však vidět, že pro řešení spotřebuje méně paměti než ostatní algoritmy.
+        Znovu bylo potvrzeno, že časová složitost algoritmu WEIN roste rychleji než u ostatních algoritmů. Pro multi-cyklický graf s 200 vrcholy, 225 hranami a 350 cykly byl čas výpočtu algoritmu WEIN 0.27 sekund a algoritmu NX 0.37 sekund, ale pro graf s 200 vrcholy, 240 hranami a 7'339 cykly byl již čas výpočtu algoritmu WEIN 137.43 sekund a algoritmu NX pouhých 1.98 sekund.
 
         Pro úplné grafy, sice časová složitost algoritmu HJ rostla rychleji než NX, ale pro grafy do 11-ti vrcholů byl algoritmus HJ rychlejší. Toto tvrzení pro multi-cyklické grafy, které simulují řidké grafy, neplatí. Zde rostou časové nároky algoritmu HJ velice rychle. Pro porovnání: algoritmus NX nalezne všechny cykly v multi-cyklickém grafu o 200 vrcholech, 235 hranách a 6'027 cyklech za 0.95 sekund a algoritmus HJ za 3.73 sekund, ale pro 200 vrcholů, 250 hran a 119'589 cyklů, které algoritmus NX nalezne za 23.59 sekund, již algoritmus HJ nestihne doběhnout v časovém limitu tři minut. Tento problém algoritmu HJ pramení z využívání fronty, ve které jsou uloženy všechny rozpracované cesty, což vede na opakované prohledávání jednotlivých vrcholů. Další nevýhodou fronty je její vysoká (zbytečná) paměťová náročnost v případě nízkéno počtu cyklů v poměru k počtu vrcholů. Problém vysokých paměťových nároků lze vidět v případě multi-cyklického grafu s 200 vrcholy, 250 hranami a 119'589 cykly. V tomto případě algoritmus NX využil při hledání cyklů maximálně 177.6 MiB paměti, ale algoritmus HJ, který ani nestačil doběhnout, již spotřeboval 1'441.5 MiB paměti.
 
 \chapter{Závěr}
     \label{chapter:Conclusion}
-    \lipsum[2]
+    Tento projekt implementuje a porovnává tři různé algoritmy pro výčet všech cyklů v orientovaných grafech.
+
+    Nejpřímočařejší Brute-Force (BF) algoritmus prohledávající celý graf do hloubky má časovou složitost TODO a prostorovou složitost TODO.
+
+    Algoritmus Herberta Weinblatta (WEIN) vyhledávající cykly pomocí kombinace již nalezených cyklů má časovou složitost $\mathcal{O}(|V|^2+|E|\cdot|V|\cdot(c + 1))$ a prostorovou složitost $\mathcal{O}(|V|^2)$, kde $c$ je počet cyklů.
+
+    Posledním algoritmem je algoritmus, kerý publikovali Hongbo Liu a Jiaxin Wang (HJ). Tento algoritmus využívá frontu, do které generuje všechny cesty v grafu. Časová složitost tohoto algoritmus je $\mathcal{O}(d^{|V|-d}\cdot d!)$ a prostorová složitost je $\mathcal{O}(d^{|V|-d}\cdot d!)$, kde $d$ je maximální výstupní stupeň v grafu.
+
+    Během experimentálních měření byly algoritmy porovnány s Johnsonovým přístupen implementovaným v knihovně Networkx. Ukázalo se, že pro úplné grafy je algoritmus HJ nejefektivnějším. Zato pro multi-cyklické grafy byl algoritmus HJ "mnohonásobně" pomalejší než Johnsonův. Tím bylo potvrzeno, že Johnsonův algoritmus je opravdu nejefektivnějším a nejvšestrannějším algoritmem pro vyhledávání cyklů.
