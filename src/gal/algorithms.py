@@ -12,7 +12,7 @@ from queue import Queue
 from . import digraph
 
 
-def __get_cycles_nx(graph: digraph.DiGraph) -> list():
+def __get_cycles_nx(graph: digraph.DiGraph) -> list:
     """Enumerates all cycles (elementary circuits) in a graph.
     It uses a nonrecursive, iterator/generator version of
     Johnson's algorithm [Finding all the elementary circuits of
@@ -36,7 +36,7 @@ def __get_cycles_nx(graph: digraph.DiGraph) -> list():
 
     return list(nx.simple_cycles(graph_nx))
 
-def __get_cycles_hj(input_graph: digraph.DiGraph) -> list():
+def __get_cycles_hj(input_graph: digraph.DiGraph) -> list:
     """Enumerates all cycles (elementary circuits) in a graph.
     It uses Hongbo's and Jiaxin's algorithm with a queue
     [Hongbo Liu and Jiaxin Wang, "A new way to enumerate cycles
@@ -114,7 +114,7 @@ def __get_cycle_wein(input_graph: digraph.DiGraph) -> list:
         except ValueError:
             return list()
 
-    def get_suitable_edge(TT: list) -> int|None:
+    def get_suitable_edge(TT: list):
         """Returns suitable successor of the path end.
         The time complexity is O(n) for n nodes.
 
@@ -246,7 +246,7 @@ def __get_cycle_wein(input_graph: digraph.DiGraph) -> list:
     # The time complexity is O(n * c), where n is a number of nodes and c is a number of cycles.
     return [[input_graph.vertex_cname.inv[graph.vertex_cname[v]] for v in c[:-1]] for c in cycles]
 
-def _bet_cycles_bf(input_graph: digraph.DiGraph) -> list():
+def _bet_cycles_bf(input_graph: digraph.DiGraph) -> list:
     """Enumerates all cycles (elementary circuits) in a graph.
     It uses algorithm proposed in a book by Narsingh Deo
     (page 287 Alg. 5), which is systematic and exhaustive
