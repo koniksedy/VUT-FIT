@@ -63,7 +63,7 @@ def enumerate_cycles(graph: DiGraph, nx: bool, bf: bool, hj: bool, wein: bool) -
         raise RuntimeError("The enumeration algorithm was not selected.")
 
 def translate_vertices(graph: DiGraph, vertices: list):
-    return map(lambda x: graph.vertex_cname[x], vertices)
+    return map(lambda x: str(graph.vertex_cname[x]), vertices)
 
 
 def main():
