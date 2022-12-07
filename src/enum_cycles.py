@@ -4,7 +4,7 @@ An executable python3 application for the enumeration
 of cycles in directed graphs. Cycles are printed to the stdout.
 Authors: Bc. Jan Bíl
          Bc. Michal Šedý
-Last change: 15.11.2022
+Last change: 07.12.2022
 """
 
 from argparse import ArgumentParser, Namespace
@@ -63,22 +63,17 @@ def enumerate_cycles(graph: DiGraph, nx: bool, bf: bool, hj: bool, wein: bool) -
         raise RuntimeError("The enumeration algorithm was not selected.")
 
 def translate_vertices(graph: DiGraph, vertices: list):
-    return filter(lambda x: graph.vertex_cname[x], vertices)
+    return map(lambda x: str(graph.vertex_cname[x]), vertices)
 
 
 def main():
     args = parse_arguments()
     graph = load_graph(args.input, args.complete, args.multicycle, args.nested)
     # Get cycles with an internal representation of vertices
-    print("|V|:", len(graph.vertices))
-    print("|E|:", sum([len(vs) for vs in graph.edges]))
     cycles_inter_repr = enumerate_cycles(graph, args.nx, args.bf, args.hj, args.wein)
-    print("c:", len(cycles_inter_repr))
-    # with open(f"graphs/{args.multicycle[1]}-{len(cycles_inter_repr)}.grpf", "w") as fd:
-    #     print(graph, file=fd)
-    exit(0)
+
     for cycle in cycles_inter_repr:
-        vertex_names = map(lambda x: str(graph.vertex_cname[x]), cycle)
+        vertex_names = translate_vertices(graph, cycle)
         print(" ".join(vertex_names))
 
 

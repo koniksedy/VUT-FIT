@@ -20,13 +20,7 @@ Na kořenové úrovni projektu se nachází tři složky. Složka `/src` obsahuj
 
 ## Instalace závislostí
 
-Potřebné knihovny využívané programem lze instalovat pomocí vástroje pip3 do virtuálního prostředí následovně.
-
-```bash
-python3 -m venv gal-env
-source ./gal-env/bin/activate
-pip3 install -r requirements.txt
-```
+Potřebné knihovny využívané programem lze instalovat pomocí nástroje pip3 do virtuálního prostředí `gal-env` spuštěním skriptu `build.sh`. Spuštění virtuálního prostředí lze provést příkazem `source ./gal-env/bin/activate` v kořenové úrovni projektu.
 
 ## Spuštění programu
 
@@ -34,10 +28,10 @@ Při spuštění programu lze přepínači zvolit algoritmus, který bude použi
 
 Dále lze zpracovávat graf zadaný vstupním souborem, vyheverovaným úplným, multi-cyklickým, nebo nested grafem. Právě jeden graf musí být zadán.
 
-Program `enum_cycles.py` umístěný ve složce `/src` lze po úspěšné instalaci závislostí spustit s využitím interpretu python3 (verze 3.8+) následovně:
+Program `enum_cycles.py` umístěný ve složce `/src` lze po úspěšné instalaci závislostí spustit ve virtuálním prostředí `gal-env` s využitím interpretu python3 (verze 3.8+) následovně:
 
 ```
-pužití: enum_cycles.py [-h] (--nx | --bf | --hj | --wein) [-c N] [-m N M] [-n N] [input]
+použití: enum_cycles.py [-h] (--nx | --bf | --hj | --wein) [-c N] [-m N M] [-n N] [input]
 
 Poziční argumenty:
   input                 Vstupní soubor s grafem.
