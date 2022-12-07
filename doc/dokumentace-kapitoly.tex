@@ -195,54 +195,90 @@
 
 \chapter{Brute-force}
     \label{chapter:Algo1}
-    \lipsum[1]
+    Tento algoritmus prvně publikoval S. M. Roberts a B. Flores \cite{Curcuits1966} a následně byl upraven Tiernanen \cite{Tiernan}. Finální podoba je popsána v knize od N. Deo \cite{Book_algo}. Algoritmus prohledáváním prochází všechny možnosti, jeho časová náročnost je tedy velmi vysoká a je zde prostor pro různé optimalizace.
 
     \section{Popis algoritmu}
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque.
+    Vrcholy vstupního grafu G jsou reprezentovány celými čísly $1,2\dots n$. Algoritmus začíná ve vrcholu $p_1$ a prohledáváním následovníků vytváří orientovanou cestu $P=\langle p_1p_2\dots p_k\rangle$. Když již cestu není možné rozšířit, algoritmus zkontroluje, zda existuje hrana $(p_k, p_1) \in E$. Pokud ano, je zaznamenán cyklus $\langle p_1p_2\dots p_kp_1\rangle$. Poté se algoritmus vrátí o jeden vrchol zpět (do vrcholu $p_{k-1}$) a snaží se z tohoto vrcholu cestu rozšířit jinou hranou, pokud taková existuje. Vrchol $p_k$ je zakázán pro další prohledávání z~vrcholu $p_{k-1}$ aby se zamezilo procházení stejných cest. Tento proces je opakován, dokud se výpočet nevrátí až k vrcholu $p_1$. V~případě, že již byli všichni následníci $p_1$ zakázáni (byly nalezeny všechny cykly začínající z~vrcholu $p_1$), je zvolen nový počáteční vrchol cesty $P$ a proces vyhledávání je opakován. Z~důvodu zamezení zbytečným operacím při vyhledávání cyklů musí být zavedeny následující opatření:
+    \begin{itemize}
+        \item Během rozšiřování orientované cesty musí být zajištěna její korektnost (žádný vrchol se nesmí opakovat).
+        \item Nesmí být zaznamenány žádné cyklické permutace cyklů (začínaly by pouze z~jiného vrcholu). To je zajištěno podmínkou, že žádný vrchol $i\leq p_1$ není možné prozkoumat, pokud budovaná orientovaná cesta začíná ve vrcholu $p_1$.
+        \item Během vyhledávání se nesmí žádná cesta procházet více než jednou. To je zajištěno aktualizováním binární matice $n \times n : H[h_{i j}]$. Pokud $h_{ij} = 1$, pak nesmí být použita hrana $(i, j) \in E$ pro rozšíření cesty $P$ (byla již jednou použita). Hodnota 0 informuje, že daná hrana může být použita pro rozšíření cesty. Řádek $i$ matice $H$ je nulován při zpětném navrácení z vrcholu $i$. Při prohledávání z nového počátečního vrcholu je matice $H$ nulová.
+    \end{itemize}
 
-        \begin{algorithm}[h]
-            \SetAlgoLined
-            \caption{Dummy Algorithm.}
+    V algoritmu se používá indexace pomocí záporných čísel. Tato indexace má následující význam: index -1 značí poslední prvek listu, index -2 předposlední a tak dále. Pro sjednocení dvou cest $P_1 = \langle v_1v_2 \rangle$ a $P_2 = \langle v_3v_4 \rangle$ bude využíván operátor $+$, tedy $P_1 + P_2 = \langle v_1v_2v_3v_4 \rangle$.
+
+        \begin{algorithm}[!h]
+            \DontPrintSemicolon
+            \caption{Bruteforce algorithm}
             %
-            Do something.\;
-            \For{$k=0,1,2,3, ...$}{
-                Do something.\;
-                \eIf{$x \geq y$}{
-                     Do something.\;
-                }{
-                     Do something.\;
-                     \For{$j = 1,...,10$}{
-                          Do something.\;
-                     }
-                     THIS IS THE SPOT WHERE I NEED THE PAGE BREAK.\;
-                     Do something.\;
+            \KwIn{$G := (V, E), n:= |V|$}
+            \KwOut{$L_{cycles}$}
+            $L_{cycles} \leftarrow  \mathit{EmptyList}$\;
+            $H[0 \dots n-1][0 \dots n-1] \leftarrow 0$ \tcp*{nulová matice $n \times n$}
+            \For{$p_s \in V$}
+            {
+                $P \leftarrow  \mathit{EmptyList}$\;
+                $P.append(p_s)$\;
+                $p_{curr} \leftarrow p_s$\;
+                % $isDone \leftarrow$ \textbf{False}\;
+                \While{\textnormal{\textbf{True}}}
+                {
+                    $foundSuccessor \leftarrow$ \textbf{False}\;
+                    \For{$(p_{curr},p_{next}) \in E$}
+                    {
+                        \If{$H[p_{curr}][p_{next}]=0 \land p_{next} \notin P \land p_{next} > p_s$}
+                        {
+                        $P.append(p_{next}$)\;
+                        $p_{curr} \leftarrow p_{next}$\;
+                        $foundSuccessor \leftarrow$ \textbf{True}\;
+                        \textbf{break}\;
+                        }
+                    }
+
+                    \eIf{$foundSuccessor$}
+                    {
+                        \textbf{continue}\;
+                    }
+                    {
+                        \If{$(p_{curr}, p_s) \in E$}
+                        {
+                            $L_{cycles}.append(P + \langle p_s \rangle$)\;
+                        }
+                        \If{$p_{curr} = p_s$}
+                        {
+                            \textbf{break}\;
+                        }
+                        $H[P[-2]][p_{curr}$] $\leftarrow$ 1\;
+                        $H[p_{curr}][0\dots n-1$] $\leftarrow$ 0\;
+                        $p_{curr} \leftarrow P[-2]$\;
+                        $P.removeLast()$
+                    }
                 }
             }
+            \KwRet{$L_{cycles}$}\;
         \end{algorithm}
-
-        \lipsum[1-2]
 
     \section{Časová složitost}
         \begin{theorem}
-            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque.
+            Časová složitost Brute-Force algoritmu je $\mathcal{O}(d^{|V|-d} \cdot\, d!)$, kde $d$ je maximální výstupní stupeň v grafu.
         \end{theorem}
 
         \begin{proof}
-            \lipsum[1]
+            Na prohledávání cest se můžeme dívat jako na prohledávání stromu, kde každý vnitřní uzel má až $d$ potomků. Hloubka takového stromu může dosahovat až $|V| - 1 \approx |V|$. Ovšem je zřejmé, že v hloubce větší než $|V| - d$, začíná počet možných následníků klesat. V hloubce $|V| -1$ již není možné cestu rozšířit. V hloubce $|V| -2$ máme právě jednu možnost. V hloubce $|V| - d$ máme $d - 1$ možností. Pro počet prohledaných uzlů rozdělíme strom na 2 části: v první má každý uzel $d$ následovníků až do hloubky $|V| - d$. Počet uzlů je tedy $d^{|V|-d}$. Druhá část stromu obsahuje $(d-1) \cdot (d-2) \cdot (d-3) \cdot\, \dots\, \cdot 1 = (d-1)!$ uzlů, tedy celý strom má mohutnost $d^{|V|-d} \cdot (d-1)! \in \mathcal{O}(d^{|V|-d} \cdot d!)$. Bylo dokázáno, že časová složitost algoritmu je $\mathcal{O}(d^{|V|-d} \cdot d!)$.
         \end{proof}
 
     \section{Prostorová složitost}
         \begin{theorem}
-            Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut purus elit, vestibulum ut, placerat ac, adipiscing vitae, felis. Curabitur dictum gravida mauris. Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna. Donec vehicula augue eu neque.
+            Prostorová složitost Brute-Force algoritmu je $\mathcal{O}(|V|^{2})$.
         \end{theorem}
 
         \begin{proof}
-            \lipsum[1]
+            Matice $H$, která obsahuje $|V| \times |V|$ prvků má prostorovou složitost $\mathcal{O}(|V|^2)$. Dále si algoritmus musí pamatovat cestu P, která nabývá délky maximálně $|V|-1 \in \mathcal{O}(|V|)$. Celková prostorová složitost je tedy $\mathcal{O}(|V|^{2})$.
         \end{proof}
 
 \chapter{Herbert Weinbaltt}
     \label{chapter:Algo2}
-    Tento algoritmus byl publikován v roce 1972 Herbertem Weinblattem \cite{A_new_search_algorithm}. Jeho základem je Tiernanův algoritmus \cite{Tiernan} publikovaný o dva roky dříve, který vyhodnocuje každý cyklus pouze jednou, jednalo se tedy o teoreticky nejefektivnější algoritmus, ovšem za cenu vyšších paměťových nároků. Sám Tiernan ale naznačil, že pro průměrně husté grafy s více než 100 hranami by bylo použití tohoto algoritmus neprakticky pomalé. Herbert Weinblatt ve svém článku popisuje nový přístup, který stejně jako Tiernanův vyhodnocuje každý cyklus pouze jednou, ale nově také minimalizuje množství prozkoumaných hran nutných k objevení cyklu. V důsledku toho dokázal algoritmus implementovaný v experimentálním jazyce Snobol3 na počítači IBM 7094 objevit všech 44 cyklů v grafu s 194 uzly a 294 hranami za méně než sedm sekund.
+    Tento algoritmus byl publikován v roce 1972 Herbertem Weinblattem \cite{A_new_search_algorithm}. Jeho základem je Tiernanův algoritmus \cite{Tiernan} publikovaný o dva roky dříve, který vyhodnocuje každý cyklus pouze jednou, jednalo se tedy o teoreticky nejefektivnější algoritmus, ovšem za cenu vyšších paměťových nároků. Sám Tiernan ale naznačil, že pro průměrně husté grafy s více než 100 hranami by bylo použití tohoto algoritmus neprakticky pomalé. Herbert Weinblatt ve svém článku popisuje nový přístup, který stejně jako Tiernanův vyhodnocuje každý cyklus pouze jednou, ale nově také minimalizuje množství prozkoumaných hran nutných k objevení cyklu. V~důsledku toho dokázal algoritmus implementovaný v experimentálním jazyce Snobol3 na počítači IBM 7094 objevit všech 44 cyklů v grafu s 194 uzly a 294 hranami za méně než sedm sekund.
 
     \section{Popis algoritmu}
         Před vlastním popisem algoritmu je potřeba definovat pomocné funkce $\mathit{END}$ a $\mathit{TAIL}$.
@@ -821,7 +857,7 @@
 
         Znovu bylo potvrzeno, že časová složitost algoritmu WEIN roste rychleji než u ostatních algoritmů. Pro multi-cyklický graf s 200 vrcholy, 225 hranami a 350 cykly byl čas výpočtu algoritmu WEIN 0.27 sekund a algoritmu NX 0.37 sekund, ale pro graf s 200 vrcholy, 240 hranami a 7'339 cykly byl již čas výpočtu algoritmu WEIN 137.43 sekund a algoritmu NX pouhých 1.98 sekund.
 
-        Pro úplné grafy, sice časová složitost algoritmu HJ rostla rychleji než NX, ale pro grafy do 11-ti vrcholů byl algoritmus HJ rychlejší. Toto tvrzení pro multi-cyklické grafy, které simulují řidké grafy, neplatí. Zde rostou časové nároky algoritmu HJ velice rychle. Pro porovnání: algoritmus NX nalezne všechny cykly v multi-cyklickém grafu o 200 vrcholech, 235 hranách a 6'027 cyklech za 0.95 sekund a algoritmus HJ za 3.73 sekund, ale pro 200 vrcholů, 250 hran a 119'589 cyklů, které algoritmus NX nalezne za 23.59 sekund, již algoritmus HJ nestihne doběhnout v časovém limitu tři minut. Tento problém algoritmu HJ pramení z~využívání fronty, ve které jsou uloženy všechny rozpracované cesty, což vede na opakované prohledávání jednotlivých vrcholů. Další nevýhodou fronty je její vysoká (zbytečná) paměťová náročnost v případě nízkého počtu cyklů v poměru k počtu vrcholů. Problém vysokých paměťových nároků lze vidět v případě multi-cyklického grafu s 200 vrcholy, 250 hranami a 119'589 cykly. V tomto případě algoritmus NX využil při hledání cyklů maximálně 177.6 MiB paměti, ale algoritmus HJ, který ani nestačil doběhnout, již spotřeboval 1'441.5 MiB paměti.
+        Pro úplné grafy, sice časová složitost algoritmu HJ rostla rychleji než NX, ale pro grafy do 11-ti vrcholů byl algoritmus HJ rychlejší. Toto tvrzení pro multi-cyklické grafy, které simulují řidké grafy, neplatí. Zde rostou časové nároky algoritmu HJ velice rychle. Pro porovnání: algoritmus NX nalezne všechny cykly v multi-cyklickém grafu o 200 vrcholech, 235 hranách a 6'027 cyklech za 0.95 sekund a algoritmus HJ za 3.73 sekund, ale pro 200 vrcholů, 250 hran a 119'589 cyklů, které algoritmus NX nalezne za 23.59 sekund, již algoritmus HJ nestihne doběhnout v časovém limitu tři minut. Tento problém algoritmu HJ pramení z využívání fronty, ve které jsou uloženy všechny rozpracované cesty, což vede na opakované prohledávání jednotlivých vrcholů. Další nevýhodou fronty je její vysoká (zbytečná) paměťová náročnost v případě nízkéno počtu cyklů v poměru k počtu vrcholů. Problém vysokých paměťových nároků lze vidět v případě multi-cyklického grafu s 200 vrcholy, 250 hranami a 119'589 cykly. V tomto případě algoritmus NX využil při hledání cyklů maximálně 177.6 MiB paměti, ale algoritmus HJ, který ani nestačil doběhnout, již spotřeboval 1'441.5 MiB paměti.
 
 \chapter{Závěr}
     \label{chapter:Conclusion}
