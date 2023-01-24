@@ -93,6 +93,11 @@ FUNCTION {opt.sep.t} { ": " }
 FUNCTION {opt.pages} { "p." }    % number of pages
 % FUNCTION {opt.pages} { "sh." }   % number of sheets
 
+% -- Choice between two forms of bibliographic citations of theses.
+% #0 -- default form uses element spacing matching the monography
+% #1 -- form, that is used for example by csplainnat.bst
+FUNCTION {opt.thesis} { #0 }     % default version
+% FUNCTION {opt.thesis} { #1 }    % alternative version
 
 % -- Beginning of the availability element (url).
 % This option affects text, that is displayed before the URL itself.
@@ -109,15 +114,14 @@ FUNCTION {opt.path} { "Path: " }
 % Entries that are accepted and processed by this style.
 ENTRY
   { address
+    location
     author
     booktitle
     booksubtitle    % book subtitle
+    secondarytitle  % webpage title
     cited           % date of citation
-    contributory    % secondary author(s)
-    day
-    doi
+    contrybutory    % secondary author(s)
     edition
-    editionnumber   % edition number
     editor
     howpublished    % type of medium
     chapter
@@ -128,7 +132,6 @@ ENTRY
     journal
     journalsubtitle
     key
-    location
     month
     note
     number
@@ -137,12 +140,9 @@ ENTRY
     pages
     publisher
     revised         % revision date/update
-    secondarytitle  % webpage title
     school
-    series          % edition name
+    series
     subtitle        % subtitle
-    supervisor      % for theses
-    time            % publication time
     title
     type
     url             % availability
@@ -928,7 +928,7 @@ FUNCTION {get.month.n}
 % Vraci genitiv mesice.
 %
 % /** prepis pseudokodu do funkce pracujici s polem **/
-% string get.month.g (int n)
+% string get.month.n (int n)
 % {
 %   int month = { 1 => "january", "february", "march", "april", "may", "june",
 %                "july", "august", "september", "october", "november", "december"};
@@ -1234,14 +1234,6 @@ FUNCTION {format.authors}
   if$
 }
 
-% Supervisor name formatting
-FUNCTION {format.supervisor}
-{ supervisor empty$
-  { "" }
-  { "Supervisor " supervisor format.names * }
-  if$
-}
-
 % Editor names formatting
 % If the 'editor' element is not empty, applies formatting using the
 % 'format.names.ed' function.
@@ -1465,7 +1457,7 @@ FUNCTION {format.edition}
     { edition "1" =
       edition "21" =
       edition "31" =
-        or or
+	      or or
         { edition "st ed." * }
         { edition "2" =
           edition "22" =
@@ -1768,62 +1760,9 @@ FUNCTION {format.range}
   if$
 }
 
-% Conference proceedings volume and number formatting
+% Monographic publication edition and volume formatting.
 %
-% string format.cvolume ()
-% {
-%   if (empty$(volume))
-%   { 
-%     push("");
-%   } else
-%   {
-%     if (is.ord(volume))
-%     {
-%       push("vol. " * volume);
-%     } else
-%     {
-%       push(volume);
-%     }
-%   }
-%   if (empty$(number))
-%   {
-%     return pop();
-%   } else
-%   {
-%     if (is.ord(number))
-%     {
-%       return comma.connect(pop(), "no. " * number);
-%     } else
-%     {
-%       return comma.connect(pop(), number);
-%     }
-%   }
-% }
-FUNCTION {format.cvolume}
-{ volume empty$
-  { "" }
-  { volume is.ord
-    { "vol. " volume * }
-    { volume }
-    if$
-  }
-  if$
-  number empty$
-  { 
-    "" comma.connect
-  }
-  { number is.ord
-    { "no. " number * comma.connect }
-    { number comma.connect }
-    if$
-  }
-  if$
-}
-
-
-% Conference proceedings or book series and edition number formatting
-%
-% string format.cseries ()
+% string format.bvolume ()
 % {
 %   if (empty$(series))
 %   {
@@ -1831,35 +1770,54 @@ FUNCTION {format.cvolume}
 %   } else
 %   {
 %     push(capitalize(series));
-%     if (empty$(editionnumber))
-%     { } else
+%     if (empty$(volume))
 %     {
-%       if (is.ord(editionnumber))
+%       if (empty$(number))
+%       { } else
 %       {
-%         return comma.connect(pop(), "no. " * editionnumber);
+%         if (is.ord(number))
+%         {
+%           return comma.connect(pop(), "no. " * number);
+%         } else
+%         {
+%           return comma.connect(pop(), number);
+%         }
+%       }
+%     } else
+%     {
+%       if (is.ord(volume))
+%       {
+%         return comma.connect(pop(), "vol. " * volume);
 %       } else
 %       {
-%         return comma.connect(pop(), editionnumber);
+%         return comma.connect(pop(), volume);
 %       }
 %     }
 %   }
 % }
-FUNCTION {format.cseries}
+FUNCTION {format.bvolume}
 { series empty$
   { "" }
   { series capitalize
-    editionnumber empty$
-    'skip$
-    { editionnumber is.ord
-      { "no. " editionnumber * comma.connect }
-      { editionnumber comma.connect }
+    volume empty$
+    { number empty$
+      'skip$
+      { number is.ord
+        { "no. " number * comma.connect }
+        { number comma.connect }
+        if$
+      }
+      if$
+    }
+    { volume is.ord
+      { "vol. " volume * comma.connect }
+      { volume comma.connect }
       if$
     }
     if$
   }
   if$
 }
-
 
 % Availability formatting.
 %
@@ -2014,8 +1972,7 @@ FUNCTION {format.chapter}
 %   }
 % }
 FUNCTION {format.journal.issue}
-{ format.date
-  duplicate$ empty$
+{ format.date duplicate$ empty$
   { pop$ "" 's := }
   { 's := }
   if$
@@ -2063,25 +2020,6 @@ FUNCTION {format.issn}
 { issn empty$
   { "" }
   { "ISSN " issn * }
-  if$
-}
-
-% DOI formatting.
-%
-% string format.doi ()
-% {
-%   if (empty$(doi))
-%   {
-%     return "";
-%   } else
-%   {
-%     return "DOI: " * doi;
-%   }
-% }
-FUNCTION {format.doi}
-{ doi empty$
-  { "" }
-  { "DOI: " doi * }
   if$
 }
 
@@ -2191,6 +2129,57 @@ FUNCTION {conference.basics}
   if$
 }
 
+% Formatuje zakladni informace (primarni odpovednost a titul) o sborniku pro bibliograficke citaci kapitoly v knize.
+%
+% In <primarni odpovendost> opt.sep.a() <titul knihy>.
+%
+% Pokud je <titlul knihy> prazdny, netiskne se nic.
+%
+% void inbook.basics ()
+% {
+%   if (empty$(editor))
+%   {
+%     return ""
+%   } else
+%   {
+%     if ((substring$(format.editors(), -1, 1) == opt.sep.a())
+%     {
+%       push(format.editors());
+%     } else
+%     {
+%       push(capitalize(format.editors() * opt.sep.a()));
+%     }
+%   }
+%   push(tie.or.connect("In:", pop()));
+%   if (empty$(format.from.btitle()))
+%   {
+%     pop();
+%     push("");
+%   } else
+%   {
+%     push(pop() * format.from.btitle());
+%   }
+%   return pop();
+% }
+FUNCTION {inbook.basics}
+{ editor empty$
+  { 
+    ""
+  }
+  { format.editors
+    duplicate$ #-1 #1 substring$ opt.sep.a =
+    'skip$
+    { opt.sep.a * }
+    if$
+  }
+  if$
+  "In:" swap$ tie.or.connect
+  format.from.btitle
+  duplicate$ empty$
+  { pop$ }
+  { tie.or.connect }
+  if$
+}
 
 % Formats information about a thesis (bachelor's, dissertation etc).
 % The elements used to create a bibliographic citation are different from
@@ -2354,18 +2343,34 @@ FUNCTION {format.thesis.type}
 %   if (empty$(type))
 %   {
 %     push("");
+%     warning$("type empty in "* cite$());
 %   } else
 %   {
 %     push(type);
 %   }
 %   if (empty$(number))
 %   {
+%%     warning$("number empty in "* cite$());
 %   } else
 %   {
 %     space.connect(pop(), number);
 %   }
 % }
 FUNCTION {format.report.type}
+{ type empty$
+    { ""
+      "empty type in " cite$ * warning$
+    }
+    { type }
+  if$
+  number empty$
+%    { "number empty in " cite$ * warning$ }
+    'skip$
+    { number space.connect }
+  if$
+}
+
+FUNCTION {format.manual.type}
 { type empty$
     { "" }
     { type }
@@ -2404,103 +2409,125 @@ FUNCTION {empty.misc.check}
   if$
 }
 
+% Checks if all elements used for @Unpublished record are empty.
+%
+% int empty.unpublished.check ()
+% {
+%   if ( (empty$(author)) && (empty$(title)) && 
+%        (empty$(year)) &&
+%        (empty$(note)) && (!empty$(key)) )
+%   {
+%     warning$("all unpublished relevant fields are empty in " * cite$());
+%     return 1;
+%   } else
+%   {
+%     return 0;
+%   }
+% }
+FUNCTION {empty.unpublished.check}
+{ author empty$ title empty$
+  month empty$ note empty$
+  and and and
+  key empty$ not and
+  { "all unpublished relevant fields are empty in " cite$ * warning$
+    #1
+  }
+  { #0 }
+  if$
+}
 
 % Formats place of publication and institution of a technical report.
 %
 % string format.report.details ()
 % {
-%   if ( empty$(institution) )
+%   if ( empty$(address) && empty$(institution) )
 %   {
-%     if ( empty$(address) && empty$(organization) )
-%     {
-%       return "";
-%     } else
-%     {
-%       if (empty$(address))
-%       {
-%         push("");
-%       } else
-%       {
-%         push(opt.sep.a() * " " * address * opt.sep.p());
-%       }
-%       if (empty$(organization))
-%       {
-%         warning$("empty organization in " * cite$());
-%       } else
-%       {
-%         return pop() * organization;
-%       }
-%     }
+%     return "";
 %   } else
 %   {
-%     if ( empty$(address) && empty$(institution) )
+%     if (empty$(address))
 %     {
-%       return "";
+%%       push("[b.m.]");
+%       push("");
 %     } else
 %     {
-%       if (empty$(address))
-%       {
-%%         push("[b.m.]");
-%         push("");
-%       } else
-%       {
-%         push(opt.sep.a() * " " * address * opt.sep.p());
-%       }
-%       if (empty$(institution))
-%       {
-%         warning$("institution is empty in " * cite$());
-%       } else
-%       {
-%         return pop() * institution;
-%       }
+%       push(opt.sep.a() * " " * address * opt.sep.p());
+%     }
+%     if (empty$(institution))
+%     {
+%       warning$("institution is empty in " * cite$());
+%     } else
+%     {
+%       return pop() * institution;
 %     }
 %   }
 % }
 FUNCTION {format.report.details}
-{ institution empty$
-  {
-    address empty$
-    organization empty$
-    and
-      { "" }
-      { address empty$
-          { "" }
-          { address }
-        if$
-        organization empty$
-          { "empty organization in " cite$ * warning$ }
-          { address empty$
-              { organization * }
-              { opt.sep.p * organization * }
-            if$
-          }
-        if$
-      }
-    if$
-  }
-  {
-    address empty$
-    institution empty$
-    and
-      { "" }
-      { address empty$
-          { "" }
-          { address }
-        if$
-        institution empty$
-          { "empty institution in " cite$ * warning$ }
-          { address empty$
-              { institution * }
-              { opt.sep.p * institution * }
-            if$
-          }
-        if$
-      }
-    if$
-  }
+{ address empty$
+  institution empty$
+  and
+    { "" }
+    { address empty$
+        { "" }
+        { address }
+      if$
+      institution empty$
+        { "empty institution in " cite$ * warning$ }
+        { address empty$
+            { institution * }
+            { opt.sep.p * institution * }
+          if$
+        }
+      if$
+    }
   if$
 }
 
+% Address and organization formatting for the manual record type.
+%
+% string format.manual.details ()
+% {
+%   if ( empty$(address) && empty$(institution) )
+%   {
+%     return "";
+%   } else
+%   {
+%     if (empty$(address))
+%     {
+%       push("");
+%     } else
+%     {
+%       push(opt.sep.a() * " " * address * opt.sep.p());
+%     }
+%     if (empty$(organization))
+%     {
+%       warning$("empty organization in " * cite$());
+%     } else
+%     {
+%       return pop() * organization;
+%     }
+%   }
+% }
+FUNCTION {format.manual.details}
+{ address empty$
+  organization empty$
+  and
+    { "" }
+    { address empty$
+        { "" }
+        { address }
+      if$
+      organization empty$
+        { "empty organization in " cite$ * warning$ }
+        { address empty$
+            { organization * }
+            { opt.sep.p * organization * }
+          if$
+        }
+      if$
+    }
+  if$
+}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%% CODE -- FUNCTIONS FOR RECORD PROCESSING %%%%%%%%%%%%%%%%%%%%
@@ -2510,7 +2537,7 @@ FUNCTION {format.report.details}
 % Bibliographic citations of an article in a serial publication (magazine article).
 %
 % Required elements:   author, title, journal, edition, year, volume, number, pages, issn
-% Optional elements: subtitle, journalsubtitle, publisher, address, contributory, url*, month, note, doi
+% Optional elements: subtitle, journalsubtitle, publisher, address, contrybutory, url*, month, note
 % Elements of el. doc.:  howpublished*, revised*, cited*, version
 %
 % * Required element for el. doc.
@@ -2527,27 +2554,22 @@ FUNCTION {article}
   format.title "title" output.check
   new.block %% journal title (required)
   format.journal "journal" output.check
-  format.howpublished output
-  new.block
-  format.edition "edition" output.check
-  new.block %% edition (required)
-  contributory capitalize output
-  new.block %% contributory (optional)
+  new.block %% title (required)
   format.publish.info output
   new.block
+  contrybutory capitalize output
+  new.block %% contrybutory (optional)
+  format.howpublished output
+  new.block %% serial pub. title (required) a medium type (required for el. doc.)
+  format.edition "edition" output.check
+  new.block %% edition (required)
   format.journal.issue
-  format.pages comma.connect
   format.revised comma.connect
-  format.cited comma.connect output
+  format.cited comma.connect
+  format.pages comma.connect "pages" output.check
   new.block %% location in source document (required)
-  format.cseries output
-  new.block
-  format.doi output
-  new.block
-  format.issn output %% standard number ISSN (optional)
-  new.block
   note output
-  new.block %% poznamky (volitelne)
+  new.block %% notes (optional)
   howpublished empty$
   { format.url output }
   { format.url "url" output.check
@@ -2559,14 +2581,16 @@ FUNCTION {article}
     if$
   }
   if$
-  fin.entry 
+  new.block %% availability (required for el. doc.)
+  format.issn output
+  fin.entry %% standard number ISSN (optional)
 }% @Article
 
 % Processes @Book type record.
 % Bibliographic citation of a monographic publication (book).
 %
 % Required elements:   author nebo editor, title, edition, address, publisher, year, isbn
-% Optional elements: subtitle, contributory, month, pages, series, number nebo volume, note, url*
+% Optional elements: subtitle, contrybutory, month, pages, series, number nebo volume, note, url*
 % Elements of el. doc.:  howpublished*, revised*, cited*, version
 %
 % * Required element for el. doc.
@@ -2579,7 +2603,7 @@ FUNCTION {book}
   new.block %% title (required) and medium type (required for el. doc.)
   format.edition capitalize "edition" output.check
   new.block %% edition (required)
-  contributory capitalize output
+  contrybutory capitalize output
   new.block %% secondary author(s) (optional)
   format.publish.info
   format.date comma.connect
@@ -2590,10 +2614,8 @@ FUNCTION {book}
             %% date of revision/update and citation (required for el. doc.)
   format.range output
   new.block %% pages (optional)
-  format.cseries output
+  format.bvolume output
   new.block %% series (optional)
-  format.isbn "isbn" output.check
-  new.block
   note capitalize output
   new.block %% notes (optional)
   howpublished empty$
@@ -2607,18 +2629,22 @@ FUNCTION {book}
     if$
   }
   if$
+  new.block %% availability (required for el. doc.)
+  format.isbn "isbn" output.check
   fin.entry %% standard number ISBN (required)
 }% @Book
 
 % @Booklet is merely a reference to @Book.
 FUNCTION {booklet} { book }
 
-% Processes @Conference and @InProceedings, InCollection and @InBook type records.
+% Processes @Conference and @InProceedings type records.
+%   HEROUT added @InCollection
 % Bibliographic citation of conference proceedings entry (paper).
 %
 % Required elements:   author, title, editor nebo organization, booktitle,
 %       edition, address, publisher, year, pages, isbn or issn.
-% Optional elements: subtitle, booksubtitle, contributory, month, series, editionnumber, chapter, number nebo volume, note, doi url*.
+% Optional elements: subtitle, booksubtitle, contrybutory, month, series,
+%       number nebo volume, note, url*.
 % Elements of el. doc.:  howpublished*, revised*, cited*, version.
 %
 % * Required element for el. doc.
@@ -2634,30 +2660,18 @@ FUNCTION {conference}
 %  format.edition "edition" output.check
   format.edition output
   new.block %% edition
-  contributory capitalize output
+  contrybutory capitalize output
   new.block %% podrizena odpovednost (volitelna)
   format.publish.info
   format.date capitalize comma.connect
-  format.cvolume comma.connect
   format.chapter comma.connect
   format.pages comma.connect
   format.revised comma.connect
   format.cited tie.or.connect
   capitalize output
   new.block %% publisher information, date of publication, revision/update and citation
-  format.cseries output
+  format.bvolume output
   new.block %% series (if numbered, include number or volume)
-  format.doi output
-  new.block
-  isbn empty$
-    { issn empty$
-        { "empty isbn and issn in " cite$ * warning$ }
-        { format.issn output }
-      if$
-    }
-    { format.isbn output }
-  if$
-  new.block %% standard numbers ISBN or ISSN (required)
   note capitalize output
   new.block %% notes
   howpublished empty$
@@ -2671,20 +2685,29 @@ FUNCTION {conference}
       if$
     }
   if$
-  fin.entry
-} % @Conference and @InProceedings, @InCollection and @InBook
+  new.block %% availability (required for el. doc.)
+  isbn empty$
+    { issn empty$
+        { "empty isbn and issn in " cite$ * warning$ }
+        { format.issn output }
+      if$
+    }
+    { format.isbn output }
+  if$
+  fin.entry %% standard numbers ISBN or ISSN (required)
+} % @Conference and @InProceedings and @InCollection
 
 % @InProceedings is simply a reference to @Conference. 
 FUNCTION {inproceedings} { conference }
 FUNCTION {incollection} { conference }
-FUNCTION {inbook} { conference }
 
 % Processes @Proceedings type of records.
 % 
 % Bibliographic citation of monographies (books, proceedings and such).
 %
 % Required elements:   author or editor, title, edition, year, isbn or issn.
-% Optional elements: subtitle, contributory, address, publisher, month, series, number or volume, note, doi, url*.
+% Optional elements: subtitle, booksubtitle, contrybutory, address, publisher, month, series,
+%       number or volume, note, url*.
 % Elements of el. doc.:  howpublished*, revised*, cited*, version.
 %
 % * Required element for el. doc.
@@ -2698,30 +2721,18 @@ FUNCTION {proceedings}
 %  format.edition "edition" output.check
   format.edition output
   new.block %% edition
-  contributory capitalize output
+  contrybutory capitalize output
   new.block %% secondary author(s) (optional)
   format.publish.info
   format.date capitalize comma.connect
-  format.cvolume comma.connect
   format.chapter comma.connect
   format.pages comma.connect
   format.revised comma.connect
   format.cited tie.or.connect
   capitalize output
   new.block %% publishing information, date of publication, revision/update and citation
-  format.cseries output
+  format.bvolume output
   new.block %% series (if numbered, then include it's number or volume)
-  format.doi output
-  new.block
-  isbn empty$
-    { issn empty$
-        { "empty isbn and issn in " cite$ * warning$ }
-        { format.issn output }
-      if$
-    }
-    { format.isbn output }
-  if$
-  new.block %% ISBN or ISSN (required)
   note capitalize output
   new.block %% notes
   howpublished empty$
@@ -2735,14 +2746,24 @@ FUNCTION {proceedings}
       if$
     }
   if$
-  fin.entry
+  new.block %% availability (required for el. doc.)
+  isbn empty$
+    { issn empty$
+        { "empty isbn and issn in " cite$ * warning$ }
+        { format.issn output }
+      if$
+    }
+    { format.isbn output }
+  if$
+  fin.entry %% ISBN or ISSN (required)
 } % @Proceedings
-
+			
 
 % Processes @Misc, @Webpage and @Website type records.
+% Advised to use for bibliographic citations of online documents and web pages.
 %
 % Required elements:   At least one of the optional elements!
-% Optional elements: author, secondarytitle, title, subtitle, howpublished, contributory, edition, month, doi, issn
+% Optional elements: author, secondarytitle, title, subtitle, howpublished, contrybutory, edition, month,
 %       year, revised*, cited, note, url, version
 %
 % Note: Displays warning if the year element is not used. Should not call format.date
@@ -2753,6 +2774,7 @@ FUNCTION {misc}
     format.authors
     duplicate$ empty$
     { pop$
+      "empty author in " cite$ * warning$
     }
     { output.authors }
     if$
@@ -2762,7 +2784,7 @@ FUNCTION {misc}
     format.btitle "title" output.check
     format.howpublished output
     new.block
-    contributory capitalize output
+    contrybutory capitalize output
     new.block %% secondary author(s) (optional)
     format.edition output
     new.block
@@ -2774,19 +2796,10 @@ FUNCTION {misc}
     and
       { 
         output
-        day empty$
-        { format.date capitalize output }
-        { day ". " * format.date * comma.connect output }
-        if$
+        format.date capitalize output
       }
-      { 
-        day empty$
-        { format.date comma.connect output }
-        { day ". " * format.date * comma.connect output }
-        if$
-      }
+      { format.date comma.connect output }
     if$
-    time output
     revised empty$
       'skip$
       { 
@@ -2795,10 +2808,6 @@ FUNCTION {misc}
       }
     if$
     format.cited makesmall output
-    new.block
-    format.doi output
-    new.block
-    format.issn output %% standardni cislo ISSN (volitelne)
     new.block
     note capitalize makesmall output
     new.block
@@ -2823,27 +2832,167 @@ FUNCTION {misc}
 FUNCTION {webpage} { misc }
 FUNCTION {website} { misc }
 
-
-% Processes @Manual, @TechReport and @Unpublished type records..
+% Processes @Unpublished type records. -- Added by HEROUT
 %
-% Required elements:  author, title, edition, address, organization or institution, month, year, revised
-% Optional elements: note, number, url*
-% Elements of el. doc.:  howpublished*, cited*
+% Required elements:   At least one of the optional elements!
+% Optional elements: author, title, subtitle, howpublished, edition, month,
+%       year, revised*, cited, note, url, version, path
+%
+% Note: Displays warning if the year element is not used. Should not call format.date
+FUNCTION {unpublished}
+{ empty.unpublished.check
+    'skip$
+    { output.bibitem
+    format.authors
+    duplicate$ empty$
+      { pop$
+      "empty author in " cite$ * warning$
+      }
+      { output.authors }
+    if$
+    new.block
+    format.btitle "title" output.check
+    format.howpublished output
+    new.block
+    format.edition output
+    new.block
+    format.report.details
+    format.date comma.connect
+    format.pages comma.connect
+    format.revised comma.connect output
+    new.block
+    format.cited output
+    new.block
+    note capitalize makesmall output
+    new.block
+    howpublished empty$
+      { format.url output }
+      { format.url "url" output.check
+        year empty$
+        revised empty$
+        and
+          { "empty year and revised in " cite$ * warning$ }
+          'skip$
+        if$
+      }
+    if$
+    fin.entry
+    }
+  if$
+} % @Unpublished
+
+% Processes @InBook type records.
+% Bibliographic citation of a chapter or page range in a monography.
+%
+% Required elements:   author nebo editor, title, edition, volume, year,
+%       pages a/nebo chapter
+% Optional elements: subtitle, contrybutory, address, publisher, month,
+%       note, url*, isbn
+% Elements of el. doc.:  howpublished*, revised*, cited*, version
+%
+% * Required element for el. doc.
+FUNCTION {inbook}
+{ output.bibitem
+  author.or.editor
+  new.block %% author (required)
+  format.title "title" output.check
+  new.block %% titul prispevku
+  inbook.basics
+  format.howpublished tie.or.connect output
+  new.block %% title (required) and medium type (required for el. doc.)
+  format.edition output
+  new.block %% edition
+  format.vol "volume" output.check
+  new.block %% book volume/part (required -- mainly in multi-volume pub.)
+  contrybutory capitalize output
+  new.block %% contrybutory (optional)
+  format.publish.info
+  format.date capitalize comma.connect
+  format.chapter comma.connect
+  format.pages comma.connect
+  format.revised comma.connect
+  format.cited tie.or.connect
+  capitalize output
+  new.block %% publisher information (optional), date of publication (required),
+            %% date of revision/update and citation (required for el. doc.)
+  format.bvolume output
+  new.block %% series (if numbered, include the number of volume)
+  note capitalize output
+  new.block %% notes (optional)
+  howpublished empty$
+  { format.url output }
+  { format.url "url" output.check
+    year empty$
+    revised empty$
+    and
+    { "empty year and revised in " cite$ * warning$ }
+    'skip$
+    if$
+  }
+  if$
+  new.block %% availability (required for el. doc.)
+  format.isbn output
+  fin.entry %% standard number ISBN (optional)
+}%@InBook
+
+% Processes @TechReport type records..
+%
+% Required elements:   author, title, institution, address, year, type, number
+% Optional elements: subtitle, contrybutory, month, pages, note, url*
+% Elements of el. doc.:  howpublished*, revised*, cited*
 %
 % Note: * Required element for el. doc.
 FUNCTION {techreport}
+{ output.bibitem
+  format.authors
+  duplicate$ empty$
+    { pop$
+      "empty author in " cite$ * warning$
+    }
+    { output.authors }
+  if$
+  new.block %% author (required)
+  format.btitle "title" output.check
+  format.howpublished output
+  new.block %% contrybutory (optional)
+  format.edition output
+  new.block
+  format.report.type capitalize output
+  new.block %% type and number of report (required elements)
+  format.report.details
+  format.date comma.connect
+  format.revised comma.connect capitalize output
+  new.block
+  format.range output
+  new.block %% range (optional)
+  format.cited
+  capitalize output
+  new.block %% publishing institution information (optional) date of publication (required)
+  note capitalize output
+  new.block %% notes (optional)
+  format.url output
+  new.block %% availability (optional)
+  fin.entry
+}%@TechReport
+
+% Processes @Manual type records.
+%
+% Required elements:   title, 
+% Optional elements: author, organization, year, address, edition, month, note, url*
+% Elements of el. doc.:  howpublished*, revised*, cited*
+%
+% Note: * Required element for el. doc.
+FUNCTION {manual}
 { output.bibitem
   author.or.editor
   new.block %% author (required)
   format.btitle "title" output.check
   format.howpublished output
+  new.block %% contrybutory (optional)
+  format.edition capitalize output
+  format.manual.type output
   new.block
-  format.report.type
-  format.edition capitalize comma.connect output
-  new.block
-  contributory capitalize output
-  new.block %% podrizena odpovednost (volitelna)
-  format.report.details
+  format.manual.details
   format.date comma.connect
   format.revised comma.connect
   format.cited tie.or.connect
@@ -2856,17 +3005,15 @@ FUNCTION {techreport}
   format.url output
   new.block %% availability (optional)
   fin.entry
-}%@Manual, @TechReport and @Unpublished
-FUNCTION {manual} { techreport }
-FUNCTION {unpublished} { techreport }
+}%@Manual
 
 % Processes @BachelorsThesis, @MastersThesis and @PhdThesis type records.
 % Bibliographic citation of theses (bachelor's, master's and dissertation).
 %
 % Default version -- value #0 in choose.thesis.
 %
-% Required elements:   author, title, address or location, school, year, type
-% Optional elements: subtitle, pages, inserts, note, url, isbn, howpublished
+% Required elements:   author, title, address, school, year, type
+% Optional elements: subtitle, pages, inserts, note, url, isbn
 FUNCTION {thesis}
 { output.bibitem
   format.authors
@@ -2878,12 +3025,9 @@ FUNCTION {thesis}
   if$
   new.block %% author (required)
   format.btitle "title" output.check
-  format.howpublished output
   new.block %% title (required)
   format.thesis.info capitalize output
   new.block %% school and year (required)
-  format.cited makesmall output
-  new.block %% cited
   format.thesis.range output
   new.block %% number of pages and appendices (optional)
   type$ "l" change.case$
@@ -2899,23 +3043,82 @@ FUNCTION {thesis}
   new.block %% thesis type (optional -- implicit type used)
   format.thesis.school output
   new.block
-  format.isbn output
-  new.block
-  format.supervisor output
   note capitalize output
-  new.block
+  new.block %% notes (required)
+  format.cited makesmall output
+  new.block %% cited
   format.url output
+  new.block %% availability (optional)
+  format.isbn output
   fin.entry %% standard number ISBN (optional)
 }%@BachelorsThesis, @MastersThesis a @PhdThesis
 
-% @BachelorsThesis type records are processed by thesis function.
-FUNCTION {bachelorsthesis}{ thesis }
+% Alternative version of bibliographic citation of theses.
+%
+% Alternative version -- value #1 in choose.thesis.
+FUNCTION {another.thesis}
+{ output.bibitem
+  format.authors
+  duplicate$ empty$
+  { pop$
+    "empty author in " cite$ * warning$
+  }
+  { output.authors }
+  if$
+  new.block %% author (required)
+  format.btitle "title" output.check
+  new.block %% title (required)
+  type$ "l" change.case$
+  duplicate$ "bachelorsthesis" =
+  { pop$ "Bachelor's thesis" }
+  { "mastersthesis" =
+    { "Master's thesis" }
+    { "Dissertation" }
+    if$
+  }
+  if$
+  format.thesis.type
+  school empty$
+  { "empty school in " cite$ * warning$ }
+  { school comma.connect }
+  if$
+  address empty$
+  { "empty address in " cite$ * warning$ }
+  { address comma.connect }
+  if$
+  year empty$
+  { "empty year in " cite$ * warning$ }
+  { year comma.connect }
+  if$
+  capitalize output
+  new.block %% type of thesis, school, address, date of publication
+  format.thesis.range output
+  new.block %% number of pages
+  note capitalize output
+  new.block %% notes (required)
+  format.url output
+  new.block %% availability (volitelny)
+  format.isbn output
+  fin.entry %% standard number ISBN (volitelne)
+}%@BachelorThesis, @MasterThesis a @PhdThesis
+
+% Chooses the correct format of bibliographic citation based on the opt.thesis option value
+% for a thesis.
+FUNCTION {chosen.thesis}
+{ opt.thesis #0 =
+    { thesis }
+    { another.thesis }
+  if$
+}
+
+% @BachelorThesis type records are processed by thesis function.
+FUNCTION {bachelorsthesis}{ chosen.thesis }
 
 % @MastersThesis type records are processed by thesis function.
-FUNCTION {mastersthesis} { thesis }
+FUNCTION {mastersthesis} { chosen.thesis }
 
 % @PhdThesis type records are processed by thesis function.
-FUNCTION {phdthesis} { thesis }
+FUNCTION {phdthesis} { chosen.thesis }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%% SLIGHTLY EDITED FUNCTIONS TAKEN FROM plain.bst %%%%%%%%%%%%%%%%

@@ -1,0 +1,127 @@
+%\documentclass{PPFIT} % pro psaní v angličtině / for writing in English
+\documentclass[czech]{PPFIT} % pro psaní v češtině / for writing in Czech
+%\documentclass[slovak]{PPFIT} % pro psaní ve slovenštině / for writing in Slovak
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	PŘIZPŮSOBENÍ PDF / PDF CUSTOMIZATION
+%--------------------------------------------------------
+\usepackage{stfloats}
+\usepackage{lipsum}
+
+\hypersetup{
+	pdftitle={Využití opakujících se podstruktur pro efektivní reprezentaci automatů},
+	pdfauthor={Bc. Michal Šedý},
+	pdfkeywords={nedeterministický konečný automaty, nedeterministický zásobníkový automaty, minimalizace, simulace}
+}
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%  PŘEDBĚŽNÁ vs. KONEČNÁ VERZE / REVIEW vs. FINAL VERSION
+%--------------------------------------------------------
+%   NECHTE následující řádek zakomentovaný pro PŘEDBĚŽNÉ VERZE
+%   Pro KONEČNOU VERZI řádek odkomentujte.
+%   LEAVE this line commented out for the REVIEW VERSIONS
+%   UNCOMMENT this line to get the FINAL VERSION
+
+\PPFinalCopy
+
+
+\PPYear{2022/2023}
+
+\ifczechslovak%
+    %--------------------------------------------------------
+    %--------------------------------------------------------
+    %	INFORMACE O ČLÁNKU
+    %--------------------------------------------------------
+
+  \PaperTitle{Hry s nepřenositelným užitkem}
+
+	\Authors{Bc. Michal Šedý}
+	\affiliation{%
+	  \href{mailto:xsedym02@stud.fit.vutbr.cz}{xsedym02@stud.fit.vutbr.cz},
+	  \textit{Fakulta informačních technologií, Vysoké učení technické v Brně}}
+
+	\Keywords{kooperativní hry --- hry s nepřenositelným užitkem --- jádro hry --- Shapleyho hodnota}
+
+	% \Supplementary{\href{http://youtu.be/S3msCdn3fNM}{Demonstrační Video} --- \href{http://fit.vut.cz/}{Stáhnutelný Kód}}
+
+    %--------------------------------------------------------
+    %--------------------------------------------------------
+    %	ABSTRAKT
+    %--------------------------------------------------------
+    \Abstract{
+        \lipsum[1]
+    }
+\else%
+    %--------------------------------------------------------
+    %--------------------------------------------------------
+    %	INFORMATION ABOUT THE ARTICLE
+    %--------------------------------------------------------
+    % \PaperTitle{How to write an amazing article}
+
+	% \Authors{Adam Herout*}
+	% \affiliation{*%
+	% 	\href{mailto:herout@fit.vut.cz}{herout@fit.vut.cz},
+	% 	\textit{Faculty of Information Technology, Brno University of Technology}}
+
+	% \Keywords{Keyword1 --- Keyword2 --- Keyword3}
+
+	% \Supplementary{\href{http://youtu.be/S3msCdn3fNM}{Demonstation video} --- \href{http://fit.vut.cz/}{Downloadable code}}
+
+	% %--------------------------------------------------------
+    % %--------------------------------------------------------
+    % %	ABSTRACT
+    % %--------------------------------------------------------
+    % \Abstract{}
+\fi
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	TEASER
+%--------------------------------------------------------
+% \Teaser{
+% %	\TeaserImage{placeholder.pdf}
+% %	\TeaserImage{placeholder.pdf}
+% %	\TeaserImage{placeholder.pdf}
+% }
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+\begin{document}
+\startdocument
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	OBSAH ČLÁNKU / CONTENT OF THE ARTICLE
+%--------------------------------------------------------
+\ifczechslovak
+    \input{xsedym02-NTU-text.tex}
+\else
+    \input{xsedym02-NTU-text-en.tex}
+\fi
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	LITERATURA
+%--------------------------------------------------------
+%--------------------------------------------------------
+\phantomsection
+\ifczech
+    \bibliographystyle{bib-styles/czplain}
+\fi
+\ifslovak
+    \bibliographystyle{bib-styles/skplain}
+\fi
+\ifenglish
+    \bibliographystyle{bib-styles/enplain}
+\fi
+
+\bibliography{xsedym02-NTU-bib}
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+\end{document}
