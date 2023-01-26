@@ -1,7 +1,7 @@
 \section{Úvod}
     Kooperativní teorie her se zabývá hrami se dvěma a~více hráči, jejichž spolupráce (dohodnuti vymahatel-né strategie) může vést k lepším ziskům hráčů ze hry, než kdyby hra proběhla nekooperativně. Žádný hráč by neměl obdržet menší zisk, než by mu přineslo odmítnutí spolupráce. V takovém případě by se již nejednalo o~kooperativní hru.
 
-    Cílem této práce je popis kooperativní hry s nepře-nositelným užitkem (NTU--hra) \cite{Coop_intro,Game_Theory,EOLSS}, pro kterou je stanovena množina hráčů, kteří spolu tvoří koalice a~výplatní funkce, která každé koalici přiřazuje množinu možných výplatních vektorů. Budeme pracovat pouze se superaditivními NTU hrami, pro které platí, že je součet užitků dvou disjunktních koalic menší, nebo roven užitku větší koalice vzniklé sloučením techto dvou menších koalicí. Vyjednávání o utváření koalic lze tedy zanedbat, protože na základě podmínky superaditivity lze vidět, že hráči budou vždy chtít utvořit koalici složenou ze všech přítomných hráčů (velká koalice). Jediným místem vyjednávání v těchto NTU--hrách je volba výplatního vektoru z množiny určeného výplatní funkcí pro velkou koalici. Pokud jsou hráči racionální, pak žádný z nich nepřijme výplatní vektor, který by mu poskytoval menší zisk, než by mohl získat v jiné koalici. Množina všech výplatních vektorů koalice, které jsou ochotni všichni její racionální členové přijmout se nazývá jádro hry. Je také potřeba určit "nejspravedlivější" výplatní vektor, který bere v~úvahu přínos každého člena do koalice, tento vektor specifikuje Shapleyho NTU--hodnota \cite{Shapley1969}.
+    Cílem této práce je popis kooperativní hry s nepře-nositelným užitkem (NTU--hra) \cite{Coop_intro,Game_Theory,EOLSS}, pro kterou je stanovena množina hráčů, kteří spolu tvoří koalice a~charakteristická funkce, která každé koalici přiřazuje množinu možných výplatních vektorů. Budeme pracovat pouze se superaditivními NTU hrami, pro které platí, že je součet užitků dvou disjunktních koalic menší, nebo roven užitku větší koalice vzniklé slouče-ním těchto dvou menších koalicí. Vyjednávání o utvá-ření koalic lze tedy zanedbat, protože na základě podmínky superaditivity lze vidět, že hráči budou vždy chtít utvořit koalici složenou ze všech přítomných hráčů (velká koalice). Jediným místem vyjednávání v~těchto NTU--hrách je volba výplatního vektoru z~mno-žiny určeného charakteristickou funkcí pro velkou koalici. Pokud jsou hráči racionální, pak žádný z~nich nepřijme výplatní vektor, který by mu poskytoval menší zisk, než by mohl získat v jiné koalici. Množina všech výplatních vektorů koalice, které jsou ochotni její racionální členové přijmout se nazývá jádro hry. Je také potřeba určit "nejspravedlivější" výplatní vektor, který bere v~úvahu přínos každého člena do koalice, tento vektor specifikuje Shapleyho NTU--hodnota \cite{Shapley1969}.
 
     Mezi dvě nejznámější podtřídy NTU--her patří dvouhráčové kooperativní hry s vyjednávání \cite{Game_Theory}, pro které existuje Nashovo řešení \cite{Nash1950}, druhou podtřídou jsou pak kooperativní hry s přenositelným užitkem (TU--hry) \cite{Game_Theory,EOLSS}. TU--hry přiřazují každé koalici libovolně dělitelnou komoditu (touto komoditou mohou být například peníze), která je "spravedlivě" distribuována mezi členy koalice. Oproti tomu NTU--hry simulují situaci, ve které existuje pouze množina nedělitelných komodit (například zboží ve směnné ekonomice), které jsou přerozděleny mezi členy koalice.
 
@@ -9,9 +9,9 @@
 
     Sekce \ref{sec:NTU} obsahuje definici n-hráčové kooperativní hry s nepřenositelným užitkem, dále sekce uvádí principy převodu nekooperativní strategické hry v normální formě \cite{Hruby2022NCOOP}, dvouhráčové kooperativní hry s vyjednávání, TU--hry a veřejné volby na ekvivalentní NTU--hru. Současně je také uveden opačný převod, kdy je NTU--hra transformována na nekooperativní strategickou hru v normální formě.
 
-    Definice jádra NTU--hry udávajícího pro každou koalici všechny racionální výplatní vektory je uvedena v kapitole \ref{sec:Core}.
+    Definice jádra NTU--hry udávajícího pro velkou koalici všechny racionální výplatní vektory je uvedena v kapitole \ref{sec:Core}.
 
-    V poslední sekci \ref{sec:Shapley} je popsána Shapleyho NTU--hodnota (jinak také zvané $\lambda$--přenosová NTU--hodnota), která specifikuje "spravedlivý" výplatní vektor.
+    V poslední sekci \ref{sec:Shapley} je popsána Shapleyho NTU--hodnota (jinak také zvaná $\lambda$--přenosová NTU--hodnota), která specifikuje "spravedlivý" výplatní vektor.
 
 
 \section{TU--hra}
@@ -23,7 +23,7 @@
 
         Koalici $K = Q$ budeme nazývat \textit{velkou koalicí}. Jak již bylo dříve zmíněno, budeme uvažovat hry se superaditivitou. TU-hra $\Gamma$ je \textit{superaditivní}, pokud pro každé dvě disjunktní koalice $K$ a $L$ platí $v(K \cup L) \geq v(K) + v(L)$.
 
-        Pro vyjádření rozdělení zisku $v(K)$ v koalici $K$ zavedeme \textit{výplatní vektor} $a \in \mathbb{R}^{|Q|}$, kde $a(K) = \sum_{i\in K}a_i$. Ve hrách budeme pracovat pouze s \textit{prostorem efektivních zisků} $X^*(v) = \{a \in \mathbb{R}^{|Q|}\,|\,a(Q) = v(Q)\}$.
+        Pro vyjádření rozdělení zisků $v(K)$ v koalici $K$ zavedeme \textit{výplatní vektor} $a \in \mathbb{R}^{|Q|}$, kde $a(K) = \sum_{i\in K}a_i$. Ve hrách budeme pracovat pouze s \textit{prostorem efektivních zisků} $X^*(v) = \{a \in \mathbb{R}^{|Q|}\,|\,a(Q) = v(Q)\}$.
 
     \subsection{Imputace v TU--hře}
         Výplatní vektor $a \in X^*(v)$ je \textit{\textbf{individuálně racionální}}, pokud pro všechny hráče $i \in Q$ platí $a_i \geq v(\{i\})$. Tedy žádný hráč nesmí v koalici dostat méně, než kdyby byl v jednočlenné koalici (sám).
@@ -35,7 +35,7 @@
         Mějme TU--hru $\Gamma = (Q, v)$, koalici $K \subseteq Q$ a dvě imputace $a, b$. Řekneme, že $a$ \textit{\textbf{dominuje}} $b$ pro koalici $K$ (značíme $a \succ_K b$), pokud platí $\forall i \in K: a_i > b_i$ a~zároveň $\sum_{i \in K}a_i \leq v(K)$.
 
     \subsection{Jádro TU--hry}
-        \textit{\textbf{Jádro hry}} $\Gamma = (Q, v)$ je tvořeno množinou imputací $C(v) = \{a \in X(v)\,|\,\sum_{i \in K} \geq v(K); \forall K \in 2^Q \setminus \emptyset\}$. Jedná se o takovou množinu imputací, že každá případná koalice $K$ obdrží alespoň $v(K)$. Pro každou imputaci v~jádře zároveň platí, že není domnivana žádnou jinou imputací.
+        \textit{\textbf{Jádro hry}} $\Gamma = (Q, v)$ je tvořeno množinou imputací $C(v) = \{a \in X(v)\,|\,\sum_{i \in K} \geq v(K); \forall K \in 2^Q \setminus \emptyset\}$. Jedná se o takovou množinu imputací, že každá případná koalice $K$ obdrží alespoň $v(K)$. Pro každou imputaci v~jádře zároveň platí, že není dominována žádnou jinou imputací.
 
         Pokud je jádro prázdné, pak neexistuje stabilní kooperativní řešení, které by ustanovilo velkou koalici.
 
@@ -56,7 +56,7 @@
         H_i = \sum^N_{k = 1}\frac{h_i(k)}{N}
         $$
 
-        Mějme TU--hru $\Gamma = (Q, v)$, \textit{\textbf{Shapleyho vektor}} této hry definován funkci $\phi$ jako $\phi(v) = \mathbb{H} = (H_1, H_2, \dots, \\H_N)$. Pro Shapleyho vektor platí, že je imputací hry.
+        Mějme TU--hru $\Gamma = (Q, v)$, \textit{\textbf{Shapleyho vektor}} této hry je definován funkci $\phi$ jako $\phi(v) = \mathbb{H} = (H_1, H_2, \dots, \\H_N)$. Pro Shapleyho vektor platí, že je imputací hry.
 
 \section{NTU--hra}
     \label{sec:NTU}
@@ -90,7 +90,7 @@
                 \item $U_i: \prod_{j\in Q}S_j \rightarrow \mathbb{R}$ je výplatní funkce hráče $i \in Q$.
             \end{itemize}
 
-            Pro množinu hráčů $P \subseteq Q$ budeme $S_P$ označovat $\prod_{i \in Q}S_i$. Doplněk $S_P$ bude označovat $S_{-P} = S_{Q\setminus P}$.
+            Pro množinu hráčů $P \subseteq Q$ budeme $S_P$ označovat $\prod_{i \in P}S_i$. Doplněk $S_P$ bude označovat $S_{-P} = S_{Q\setminus P}$.
 
             Nechť $\alpha(K \subseteq Q) = \{x \in \mathbb{R}^{|Q|}\,|\, \exists\, a \in K:  x \leqslant a\}$.
 
@@ -109,7 +109,7 @@
             \end{itemize}
 
         \subsubsection*{Kooperativní hry s vyjednáváním}
-            \textit{\textbf{Kooperativní hra dvou hráčů $A$ a $B$ s vyjednáváním}} \cite{Hruby2022} je dvojice $\Gamma_B = (\Omega, c)$, kde $\Omega$ je množina všech dosažitelných výsledků a $c = (c_A, c_B)$ je výsledek, kte-rého by hráči dosáhli, pokud by se hra odehrala nekooperativně.  Existuje funkce $F$ modelující \textit{Nashovo vyjednávací řešení}. Je definována následně: $F(\Omega, c) = arg max_{u_A, u_B}\{(u_A - c_A)(u_B - c_B)\,|\, (u_A, u_B) \in \Omega \land u_A \geq c_A \land u_B \geq c_B\}$.
+            \textit{\textbf{Kooperativní hra dvou hráčů $A$ a $B$ s vyjednáváním}} \cite{Hruby2022} je dvojice $\Gamma_B = (\Omega, c)$, kde $\Omega$ je množina všech dosažitelných výsledků a $c = (c_A, c_B)$ je výsledek, kte-rého by hráči dosáhli, pokud by se hra odehrála nekooperativně.  Existuje funkce $F$ modelující \textit{Nashovo vyjednávací řešení}. Je definována následně: $F(\Omega, c) = arg max_{u_A, u_B}\{(u_A - c_A)(u_B - c_B)\,|\, (u_A, u_B) \in \Omega \land u_A \geq c_A \land u_B \geq c_B\}$.
 
             Dvouhráčovou hru s vyjednáváním $\Gamma_B = (\Omega, c)$ s~funkci $F$ modelující Nashovo vyjednávací řešení lze převést na NTU--hru $\Gamma_N = (Q, V)$, kde:
 
@@ -122,7 +122,7 @@
                 \end{cases}$
             \end{itemize}
         \subsubsection*{Veřejná volba}
-            Převod veřejné volby na NTU--hru uvedeme na příkladě \cite[str. 120]{Game_Theory}. Mejme veřejnou volbu hráčů $1, 2, 3$ mezi alternativami $a_1, a_2$. Váhy jejich preferenci se různí a jsou určeny tabulkou:
+            Převod veřejné volby na NTU--hru uvedeme na příkladu \cite[str. 120]{Game_Theory}. Mějme veřejnou volbu hráčů $1, 2, 3$ mezi alternativami $a_1, a_2$. Váhy jejich preferencí se různí a jsou určeny tabulkou:
 
             \begin{table}[!h]
                 \centering
@@ -189,10 +189,10 @@
 
         \textit{Maximální individuální zisk} hráče $i \in Q$ je maximum ze všech jeho zisků, kterých dosáhne, pokud se nezúčastní žádné koalice. Toto maximum budeme označovat $v^i$ a je definováno jako $v^i = max\{a_i\,|\, a \in V({i})\}$.
 
-        Pro hru $\Gamma = (Q, V)$ je výplatní vektor $a$ \textit{Indivi-duálně racionální}, pokud $x_i \geq v^i$ pro všechny hráče $i \in Q$. \textit{\textbf{Množina Individuálně racionálních}} výplatních vektorů pro koalici $K \subseteq Q$ je pak dán množinou $V_{ir}(K) = \{a \in V(K)\,|\, a \textit{ je individuálně racionální}\}$.
+        Pro hru $\Gamma = (Q, V)$ je výplatní vektor $a$ \textit{Indivi-duálně racionální}, pokud $x_i \geq v^i$ pro všechny hráče $i \in Q$. \textit{\textbf{Množina Individuálně racionálních}} výplatních vektorů pro koalici $K \subseteq Q$ je pak dána množinou $V_{ir}(K) = \{a \in V(K)\,|\, a \textit{ je individuálně racionální}\}$.
 
     \subsection{Jádro hry}
-        Jednou s hlavních důležitých otázek při analýze superaditivních her s~nepřenositelným užitkem je neprázdnost jádra. Pokud je jádro hry prázdné, pak nemá hra řešení v podobě velké koalice.
+        Jednou s hlavních důležitých otázek při analýze superaditivních her s~nepřenositelným užitkem je neprázdnost jádra. Pokud je jádro hry prázdné, pak nemá hra stabilní kooperativní řešení v podobě velké koalice.
 
         Nechť je $\Gamma = (Q, V)$ NTU--hra a $A \subseteq \mathbb{R}^{|Q|}$ podmnožina výplatních vektorů. \textit{\textbf{Jádro hry $\Gamma$ s ohledem na $A$}} je taková množina $C(Q, V, A) \subseteq A$, že pro každý výplatní vektor $a \in C(Q, V, A)$ platí, že není dominován žádným jiným vektorem z $A$.
 
@@ -200,7 +200,7 @@
 
         Pro každou superaditivní NTU--hru $\Gamma = (Q, V)$ platí, že $C(Q, V) = C(Q, V, V_e(Q)) = C(Q, V, V_{ir}(Q)) = C(Q, V, V_e(Q) \cap C_{ir}(Q))$.
 
-        Následující příklad popisuje jádro v tří hráčové NTU--hře $\Gamma = (Q, V)$, kde:
+        Následující příklad popisuje jádro v třihráčové NTU--hře $\Gamma = (Q, V)$, kde:
 
         \begin{itemize}
             \vspace*{-0.3em}
@@ -212,20 +212,20 @@
             \end{cases}$
         \end{itemize}
 
-        Pro výše uvedený příklad tří hráčové NTU--hry je jádro $C(Q, V) = \{(0.5, 0.5, 0)\}$.
+        Pro výše uvedený příklad třihráčové NTU--hry je jádro $C(Q, V) = \{(0.5, 0.5, 0)\}$.
 
 \section{Shapleyho hodnota v NTU--hře}
     \label{sec:Shapley}
-    V TU--hrách umožňuje Shapleyho hodnota \cite{Shapley1953} určit takové rozdělení zisku (výplatní vektor) koalice mezi její členy, že bude zisk každého hráče odrážel jeho přínos do koalice. Tento přístup zobecnil Shapley také pro NTU--hry \cite{Shapley1969}. V NTU--hrách je na základě Shapleyho NTU--hodnoty (známá také jako $\lambda$--přenosová NTU--hodnota) pro koalici $K$ zvolen "spravedlivý" výplatní vektor z množiny $V(K)$.
+    V TU--hrách umožňuje Shapleyho hodnota \cite{Shapley1953} určit takové rozdělení zisků (výplatní vektor) koalice mezi její členy, že bude zisk každého hráče odrážel jeho přínos do koalice. Tento přístup zobecnil Shapley také pro NTU--hry \cite{Shapley1969}. V NTU--hrách je na základě Shapleyho NTU--hodnoty (známá také jako $\lambda$--přenosová NTU--hodnota) zvolen "spravedlivý" výplatní vektor z~množiny $V(Q)$.
 
     \subsection{Shapleyho NTU--hodnota}
-        Mějme danou NTU--hru $(Q, V)$ a nechť $\Delta = \{\lambda \in \mathbb{R}^{|Q|}\,|\, \sum_{i\in Q}\lambda_i = 1\}$ je \textit{množina váhových vektorů}. Pro každý vektor $\lambda \in \Delta$ je definována mapovací funkce $v_\lambda: 2^Q \rightarrow \mathbb{R} \cup \{\infty\}$ následovně: $v_\lambda(K) = \{\lambda^K \cdot x^K\,|\, x \in V(K)\}$ pro $K \subseteq 2^Q \setminus \{\emptyset\}$ a $v_\lambda(\emptyset) = 0$. Váhový vektor $\lambda \in \Delta$ je \textit{proveditelný}, pokud pro každou koalici $K \subseteq Q$ platí $v_\lambda(K) \in \mathbb{R}$.
+        Mějme danou NTU--hru $(Q, V)$ a nechť $\Delta = \{\lambda \in \mathbb{R}^{|Q|}\,|\, \sum_{i\in Q}\lambda_i = 1\}$ je \textit{množina váhových vektorů}. Pro každý vektor $\lambda \in \Delta$ je definována mapovací funkce $v_\lambda: 2^Q \rightarrow \mathbb{R} \cup \{\infty\}$ následovně: $v_\lambda(K) = \{\lambda \cdot x\,|\, x \in V(K)\}$ pro $K \subseteq 2^Q \setminus \{\emptyset\}$ a $v_\lambda(\emptyset) = 0$. Váhový vektor $\lambda \in \Delta$ je \textit{proveditelný}, pokud pro každou koalici $K \subseteq Q$ platí $v_\lambda(K) \in \mathbb{R}$.
 
         Pro hru $\Gamma = (Q, V)$ je \textit{\textbf{Shapleyho NTU--hodnota}} vektor $a_{SH} \in V(Q)$, pokud existuje proveditelný váho-vý vektor $\lambda \in \Delta$ takový, že $\phi(v_\lambda) = \lambda a_{SH}$. Množina všech Shapleyho NTU--hodnot je $SH(V)$ (hra může mít více Shapleyho NTU--hodnot).
 
         Tedy spravedlivým výplatním vektorem pro koalici $Q$ je takový vektor $a$, jehož vektorový součin s provedi-telným váhovým vektorem $\lambda$ se rovná Shapleyho hodnotě pro TU--hru, specifikovanou charakteristickou funkcí $v_\lambda$.
 
-        Mějme kooperativní vyjednávací hru $\Gamma_B = (\Omega, c)$ a ji odpovídající NTU--hru $\Gamma_N = (Q, V)$, pak platí, že $HS(Q) = \{F(\Gamma, c)\}$.
+        Mějme kooperativní vyjednávací hru $\Gamma_B = (\Omega, c)$ a ji odpovídající NTU--hru $\Gamma_N = (Q, V)$, pak platí, že $HS(V) = \{F(\Gamma, c)\}$.
 
         Nechť je $\Gamma_T = (Q, v_T)$ TU--hra a $\Gamma_N = (Q, V_N)$ ji odpovídající NTU--hra, pak platí, že $HS(V_N) = \{\phi(v_T)\}$.
 
@@ -241,7 +241,7 @@
         Mějme NTU--hry $\Gamma_U = (Q, U), \Gamma_V = (Q, V)$ a $\Gamma_W = (Q, W)$. Pro Shapleyho NTU--hodnoty platí následující axiomy.
 
         \subsubsection*{A8: Pareto efektivita}
-            Platí $SH(V) \subseteq \partial V$. Tedy každý výplatní vektor $a \in SH(V)$ splňuje Pareto efektivitu pro všechny $S \subseteq Q$ podle A4.
+            Platí $SH(V) \subseteq \partial V$. Tedy každý výplatní vektor $a \in SH(V)$ splňuje Pareto efektivitu pro všechny $K \subseteq Q$ podle A4.
 
         \subsubsection*{A9: Měřítková kovariance}
             Podle měřítkové kovariance (\textit{scale covariance}) platí: $SH(\lambda V) = \lambda SH(V)$ pro všechny vektory $\lambda \in \mathbb{R}^{|Q|}_{+}$. Jinak řečeno: výsledek hry s výplatními vektory vynásobenými libovolným kladným vektorem $\lambda$ jsou totožné s výsledky původní hry vynásobenými tímto vektorem.
@@ -266,7 +266,6 @@
 
     Hra s přenositelným užitkem je speciální podtřídou NTU--her, proto ji lze na NTU--hru převést. Tento převod společně s převody ostatních her na NTU--hru byl uveden v sekci \ref{sec:NTU}.
 
-    Podstatnou vlastností NUT--hry je její jádro, které obsahuje pareto efektivní a individuálně racionální výplatní vektory. Právě analýzou jádra lze určit, zda zadaná hra má kooperativní řešení v podobě velké koalice (jádro je neprazdne).
+    Podstatnou vlastností NUT--hry je její jádro, které obsahuje pareto efektivní a individuálně racionální výplatní vektory. Právě analýzou jádra lze určit, zda zadaná hra má kooperativní řešení v podobě velké koalice (jádro je neprázdné).
 
     Posledním popisovaným konceptem pro analýzu NTU--her byla Shapleyho NTU--hodnota, která určuje "spravedlivé" výplatní vektory pro koalici, s ohledem na hráčův přínos koalici (respektive ztrátu způsobenou při vystoupení hráče z koalice).
-
