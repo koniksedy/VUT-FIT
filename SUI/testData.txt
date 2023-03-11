@@ -1,0 +1,12 @@
+Autor: Michal Šedý <xsedym02>
+Poslední změna: 09.12.2021
+
+Zkomprimovaná data pomocí 7Z jsou k dispozici přes následující odkaz.
+
+Hry byly spouštěny vždy s čtyřmi hráči (ai) viz popisky složek. Celkem bylo nahráno 17000 her v různých kombinacích hráčů.
+Vítěz "W" a počet odehraných útoků "R" je poznačen ve jméně výstupního souboru.
+Jednotlivé složky jsou zvlášť komprimovány pomocí zip. Celkem po rozbalení všech archívů (není potřeba)
+je velikost dat přibližně 65 GB.
+
+
+https://vutbr-my.sharepoint.com/:u:/g/personal/xsedym02_vutbr_cz/ETdlI7O8X7ZJsPzRzxpwB9sBLLfSZQTKIaxQ8CKonJPvvw?e=iNbdZy
