@@ -1,0 +1,256 @@
+% dokumentace.tex
+% Hlavní tex soubor pro dokumentaci k projektu do předmětu GAL
+% Autoři: Bc. Jan Bíl
+%         Bc. Michal Šedý
+% Poslední úprava: 30.10.2022
+
+
+% Byla využita šablona šablona pro Bakalářské práce
+%==============================================================================
+
+% Autoři / Authors: 2008 Michal Bidlo, 2019 Jaroslav Dytrych
+% Kontakt pro dotazy a připomínky: sablona@fit.vutbr.cz
+% Contact for questions and comments: sablona@fit.vutbr.cz
+%==============================================================================
+% nobib - bez literatury
+% english - anglický text
+% print - černobílé
+% cprint - černobílé a barevné obrázky
+\documentclass[]{fitthesis} % česky, barevné, s literaturou
+%---rm---------------
+\renewcommand{\rmdefault}{lmr}%zavede Latin Modern Roman jako rm / set Latin Modern Roman as rm
+%---sf---------------
+\renewcommand{\sfdefault}{qhv}%zavede TeX Gyre Heros jako sf
+%---tt------------
+\renewcommand{\ttdefault}{lmtt}% zavede Latin Modern tt jako tt
+
+% vypne funkci šablony, která automaticky nahrazuje uvozovky,
+% aby nebyly prováděny nevhodné náhrady v popisech API apod.
+% disables function of the template which replaces quotation marks
+% to avoid unnecessary replacements in the API descriptions etc.
+\csdoublequotesoff
+
+% Balíky
+% ======================================================================
+\usepackage{url}
+\usepackage{lipsum}
+\usepackage{amsthm}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\usepackage{mathtools}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\usepackage{tikz}
+\usetikzlibrary{shapes,shapes.geometric,arrows,fit,calc,positioning,automata,}
+% \tikzset{elliptic state/.style={draw, ellipse, inner sep=1mm}}
+% \tikzset{rectangular state/.style={draw, rounded rectangle, inner sep=2mm, minimum height=0.9cm}}
+\usepackage{changepage}
+\usepackage{hhline}
+
+% Makra
+% ======================================================================
+\newcounter{DTcounter}
+\counterwithin{DTcounter}{section}
+\newenvironment{theorem}
+  {
+    \refstepcounter{DTcounter}
+    \stepcounter{figure}
+    \stepcounter{equation}
+    \bigskip
+    \noindent\textbf{Teorém~\theDTcounter}\begin{itshape}
+      }
+      {
+      \end{itshape}
+      \leavevmode
+  }
+\newenvironment{definition}
+  {
+      \refstepcounter{DTcounter}
+      \stepcounter{figure}
+      \stepcounter{equation}
+      \bigskip
+      \noindent\textbf{Definice~\theDTcounter}\begin{itshape}
+  }
+  {
+      \end{itshape}
+      \leavevmode
+  }
+\newenvironment{lemma}
+  {
+      \refstepcounter{DTcounter}
+      \stepcounter{figure}
+      \stepcounter{equation}
+      \bigskip
+      \noindent\textbf{Lemma~\theDTcounter}\begin{itshape}
+  }
+  {
+      \end{itshape}
+      \leavevmode
+  }
+
+% =======================================================================
+% balíček "hyperref" vytváří klikací odkazy v pdf, pokud tedy použijeme pdflatex
+% problém je, že balíček hyperref musí být uveden jako poslední, takže nemůže
+% být v šabloně
+% "hyperref" package create clickable links in pdf if you are using pdflatex.
+% Problem is that this package have to be introduced as the last one so it
+% can not be placed in the template file.
+\ifWis
+\ifx\pdfoutput\undefined % nejedeme pod pdflatexem / we are not using pdflatex
+\else
+  \usepackage{color}
+  \usepackage[unicode,colorlinks,hyperindex,plainpages=false,pdftex]{hyperref}
+  \definecolor{hrcolor-ref}{RGB}{223,52,30}
+  \definecolor{hrcolor-cite}{HTML}{2F8F00}
+  \definecolor{hrcolor-urls}{HTML}{092EAB}
+  \hypersetup{
+	linkcolor=hrcolor-ref,
+	citecolor=hrcolor-cite,
+	filecolor=magenta,
+	urlcolor=hrcolor-urls
+  }
+  \def\pdfBorderAttrs{/Border [0 0 0] }  % bez okrajů kolem odkazů / without margins around links
+  \pdfcompresslevel=9
+\fi
+\else % pro tisk budou odkazy, na které se dá klikat, černé / for the print clickable links will be black
+\ifx\pdfoutput\undefined % nejedeme pod pdflatexem / we are not using pdflatex
+\else
+  \usepackage{color}
+  \usepackage[unicode,colorlinks,hyperindex,plainpages=false,pdftex,urlcolor=black,linkcolor=black,citecolor=black]{hyperref}
+  \definecolor{links}{rgb}{0,0,0}
+  \definecolor{anchors}{rgb}{0,0,0}
+  \def\AnchorColor{anchors}
+  \def\LinkColor{links}
+  \def\pdfBorderAttrs{/Border [0 0 0] } % bez okrajů kolem odkazů / without margins around links
+  \pdfcompresslevel=9
+\fi
+\fi
+% Řešení problému, kdy klikací odkazy na obrázky vedou za obrázek
+% This solves the problems with links which leads after the picture
+\usepackage[all]{hypcap}
+
+\clubpenalty=10000
+\widowpenalty=10000
+
+% checklist
+\newlist{checklist}{itemize}{1}
+\setlist[checklist]{label=$\square$}
+
+\begin{document}
+  % Vysazeni titulnich stran / Typesetting of the title pages
+  % ----------------------------------------------
+
+  \begin{titlepage}
+    \begin{center}
+      \includegraphics[width=0.77 \linewidth]{template-fig/fit-cz.png}
+
+      \vspace{\stretch{1}}
+
+      \Huge{\textbf{Porovnání algoritmů výčtu cyklů v~grafech}}
+
+      \vspace{\stretch{1}}
+    \end{center}
+
+
+    \begin{minipage}[b]{0.96\textwidth}
+      \Large Bc. Jan Bíl  \\
+      Bc. Michal Šedý  \hfill \today
+    \end{minipage}
+
+  \end{titlepage}
+
+  \setcounter{tocdepth}{2}\setcounter{page}{1}
+  % Obsah
+  % ----------------------------------------------
+  \setlength{\parskip}{0pt}
+
+  {\hypersetup{hidelinks}\tableofcontents}
+
+  % Seznam obrazku a tabulek (pokud prace obsahuje velke mnozstvi obrazku, tak se to hodi)
+  % List of figures and list of tables (if the thesis contains a lot of pictures, it is good)
+  \ifczech
+    \renewcommand\listfigurename{Seznam obrázků}
+  \fi
+  \ifslovak
+    \renewcommand\listfigurename{Zoznam obrázkov}
+  \fi
+  % {\hypersetup{hidelinks}\listoffigures}
+
+  \ifczech
+    \renewcommand\listtablename{Seznam tabulek}
+  \fi
+  \ifslovak
+    \renewcommand\listtablename{Zoznam tabuliek}
+  \fi
+  % {\hypersetup{hidelinks}\listoftables}
+
+  \ifODSAZ
+    \setlength{\parskip}{0.5\bigskipamount}
+  \else
+    \setlength{\parskip}{0pt}
+  \fi
+
+  % vynechani stranky v oboustrannem rezimu
+  % Skip the page in the two-sided mode
+  \iftwoside
+    \cleardoublepage
+  \fi
+
+  % Text prace / Thesis text
+  % ----------------------------------------------
+  \input{dokumentace-kapitoly}
+
+
+  % Pouzita literatura / Bibliography
+  % ----------------------------------------------
+
+  \ifczech
+    \makeatletter
+    \def\@openbib@code{\addcontentsline{toc}{chapter}{Literatura}}
+    \makeatother
+    \bibliographystyle{bib-styles/Pysny/czplain}
+  \else
+    \makeatletter
+    \def\@openbib@code{\addcontentsline{toc}{chapter}{Bibliography}}
+    \makeatother
+    \bibliographystyle{bib-styles/Pysny/enplain}
+  %  \bibliographystyle{alpha}
+  \fi
+
+  \ifbib
+    \begin{flushleft}
+    \bibliography{dokumentace-bibliografie}
+    \end{flushleft}
+  \fi
+
+  % vynechani stranky v oboustrannem rezimu
+  % Skip the page in the two-sided mode
+  \iftwoside
+    \cleardoublepage
+  \fi
+
+  % Prilohy / Appendices
+  % ---------------------------------------------
+  \appendix
+\ifczech
+  \renewcommand{\appendixpagename}{Přílohy}
+  \renewcommand{\appendixtocname}{Přílohy}
+  \renewcommand{\appendixname}{Příloha}
+\fi
+
+  \startcontents[chapters]
+  \setlength{\parskip}{0pt}
+
+  \ifODSAZ
+    \setlength{\parskip}{0.5\bigskipamount}
+  \else
+    \setlength{\parskip}{0pt}
+  \fi
+
+  % vynechani stranky v oboustrannem rezimu
+  \iftwoside
+    \cleardoublepage
+  \fi
+
+  % Přílohy / Appendices
+  \input{dokumentace-prilohy}
+
+\end{document}
