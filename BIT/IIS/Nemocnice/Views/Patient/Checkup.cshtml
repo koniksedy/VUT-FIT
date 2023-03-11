@@ -1,0 +1,162 @@
+﻿@model Nemocnice.Models.PatientCheckupModel
+@addTagHelper *, cloudscribe.Web.Pagination
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
+@using Nemocnice.Data;
+
+@{
+    ViewData["Title"] = "Vyšetření";
+}
+<link href="~/lib/bootstrap/dist/css/PagedList.css" rel="stylesheet" type="text/css" />
+<style>
+
+</style>
+
+    <h2 style="margin-top:30px;margin-bottom:30px">Aktivní prohlídky</h2>
+    <div>
+        <div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            Vytvořil
+                        </th>
+                        <th>
+                            Kam zajít
+                        </th>
+                        <th>
+                            Stav
+                        </th>
+                        <th>
+                            Vytvořeno
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.CheckupTicketsRunning.Count == 0)
+                    {
+                        <tr style="background-color:white;">
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <p>Nejsou zde žádné záznamy k zobrazení</p>
+                            </td>
+                            <td></td>
+                        </tr>
+                    }
+                    @foreach (var prohlidka in Model.CheckupTicketsRunning)
+                    {
+                        string desc = prohlidka.State.Substring(0, prohlidka.State.Length);
+                        @try
+                        {
+                            desc = prohlidka.State.Substring(0, 37);
+                            desc = desc + "...";
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                        @using (var db = new DatabaseContext())
+                        {
+                            var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.CreatedBy.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault() ;
+                            var DoctorTo = db.UserT.Where(x => x.UserId == prohlidka.ToDoctor.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
+                        <tr class="radek_zaznamu" style="cursor:pointer" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId })')">
+                            <td>
+                                @DoctorCreator.Name @DoctorCreator.Surname
+                            </td>
+                            <td>
+                                @DoctorTo.Name @DoctorTo.Surname
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => desc)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => prohlidka.CreateDate)
+                            </td>
+                        </tr>
+                            }
+                        }
+                </tbody>
+            </table>
+            <script>
+
+            </script>
+            @(Html.Pager(Model.CheckupTicketsRunning).Url(page => Url.Action("Checkup", new { tab1 = page, tab2 = Model.tab2}))
+            .Classic())
+        </div>
+
+        <h2 style="margin-bottom:30px;margin-top:75px">Ukončené prohlídky</h2>
+        <div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>
+                            Vytvořil
+                        </th>
+                        <th>
+                            Ukončil
+                        </th>
+                        <th>
+                            Výsledek
+                        </th>
+                        <th>
+                            Ukončeno
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.CheckupTicketsDone.Count == 0)
+                    {
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <p>Nejsou zde žádné záznamy k zobrazení</p>
+                            </td>
+                            <td></td>
+                        </tr>
+                    }
+                    @foreach (var prohlidka in Model.CheckupTicketsDone)
+                    {
+                        string desc = prohlidka.Result.Substring(0, prohlidka.Result.Length);
+                        @try
+                        {
+                            desc = prohlidka.Result.Substring(0, 37);
+                            desc = desc + "...";
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                        @using (var db = new DatabaseContext())
+                        {
+                            var DoctorCreator = db.UserT.Where(x => x.UserId == prohlidka.CreatedBy.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
+                            var DoctorTo = db.UserT.Where(x => x.UserId == prohlidka.ToDoctor.UserId).Select(x => new { x.Name, x.Surname }).FirstOrDefault();
+                            <tr class="radek_zaznamu" style="cursor:pointer" onclick="redirectToAction('@Url.Action("Detail", "Patient", new { currentTicketID = prohlidka.CheckupTicketId })')">
+                                <td>
+                                    @DoctorCreator.Name @DoctorCreator.Surname
+                                </td>
+                                <td>
+                                    @DoctorTo.Name @DoctorTo.Surname
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => desc)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => prohlidka.FinishDate)
+                                </td>
+                            </tr>
+                        }
+                    }
+                    </tbody>
+            </table>
+
+            @(Html.Pager(Model.CheckupTicketsDone).Url(page => Url.Action("Checkup", new { tab1 = Model.tab1, tab2 = page}))
+            .Classic())
+
+        </div>
+    </div>
+

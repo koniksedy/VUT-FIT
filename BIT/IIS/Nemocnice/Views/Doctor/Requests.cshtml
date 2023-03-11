@@ -1,0 +1,118 @@
+﻿
+@{
+    ViewData["Title"] = "Request";
+}
+<style>
+    .flexito {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .flexito1 {
+        width: 300px;
+        height: 350px;
+        margin-bottom: 50px;
+    }
+
+
+    .flexito2 {
+        width: 300px;
+        height: 350px;
+        margin-bottom: 50px;
+    }
+
+
+    .flexito3 {
+        width: 300px;
+        height: 350px;
+        margin-bottom: 50px;
+    }
+
+    .test-text {
+        position: absolute;
+        text-align: left;
+        opacity: 1;
+        margin-top: -2.6em;
+        margin-left: 20px;
+        width: 100%;
+        height: 2em;
+        pointer-events: none;
+        cursor: default;
+        text-decoration: none;
+        font-size: 28px;
+        color: #333333;
+    }
+
+    img {
+        border-radius: 5%;
+        cursor: pointer;
+    }
+
+        img:hover {
+            -ms-transform: scale(1.04); /* IE 9 */
+            -webkit-transform: scale(1.04); /* Safari 3-8 */
+            transform: scale(1.04);
+            filter: grayscale(40%);
+        }
+
+    .Doctor:hover {
+        -ms-transform: scale(1.04); /* IE 9 */
+        -webkit-transform: scale(1.04); /* Safari 3-8 */
+        transform: scale(1.04);
+        filter: grayscale(40%);
+        filter: blur(1px);
+    }
+
+</style>
+
+
+
+<h1 style="margin-bottom:70px; margin-top:30px">Žádosti o vyšetření</h1>
+
+
+<div class="flexito">
+    <div class="flexito1">
+        <h4><a asp-action="InRequest">Příchozí žádosti</a></h4>
+        <img class="Doctor" alt="Doctor" height="350" width="300" src="../Img/Shared/prichozi.jpg" onclick="ImgClicked()" />
+
+
+
+    </div>
+
+    <div class="flexito2">
+
+        <h4><a asp-action="OutRequest">Moje žádosti</a></h4>
+        <img class="Doctor" alt="Doctor" height="350" width="300" src="../Img/Shared/moje zadosti.jpg" onclick="ImgClicked1()" />
+
+
+    </div>
+
+
+    <div class="flexito3">
+
+        <h4><a asp-action="InFinishRequest">Příchozí vyřízené řádosti</a></h4>
+        <img class="Doctor" alt="Doctor" height="350" width="300" src="../Img/Shared/ukoncene.jpg" onclick="ImgClicked2()" />
+
+    </div>
+
+
+</div>
+
+<script>
+    function ImgClicked() {
+        window.location.href = "InRequest";
+    }
+    function ImgClicked1() {
+        window.location.href = "OutRequest";
+    }
+    function ImgClicked2() {
+        window.location.href = "InFinishRequest";
+    }
+</script>
+
+
+
+
+
+

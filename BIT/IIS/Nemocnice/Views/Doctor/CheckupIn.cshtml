@@ -1,0 +1,518 @@
+﻿@{
+    ViewData["Title"] = "Příchozí žádost";
+}
+
+@model CheckupTicketModel
+
+<style>
+
+</style>
+
+
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+
+    /* The Modal (background) */
+    .modalImage {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 9999; /* Sit on top */
+        padding-top: 50px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    }
+
+    /* Modal Content (image) */
+    .modal-contentImage {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+    }
+
+    /* Caption of Modal Image */
+    #caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+    }
+
+    /* Add Animation */
+    .modal-contentImage, #caption {
+        -webkit-animation-name: zoom;
+        -webkit-animation-duration: 0.6s;
+        animation-name: zoom;
+        animation-duration: 0.6s;
+    }
+
+    /* The Close Button */
+    .closeImage {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .closeImage:hover,
+        .closeImage:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    .input-image {
+        max-width: 383px;
+        margin-bottom: 15px;
+    }
+
+        .input-image .btn {
+            z-index: 1;
+        }
+
+    .ulozit-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+</style>
+
+<!-- Knihovny pro autocomplete -->
+<script src="~/lib/extern/jquery.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<script src="~/lib/extern/jquery-ui.js"></script>
+<!-- Bez následujícího skriptu nebude fungovat drobdown menu.-->
+<script>
+    $(document).ready(function () {
+        $('.dropdown-toggle').dropdown();
+    });
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<h2 style="margin-top:30px">
+    Žádost o vyšetření
+</h2>
+
+<div style="max-width:1075px" class="flex-row row">
+    <div class="col">
+        <div style="margin-top:30px">
+            <b>Pacient:     @Model.PatientFullName.getFullName() (r.č.:&nbsp;@Model.SocialSecurityNumber)</b><br />
+            <b>Od lékaře:  </b>@Model.DoctorFullName.getFullName()<br />
+        </div>
+    </div>
+    <div class="col">
+        <h4 style="margin-top:25px">Obrázky</h4>
+        <div>
+            <table class="table-striped moje-tabulka">
+                <tbody>
+                    @foreach (var item in Model.Pictures)
+                    {
+                        <tr class="kurzor" onclick="viewImage('/images/' + '@item.id' + '@item.type', '@item.name')">
+                            <td>
+                                @if (item.name.Length > 25)
+                                {
+                                    @((item.name.Substring(0, 20)) + "...")
+
+                                }
+                                else
+                                {
+                                    @item.name
+
+                                }
+                            </td>
+                        </tr>
+                    }
+                    @if (Model.Pictures.Count == 0)
+                    {
+                        <tr class="vypnout"><td>Žádné obrázky</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<div style="margin-top:20px;margin-bottom:20px;max-width:735px">
+        <div class="flex-row row">
+            <div style="margin-top:5px;max-width:50px" class="col">
+                <b>Stav: </b>
+            </div>
+            <div class="input-group col">
+                <input autocomplete="off" type="text" class="form-control m-input" id="newState" name="newState" value="@Model.State" />
+                <div class="input-group-append">
+                    <button onclick="refresh_spinner()" class="btn btn-primary" type="submit">
+                        <span id="refreshButton">
+                            <i style="margin-right:3px" class="fa fa-refresh" aria-hidden="true"></i>
+                        </span>
+                        Aktualizovat
+                    </button>
+                </div>
+            </div>
+        </div>
+        <input hidden name="patientNumber" value="@Model.SocialSecurityNumber" />
+        <input hidden name="ticketDate" value="@Model.CreateDate" />
+</div>
+
+<div style="max-width:900px">
+    <h4>Žádost [@Model.CreateDate]</h4>
+    <textarea style="width:100%" rows="10" readonly>@Model.RequestText</textarea>
+</div>
+
+<div style="max-width:900px;margin-top:20px">
+    <form asp-action="FinishTicket" enctype="multipart/form-data" method="post" onsubmit="return check_TicketReport()">
+
+        <h4>Výsledek mého vyšetření</h4>
+        <div>
+            <textarea style="width:100%" rows="10" id="reportText" name="reportText"></textarea>
+        </div>
+        <!-- Přikládání obrázků a výsledků vyšetření -->
+        <!-- ADD PICTURE/RESULT-->
+        <div style="margin-top:15px;margin-bottom:15px" class="row">
+            <div style="margin-right:5px" class="col">
+                <h4>Přiložit obrázky.</h4>
+                <div>
+                    <button id="addRowFile" type="button" class="btn btn-success">
+                        <i style="margin-right:5px" class="fa fa-upload" aria-hidden="true"></i>
+                        Nový
+                    </button>
+                    <button id="addRowExisting" type="button" class="btn btn-success existujici-top">
+                        <i style="margin-right:5px" class="fa fa-cloud-upload" aria-hidden="true"></i>
+                        Existující
+                    </button>
+                </div>
+            </div>
+            <div class="col-6">
+                <h4>Přiložit text zprávy.</h4>
+                <div>
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">
+                        <i style="margin-right:5px" class="fa fa-file-text" aria-hidden="true"></i>
+                        Vybrat zprávu
+                    </button>
+                    <div class="modal fade" id="CopyReportModal" tabindex="-1" role="dialog" aria-labelledby="CopyReportModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="CopyReportModalLabel">Přiložit zprávu</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <table class="table-responsive-md table-striped">
+                                        @foreach (var item in Model.AllReports)
+                                        {
+                                            <tr style="cursor:pointer">
+                                                <td data-dismiss="modal" onclick="selectedReport('@item', '@Model.SocialSecurityNumber')">
+                                                    @item
+                                                </td>
+                                            </tr>
+                                        }
+                                    </table>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!--Dynamic row-->
+        <div class="row">
+            <div class="col input-image">
+                <div id="newRow"></div>
+            </div>
+        </div>
+        <input hidden name="patientNumber" value="@Model.SocialSecurityNumber" />
+        <input hidden name="ticketDate" value="@Model.CreateDate" />
+        <div class="row">
+            <div class="col">
+                <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
+            </div>
+            <div class="col ulozit-btn">
+                <button onclick="loading_spinner()" class="btn btn-primary" type="submit">
+                    <span id="saveButton">
+                        <i style="margin-right:3px" class="fa fa-paper-plane" aria-hidden="true"></i>
+
+                    </span>
+                    Odeslat
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal For pictures -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Vyberte Obrázek</h5>
+                <div id="loadingPicture" class="spinner col">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Datum
+                            </th>
+                            <th>
+                                Název
+                            </th>
+                            <th>zobrazit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myTable"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal For picture DISPLAY-->
+<div id="myModal" class="modalImage">
+    <span onclick="closeModalPicture()" class="closeImage" id="close2">&times;</span>
+    <img class="modal-contentImage" id="img01">
+    <div id="caption"></div>
+</div>
+
+<!--Script for spinner on save-->
+<script>
+    function loading_spinner() {
+        document.getElementById("saveButton").innerHTML = "<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>";
+    }
+</script>
+
+<script>
+    function stop_spinner() {
+        document.getElementById("saveButton").innerHTML = '<i style="margin-right:3px" class="fa fa-paper-plane" aria-hidden="true"></i>';
+    }
+</script>
+
+<!--Script for spinner on save-->
+<script>
+    function refresh_spinner() {
+
+        $.ajax({
+                url: '/Doctor/UpdateState',
+                dataType: "json",
+            data: {
+                newState: document.getElementById("newState").value,
+                    date: '@Model.CreateDate',
+                    patient: '@Model.SocialSecurityNumber'
+                },
+                success: function (data) {
+                    document.getElementById("refreshButton").innerHTML = '<i style="margin-right:3px" class="fa fa-refresh" aria-hidden="true"></i>';
+                },
+                error: function () {
+                    alert("Nepodařilo se načíst obrázky.");
+                    document.getElementById("refreshButton").innerHTML = '<i style="margin-right:3px" class="fa fa-refresh" aria-hidden="true"></i>';
+                }
+            });  
+    }
+</script>
+
+<!-- SCRIPTS for MICTURE-->
+<script>
+    // add row2
+    $("#addRowExisting").click(function () {
+        var html = '';
+        html += '<div id="inputFormRowFile">';
+        html += '<div class="input-group mb-3">';
+        html += '<div class="custom-file">';
+        html += '<input autocomplete="off" value="" data-toggle="modal" data-target="#exampleModal" name="FileExist" type="text" class="custom-file-input" id="inputGroupFile02" aria-describedby="inputGroupFileAddon02">';
+        html += '<label class="custom-file-label" for="inputGroupFile02">Vyberte existující soubor</label>';
+        html += '</div>';
+        html += '<div class="input-group-append">';
+        html += '<button id="removeRowFile" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#newRow').append(html);
+    });
+</script>
+
+<script>
+    // add row
+    $("#addRowFile").click(function () {
+        var html = '';
+        html += '<div id="inputFormRowFile">';
+        html += '<div class="input-group mb-3">';
+        html += '<div class="custom-file">';
+        html += '<input onchange="changeIn(this)" name="FileOut" accept="image/*" type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">';
+        html += '<label class="custom-file-label text-truncate" for="inputGroupFile01">Vyberte soubor</label>';
+        html += '</div>';
+        html += '<div class="input-group-append">';
+        html += '<button id="removeRowFile" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#newRow').append(html);
+    });
+
+    // remove row
+    $(document).on('click', '#removeRowFile', function () {
+        $(this).closest('#inputFormRowFile').remove();
+    });
+</script>
+
+<script type="text/javascript">
+    // Add the following code if you want the name of the file appear on select
+    function changeIn(that) {
+        var fileName = $(that).val().split("\\").pop();
+        $(that).siblings(".custom-file-label").addClass("selected").html(fileName);
+    }
+</script>
+
+
+<script>
+    $(document).on('shown.bs.modal', '#exampleModal', function (event) {
+        var triggerElement = $(event.relatedTarget); // Button that triggered
+
+        var modal = document.getElementById("myTable");
+        if (modal.innerHTML == "") {
+            $.ajax({
+                url: '/Doctor/GetPictures',
+                dataType: "json",
+                data: {
+                    patientNum: '@Model.SocialSecurityNumber',
+                },
+                success: function (data) {
+                    if (modal.innerHTML == "") {
+                        jQuery.each(data, function (i, val) {
+                            var html = "<tr style=\"cursor:pointer\"><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">";
+                            if (val.name.length > 25) {
+                                html += val.name.substring(0, 23) + "...";
+                            }
+                            else {
+                                html += val.name;
+                            }
+
+                            html += "</td>";
+                            html += "<td><i onclick=\"viewImage('/images/" + val.id + val.type + "', '" + val.name + "')\" class=\"fa fa-picture-o\" style=\"font-size:24px\"></i></td>";
+                            html += "</tr>";
+                            modal.innerHTML += html;
+                        });
+                        for (var i = 0, row; row = modal.rows[i]; i++) {
+                            row.cells[0].onclick = null;
+                            row.cells[1].onclick = null;
+                            row.cells[0].onclick = function () {
+                                triggerElement.val(this.getElementsByTagName('input')[0].value);
+                                triggerElement.siblings(".custom-file-label").addClass("selected").html(this.parentElement.cells[1].innerHTML);
+                            }
+                            row.cells[1].onclick = function () {
+                                triggerElement.val(this.parentElement.cells[0].getElementsByTagName('input')[0].value);
+                                triggerElement.siblings(".custom-file-label").addClass("selected").html(this.innerHTML);
+                            }
+                        }
+                    }
+
+                    document.getElementById("loadingPicture").innerHTML = "";
+                },
+                error: function () {
+                    alert("Nepodařilo se načíst obrázky.");
+                }
+            });
+        } else {
+            for (var i = 0, row; row = modal.rows[i]; i++) {
+                row.cells[0].onclick = null;
+                row.cells[1].onclick = null;
+                row.cells[0].onclick = function () {
+                    triggerElement.val(this.getElementsByTagName('input')[0].value);
+                    triggerElement.siblings(".custom-file-label").addClass("selected").html(this.parentElement.cells[1].innerHTML);
+                }
+                row.cells[1].onclick = function () {
+                    triggerElement.val(this.parentElement.cells[0].getElementsByTagName('input')[0].value);
+                    triggerElement.siblings(".custom-file-label").addClass("selected").html(this.innerHTML);
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("caption");
+
+    function viewImage(source, name) {
+        modal.style.display = "block";
+        modalImg.src = source;
+        captionText.innerHTML = name;
+    };
+
+    // When the user clicks on <span> (x), close the modal
+    function closeModalPicture() {
+        modal.style.display = "none";
+    };
+</script>
+
+
+<script>
+    function selectedReport(report, patNum) {
+        result = $.ajax({
+            url: '/Doctor/GetReport',
+            dataType: "json",
+            data: {
+                patientNum: patNum,
+                date: report,
+            },
+            success: function (data) {
+                var text = document.getElementById('reportText').value;
+                document.getElementById('reportText').value = text.concat(data);
+            },
+            error: function () {
+                alert("Nepodařilo se zkoírovat zprávu.");
+            }
+        }).responseJSON;
+    }
+</script>
+
+<script>
+    function check_TicketReport() {
+        if (document.getElementById("reportText").value == "") {
+            if (!confirm("Jste si jistí, že chcete odeslat výsledek vyšetření s žádným textem?")) {
+                stop_spinner();
+                return false;
+            }
+        }
+        return true;
+    }
+</script>

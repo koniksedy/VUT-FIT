@@ -1,0 +1,680 @@
+﻿<!-- Zobrazení zprávy pacienta. -->
+<!-- Autor: Michal Šedý (xsedym02) -->
+
+@{
+    ViewData["Title"] = "Zpráva";
+}
+
+<!-- Knihovna pro dynamicky přidávatelné řádky. -->
+<!--<script src="~/lib/jquery/dist/jquery.min.js"></script>-->
+<!-- styp potřebný pro autocomplete -->
+<style>
+    .ui-autocomplete {
+        max-height: 100px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    /* IE 6 doesn't support max-height
+    * we use height instead, but this forces the menu to always be this tall
+    */
+    * html .ui-autocomplete {
+        height: 100px;
+    }
+</style>
+
+<!-- Knihovny pro autocomplete -->
+<script src="~/lib/extern/jquery.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+<script src="~/lib/extern/jquery-ui.js"></script>
+<!-- Bez následujícího skriptu nebude fungovat drobdown menu.-->
+<script>
+    
+    $(document).ready(function () {
+        $('.dropdown-toggle').dropdown();
+    });
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<!-- Styly pro zobrazení obrázku -->
+<style>
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+
+    /* The Modal (background) */
+    .modalImage {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 9999; /* Sit on top */
+        padding-top: 50px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+    }
+
+    /* Modal Content (image) */
+    .modal-contentImage {
+        margin: auto;
+        display: block;
+        width: 60%;
+    }
+
+        .modal-contentImage img:hover {
+            transform: scale(1);
+        }
+
+    /* Caption of Modal Image */
+    #caption {
+        margin: auto;
+        display: block;
+        width: 80%;
+        max-width: 700px;
+        text-align: center;
+        color: #ccc;
+        padding: 10px 0;
+        height: 150px;
+    }
+
+    /* Add Animation */
+    .modal-contentImage, #caption {
+        -webkit-animation-name: zoom;
+        -webkit-animation-duration: 0.6s;
+        animation-name: zoom;
+        animation-duration: 0.6s;
+    }
+
+    /* The Close Button */
+    .closeImage {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .closeImage:hover,
+        .closeImage:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+</style>
+
+<style>
+    .zpravy {
+        min-width: 350px;
+    }
+
+    .text-zprav {
+        width: 100%;
+    }
+
+    .hlavni-diagnoza {
+        max-width: 148px;
+        margin-right: 5px;
+        margin-top: 12px;
+    }
+
+        .hlavni-diagnoza div {
+            max-width: 148px;
+        }
+
+        .hlavni-diagnoza input {
+            border-radius: 0.25rem;
+            color: black;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            max-width: 148px;
+        }
+
+        .hlavni-diagnoza button {
+            width: 148px;
+            width: 148px;
+        }
+
+    .diagnoza {
+        max-width: 107px;
+        margin-right: 5px;
+        margin-top: 12px;
+    }
+
+        .diagnoza div {
+            max-width: 107px;
+        }
+
+        .diagnoza input {
+            border-radius: 0.25rem;
+            color: #495050;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #ced4da;
+            max-width: 107px;
+        }
+
+        .diagnoza button {
+            width: 107px;
+            max-width: 107px;
+        }
+
+    @@media only screen and (min-width:1000px) {
+        .vykon {
+            margin-top: 12px;
+            width: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+    }
+
+    @@media only screen and (max-width:999px) {
+        .vykon {
+            margin-top: 12px;
+            width: 150px;
+        }
+    }
+
+    .vykon input {
+        border-radius: 0.25rem;
+        color: black;
+        padding: 0.375rem 0.75rem;
+        border: 1px solid #ced4da;
+        width: 77px;
+        max-width: 77px;
+    }
+
+    .input-image {
+        max-width: 383px;
+        margin-bottom: 15px;
+    }
+
+        .input-image .btn {
+            z-index: 1;
+        }
+
+    .ulozit-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+</style>
+
+
+<!-- The Modal For picture DISPLAY-->
+<div id="myModal" class="modalImage">
+    <span onclick="closeModalPicture()" class="closeImage" id="close2">&times;</span>
+    <img class="modal-contentImage" id="img01">
+    <div id="caption"></div>
+</div>
+
+
+<!-- Model obsahující informace o pacientovi, všech zprávách a předchozí a aktuální zprávě. -->
+@model Nemocnice.Models.PatientReportsModel
+<!-- Základní informace o pacientovi -->
+<h2 style="margin-bottom:0px;margin-top:30px;">
+    @Model.PatientFullName.getFullName() (r.č:&nbsp;@Model.SocialSecurityNumber, poj:&nbsp;@Model.Insurance)
+    <i onclick="redirectToAction('@Url.Action("PatientProfile", "Doctor", new { patientNum = Model.SocialSecurityNumber})')" class="fa fa-external-link icons" aria-hidden="true"></i>
+
+</h2>
+
+<div style="margin-top:20px" class="row flex-row flex-wrap-reverse">
+    <div class="col-9 zpravy">
+        <div>
+            <!-- Pokud předchozí zpráva neexistuje, nepíše se datu ani čas. -->
+            @if (!String.IsNullOrEmpty(Model.PreviousReport))
+            {
+                <h4>[@Model.PreviousReportDate]</h4>
+            }
+            else
+            {
+                <h4 style="margin-top:37px"></h4>
+            }
+
+            <!-- Text starší zprávy se nedá přepsat.-->
+            <textarea class="text-zprav" readonly disabled rows="5">@Model.PreviousReport</textarea>
+        </div>
+        <div>
+            <!-- Čas nové/upravované zprávy -->
+            <h4 style="margin-top:15px">[@Model.ActualReportDate]</h4>
+            <!-- Úprave, nebo vytvoření zprávy. -->
+            @if (Model.AllReports.Any() && DateTime.Compare(Model.AllReports.First(), Model.ActualReportDate) >= 0)
+            {
+                <!-- Pacient má zápisy a jedná se o zobrazení/úpravu staré zprávy.-->
+                <form method="post" asp-action="UpdateReport">
+                    <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
+                    <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
+                    <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
+                    <!-- Primárně je text staré zprávy zavčen. Odemče se až po stisknutí tlačítka Upravit. -->
+                    <textarea class="text-zprav" readonly disabled id="ReportText" name="ReportText" rows="10">@Model.ActualReport</textarea>
+                    <div id="lockbtn">
+                        <div style="margin-top:12px" class="row">
+                            <div class="col">
+                                <button class="btn btn-primary" type="button" onclick="upravitBtnFunction()">
+                                    <i class=" fa fa-pencil" aria-hidden="true"></i>
+                                    Upravit
+                                </button>
+                            </div>
+                            <div class="col float-right ulozit-btn">
+                                <!-- Uložit, blokováno, dokud se nezmáčkne tlačítko Upravit-->
+                                <button onclick="loading_spinner()" class="btn btn-primary" type="submit" id="RepareReportSaveBtn" disabled>
+                                    <span id="saveButton">
+                                        <i style="margin-right:3px" class="fa fa-floppy-o" aria-hidden="true"></i>
+                                    </span>
+                                    Uložit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <!-- Vytvoření nové zprávy. -->
+                <form method="post" enctype="multipart/form-data" asp-action="CreateReport" onsubmit="return ReportValidation()">
+                    <!-- hiden input, abych dostal do ActionResult hodnotu ActualReportDate a PatientNum-->
+                    <input type="hidden" name="ReportDate" value="@Model.ActualReportDate" />
+                    <input type="hidden" name="PatientNum" value="@Model.SocialSecurityNumber" />
+                    <textarea class="text-zprav" rows="10" id="ReportText" name="ReportText">@Model.ActualReport</textarea>
+
+                    <!-- Diagnozy a výkony -->
+                    <div class="row">
+                        <div class="col hlavni-diagnoza">
+                            <div>
+                                <input type="text" name="Diagnosis1" id="Diagnosis1" placeholder="Hlavní diagnoza*" autocomplete="off" />
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured1')">Vyléčeno</button>
+                            </div>
+                            <input hidden name="Cured1" id="Cured1" value="noncured" />
+                        </div>
+                        <div class="col diagnoza">
+                            <div>
+                                <input type="text" name="Diagnosis2" id="Diagnosis2" placeholder="Diagnoza 2" autocomplete="off" />
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured2')">Vyléčeno</button>
+                            </div>
+                            <input hidden name="Cured2" id="Cured2" value="noncured" />
+                        </div>
+
+                        <div class="col diagnoza">
+                            <div>
+                                <input type="text" name="Diagnosis3" id="Diagnosis3" placeholder="Diagnoza 3" autocomplete="off" />
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured3')">Vyléčeno</button>
+                            </div>
+                            <input hidden name="Cured3" id="Cured3" value="noncured" />
+                        </div>
+
+                        <div class="col diagnoza">
+                            <div>
+                                <input type="text" name="Diagnosis4" id="Diagnosis4" placeholder="Diagnoza 4" autocomplete="off" />
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-dark" value="false" onclick="cured_button(this, 'Cured4')">Vyléčeno</button>
+                            </div>
+                            <input hidden name="Cured4" id="Cured4" value="noncured" />
+                        </div>
+                        <div class="col vykon">
+                            <!-- Pole pro Výkon. (pouze jeden) -->
+                            <input type="text" id="Bill" name="Bill" placeholder="Výkon*" autocomplete="off">
+                        </div>
+                    </div>
+                    <hr />
+                    <!-- Přikládání obrázků a výsledků vyšetření -->
+                    <!-- ADD PICTURE/RESULT-->
+                    <div style="margin-top:15px;margin-bottom:15px" class="row">
+                        <div style="margin-right:5px" class="col">
+                            <h4>Přiložit obrázky.</h4>
+                            <div>
+                                <button id="addRowFile" type="button" class="btn btn-success">
+                                    <i style="margin-right:5px" class="fa fa-upload" aria-hidden="true"></i>
+                                    Nový
+                                </button>
+                                <button id="addRowExisting" type="button" class="btn btn-success existujici-top">
+                                    <i style="margin-right:5px" class="fa fa-cloud-upload" aria-hidden="true"></i>
+                                    Existující
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h4>Přiložit výsledky vyšetření.</h4>
+                            <div>
+                                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#CopyReportModal">
+                                    <i style="margin-right:5px" class="fa fa-file-text" aria-hidden="true"></i>
+                                    Výsledek vyšetření
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!--Dynamic row-->
+                    <div class="row">
+                        <div class="col input-image">
+                            <div id="newRow"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <button onClick="history.go(-1); return false;" class="btn btn-primary">Zpět</button>
+                        </div>
+                        <div class="col ulozit-btn">
+                            <button onclick="loading_spinner()" class="btn btn-primary" type="submit">
+                                <span id="saveButton">
+                                    <i style="margin-right:3px" class="fa fa-floppy-o" aria-hidden="true"></i>
+                                </span>
+                                Uložit
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            }
+        </div>
+    </div>
+    <div class="col-3">
+        <div>
+            <h4>Zprávy</h4>
+            <!-- Tabulka všech zpráv pacienta. -->
+            <table class="table-striped moje-tabulka">
+                <tbody>
+                    @foreach (var item in Model.AllReports)
+                    {
+                        <tr class="kurzor" onmousedown="redirectToAction('@Url.Action("Report", "Doctor", new { socialNum = Model.SocialSecurityNumber, date = item })')">
+                            <td>
+                                @Html.DisplayFor(modelItem => item)
+                            </td>
+                        </tr>
+                    }
+                    @if(!Model.AllReports.Any())
+                    { 
+                    <tr class="vypnout">
+                        <td>Žádné zprávy</td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (Model.AllReports.Any() && DateTime.Compare(Model.AllReports.First(), Model.ActualReportDate) >= 0)
+        {
+            <h4 style="margin-top:25px">Obrázky</h4>
+            <div>
+                <table class="table-striped moje-tabulka">
+                    <tbody>
+                        @foreach (var item in Model.Pictures)
+                        {
+                            <tr class="kurzor" onclick="viewImage('/images/' + '@item.id' + '@item.type', '@item.name')">
+                                <td>
+                                    @if (item.name.Length > 25)
+                                    {
+                                        @((item.name.Substring(0, 20)) + "...")
+
+                                    }
+                                    else
+                                    {
+                                        @item.name
+
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        @if (Model.Pictures.Count == 0)
+                        {
+                            <tr class="vypnout"><td>Žádné obrázky</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+
+<!-- Modal For pictures -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Vyberte obrázek</h5>
+                <div id="loadingPicture" class="spinner col">
+                    <div class="bounce1"></div>
+                    <div class="bounce2"></div>
+                    <div class="bounce3"></div>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>
+                                Datum
+                            </th>
+                            <th>
+                                Název
+                            </th>
+                            <th>Zobrazit</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myTable"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal for results of checkup tickets -->
+<div class="modal fade" id="CopyReportModal" tabindex="-1" role="dialog" aria-labelledby="CopyReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CopyReportModalLabel">Přiložit výsledek vyšetření</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table-responsive-md  table-striped">
+                    @foreach (var item in Model.AllTickets)
+                    {
+                        <tr style="cursor:pointer">
+                            <td data-dismiss="modal" onclick="selectedResult('@item', '@Model.SocialSecurityNumber')">
+                                @item
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zavřít</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Script for spinner on save-->
+<script>
+    function loading_spinner() {
+        document.getElementById("saveButton").innerHTML = "<span class=\"spinner-border spinner-border-sm\" role=\"status\" aria-hidden=\"true\"></span>";
+    }
+</script>
+
+
+
+<!-- SCRIPTS for PICTURE-->
+<script>
+    // add row2
+    $("#addRowExisting").click(function () {
+        var html = '';
+        html += '<div id="inputFormRowFile">';
+        html += '<div class="input-group mb-3">';
+        html += '<div class="custom-file">';
+        html += '<input autocomplete="off" value="" data-toggle="modal" data-target="#exampleModal" name="FileExist" type="text" class="custom-file-input" id="inputGroupFile02" aria-describedby="inputGroupFileAddon02">';
+        html += '<label class="custom-file-label text-truncate" for="inputGroupFile02">Vyberte existující soubor</label>';
+        html += '</div>';
+        html += '<div class="input-group-append">';
+        html += '<button id="removeRowFile" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#newRow').append(html);
+    });
+</script>
+
+<script>
+    // add row
+    $("#addRowFile").click(function () {
+        var html = '';
+        html += '<div id="inputFormRowFile">';
+        html += '<div class="input-group mb-3">';
+        html += '<div class="custom-file">';
+        html += '<input onchange="changeIn(this)" name="FileOut" accept="image/*" type="file" class="custom-file-input" id="inputGroupFile01" aria-describedby="inputGroupFileAddon01">';
+        html += '<label class="custom-file-label text-truncate" for="inputGroupFile01">Vyberte soubor</label>';
+        html += '</div>';
+        html += '<div class="input-group-append">';
+        html += '<button id="removeRowFile" type="button" class="btn btn-danger"><i class="fa fa-trash" aria-hidden="true"></i></button>';
+        html += '</div>';
+        html += '</div>';
+        html += '</div>';
+
+        $('#newRow').append(html);
+    });
+
+    // remove row
+    $(document).on('click', '#removeRowFile', function () {
+        $(this).closest('#inputFormRowFile').remove();
+    });
+</script>
+
+<script type="text/javascript">
+    // Add the following code if you want the name of the file appear on select
+    function changeIn(that) {
+        var fileName = $(that).val().split("\\").pop();
+        $(that).siblings(".custom-file-label").addClass("selected").html(fileName);
+    }
+</script>
+
+
+<script>
+    $(document).on('shown.bs.modal', '#exampleModal', function (event) {
+        var triggerElement = $(event.relatedTarget); // Button that triggered
+
+        var modal = document.getElementById("myTable");
+        if (modal.innerHTML == "") {
+            $.ajax({
+                url: '/Doctor/GetPictures',
+                dataType: "json",
+                data: {
+                    patientNum: '@Model.SocialSecurityNumber',
+                },
+                success: function (data) {
+                    if (modal.innerHTML == "") {
+                        jQuery.each(data, function (i, val) {
+                            var html = "<tr style=\"cursor:pointer\"><td data-dismiss=\"modal\">" + val.date + "<input hidden value=\"" + val.id + "\"/></td><td data-dismiss=\"modal\">";
+                            if (val.name.length > 25) {
+                                html += val.name.substring(0, 23) + "...";
+                            }
+                            else {
+                                html += val.name;
+                            }
+
+                            html += "</td>";
+                            html += "<td><i onclick=\"viewImage('/images/" + val.id + val.type + "', '" + val.name + "')\" class=\"fa fa-picture-o\" style=\"font-size:24px\"></i></td>";
+                            html += "</tr>";
+                            modal.innerHTML += html;
+                        });
+                        for (var i = 0, row; row = modal.rows[i]; i++) {
+                            row.cells[0].onclick = null;
+                            row.cells[1].onclick = null;
+                            row.cells[0].onclick = function () {
+                                triggerElement.val(this.getElementsByTagName('input')[0].value);
+                                triggerElement.siblings(".custom-file-label").addClass("selected").html(this.parentElement.cells[1].innerHTML);
+                            }
+                            row.cells[1].onclick = function () {
+                                triggerElement.val(this.parentElement.cells[0].getElementsByTagName('input')[0].value);
+                                triggerElement.siblings(".custom-file-label").addClass("selected").html(this.innerHTML);
+                            }
+                        }
+                    }
+
+                    document.getElementById("loadingPicture").innerHTML = "";
+                },
+                error: function () {
+                    alert("Nepodařilo se načíst obrázky.");
+                }
+            });
+        } else {
+            for (var i = 0, row; row = modal.rows[i]; i++) {
+                row.cells[0].onclick = null;
+                row.cells[1].onclick = null;
+                row.cells[0].onclick = function () {
+                    triggerElement.val(this.getElementsByTagName('input')[0].value);
+                    triggerElement.siblings(".custom-file-label").addClass("selected").html(this.parentElement.cells[1].innerHTML);
+                }
+                row.cells[1].onclick = function () {
+                    triggerElement.val(this.parentElement.cells[0].getElementsByTagName('input')[0].value);
+                    triggerElement.siblings(".custom-file-label").addClass("selected").html(this.innerHTML);
+                }
+            }
+        }
+    });
+</script>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("myModal");
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("caption");
+
+    function viewImage(source, name) {
+        modal.style.display = "block";
+        modalImg.src = source;
+        captionText.innerHTML = name;
+    };
+
+    // When the user clicks on <span> (x), close the modal
+    function closeModalPicture() {
+        modal.style.display = "none";
+    };
+</script>
+
+<script>
+    function selectedResult(report, patNum) {
+        $.ajax({
+            url: '/Doctor/GetResult',
+            dataType: "json",
+            data: {
+                patientNum: patNum,
+                date: report,
+            },
+            success: function (data) {
+                var text = document.getElementById('ReportText').value;
+                document.getElementById('ReportText').value = text.concat(data);
+            },
+            error: function () {
+                alert("Nepodařilo se zkoírovat výsledek vyšetření.");
+            }
+        });
+    }
+</script>
+
+
+
+<script src="~/js/Report.js?v=2"></script>
+<script src="~/js/site.js"></script>

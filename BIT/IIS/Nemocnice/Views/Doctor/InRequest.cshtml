@@ -1,0 +1,78 @@
+﻿@model IEnumerable<Nemocnice.Models.CheckupTicketToMe>
+
+@{
+    ViewData["Title"] = "Příchozí žádosti";
+}
+
+
+
+<h1 style="margin-bottom:30px;margin-top:30px" >Příchozí žádosti</h1>
+
+<div class="flex-row row" style="display:flex;margin-bottom:5px">
+    <div>
+        <form asp-action="InRequest" method="get">
+            <div class="form-actions no-color">
+                <div class="input-group">
+                    <input class="hledat-text" type="text" placeholder="Hledat" name="SearchString" id="search" autocomplete="off" value="@ViewData["Search"]" />
+                    <div class="input-group-append">
+                        <button type="submit" name="SortOrder" value="@ViewData["SortOrder"]" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col float-right">
+        <div class="row">
+            <div>
+                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("InRequest", "Doctor", new { })')" class="btn btn-secondary">Zrušit filtry</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div style="overflow-x: auto">
+    <table class="table table-striped" style="cursor:pointer">
+        <thead>
+            <tr>
+                <th>
+                    @Html.ActionLink("Příjmení", "InRequest", new { sortOrder = "bySurname", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Jméno", "InRequest", new { sortOrder = "byName", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Rodné číslo", "InRequest", new { sortOrder = "byNumber", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Lékař", "InRequest", new { sortOrder = "byDoctor", searchString = ViewData["Search"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Datum vytvoření", "InRequest", new { sortOrder = "byDate", searchString = ViewData["Search"] })
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr onclick="redirectToAction('@Url.Action("PrepareForCheckupIn", "Doctor", new { patientNum = item.SocialSecurityNumber, date = item.CreationDate})')">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientSurname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SocialSecurityNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FromDoctor)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CreationDate)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

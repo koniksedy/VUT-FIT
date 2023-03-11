@@ -1,0 +1,224 @@
+﻿<!-- Zobrazení kartotéky přístupné pouze v s oprávněním Doctor -->
+<!-- Autor: Michal Šedý (xsedym02) -->
+<!-- Poslední změna: 12.11.2020 -->
+
+@{
+    ViewData["Title"] = "Kartotéka";
+}
+
+<!-- Model obsahující seznam základních informací o pacientech pro kartotéku. -->
+@model CardModel
+
+@using Nemocnice.Data;
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
+
+<style>
+
+
+    .new-report {
+        color: #028520;
+        font-weight: 700;
+        background-color: transparent;
+        border: none;
+    }
+
+        .new-report:hover {
+            color: #024311;
+        }
+
+    @@media only screen and (min-width:501px) {
+        .to-end {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        }
+    }
+
+    @@media only screen and (max-width:500px) {
+        .to-end {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 5px;
+        }
+    }
+           
+
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+<h1 style="margin-top:30px;margin-bottom:30px">Kartotéka</h1>
+
+
+<!-- Vyskakovací okno (modální dialog), k zadání údajů pro vytvoření nového pacienta. -->
+<!-- TODO Rozdělit okno do dvou sloupců. -->
+<form asp-action="CreatePatient" method="post" onsubmit="return validateSSN()">
+    <div class="modal fade" id="newPatientModal" tabindex="-1" role="dialog" aria-labelledby="newPatientModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width:800px" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newPatientModalLabel">Nový pacient</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="col-form-label">Jméno<a style="color:red">*</a></label>
+                                <input name="NewName" type="text" required autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Rodné číslo<a style="color:red">*</a></label>
+                                <input oninvalid="this.setCustomValidity('Zadejte rodné číslo odpovídající pravidlům bez lomítka.');" oninput="this.setCustomValidity('');" name="NewNum" id="RC" type="text" required pattern="[0-9]{2}(([1,3,6,8][0-2])|([0,2,5,7][1-9]))((0[1-9])|1[0-9]|2[0-9]|3[0-1])[0-9]{3,4}" autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Telefon<a style="color:red">*</a></label>
+                                <input name="NewTel" type="text" required autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Ulice</label>
+                                <input name="NewStreet" autocomplete="off" value="" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Město<a style="color:red">*</a></label>
+                                <input name="NewCity" required autocomplete="off" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="col-form-label">Příjmení<a style="color:red">*</a></label>
+                                <input name="NewSurname" type="text" required autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Pojišťovna<a style="color:red">*</a></label>
+                                <input oninvalid="this.setCustomValidity('Zdejte existující kód pojišťovny, např.: 111.');" oninput="this.setCustomValidity('');" name="NewInsurance" type="text" required pattern="205|207|213|111|201|209|211" autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Email</label>
+                                <input name="NewEmail" type="email" value="" autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Číslo popisné</label>
+                                <input oninvalid="this.setCustomValidity('Zdejte číslo popisné bez, a to bez lomítka.');" oninput="this.setCustomValidity('');" name="NewHouseNum" type="text" pattern="[0-9]{1,9}" value="" autocomplete="off" class="form-control" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-form-label">Směrovací číslo<a style="color:red">*</a></label>
+                                <input oninvalid="this.setCustomValidity('Zdejte směrovací číslo ve formátu \'12345\', nebo \'123 45\'');" oninput="this.setCustomValidity('');" name="NewZip" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label class="col-form-label">Titul</label>
+                                <input name="NewTitle" type="text" autocomplete="off" value="" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input class="btn btn-primary" type="submit" value="Uložit" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<!-- Vyhledávání pacienta podle zadaného výrazu. -->
+<!-- Zaměření na vyhledáné výsled je možné zrušit tlačítkem |Zrušit filtry|, které zobrazí zase všechny pacienty. -->
+<div class="flex-row" style="display:flex;margin-bottom:5px">
+    <div>
+        <form asp-action="Card" method="get">
+            <div class="form-actions no-color">
+                <div class="input-group">
+                    <input class="hledat-text" type="text" autocomplete="off" placeholder="Hledat" name="SearchString" value="@ViewData["Search"]"/>
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col float-right">
+            <div class="row">
+                <div>
+                    <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("Card", "Doctor", new { })')" class="btn btn-secondary">Zrušit filtry</button>
+                </div>
+                <div class="col to-end">
+                    <!-- Tlačítko |Nový pacient|, které ve vyskakovacím okně umožní zadat údaje pro vytvoření nového pacienta. -->
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#newPatientModal">Nový pacient</button>
+                </div>
+            </div> 
+    </div>
+</div>
+
+
+
+<!-- Halvní tabulka kartotéky. Vybrané sloupce je mořné řadit (řazení je vždy sestupné). -->
+<!-- Řazení neovlivní výsledky vyhledávání. Provede pouze jejich seřazení. -->
+<div style="overflow-x: auto;">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    @Html.ActionLink("Příjmení", "Card", new { sortOrder = "bySurname", searchString = ViewData["Search"], p = ViewData["CurrentPage"] })
+                </th>
+                <th>
+                    @Html.ActionLink("Jméno", "Card", new { sortOrder = "byName", searchString = ViewData["Search"], p = ViewData["CurrentPage"] })
+                </th>
+                <th>
+                    Titul
+                </th>
+                <th>
+                    @Html.ActionLink("Rodné číslo", "Card", new { sortOrder = "byNumber", searchString = ViewData["Search"], p = ViewData["CurrentPage"] })
+                </th>
+                <th>
+                    Pojišťovna
+                </th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.patientsPage)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientFullName.Surname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientFullName.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PatientFullName.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SocialSecurityNum)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Insurance)
+                    </td>
+                    <td>
+                        <!-- Zobrací celkový přehled pacienta se všemi jeho funkcemi. -->
+                        <a class="detail" href="@Url.Action("PatientProfile", "Doctor", new { patientNum = item.SocialSecurityNum })">Detail</a>
+                     </td>   
+                     <td>
+                        <!-- Vytvoření nové zprávy k danému pacientovi. -->
+                        <a class="new-report" href="@Url.Action("Report", "Doctor", new { socialNum = item.SocialSecurityNum })">Nová zpráva</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<br /><br />
+@(Html.Pager(Model.patientsPage).Url(page => Url.Action("Card", new { p = page, sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())

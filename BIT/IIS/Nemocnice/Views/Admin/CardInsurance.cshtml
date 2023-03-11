@@ -1,0 +1,326 @@
+﻿@{
+    ViewData["Title"] = "Správa pracovníků pojišťovny";
+}
+
+<!-- Model obsahující seznam základních informací o pacientech pro kartotéku. -->
+@model Admin_insurance
+@using Nemocnice.Data;
+@using X.PagedList
+@using X.PagedList.Mvc
+@using X.PagedList.Mvc.Core.Fluent
+@using X.PagedList.Web.Common;
+@using Microsoft.AspNetCore.Mvc;
+
+
+<style>
+
+    @@media only screen and (min-width:501px) {
+        .to-end {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+    }
+
+    @@media only screen and (max-width:500px) {
+        .to-end {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 5px;
+        }
+    }
+</style>
+
+
+
+<h1 style="margin-bottom:30px" class="pojistovna-nadpis">Správa pracovníků pojišťovny</h1>
+
+<div class="flex-row" style="display:flex;margin-bottom:5px">
+    <div>
+        <form asp-action="CardInsurance" method="get">
+            <div class="form-actions no-color">
+                <div class="input-group">
+                    <input class="hledat-text" type="text" autocomplete="off" placeholder="Hledat" name="SearchString" value="@ViewData["Search"]" />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-search" style="font-size:20px"></i></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col float-right">
+        <div class="row">
+            <div>
+                <button style="margin-left:20px" onclick="redirectToAction('@Url.Action("CardInsurance", "Admin", new { })')" class="btn btn-secondary">Zrušit filtry</button>
+            </div>
+            <div class="col to-end">
+                <!-- Tlačítko |Nový pacient|, které ve vyskakovacím okně umožní zadat údaje pro vytvoření nového pacienta. -->
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#newPatientModal">Nový pracovník</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Vyskakovací okno (modální dialog), k zadání údajů pro vytvoření nového pacienta. -->
+<form asp-action="CreateInsurance" method="post" onsubmit="return testRC('RC')">
+    <div class="modal fade" id="newPatientModal" tabindex="-1" role="dialog" aria-labelledby="newPatientModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width:800px" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newPatientModalLabel">Nový pracovník</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="col-form-label">Jméno<a style="color:red">*</a></label>
+                                <input name="NewName" type="text" required autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Telefon<a style="color:red">*</a></label>
+                                <input name="NewTel" type="text" required autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Email</label>
+                                <input name="NewEmail" type="email" value="" autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Ulice</label>
+                                <input name="NewStreet" autocomplete="off" value="" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Město<a style="color:red">*</a></label>
+                                <input name="NewCity" required autocomplete="off" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label class="col-form-label">Příjmení<a style="color:red">*</a></label>
+                                <input name="NewSurname" type="text" required autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Telefon do práce</label>
+                                <input name="NewWorkPhone" type="text" autocomplete="off" value="" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Pozice<a style="color:red">*</a></label>
+                                <input name="NewPosition" type="text" required autocomplete="off" value="" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Číslo popisné</label>
+                                <input name="NewHouseNum" type="text" pattern="[0-9]+" value="" autocomplete="off" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label">Směrovací číslo<a style="color:red">*</a></label>
+                                <input name="NewZip" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-2">
+                            <div class="form-group">
+                                <label class="col-form-label">Titul</label>
+                                <input name="NewTitle" type="text" autocomplete="off" value="" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="sortOrder" value="@ViewData["CurrentSort"]" />
+                    <input type="hidden" name="p" value="@ViewData["CurrentPage"]" />
+                    <input type="hidden" name="searchString" value="@ViewData["Search"]" />
+                    <input class="btn btn-primary" type="submit" value="Uložit" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Halvní tabulka kartotéky. Vybrané sloupce je mořné řadit (řazení je vždy sestupné). -->
+<!-- Řazení neovlivní výsledky vyhledávání. Provede pouze jejich seřazení. -->
+<table class="table table-striped" style="overflow-x: auto;">
+    <thead>
+        <tr>
+            <th>
+                @Html.ActionLink("Příjmení", "CardInsurance", new { sortOrder = "bySurname", searchString = ViewData["Search"] })
+            </th>
+            <th>
+                @Html.ActionLink("Jméno", "CardInsurance", new { sortOrder = "byName", searchString = ViewData["Search"] })
+            </th>
+            <th>
+                Pozice
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.insurancePage)
+        {
+            string pom = "#exampleModal" + item.PersonalID;
+            string pom2 = "exampleModal" + item.PersonalID;
+
+            using (var db = new DatabaseContext())
+            {
+                var tel = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.Phone).FirstOrDefault();
+                var mail = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.Email).FirstOrDefault();
+                var title = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.Title).FirstOrDefault();
+                var tmp = db.UserT.Where(x => x.UserId == item.UserId).Select(s => s.WorkAddress).FirstOrDefault();
+
+
+                var address = db.AddressT.ToList().First();
+                if (tmp != null)
+                {
+                    int tmp2 = Convert.ToInt32(tmp.AddressId);
+                    address = db.AddressT.Where(x => x.AddressId == tmp2).ToList().First();
+                }
+                else
+                {
+                    address.StreetName = "";
+                    address.ZIP = 0;
+                    address.City = "";
+                    address.HouseNumber = 0;
+                }
+
+
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InsuranceFullName.Surname)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InsuranceFullName.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Position)
+                    </td>
+                    <td>
+                        <button name="button" type="button" class="butt-payment" data-toggle="modal" data-target="@pom">Upravit</button>
+                        <form asp-action="EditDb_Insurance" method="post">
+
+                            <div class="modal fade" id="@pom2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
+                                <div class="modal-dialog" style="max-width: 800px" role="document">
+                                    <!-- zpusobi, ze je okno skryte a vyskoci az po kliku -->
+                                    <div class="modal-content">
+                                        <!-- pozadi ve vyskakovacim oknu -->
+                                        <div class="modal-header">
+                                            <!-- formatovani nadpisu a krizku -->
+                                            <h5>Upravit pracovníka pojišťovny</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="form-row">
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Jméno<a style="color:red">*</a></label>
+                                                        <input name="edit_name" type="text" required autocomplete="off" class="form-control" value="@item.InsuranceFullName.Name" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Telefon<a style="color:red">*</a></label>
+                                                        <input name="edit_tel" type="text" required autocomplete="off" class="form-control" value="@tel" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Ulice</label>
+                                                        <input name="edit_street" autocomplete="off" class="form-control" value="@address.StreetName" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Město<a style="color:red">*</a></label>
+                                                        <input name="edit_town" required autocomplete="off" class="form-control" value="@address.City" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Heslo</label>
+                                                        <input name="password" type="password" id="password" pattern=".{9,}" autocomplete="off" class="form-control" />
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Příjmení<a style="color:red">*</a></label>
+                                                        <input name="edit_surname" type="text" required autocomplete="off" class="form-control" value="@item.InsuranceFullName.Surname" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Telefon do práce</label>
+                                                        <input name="edit_work" type="text" autocomplete="off" value="@item.WorkPhone" class="form-control" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Číslo popisné</label>
+                                                        <input name="edit_cp" type="text" pattern="[0-9]+" autocomplete="off" class="form-control" value="@(address.HouseNumber == 0 ? "" : address.HouseNumber.ToString())" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Směrovací číslo<a style="color:red">*</a></label>
+                                                        <input name="edit_psc" type="text" required pattern="([0-9]{5})|([0-9]{3} [0-9]{2})" autocomplete="off" class="form-control" value="@(address.ZIP == 0 ? "" : address.ZIP.ToString())" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Potvrdit heslo</label>
+                                                        <input name="edit_confirmPassword" type="password" id="confirm_password" autocomplete="off" class="form-control" />
+                                                    </div>
+                                                </div>
+                                                <div class="col">
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Titul</label>
+                                                        <input name="edit_title" type="text" autocomplete="off" value="@title" class="form-control" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Email</label>
+                                                        <input name="edit_mail" type="email" autocomplete="off" class="form-control" value="@mail" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Pozice<a style="color:red">*</a></label>
+                                                        <input name="edit_position" type="text" required autocomplete="off" class="form-control" value="@item.Position" />
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-form-label">Login</label>
+                                                        <input readonly disabled name="edit_login" type="text" required autocomplete="off" value="@item.Login" class="form-control" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <!-- formatovani tlacitka odeslat -->
+                                            <input type="hidden" name="edit_ID" value="@item.PersonalID" />
+                                            <input type="hidden" name="old" value="@item.Login" />
+                                            <input type="hidden" name="sortOrder" value="@ViewData["CurrentSort"]" />
+                                            <input type="hidden" name="p" value="@ViewData["CurrentPage"]" />
+                                            <input type="hidden" name="searchString" value="@ViewData["Search"]" />
+                                            <input name="new_butt" class="btn-insurance" type="submit" value="Odeslat" /> <!-- tlacitko odeslat -->
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </td>
+                    <td>
+                        <button name="button" class="butt-payment" onclick="redirectToAction('@Url.Action("CardInsurance", "Admin", new { ID_delete = item.PersonalID,  sortOrder = ViewData["CurrentSort"], p = ViewData["CurrentPage"], searchString = ViewData["Search"] })')">Odstranit</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<br />
+<br />
+@(Html.Pager(Model.insurancePage).Url(page => Url.Action("CardInsurance", new { p = page, sortOrder = ViewData["CurrentSort"], searchString = ViewData["Search"] })).Classic())
+<br />
+<br />
+<br />
+
+<script>
+    var password = document.getElementById("password")
+        , confirm_password = document.getElementById("confirm_password");
+
+    function validatePassword() {
+        if (password.value != confirm_password.value) {
+            confirm_password.setCustomValidity("Hesla se neshodují");
+        } else {
+            confirm_password.setCustomValidity('');
+        }
+    }
+
+    password.onchange = validatePassword;
+    confirm_password.onkeyup = validatePassword;
+</script>
