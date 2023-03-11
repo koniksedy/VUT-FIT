@@ -1,0 +1,352 @@
+% Copyright 2022 by Marek Rychly <rychly@fit.vut.cz>.
+%
+\documentclass[10pt,xcolor=pdflatex,dvipsnames,table,oneside]{book}
+% babel and encoding
+\usepackage[slovak]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{authblk}
+\usepackage{verbatim}
+
+\usepackage{csquotes}% correct/formal language-specific quotations
+\usepackage{microtype}% character protrusion, font expansion, adjustment of interword spacing, additional kerning, tracking, etc.
+\usepackage{hyperref}% hyper-refs in PDF
+
+\author{
+Bc. Michal Šedý \and 
+Bc. Martina Chrípková \and
+Bc. Martin Novotný Mlinárcsik
+}
+
+\title{Ukladanie a príprava dátových cestovných poriadkov}
+\date{21.10.2022}
+
+\begin{document}
+
+\pagenumbering{roman}
+
+\hypersetup{pageanchor=false}% disable hyperref anchor to title page as maketitle enforce pagenumbering to arabic which colides the titlepage with the first arabic page below
+\maketitle
+\hypersetup{pageanchor=true}
+
+% Dokument složí jako rádce pro vypracování NoSQL části projektu z~předmětu UPA.
+% Vypracování předpokládá důkladnou znalost látky probrané na přednáškách.
+
+% Pokud budete do dokumentu vkládat obrázky, tak nejlépe ve vektorovém formátu (SVG, PDF), případně, 
+% nelze-li jinak, v~úsporném bitmapovém formátu (PNG).
+% Ověřte si, že jsou obrázky/diagramy ve vysázeném dokumentu čitelné.
+
+% Pořadí kapitol v tomto dokumentu odpovídá doporučovanému pořadí tvorby výsledného řešení projektu.
+
+% Buďte struční, ale výstižní (u všech popsaných rozhodnutí musí být uveden důvod proč právě takto).
+% Celkový očekávaný rozsah textu (bez případných obrázků či volného místa ve strukturovaném textu/obrážkách % atp.) kolem 10-12 stran, tj. každá kapitola 1-3 strany.
+
+\tableofcontents
+
+\newpage% force page-break to start the page numbering on a new page
+\pagenumbering{arabic}
+
+\part{Analýza zdrojových dat a návrh jejich uložení v NoSQL databázi}
+
+\chapter{Analýza zdrojových dat}\
+\par Cieľom aplikácie je stiahnutie dátových cestovným poriadkov a ich následné spracovanie a uloženie. Aplikácia bude taktiež poskytovať možnosť vyhľadania spojení v ním špecifikovanom dni.
+
+\par Dáta sú verejne distribuované pomocou webovej stránky \url{https://portal.cisjr.cz/pub/draha/celostatni/szdc/} a popis týchto dát je dostupný na \url{https://portal.cisjr.cz/pub/draha/celostatni/szdc/Popis\%20DJ\%C5\%98_CIS_v1_09.pdf}. 
+\par Všetky dáta sú serializované vo formáte XML, ktoré sú na distribučnej webovej stránke uložené v osobitných adresároch podľa roku a mesiaca, kedy boli vytvorené. Jednotlivé XML dokumenty sa vytvárajú priebežne, podľa potrieb prevádzkovateľa železníc. Niektoré cestovné poriadky majú rozsah platnosti stanovený na jeden deň, iné majú svoj rozsah platnosti špecifikovaný na mesiac. Cestovné poriadky s väčším rozsahom platnosti majú navyše dodatočne špecifikované, v ktoré dni je vlak vypravený a v ktoré nie.
+\par XML záznamy môžu byť dvoch typov:
+\begin{enumerate}
+    \item Prvým typom záznamu sú záznamy špecifikujúce vlastnosti cestovných poriadkov pre vlaky premávajúce na nejakej trase. Konkrétny vlak premávajúci po trase je špecifikovaný unikátnou kombináciou identifikátoru vlaku a identifikátoru dráhy. Vlastnosti tohto cestovného poriadku sú, napríklad, rozsah jeho platnosti alebo zoznam zastávok na trase vlaku.
+    \item Druhým typom záznamu je záznam typu \textbf{cancel}, ktorý upravuje rozsah platnosti prvého záznamu. Záznam špecifikuje dni, kedy daný vlak na danej trase nebude vypravený.
+\end{enumerate}
+\newpage
+\par Názov prvého typu záznamu obsahuje názov trasy, po ktorej daný vlak premáva. Dôležitými štrukturálnymi súčasťami záznamu prvého typu sú:
+\begin{enumerate}
+    \item Element \textbf{Identifiers}, obsahujúci identifikátor trasy \textbf{(PA)} a identifikátor vlaku \textbf{(TR)}. Táto kombinácia identifikátorov je vždy unikátna.
+    \item Element \textbf{CZPTTCreation}, špecifikujúci dátum vytvorenia dokumentu.
+    \item Element \textbf{CZPTTInformation}, pričom primárnym zdrojom informácií je subelement \textbf{CZPTTLocation}, ktorý obsahuje informácie o zastávkach vlaku na danej trase, ako napríklad názov zastávky, časy príchodu a odchodu alebo typ úkonu vykonávaného na konkrétnej stanici. Dôležitým subelementom je taktiež \textbf{PlannedCalendar}, ktorý obsahuje rozsah platnosti cestovného poriadku pre danú trasu a taktiež špecifikuje dni, v ktoré je vlak na danej trase vypravený a v ktoré nie.
+    \par Ak sa v elemente \textbf{CZPTTLocation} nachádza subelement \textbf{TimingAtLocation.Offset}, bude tento element upresňovať počet polnocí, ktoré vlak na svojej trase prekonal.
+    \item Element \textbf{RelatedPlannedTransportIdentifiers} určuje vlakové spojenie, ktoré daný záznam nahrádza. V takom prípade by mal byť pôvodný spoj zrušený správou \textbf{CZCanceledPTTMessage}. V istých prípadoch avšak táto správa chýba, čo je v rozpore s dokumentáciou poskytnutou CISJR. V nájdení týchto inkonzistencií je správa CZCanceledPTTMessage vygenerovaná aplikáciou.
+\end{enumerate}
+
+\par Tieto súčasti sú dôležité z pohľadu tvorby databázy a ich úloha bude popísaná v ďalších kapitolách dokumentácie. Všetky vyššie spomenuté súčasti musia byť povinne vyplnené, keďže ide o kritické informácie o trase. Iné, pre potreby aplikácie a tvorby databázy menej dôležité elementy jednotlivých dokumentov, je možné vyhľadať v oficiálnej dokumentácií popisu dátových cestovných poriadkov.
+
+%\paragraph{Cíl:}
+%Zjistit a popsat, jaké datové sady budou pro úlohu v projektu potřeba a jaké jsou jejich vlastnosti tak,
+%abychom mohli zvolit vhodný formát a způsob uložení v NoSQL databázi.
+
+%\paragraph{Obsah:}
+%Pro významné použité datové soubory určit nad rámec jejich veřejně přístupné dokumentaci alespoň %následující:
+%odkud a jak ho lze získat,
+%jak často a jakým způsobem je tam aktualizován,
+%jaké jsou (jen významné) části jeho struktury (pokud je strukturovaný, tj. elementy/sloupce a jejich %datové typy, povinost/volitelnost, opakování, atp.;
+%jen dále významné části, pokud pro zbytek lze udělat odkaz do veřejné dokumentace ke zdroji, existuje-li %taková),
+%jaký je identifikátor položek ve zdroji (pokud existuje) a v jakém kontextu/rozsahu a časovém rozmezí %jsou jeho hodnoty jedinečné,
+%jaké jsou případné odkazy z položek zdroje na položky dalších zdrojů (pokud tam takové jsou),
+%jaké jsou možnosti seskupení položek ze zdroje na základě jejich hodnot (např. zaměstnance můžeme seskupt %dle oddělení),
+%případné speciální rysy dat ve zdroji (např. temporální či multimediální složky, geografická data, atp.),
+%další poznámky důležité pro následný návrh (např. velikost zdroje, jeho chybovost, atp.).
+
+%\paragraph{Prostředky:}
+%Stručný strukturovaný text, odrážky, případně tabulky; případně s odkazy na konkrétní místa do veřejné %dokumentace zdroje na Internetu.
+
+%\paragraph{Fáze projektu:}
+%Hned na začátku po seznámení se zdroji dat.
+
+\chapter{Návrh způsobu uložení dat}
+\par Zo zadania projektu je známe, že užívatelia sa na trasy budú dotazovať pomocou názvov počiatočnej a koncovej stanice v zvolený deň. Z tohto dôvodu sú dôležité elementy \textbf{CZPTTLocation}, ktoré obsahujú zoznam staníc pre vlak na danej trase a elementy \textbf{PlannedCalendar}, ktoré špecifikujú, ktoré dni je vlak vypravený. Keďže zoznam lokácií, ktorými bude vlak prechádzať, je zoradený podĺa poradia staníc, v akom nimi bude vlak prechádzať, je pomerne jednoduché v databáze nájsť dokumenty, ktoré budú obsahovať počiatočnú a koncovú stanicu v užívateľom špecifikovanom poradí. Zároveň nám subelementy \textbf{BitmapDays} a \textbf{ValidityPeriod} elementu \textbf{PlannedCalendar} umožňujú vyhľadat iba tie spoje, ktoré budú premávať v užívateľom specifikovanom dni.
+Konkrétne subelement \textbf{BitmapDays} je transformovaný do podoby dvoch polí:
+\begin{enumerate}
+    \item Pole \textbf{Valid} obsahuje dátumy uložené vo formáte YYYYMMDD, ktoré určujú, ktoré dni je vlak vypravený, tj. kedy \textbf{BitmapDays} obsahujú 1.
+    \item Pole \textbf{Cancel} obsahuje dátumy vo formáte YYYYMMDD, ktoré určujú dni, v ktoré bola výprava vlaku zrušená správou CZCanceledPTTMessage. Prienik množín Valid a Cancel je prázdny. V konkrétnom prípade, kedy by existovala správa CZCanceledPTTMessage, ktorá by upravovala zmeny vytvorené inou, staršou správou rovnakého typu CZCanceledPTTMessage, pole Cancel umožňuje jednoducho prepísať zmeny staršej správy správou novšou.
+\end{enumerate}
+\par Jednotlivé dokumenty v kolekciách sú vytvorené podľa jedného dátového cestovného poriadku a jednotlivé časti dokumentu sa budú zhodovať s elementmi pôvodných XML dokumentov. Tu bude využitá vlastnosť NoSQL databáz, ktorá nám umožňuje vytvárať heterogénne dátové štruktúry, keďže často nemajú jednotlivé dátové cestovné poriadky rovnaký počet elementov \textbf{CZPTTLocation}, alebo niektoré neobsahujú elementy \textbf{NetworkSpecificParameters}.
+\par Pri počiatočnom spracovaní a nahrávaní dát do databázy sú všetky XML súbory spracované a ich obsah nahratý do kolekcie \textbf{CZPTTCISMessage}. Táto kolekcia je teda primárnou kolekciou, ktorá obsahuje väčšinu dôležitých dát pre dotazovanie a vyhľadávanie trás.
+
+\newpage
+\par Ako pomocné kolekcie sú vytvorené:
+\begin{enumerate}
+    \item \textbf{DBInfo}, ktorá obsahuje dokumenty o poslednej aktualizácií databázy.
+    \item \textbf{Location}, ktorá obsahuje dokumenty s informáciami o jednotlivých lokáciách, ktoré sa vyskytujú v elementoch \textbf{CZPTTLocation}. Táto kolekcia pomáha znížiť pamäťovú náročnosť znížením  duplicitných výskytov popisu každej lokácie v každom dokumente. Namiesto toho sa môže databáza odkazovať na túto kolekciu.
+    \item \textbf{Downloaded} obsahuje adresy na jednotlivé stiahnuté XML dokumenty. Pri aktualizácií databázy teda aplikácií stačí porovnať, ktoré XML súbory už boli stiahnuté a stiahnuť iba nové. V prípade použitia prepínača \textbf{--force} v klientskej aplikácií je možné vynútiť opätovné stiahnutie záznamov.
+\end{enumerate}
+
+\par Vrámci predspracovania dát a zníženie pamäťovej náročnosti sa záznamy typu \textbf{cancel} neukladajú, ale pri ich spracovávaní sú z nich extrahované kľúčové informácie o trase, ktorej rozsah platnosti upravujú. Tieto identifikátory sú porovnané s identifikátormi v kolekcii \textbf{CZPTTCISMessage} a pri zhode budú dokumenty v tejto kolekcií príslušne upravené, aby sa pri vyhľadávaniach užívateľom nezobrazovali. Keďže sa vo fáze iniciálneho vytvorenia a nahratia databázy bude prehľadávať celý dátový priestor môže toto predspracovanie trvať istý čas, avšak ušetrí čas pri neskôršom vyhľadávaní, keďže nebude potrebné opakovane kontrolovať, či pre vyhľadanú trasu existuje záznam typu \textbf{cancel}. Avšak aj toto prehľadávanie dátového priestoru môže byť odľahčené za použitia indexovania podľa subelementov elementu \textbf{Identifiers}.
+
+%\paragraph{Cíl:}
+% Po posouzení vlastností dat (z předchozí analýzy) a očekávaných dotazů (ze zadání) navrhnout vhodný     % způsob uložení dat do NoSQL databáze.
+% Způsob uložená musí být vhodný z hlediska způsobu nahrávání dat ze zdroje do databáze (a to i průběžného % doplňování či aktualizace, bez smazání celé databáze)
+% a z hlediska rychlosti dotazování dat v databázi z aplikace s využitím vlastností NoSQL (s využitím % klíčů a škálovatelnosti/distribuovanosti databáze).
+% Data lze při nahrávání ze zdroje do databáze předzpracovávat, např. kombinovat či doplňovat, odvozovat % pomocná data, předpočítávat agregace, atp.
+% Takové předzpracování může trvat déle (kritérium vhodnosti při předzpracování v průběhu nahrávání není % čas, ale vhodné využití obecných vlastností NoSQL, jako je sharding).
+
+%\paragraph{Obsah:}
+%Pro skupinu či každou podstatnou vlastnost dat z analýzy a dotaz ze zadání (pokud bude mít vliv na návrh) %popsat,
+%co znamená, jaký problém představuje, jaké je řešení, proč je zvolené řešení dobré a stručně jaké jsou %případné alternativy.
+
+%\paragraph{Prostředky:}
+%Strukturovaný text (odstavce, sekce, odrážky, atd.), kde je popsán proces získání, předzpracování a %uložení dat ze zdroje do databáze.
+%Možno použít také pseudokód či diagramy popisující datové toky a použité struktury a vlastnosti NoSQL %databází obecně.
+%Každé návrhové rozhodnutí musí být řádně zdůvodněno (např. části se strukturou "dotaz/vlastnost", %"problém", "řešení", "důvod", "alternativy").
+
+%\paragraph{Fáze projektu:}
+%Po analýze dat a analýze uživatelských požadavků na aplikaci, většinou souběžně s návrhem aplikace.
+
+\chapter{Zvolená NoSQL databáze}
+\par Ako druh NoSQL databázy bola zvolená dokumentová databáza, konkrétne multiplatformná open-source dokumentová databáza \textbf{MongoDB}. Kedže naše vstupné dáta sú tvorené XML súbormi s popismi jednotlivých trás, môžeme vďaka dokumentovej štruktúre MongoDB zachovať túto podobu a XML súbory previesť na jednotlivé dokumenty, ktoré budú vkladané do kolekcie. 
+\par MongoDB nám ako dokumentová databáza umožňuje vytvárať vnorené dokumenty a tak uchovávať všetky dôležité informácie o trasách v jednom dokumente. Takto sú dáta obsiahnuté v jednej ucelenej jednotke, pričom sa k týmto dátam môžeme jednoducho dostať.
+\par MongoDB poskytuje využitie tzv. \textbf{agregačnej pipeline}, ktorá umožňuje efektívne dotazovanie. Táto pipeline môže byť zostavená z viacerých krokov/úrovní, ktoré budú postupne redukovať množstvo dokumentov, nad ktorými sa bude aplikácia dotazovať. Správnou voľbou MongoDB príkazov vo vyhľadávacej pipeline môžeme značne zlepšiť časy jednotlivých vyhľadávaní, keďže sa výsledky jednotlivých úrovní berú ako vstup úrovní následujúcich. Túto úlohu čiastočne za programátora preberá aj samotné MongoDB, ktoré je schopné poradie príkazov v agregačnej pipeline samo optimalizovať tak, aby bol výsledný dotaz efektívnejší.
+\par V prípade vyhľadávania trás môžeme efektívne eliminovať trasy, ktoré nebudú obsahovať jednu z užívateľom zadaných staníc a znížiť počet porovnávaní v následujúcich úrovniach pipeline.
+V následujúcom kroku eliminujeme všetky spoje, ktoré nemajú hodnotu DATE v elemente VALID. Vďaka predchádzajúcim úpravám - aplikáciám správ typu Cancel - už nie je potrebné kontrolovať, či bol vlak zrušený.
+%\paragraph{Cíl:}
+%Rozhrnout a zdůvodnit jaký druh NoSQL databáze je vhodný (zdůvodnění plyne částečně již z předchozího % návrhu) a jaký konkrétní produkt NoSQL databáze bude použit.
+
+%\paragraph{Obsah:}
+%Určit typ databáze a konkrétní produkt NoSQL, vypsat jeho vlastnosti,
+%které jsou pro toto řešení užitečné (a jiné než u jiných typů a produktů NoSQL)
+%a zdůvodnit jejich vhodnost v kontextu předchozího návrhu.
+
+%\paragraph{Prostředky:}
+%Stručný volný text (až několik kratších odstavců) s případným vyznačením podstatných části.
+
+%\paragraph{Fáze projektu:}
+%Zakončování návrhu a přechod k implementaci.
+
+\part{Návrh, implemetace a použití aplikace}
+
+\chapter{Návrh aplikace}
+\par Aplikácia je tvorená kolekciou skriptov napísaných v jazyku \textbf{Python}. Databáza je uložená lokálne a jej prepojenie s aplikáciou zabezpečuje softvér \textbf{Docker}. Skripty napísane v jazyku Python využívajú množstvo externých knižníc pre spracovanie a nahratie dát do databázy, najmä knižnice \textbf{bs4}, \textbf{shutil}, \textbf{tempfile}, \textbf{gzip}, \textbf{zipfile} a knižnicu \textbf{xml.etree.ElementTree} pre prácu s XML dokumentmi. 
+\newline
+\newline
+Python skripty využívané pre prácu s dátami a databázou:
+\begin{enumerate}
+    \item \textbf{fill\_db.py} riadi spúštanie následných modulov, ktoré sa starajú o jednotlivé úkony pri príprave databázy. 
+    \item \textbf{downloader.py} na začiatku stiahne všetky URL adresy jednotlivých XML súborov a uloží ich to zoznamu adries. Z týchto adries sú následne stiahnuté všetky súbory zabalené vo formáte \textbf{zip} alebo \textbf{gzip}. Tieto archívy sú uložené do adresáru špecifikovaného užívateľom a v prípade nešpecifikácie je vytvorený dočasný adresár, ktorý sa po vykonaní skriptu vymaže. Skript downloader.py využíva knižnice \textbf{pqdm} pre možnosť paralelného sťahovania archívov, čím znižuje časovú náročnosť aplikácie. V prípade aktualizácie databázy skript stiahne iba nové XML súbory, pričom ich následne pridá do databázy. Opätovné stiahnutie záznamov je možné s využitím prepínača \textbf{--force}.
+    \item \textbf{parser.py} spracováva jednotlivé XML dokumenty. Skript postupne prechádza elementmi XML dokumentu a ich obsah prevádza to dátovej štruktúry typu slovník. Po spracovaní celého dokumentu je novovytvorený slovník pridaný do jedného zo zoznamov slovníkov, ktoré sú troch typov: 
+    \begin{enumerate}
+        \item \textbf{CZPTTCISMessage}
+        \item \textbf{CZCanceledPTTMessage}
+        \item \textbf{Locations}
+    \end{enumerate}
+    \par Skript parser.py taktiež využíva knižnicu \textbf{pqdm} pre paralelné spracovanie XML súborov.
+    \item \textbf{uploader.py} zoznamy slovníkov vytvorené skriptom parser.py vloží ich do databázy. Pri vkladaní dát do databázy sú využívané funkcie knižnice \textbf{pymongo} pre prácu s MongoDB v jazyku Python. Tieto príkazy sú využívané pre vkladanie dát do správnych kolekcií a pri overovaní duplicitných dokumentov. Pokiaľ dôjde ku kolízií jednoznačných identifikátorov (Identifikátory v elemente RelatedTrainIdentifiers) je ponechaný iba najaktuálnejší záznam.
+    \item \textbf{database\_api.py} poskytuje API pre prácu s databázou skrz knižnicu \textbf{pymongo} a zjednodušuje volania funkcií tejto knižnice.
+\end{enumerate}
+
+%\paragraph{Cíl:}
+%Navrhnout hlavní části aplikace splňující požadavky zadání s důrazem na práci s na ni napojenou databází %NoSQL či datovými zdroji
+%(při jejich předzpracování a nahrávání do NoSQL databáze).
+
+%\paragraph{Obsah:}
+%Použité technologie (např. skriptovací jazyk, knihovny, atp.)
+%a architektura (např. skript či sekvence skriptů pravidelně spouštěných v daných časových intervalech či %v reakci na danou událost).
+%Způsob technického řešení úloh ze zadání (jejich průběh v aplikaci) a konceptů z předchozího návrhu %(struktury, algoritmy, toky dat, atp.).
+
+%\paragraph{Prostředky:}
+%Strukturovaný text (sekce, odstavce, odrážky, atp.), případně pseudokód či obrázky, doplňující technické %detaily konceptů nastíněných v předchozím návrhu.
+%Důraz je kladen na způsob realizace dotazů ze zadání.
+
+%\paragraph{Fáze projektu:}
+%Návrh aplikace a částečně po či souběžně s návrhem databáze.
+
+\chapter{Spôsob použitia}
+
+\subsection*{Inštalácia na závislosti a vytvorení kontajneru}
+\par Aplikácia cestovných poriadkov je implementovaná v jazyku Python (3.10+) s využitím NoSQL databázy MongoDB (6.0). Databáza je nasadená v Docker (20.10.18) kontajneri. Všetky príkazy z tejto sekcie sú vykonávané v koreňovej zložke projektu.
+\newline \newline
+Inštalácia podporných balíkov:
+\begin{verbatim}
+    python3 -m venv upa-env
+    source ./upa-env/bin/activate
+    pip3 install -r requirements.txt
+\end{verbatim}
+\newline \newline
+Spustenie kontajneru:
+\begin{verbatim}
+    docker run -d -p 27017:27017 --name upa_container upa_image
+\end{verbatim}
+Mongo databáza je po spustení kontajneru prístupná z:
+\begin{verbatim}
+    mongodb://localhost:27017
+\end{verbatim}
+
+\subsection*{Užívateľské rozhranie}
+\par Skripty vykonávajúce prevod dát z cestovných poriadkov do Mongo databázy (\textbf{fill\_db.py}) a vyhľadávanie vlakových spojov (\textbf{find.py}) sa nachádzajú v zložke src. Všetky spustiteľné skripty obsahujú nápovedy.
+\newpage
+
+\subsubsection*{fill\_db.py}
+Stiahne archívy cestovných poriadkov z repozitára poskytovaného CISJR a následne ho extrahuje, spracuje a nahrá do databázy.
+\newline
+\begin{verbatim}
+    fill_db.py [-h] [--parallel-download N_THR] 
+               [--parallel-parse N_THR] 
+               [-f] [workdir]
+\end{verbatim}
+\newline
+Pričom jednotlivé prepínače znamenajú: 
+
+\par \verb|-h --help|  - Nápoveda.
+\newline
+\par \verb|--parallel-download N_THR|  - Súbory je možné z CISJR repozitára stahovať paralelne s použitím 0 < N\_THR vlákien. Pri paralelnom stahovaní je nutné uviesť pracovný adresár (workdir), kam sa budú ukladať stiahnuté súbory.
+\newline
+\par \verb|--parallel-parse N_THR|  - Dáta uložené v XML súbore je možné taktiež spracovávať paralelným spôsobom s využitím 0 < N\_THR vlákien.
+\newline
+\par \verb|-f --force| - Budú stiahnuté všetky dáta z CISJR a to bez ohľadu na obsah kolekcie Downloaded v databázi.
+\newline
+\par \verb|workdir|  - Pracovná zložka, do ktorej sa budú ukladať stiahnuté a extrahované archívy. Pokiaľ nie je uvedené, bude vytvorená dočasná zložka v /tmp, ktorá bude po dokončení odstránená. Pri použití --parallel-download musí byť zložka workdir špecifikovaná.
+
+\subsubsection*{printer.py}
+\par Trieda, využívaná na formátovanie výsledkov. Vypisuje nájdené spoje na príkazový riadok a generuje HTML súbor \verb|results.html|, ktorý zobrazuje výsledky prehľadne.
+
+\subsubsection*{find.py}\label{printer}
+\par Nájde spoje medzi zadanými stanicami v daný dátum a čas. Následne ich pomocou jednoduchého vizualizéru \ref{printer} zobrazí. Mená staníc obsahujúce biele znaky musia byť uzatvorené do "úvodzoviek". Formát dátumu a času je yyyy-ddTHH:MM:SS. \newline \newline
+Použitie: \verb|find.py FROM TO DATE_TIME|
+\newline \newline
+Pričom:
+\newline
+\par \verb|FROM| - Meno počiatočnej stanice.
+\newline
+\par \verb|TO| - Meno cieľovej stanice.
+\newline
+\par \verb|DATE_TIME| - Dátom a čas odjazdu vo formáte yyyy-mm-ddTHH:MM:SS
+\newline
+
+\subsubsection*{drop\_db.py}
+\par Zmaže Mongo databázu.
+\newline \newline
+Použitie: \verb|drop_db.py|
+
+
+
+
+
+
+
+
+%\paragraph{Cíl:}
+%Poskytnout stručnou dokumentaci pro zprovoznění databáze a aplikace.
+
+%\paragraph{Obsah:}
+%Stručně popsat, jak celé řešení zprovoznit, tj. nasadit databázi i aplikaci vč. %způsobu volání aplikace (příkazový řádek, parametry) pro úlohy
+%předzpracování a nahrání dat ze zdroje do databáze a pro ulohy hledání nad %databází tak, jak byly definovány v zadání.
+
+%\paragraph{Prostředky:}
+%Stručný text obsahující návod (popis) s ukázkami způsobu volání aplikace (např. %pro skripty by to byl kód příkazového řadku).
+
+%\paragraph{Fáze projektu:}
+%Dokončování implementace, chystání dokumentace pro předání výsledného systému %zákazníkovi.
+
+\chapter{Experimenty}
+\par Experimenty boli vykonané na systéme s následovnými technickými parametrami:
+\begin{itemize}
+    \item CPU: AMD Ryzen 7 5800H (8-jadier|16-vlákien)
+    \item RAM: 16GB
+    \item Rychlosť internetového pripojenia:  ping 1ms; upload 1000Gb; download 1000Gb
+\end{itemize}
+\newline 
+
+\begin{enumerate}
+     
+\item Rýchlosť sťahovania v závislosti na počte použitých paralelných vlákien:
+\newline \newline
+    \begin{tabular}{c|c}
+        THR & TIME  \\
+        \hline \hline
+         1 & 634 sec \\
+         2 & 288 sec \\
+         4 & 146 sec \\
+         8 & 64 sec \\
+         16 & 33 sec \\
+         32 & 22 sec \\
+         64 & 20 sec \\
+    \end{tabular}
+\newline \newline 
+\item  Rýchlosť parsovania XML dokumentov v súbore v závislosti na počte použitých paralelných vlákien:
+\newline \newline
+    \begin{tabular}{c|c}
+        THR & TIME  \\
+        \hline \hline
+         1 & 167 sec \\
+         2 & 57 sec \\
+         4 & 41 sec \\
+         6 & 36 sec \\
+         8 & 36 sec \\
+         16 & 38 sec \\
+         32 & 40 sec \\
+    \end{tabular}
+\newpage
+
+\item Rýchlosť nahrávania (upsertovania) dát do databázy v závislosti na nastavení/nenastavení indexácie podľa subelementu Identifiers v elemente PlannedTransportIdentifiers:
+\newline \newline 
+\begin{tabular}{c|c}
+        IDX & TIME  \\
+        \hline \hline
+         ON & 106 sec \\
+         OFF & 1345 sec \\
+\end{tabular}
+\newline \newline 
+\item Rýchlosť vykonania dotazu na hľadaný spoj:
+\newline \newline 
+\verb|Ostrava hl. n. -> Ostrava-Svinov v 2022-10-18T00:00:00: 0.57 sec|
+\end{enumerate}
+
+
+
+
+
+
+
+%\paragraph{Cíl:}
+%Změřit, jak aplikace a databáze fungují v praxi.
+
+%\paragraph{Obsah:}
+%Popis výchozí konfigurace aplikace a nasazení databáze stroje, kde budou experimenty probíhat (HW a SW).
+%Popis experimentů typicky představující nahrání dat ze zdroje do databáze či dotazy ze zedání s %výslednými časy jejich provedení.
+%Případné poznámky k výsledkům experimentů.
+
+%\paragraph{Prostředky:}
+%Strukturvaný text, případně tabulka či graf s doprovodným textem.
+
+%\paragraph{Fáze projektu:}
+%Testování řešení před předáním výsledného systému zákazníkovi.
+
+\end{document}
