@@ -14,8 +14,8 @@ numbers:
 run: parsplit
 	mpirun $(MPIFLAGS) -np $(PROC) parsplit
 
-# test: test.sh parsplit
-# 	./test.sh seqsplit parsplit
+test: test.sh
+	./test.sh 
 
 clean:
 	rm -f parsplit oems numbers
