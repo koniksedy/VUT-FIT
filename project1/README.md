@@ -8,12 +8,12 @@
     - [Překlad a spuštění](#skript-pro-překlad-a-spuštění)
     - [Výstup](#výstup)
     - [Postup](#postup)
-    
+
 ## Hodnocení
 
 TBD
 
-## Zadání 
+## Zadání
 
 Pomocí knihovny Open MPI implementujte v jazyce C++ úlohu Přiřazení pořadí preorder vrcholům tak, jak byla uvedena na přednášce PRL. Pouze v těch částech, kdy algoritmus předpokládá využití sdílené paměti, použijte vhodně prostředky MPI (vizte níže v textu)
 
@@ -33,7 +33,7 @@ V ukázkovém souboru je předpokládaný název souboru parsplit, který prosí
 #!/bin/bash
 
 #pocet cisel bud zadam nebo 10 :)
-if [ $# -lt 1 ];then 
+if [ $# -lt 1 ];then
     numbers=10;
 else
     numbers=$1;
@@ -59,7 +59,7 @@ Výsledné rozdělení vstupní posloupnosti bude vytištěno na obrazovku termi
 
 ### Postup
 
-Kořenový root proces (číslo 0 v hlavním komunikátoru) načte všechna čísla ze souboru. Dále vybere medián v polovině posloupnosti (v případě sudého počtu prvků bude volen blíže počátku posloupnosti), rozešle jej ostatním procesům a také jim přidělí jejich část posloupnosti. Rozdělení na části je rovnoměrné. Předpokládejte, že počet prvků v posloupnosti je vždy dělitelný beze zbytku počtem procesů, které jsou spuštěny. K rozeslání použijte kolektivní operaci MPI_Scatter. 
+Kořenový root proces (číslo 0 v hlavním komunikátoru) načte všechna čísla ze souboru. Dále vybere medián v polovině posloupnosti (v případě sudého počtu prvků bude volen blíže počátku posloupnosti), rozešle jej ostatním procesům a také jim přidělí jejich část posloupnosti. Rozdělení na části je rovnoměrné. Předpokládejte, že počet prvků v posloupnosti je vždy dělitelný beze zbytku počtem procesů, které jsou spuštěny. K rozeslání použijte kolektivní operaci MPI_Scatter.
 
 Po provedení patřičné části práce procesy použitím kolektivní operace MPI_Gatherv odevzdají výsledky kořenovému procesu, který na závěr celkový výsledek vytiskne na obrazovku.
 
