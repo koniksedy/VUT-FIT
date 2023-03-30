@@ -1,5 +1,5 @@
 /**
- * @file parsplit.c
+ * @file parsplit.cc
  * @author Michal Šedý (xsedym02@vutbr.cz)
  * @brief The implementation of the parallel split using OpenMPI (PRL - project 1)
  * @date 2023-03-22
@@ -188,7 +188,11 @@ int main(int argc, char **argv) {
     if (rank == 0) {
         numbers_in_size = load_numbers((argc == 1) ? "numbers" : argv[1], &numbers_in);
         if (numbers_in_size > 0) {
-            midpoint = numbers_in[(numbers_in_size / 2) - 1];
+            if (numbers_in_size % 2 == 0) {
+                midpoint = numbers_in[(numbers_in_size / 2) - 1];
+            } else {
+                midpoint = numbers_in[(numbers_in_size / 2)];
+            }
             numbers_per_proc = numbers_in_size / size;
         }
     }
