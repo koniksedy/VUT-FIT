@@ -1,21 +1,35 @@
 #!/bin/bash
 
-#pocet cisel bud zadam nebo 10 :)
-if [ $# -lt 1 ];then
-    numbers=10;
-else
-    numbers=$1;
-fi;
-
-#preklad cpp zdrojaku
+# Compilation
 mpic++ --prefix /usr/local/share/OpenMPI -o parsplit parsplit.cc
 
+ERROR=0
+TOTAL=500
+CNT=0
+for proc in `seq 10`; do
+    for n in `seq 50`; do
+        numbers_tot=$(($proc * $n))
 
-#vyrobeni souboru s random cisly
-dd if=/dev/random bs=1 count=$numbers of=numbers
+        # Generate numbers
+        dd if=/dev/random bs=1 count=$numbers_tot of=numbers &>/dev/null
 
-#spusteni
-mpirun -oversubscribe --prefix /usr/local/share/OpenMPI -np $numbers parsplit
+        # Run test
+        mpirun -np $proc ./parsplit | python3 comparator.py numbers &> out.txt
+        if [ $? -ne 0 ]; then
+            echo "ERROR"
+            mkdir -p ERRORS
+            ERROR=$(($ERROR + 1))
+            mv out.txt ERRORS/${CNT}-out.txt
+            mv numbers ERRORS/${CNT}-numbers
+        fi
 
-#uklid
-rm -f oems numbers
+        CNT=$(($CNT + 1))
+        echo "${CNT}/${TOTAL}"
+    done
+done
+
+# Clean temp files
+rm -f oems numbers out.txt
+
+echo "##############################"
+echo "ERRORS: $ERROR"
