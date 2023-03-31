@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Compilation
-mpic++ --prefix /usr/local/share/OpenMPI -o parsplit parsplit.cc
+mpic++ --prefix /usr/local/share/OpenMPI -o parsplit parsplit.cpp
 
 ERROR=0
 TOTAL=500

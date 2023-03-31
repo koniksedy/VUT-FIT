@@ -1,4 +1,4 @@
-""" Tests parsplit.cc output using sequential split.
+""" Tests parsplit.cpp output using sequential split.
 Author: Michal Šedý <xsedym02@vutbr.cz>
 Last change: 30.03.2023
 """
@@ -8,7 +8,7 @@ import sys
 
 
 def load_numbers(file_name: str) -> list:
-    """Loads numbers from the parsplit.cc's input file.
+    """Loads numbers from the parsplit.cpp's input file.
 
     Args:
         file_name (str): A binary file with numbers to split.
@@ -27,7 +27,7 @@ def load_numbers(file_name: str) -> list:
     return list(data_out)
 
 def numbers_from_string(string: str) -> list:
-    """Parses numbers from parsplit.cc's output.
+    """Parses numbers from parsplit.cpp's output.
     Output format: 'GT = [1,2]'
 
     Args:
@@ -43,10 +43,10 @@ def numbers_from_string(string: str) -> list:
     return numbers
 
 def load_results() -> tuple:
-    """Loads parsplit.cc's output from stdin.
+    """Loads parsplit.cpp's output from stdin.
 
     Returns:
-        tuple: A triple of splitted numbers using parsplit.cc.
+        tuple: A triple of splitted numbers using parsplit.cpp.
     """
     lt = numbers_from_string(sys.stdin.readline())
     eq = numbers_from_string(sys.stdin.readline())

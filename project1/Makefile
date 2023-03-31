@@ -5,7 +5,7 @@ MPIFLAGS=--prefix /usr/local/share/OpenMPI
 
 all: parsplit
 
-parsplit: parsplit.cc
+parsplit: parsplit.cpp
 	$(CC) $(MPIFLAGS) $^ -o $@
 
 numbers:

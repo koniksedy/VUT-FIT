@@ -1,5 +1,5 @@
     /**
- * @file parsplit.cc
+ * @file parsplit.cpp
  * @author Michal Šedý (xsedym02@vutbr.cz)
  * @brief The implementation of the parallel split using OpenMPI (PRL - project 1)
  * @date 2023-03-30
@@ -142,9 +142,6 @@ int *prescan(int arr[], int size) {
 // *********************
 
 int main(int argc, char **argv) {
-    // It does not work on my machine without it.
-    // Without it all ranks become 0.
-    // bool hack = false;
 
     // Initializing MPI
     int rank;
