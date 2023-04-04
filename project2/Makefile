@@ -1,5 +1,7 @@
 CC=mpic++
 PREFIX=--prefix /usr/local/share/OpenMPI
+PROC=2
+NUM=8
 
 .PHONY: clen run numbers test
 
@@ -12,7 +14,7 @@ numbers:
 	./numbersGen.sh $(NUM)
 
 run: parkmeans
-	mpirun -oversubscribe -np $(PROC) ./parkmeans
+	mpirun -np $(PROC) ./parkmeans
 
 test: test.sh
 	./test.sh

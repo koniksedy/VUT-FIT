@@ -2,7 +2,7 @@
 
 # Deside numbers count.
 numbers_cnt=10
-if [ $# -eq 2 ]; then
+if [ $# -eq 1 ]; then
     numbers_cnt=$1
 fi
 

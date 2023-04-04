@@ -1,5 +1,5 @@
 import sys
-
+from struct import unpack
 
 class Kmeans:
     def __init__(self) -> None:
@@ -20,19 +20,19 @@ class Kmeans:
         cnt = 0
         with open(file_name, "rb") as fh:
             while True:
-                data = list(fh.readline())
+                data = fh.read(1)
                 if not data:
                     return
-                for d in data:
-                    if cnt > max_num:
-                        return
-                    if cnt < k:
-                        self.means.append(d)
-                    self.points[d] = None
-                    cnt += 1
+                if cnt > max_num:
+                    return
+                d = unpack("b", data)[0]
+                if cnt < k:
+                    self.means.append(d)
+                self.points[d] = None
+                cnt += 1
 
     def recalculate_position(self, point: int) -> bool:
-        min_idx, min_distance = 0, 1000000
+        min_idx, min_distance = 0, sys.maxsize
         for idx, mean in enumerate(self.means):
             distance = abs(point - mean)
             if distance < min_distance:
