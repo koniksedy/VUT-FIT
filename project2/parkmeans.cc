@@ -2,9 +2,11 @@
  * @file parkmeans.cc
  * @author Michal Šedý (xsedym02@vutbr.cz)
  * @brief The implementation of the parallel 4-Means clustering using OpenMPI (PRL - project 2)
- * @date 04.04.2022
+ * @date 04.04.2023
  */
 
+
+#include <cmath>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -50,32 +52,45 @@ vector<char> load_numbers(const char *file_name)
 unsigned char get_best_cluster(const char point, const float means[])
 {
     unsigned char idx = CLUSTERS_CNT;
-    unsigned char min_distance = 255;
+    float min_distance = 255;
     for (int i = 0; i < CLUSTERS_CNT; ++i)
     {
         float distance = abs(means[i] - point);
+        // printf("%0.2f - %d = %0.2f\n", means[i], point, distance);
         if (distance < min_distance)
         {
             min_distance = distance;
             idx = i;
         }
     }
+
     return idx;
 }
 
+/**
+ * @brief Prints the result of K-means clustering for CLUSTERS_CNT (4) clusters.
+ *
+ * @param means An array of cluster means.
+ * @param clusters An array of vectors of clusters and its points.
+ * @param flags An array of vectors of flags. If one, then the point belongs to that cluster.
+ */
 void print_results(float means[], vector<char> clusters[], vector<unsigned char> flags[])
 {
     for (int i = 0; i < CLUSTERS_CNT; ++i)
     {
-        printf("[%.1f] ", means[i]);
-        for (int j = 0; j < clusters[i].size(); ++j)
+        // Sometimes the count of uniq numbers can be less than number of clusters.
+        if (!isnan(means[i]))
         {
-            if (flags[i][j] == 1)
+            printf("[%.1f] ", means[i]);
+            for (int j = 0; j < clusters[i].size(); ++j)
             {
-                printf("%d ", clusters[i][j]);
+                if (flags[i][j] == 1)
+                {
+                    printf("%d ", clusters[i][j]);
+                }
             }
+            printf("\n");
         }
-        printf("\n");
     }
 }
 
@@ -186,8 +201,10 @@ int main(int argc, char *argv[])
         MPI_Bcast(means, CLUSTERS_CNT, MPI_FLOAT, ROOT, MPI_COMM_WORLD);
         // Test if the convergence has been met.
         MPI_Allreduce(&changed_loc, &changed_glob, 1, MPI_CXX_BOOL, MPI_LOR, MPI_COMM_WORLD);
+
     }
 
+    // Collecting results.
     for (int i = 0; i < CLUSTERS_CNT; ++i)
     {
         MPI_Gather(&clusters_loc[i], 1, MPI_CHAR, clusters[i].data(), 1, MPI_CHAR, ROOT, MPI_COMM_WORLD);
