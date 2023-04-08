@@ -56,7 +56,6 @@ unsigned char get_best_cluster(const char point, const float means[])
     for (int i = 0; i < CLUSTERS_CNT; ++i)
     {
         float distance = abs(means[i] - point);
-        // printf("%0.2f - %d = %0.2f\n", means[i], point, distance);
         if (distance < min_distance)
         {
             min_distance = distance;
