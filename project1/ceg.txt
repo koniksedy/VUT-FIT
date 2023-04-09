@@ -1,0 +1,36 @@
+Causes:
+task_normal:        Zadán požadavek na neprioritní přesun
+pouze_vykladka:     Vozík je v režimu pouze_vykladka
+pick_up_normal:     Vyzvednutí neprioritního materiálu (<1 min od zadání požadavku)
+priority_set:       Nastavení priority přesunu materiálu (1 min od zadání požadavku)
+pick_up_priority:   Vyzvednutí prioritního materiálu (< 1 min od nastavení priority)
+not_picked_up:      Nevyzvednutí prioritního materiálu (>= 1 min od nastavení priority)
+priority_cargo:     Vozík má naložený prioritní náklad
+enought_slots:      Vozík má dostatečný počet volných slotů
+enought_weight:     Vozík nebude po vyzvednutí nákladu přetížen
+
+Effects:
+picking_up_normal:          Vozík vyzvedá neprioritní náklad
+seting_priority:            Náklad se stává prioritním
+picking_up_priority:        Vozík vyzvedá prioritní náklad
+exception:                  Vyvolání výjimky (prioritní náklad nebyl naložen do 1 min)
+seting_pouze_vykladka:      Nastavení režimu pouze_vykladka
+keeping_pouze_vykladka:     Ponechání režimu pouze_vykladka
+only_unloading_priority:    Nevyzvedá žádný materiál, pouze vykládá prioritní materiál
+
+Rules:
+picking_up_normal = pick_up_normal && enought_slots && enought_weight
+seting_priority = priority_set
+picking_up_priority = pick_up_priority && enought_slots && enought_weight
+exception = not_picked_up
+seting_pouze_vykladka = pick_up_priority
+keeping_pouze_vykladka = pouze_vykladka && priority_cargo
+only_unloading_priority = pouze_vykladka
+
+Constraints:
+pick_up_normal -> task_normal
+pick_up_priority -> priority_set
+priority_cargo -> pick_up_priority
+pouze_vykladka -> priority_cargo
+
+E: pick_up_normal, pick_up_priority, not_picked_up

@@ -1,0 +1,98 @@
+{
+    "name": "ATA-1",
+    "t_strength": "2",
+    "dont_care_values": "no",
+    "values": "indices",
+    "parameters": [
+      {
+        "identificator": "slots",
+        "type": "integer",
+        "blocks": [
+          "slots = 1",
+          "slots = 2",
+          "slots = 3",
+          "slots = 4"
+        ]
+      },
+      {
+        "identificator": "cargo_src",
+        "type": "string",
+        "blocks": [
+          "cargo_src = 'A'",
+          "cargo_src = 'B'",
+          "cargo_src = 'C'",
+          "cargo_src = 'D'"
+        ]
+      },
+      {
+        "identificator": "cargo_dst",
+        "type": "string",
+        "blocks": [
+          "cargo_dst = 'A'",
+          "cargo_dst = 'B'",
+          "cargo_dst = 'C'",
+          "cargo_dst = 'D'"
+        ]
+      },
+      {
+        "identificator": "capacity",
+        "type": "integer",
+        "blocks": [
+          "capacity = 50",
+          "capacity = 150",
+          "capacity = 500"
+        ]
+      },
+      {
+        "identificator": "cargo_overload",
+        "type": "boolean",
+        "blocks": [
+          false,
+          true
+        ]
+      },
+      {
+        "identificator": "cargo_when",
+        "type": "integer",
+        "blocks": [
+          "cargo_when = 0",
+          "cargo_when > 0"
+        ]
+      },
+      {
+        "identificator": "cargo_delay",
+        "type": "integer",
+        "blocks": [
+          "cargo_delay = 0",
+          "cargo_delay > 0"
+        ]
+      },
+      {
+        "identificator": "count",
+        "type": "integer",
+        "blocks": [
+          "count = 1",
+          "count > 1"
+        ]
+      },
+      {
+        "identificator": "heavy",
+        "type": "boolean",
+        "blocks": [
+          false,
+          true
+        ]
+      }
+    ],
+    "constraints": [
+      "capacity.1 -> !slots.1",
+      "capacity.3 -> !slots.3",
+      "capacity.3 -> !slots.4",
+      "cargo_src.1 -> !cargo_dst.1",
+      "cargo_src.2 -> !cargo_dst.2",
+      "cargo_src.3 -> !cargo_dst.3",
+      "cargo_src.4 -> !cargo_dst.4",
+      "count.1 -> cargo_delay.1",
+      "cargo_overload.1 -> heavy.1"
+    ]
+}
