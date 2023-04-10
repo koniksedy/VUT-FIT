@@ -54,17 +54,17 @@ Rozhodovací tabulka pokrývá všechny příčiny a všechny důsledky.
 
 Následující tabulka obsahuje vstupní parametry vybrané pro kombinační testování.
 
-| Název            | Popis                                                         |
-| ---------------- | ------------------------------------------------------------- |
-| `slots`          | Počet slotů vozíku                                            |
-| `capacity`       | Maximální nosnost vozíků                                      |
-| `cargo_src`      | Zastávka pro vyzvednutí materiálu                             |
-| `cargo_dst`      | Cílová zastávka pro vyložení materiálu                        |
-| `cargo_overload` | Označuje, zda existuje náklad na vozík moc těžký              |
-| `cargo_when`     | Čas naplánování prvního požadavku                             |
-| `cargo_delay`    | Časová prodleva mezi sousedícími požadavky                    |
-| `count`          | Celkový počet požadavků                                       |
-| `heavy`          | Označuje, zda suma váh všech nákladů převyšuje nosnost vozíku |
+| Název            | Popis                                                           |
+| ---------------- | --------------------------------------------------------------- |
+| `slots`          | Počet slotů vozíku                                              |
+| `capacity`       | Maximální nosnost vozíků                                        |
+| `cargo_src`      | Zastávka pro vyzvednutí materiálu                               |
+| `cargo_dst`      | Cílová zastávka pro vyložení materiálu                          |
+| `cargo_overload` | Označuje, zda existuje materiál, který je na vozík moc těžký    |
+| `cargo_0s`       | Označuje, zda je první požadavek naplanovan na 0 sec            |
+| `cargo_delay`    | Označuje, zda je časová prodleva mezi jednotlivými požadavky    |
+| `one`            | Označuje, zda se jedná o jediný materiál pro vozík              |
+| `heavy`          | Označuje, zda suma váh všech materiálu převyšuje nosnost vozíku |
 
 ## Popis charakteristiky parametrů a omezení
 
@@ -103,20 +103,20 @@ Popis charakteristik parametrů a omezení pro nástroj [combine.testos.org](htt
 | 1                | `true`                                           |
 | 2                | `false`                                          |
 
-| `cargo_when` | Čas naplánování prvního požadavku |
-| ------------ | --------------------------------- |
-| 1            | 0                                 |
-| 2            | > 0                               |
+| `cargo_0s` | Označuje, zda je první požadavek naplanovan na 0 sec |
+| ---------- | ---------------------------------------------------- |
+| 1          | `true`                                               |
+| 2          | `false`                                              |
 
-| `cargo_delay` | Časová prodleva mezi následujícími požadavky |
-| ------------- | -------------------------------------------- |
-| 1             | 0                                            |
-| 2             | > 0                                          |
+| `cargo_delay` | Označuje, zda je časová prodleva mezi jednotlivými požadavky |
+| ------------- | ------------------------------------------------------------ |
+| 1             | `true`                                                       |
+| 2             | `false`                                                      |
 
-| `count` | Celkový počet požadavků |
-| ------- | ----------------------- |
-| 1       | 1                       |
-| 2       | > 1                     |
+| `one` | Označuje, zda se jedná o jediný materiál pro vozík |
+| ----- | -------------------------------------------------- |
+| 1     | `true`                                             |
+| 2     | `false`                                            |
 
 | `heavy` | Označuje, zda suma váh všech nákladů převyšuje nosnost vozíku |
 | ------- | ------------------------------------------------------------- |
@@ -135,7 +135,7 @@ cargo_src.2 -> !cargo_dst.2
 cargo_src.3 -> !cargo_dst.3
 cargo_src.4 -> !cargo_dst.4
 
-count.1 -> cargo_delay.1
+one.1 -> cargo_delay.2
 cargo_overload.1 -> heavy.1
 cargo_overload.2 -> heavy.2
 
@@ -145,27 +145,28 @@ cargo_overload.2 -> heavy.2
 
 Následující tabulka kombinačních testů využívajících všechny dvojic bloků s ohledem na omezení byla vygenerována nástrojem [combine.testos.org/](https://combine.testos.org/). Snímek obrazovky z nástroje combine je uložen jako `combine.png`.
 
-| test ID | slots | cargo_src | cargo_dst | capacity | cargo_overload | cargo_when | cargo_delay | count |  heavy  |
-| ------: | :---: | :-------: | :-------: | :------: | :------------: | :--------: | :---------: | :---: | :-----: |
-|       1 |   1   |     A     |     B     |   150    |     `true`     |     0      |      0      |   1   | `true`  |
-|       2 |   1   |     B     |     A     |   500    |    `false`     |    > 0     |     > 0     |  > 1  | `false` |
-|       3 |   1   |     C     |     D     |   150    |    `false`     |     0      |     > 0     |  > 1  | `true`  |
-|       4 |   1   |     D     |     C     |   150    |     `true`     |    > 0     |      0      |  > 1  | `true`  |
-|       5 |   2   |     A     |     C     |    50    |    `false`     |     0      |     > 0     |  > 1  | `false` |
-|       6 |   2   |     B     |     D     |    50    |     `true`     |    > 0     |      0      |   1   | `true`  |
-|       7 |   2   |     C     |     A     |    50    |     `true`     |     0      |      0      |   1   | `true`  |
-|       8 |   2   |     D     |     B     |   500    |    `false`     |     0      |      0      |   1   | `false` |
-|       9 |   3   |     A     |     D     |    50    |     `true`     |    > 0     |     > 0     |  > 1  | `true`  |
-|      10 |   3   |     B     |     C     |   150    |    `false`     |     0      |      0      |   1   | `false` |
-|      11 |   3   |     C     |     B     |    50    |     `true`     |    > 0     |     > 0     |  > 1  | `true`  |
-|      12 |   3   |     D     |     A     |    50    |     `true`     |     0      |     > 0     |  > 1  | `true`  |
-|      13 |   4   |     A     |     B     |    50    |     `true`     |     0      |      0      |   1   | `true`  |
-|      14 |   4   |     B     |     A     |   150    |    `false`     |    > 0     |     > 0     |  > 1  | `false` |
-|      15 |   4   |     C     |     D     |    50    |     `true`     |     0      |      0      |   1   | `true`  |
-|      16 |   4   |     D     |     C     |    50    |     `true`     |     0      |      0      |   1   | `true`  |
-|      17 |   1   |     A     |     C     |   500    |     `true`     |     0      |      0      |   1   | `true`  |
-|      18 |   1   |     A     |     D     |   500    |     `true`     |     0      |      0      |   1   | `true`  |
-|      19 |   1   |     C     |     A     |   500    |     `true`     |     0      |      0      |   1   | `true`  |
-|      20 |   2   |     A     |     A     |   150    |     `true`     |     0      |      0      |   1   | `true`  |
-|      21 |   1   |     C     |     D     |    50    |    `false`     |     0      |      0      |   1   | `false` |
+| test Id | slots | cargo_src | cargo_dst | capacity | cargo_overload | cargo_0s | cargo_delay |   one   |  heavy  |
+| ------- | :---: | :-------: | :-------: | :------: | :------------: | :------: | :---------: | :-----: | :-----: |
+| 1       |   1   |     A     |     B     |   150    |     `true`     |  `true`  |   `true`    | `false` | `true`  |
+| 2       |   1   |     B     |     A     |   500    |    `false`     | `false`  |   `false`   | `true`  | `false` |
+| 3       |   1   |     C     |     D     |   150    |    `false`     |  `true`  |   `false`   | `true`  | `false` |
+| 4       |   1   |     D     |     C     |   150    |     `true`     | `false`  |   `true`    | `false` | `true`  |
+| 5       |   2   |     A     |     C     |    50    |    `false`     |  `true`  |   `false`   | `true`  | `false` |
+| 6       |   2   |     B     |     D     |    50    |     `true`     | `false`  |   `true`    | `false` | `true`  |
+| 7       |   2   |     C     |     A     |    50    |     `true`     |  `true`  |   `true`    | `false` | `true`  |
+| 8       |   2   |     D     |     B     |   500    |    `false`     |  `true`  |   `true`    | `false` | `false` |
+| 9       |   3   |     A     |     D     |    50    |     `true`     | `false`  |   `false`   | `true`  | `true`  |
+| 10      |   3   |     B     |     C     |   150    |    `false`     |  `true`  |   `true`    | `false` | `false` |
+| 11      |   3   |     C     |     B     |    50    |     `true`     | `false`  |   `false`   | `true`  | `true`  |
+| 12      |   3   |     D     |     A     |    50    |     `true`     |  `true`  |   `false`   | `true`  | `true`  |
+| 13      |   4   |     A     |     B     |    50    |     `true`     |  `true`  |   `true`    | `false` | `true`  |
+| 14      |   4   |     B     |     A     |   150    |    `false`     | `false`  |   `false`   | `true`  | `false` |
+| 15      |   4   |     C     |     D     |    50    |     `true`     |  `true`  |   `true`    | `false` | `true`  |
+| 16      |   4   |     D     |     C     |    50    |     `true`     |  `true`  |   `true`    | `false` | `true`  |
+| 17      |   1   |     A     |     C     |   500    |     `true`     |  `true`  |   `true`    | `false` | `true`  |
+| 18      |   1   |     A     |     D     |   500    |     `true`     |  `true`  |   `true`    | `false` | `true`  |
+| 19      |   1   |     C     |     A     |   500    |     `true`     |  `true`  |   `true`    | `false` | `true`  |
+| 20      |   2   |     A     |     A     |   150    |     `true`     |  `true`  |   `true`    | `false` | `true`  |
+| 21      |   1   |     A     |     A     |    50    |     `true`     |  `true`  |   `false`   | `false` | `true`  |
+
 
