@@ -10,10 +10,37 @@ import sys
 import cartctl
 import cart
 from cartctl import CartCtl
-from cart import Cart, CargoReq
+from cart import Cart, CargoReq, CartError
 from jarvisenv import Jarvis
 import unittest
+import random
+import xml.etree.ElementTree as ET
 
+def load_xml_tests(input_file: str) -> list:
+    bool_decode = {1: True, 2: False}
+    station_decode = {1: "A", 2: "B", 3: "C", 4: "D"}
+    capacity_decode = {1: 50, 2: 150, 3: 500}
+    slots_decode = {1:1, 2:2, 3:3, 4:4}
+    param_decode = {"slots": slots_decode,
+                    "cargo_src": station_decode,
+                    "cargo_dst": station_decode,
+                    "capacity": capacity_decode,
+                    "cargo_overload": bool_decode,
+                    "cargo_0s": bool_decode,
+                    "cargo_delay": bool_decode,
+                    "one": bool_decode,
+                    "heavy": bool_decode}
+    tests_list = list()
+    tree = ET.parse(input_file)
+    root = tree.getroot()
+    for test_case in root.iter("testcase"):
+        test = dict()
+        for test_atrib in test_case:
+            param = test_atrib.attrib["param_id"]
+            data = param_decode[param][int(test_atrib.text)]
+            test[param] = data
+        tests_list.append(test)
+    return tests_list
 
 def log(msg):
     """simple logging"""
@@ -477,6 +504,100 @@ class TestCartRequests(unittest.TestCase):
             self.assertIsNotNone(braceletL.context)
         else:
            self._assert_final_cart_ceg(cart_ctl, cart_dev, [helmet, braceletR], braceletL_dst)
+
+    def test_combine(self) -> None:
+        """The implementation of all 21 combination tests."""
+
+        def add_load(c: CartCtl, cargo_req: CargoReq):
+            """callback for scheduled load"""
+            log("%d: Requesting %s at %s" % (Jarvis.time(), cargo_req, cargo_req.src))
+            c.request(cargo_req)
+
+        def on_move(c: Cart):
+            """example callback (for assert)"""
+            # put some asserts here
+            log("%d: Cart is moving %s->%s" % (Jarvis.time(), c.pos, c.data))
+
+        def on_load(c: Cart, cargo_req: CargoReq) -> None:
+            """Cargo load callback"""
+            if cargo_req.weight > c.load_capacity:
+                self.fail("The cargo should not be loaded. It is overweighed.")
+            log("%d: Cart at %s: loading: %s" % (Jarvis.time(), c.pos, cargo_req))
+            log(c)
+            self.assertIn(cargo_req, c.slots)
+            cargo_req.context = "loaded"
+
+        def on_unload(c: Cart, cargo_req: CargoReq) -> None:
+            """Cargo unload callback"""
+            if cargo_req.weight > c.load_capacity:
+                self.fail("The cargo should not be unloaded (even loaded). It is overweighed.")
+            log("%d: Cart at %s: unloading: %s" % (Jarvis.time(), c.pos, cargo_req))
+            log(c)
+            self.assertEqual(cargo_req.context, "loaded")
+            cargo_req.context = "unloaded"
+            self.assertNotIn(cargo_req, c.slots)
+
+        def generate_cargo(params: dict) -> list:
+            """Generates up to 3 cargos with specified parameters."""
+            cnt = 1
+            if not params["one"]:
+                if random.random() < 0.5:
+                    cnt = 3
+                else:
+                    cnt = 2
+            cargo_list = list()
+            for i in range(cnt):
+                weight = random.randint(1, int(params["capacity"]/cnt))
+                if params["cargo_overload"]:
+                    weight = params["capacity"] + 10
+                elif params["heavy"]:
+                    weight = random.randint(int(params["capacity"]/cnt), params["capacity"])
+                c = CargoReq(params["cargo_src"], params["cargo_dst"], weight, f"cargo_{i}")
+                c.onload = on_load
+                c.onunload = on_unload
+                cargo_list.append(c)
+            return cargo_list
+
+        # TESTING
+        tests = load_xml_tests("../combine.xml")
+        for i, test_params in zip(range(len(tests)), tests):
+            print(f"\nCOMBINATION TEST {i}")
+            print(f"parameters: " + ",".join([f"{k}={v}" for k, v in test_params.items()]))
+
+            # Setup Cart
+            cart_dev = Cart(test_params["slots"], test_params["capacity"], 0)
+            cart_dev.onmove = on_move
+
+            # Setup Cart Controller
+            cart_ctl = CartCtl(cart_dev, Jarvis)
+
+            # Creating Cargo
+            cargo_list = generate_cargo(test_params)
+
+            # Setup Plan
+            Jarvis.reset_scheduler()
+            time = 0
+            for i, cargo in zip(range(len(cargo_list)), cargo_list):
+                if i == 0 and not test_params["cargo_0s"]:
+                    time = random.randint(1, 120)
+                elif i != 0 and test_params["cargo_delay"]:
+                    time += random.randint(10, 100)
+
+                Jarvis.plan(time, add_load, (cart_ctl, cargo))
+
+            # Exercise + Verify indirect output
+            cargo_busy = not test_params["cargo_overload"] and not test_params["cargo_delay"] and not test_params["one"]
+            if cargo_busy:
+                self.assertRaises(CartError, Jarvis.run)
+            else:
+                Jarvis.run()
+
+            # Verify direct output
+            # Unpicked (undelivered) cargo is deleted.
+            delivered_cargo = [c for c in cargo_list if c.context is not None]
+            self._assert_final_cart_ceg(cart_ctl, cart_dev, delivered_cargo)
+
+            print(f"ok")
 
 
 if __name__ == "__main__":
