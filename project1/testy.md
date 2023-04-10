@@ -30,24 +30,24 @@ Předpis pro graf se nachází v souboru `ceg.txt`.
 
 Rozhodovací tabulka pokrývá všechny příčiny a všechny důsledky.
 
-| Jméno                       | Popis                                                               |    1    |    2    |    3    |    4    |
-| --------------------------- | ------------------------------------------------------------------- | :-----: | :-----: | :-----: | :-----: |
-| task_normal                 | Zadán požadavek na neprioritní přesun                               |    1    |    1    |    1    |    0    |
-| pouze_vykladka              | Vozík je v režimu pouze_vykladka                                    |    0    |    0    |    0    |    1    |
-| pick_up_normal              | Vyzvednutí neprioritního materiálu (<1 min od zadání požadavku)     |    1    |    0    |    0    |    0    |
-| priority_set                | Nastavení priority přesunu materiálu (1 min od zadání požadavku)    |    0    |    1    |    1    |    1    |
-| pick_up_priority            | Vyzvednutí prioritního materiálu (< 1 min od nastavení priority)    |    0    |    1    |    0    |    1    |
-| not_picked_up               | Nevyzvednutí prioritního materiálu (>= 1 min od nastavení priority) |    0    |    0    |    1    |    0    |
-| priority_cargo              | Vozík má naložený prioritní náklad                                  |    0    |    0    |    0    |    1    |
-| enought_slots               | Vozík má dostatečný počet volných slotů                             |    1    |    1    |    1    |    0    |
-| enought_weight              | Vozík nebude po vyzvednutí nákladu přetížen                         |    1    |    1    |    0    |    0    |
-| **picking_up_normal**       | **Vozík vyzvedá neprioritní náklad**                                | `true`  | `false` | `false` | `false` |
-| **seting_priority**         | **Náklad se stává prioritním**                                      | `false` | `true`  | `true`  | `true`  |
-| **picking_up_priority**     | **Vozík vyzvedá prioritní náklad**                                  | `false` | `true`  | `false` | `false` |
-| **exception**               | **Vyvolání výjimky (prioritní náklad nebyl naložen do 1 min**)      | `false` | `false` | `true`  | `false` |
-| **seting_pouze_vykladka**   | **Nastavení režimu pouze_vykladka**                                 | `false` | `true`  | `false` | `true`  |
-| **keeping_pouze_vykladka**  | **Ponechání režimu pouze_vykladka**                                 | `false` | `false` | `false` | `true`  |
-| **only_unloading_priority** | **Nevyzvedá žádný materiál, pouze vykládá prioritní materiál**      | `false` | `false` | `false` | `true`  |
+| Jméno                       | Popis                                                               |    1    |    2    |    3    |    4    |    5    |    6    |
+| --------------------------- | ------------------------------------------------------------------- | :-----: | :-----: | :-----: | :-----: | :-----: | :-----: |
+| task_normal                 | Zadán požadavek na neprioritní přesun                               |    0    |    1    |    1    |    1    |    1    |    1    |
+| pouze_vykladka              | Vozík je v režimu pouze_vykladka                                    |    0    |    0    |    0    |    0    |    0    |    1    |
+| pick_up_normal              | Vyzvednutí neprioritního materiálu (<1 min od zadání požadavku)     |    0    |    1    |    0    |    0    |    0    |    0    |
+| priority_set                | Nastavení priority přesunu materiálu (1 min od zadání požadavku)    |    0    |    0    |    1    |    1    |    1    |    1    |
+| pick_up_priority            | Vyzvednutí prioritního materiálu (< 1 min od nastavení priority)    |    0    |    0    |    1    |    0    |    0    |    0    |
+| not_picked_up               | Nevyzvednutí prioritního materiálu (>= 1 min od nastavení priority) |    0    |    0    |    0    |    1    |    1    |    1    |
+| priority_cargo              | Vozík má naložený prioritní materiál                                |    0    |    0    |    0    |    0    |    0    |    1    |
+| enought_slots               | Vozík má dostatečný počet volných slotů                             |    1    |    1    |    1    |    0    |    1    |    1    |
+| enought_weight              | Vozík nebude po vyzvednutí materiálu přetížen                       |    1    |    1    |    1    |    1    |    0    |    1    |
+| **picking_up_normal**       | **Vozík vyzvedá neprioritní materiál**                              | `false` | `true`  | `false` | `false` | `false` | `false` |
+| **seting_priority**         | **Materiál se stává prioritním**                                    | `false` | `false` | `true`  | `true`  | `true`  | `true`  |
+| **picking_up_priority**     | **Vozík vyzvedá prioritní materiál**                                | `false` | `false` | `true`  | `false` | `false` | `false` |
+| **exception**               | **Vyvolání výjimky (prioritní náklad nebyl naložen do 1 min**)      | `false` | `false` | `false` | `true`  | `true`  | `true`  |
+| **seting_pouze_vykladka**   | **Nastavení režimu pouze_vykladka**                                 | `false` | `false` | `true`  | `false` | `false` | `false` |
+| **keep_pouze_vykladka**     | **Pokračuje v režimu pouze_vykladka**                               | `false` | `false` | `false` | `false` | `false` | `true`  |
+| **only_unloading_priority** | **Nevyzvedá žádný materiál, pouze vykládá prioritní materiál**      | `false` | `false` | `false` | `false` | `false` | `true`  |
 
 
 ## Identifikace vstupních parametrů
@@ -106,17 +106,17 @@ Popis charakteristik parametrů a omezení pro nástroj [combine.testos.org](htt
 | `cargo_when` | Čas naplánování prvního požadavku |
 | ------------ | --------------------------------- |
 | 1            | 0                                 |
-| 2            | (0, +inf)                         |
+| 2            | > 0                               |
 
 | `cargo_delay` | Časová prodleva mezi následujícími požadavky |
 | ------------- | -------------------------------------------- |
 | 1             | 0                                            |
-| 2             | (0, +inf)                                    |
+| 2             | > 0                                          |
 
 | `count` | Celkový počet požadavků |
 | ------- | ----------------------- |
 | 1       | 1                       |
-| 2       | (1, +inf)               |
+| 2       | > 1                     |
 
 | `heavy` | Označuje, zda suma váh všech nákladů převyšuje nosnost vozíku |
 | ------- | ------------------------------------------------------------- |
@@ -145,27 +145,27 @@ cargo_overload.2 -> heavy.2
 
 Následující tabulka kombinačních testů využívajících všechny dvojic bloků s ohledem na omezení byla vygenerována nástrojem [combine.testos.org/](https://combine.testos.org/). Snímek obrazovky z nástroje combine je uložen jako `combine.png`.
 
-| test ID | slots | cargo_src | cargo_dst | capacity | cargo_overload | cargo_when | cargo_delay | count | heavy   |
-| ------- | ----- | --------- | --------- | -------- | -------------- | ---------- | ----------- | ----- | ------- |
-| 1       | 1     | A         | B         | 150      | `true`         | 0          | 0           | 1     | `true`  |
-| 2       | 1     | B         | A         | 500      | `false`        | > 0        | > 0         | > 1   | `false` |
-| 3       | 1     | C         | D         | 150      | `false`        | 0          | > 0         | > 1   | `true`  |
-| 4       | 1     | D         | C         | 150      | `true`         | > 0        | 0           | > 1   | `true`  |
-| 5       | 2     | A         | C         | 50       | `false`        | 0          | > 0         | > 1   | `false` |
-| 6       | 2     | B         | D         | 50       | `true`         | > 0        | 0           | 1     | `true`  |
-| 7       | 2     | C         | A         | 50       | `true`         | 0          | 0           | 1     | `true`  |
-| 8       | 2     | D         | B         | 500      | `false`        | 0          | 0           | 1     | `false` |
-| 9       | 3     | A         | D         | 50       | `true`         | > 0        | > 0         | > 1   | `true`  |
-| 10      | 3     | B         | C         | 150      | `false`        | 0          | 0           | 1     | `false` |
-| 11      | 3     | C         | B         | 50       | `true`         | > 0        | > 0         | > 1   | `true`  |
-| 12      | 3     | D         | A         | 50       | `true`         | 0          | > 0         | > 1   | `true`  |
-| 13      | 4     | A         | B         | 50       | `true`         | 0          | 0           | 1     | `true`  |
-| 14      | 4     | B         | A         | 150      | `false`        | > 0        | > 0         | > 1   | `false` |
-| 15      | 4     | C         | D         | 50       | `true`         | 0          | 0           | 1     | `true`  |
-| 16      | 4     | D         | C         | 50       | `true`         | 0          | 0           | 1     | `true`  |
-| 17      | 1     | A         | C         | 500      | `true`         | 0          | 0           | 1     | `true`  |
-| 18      | 1     | A         | D         | 500      | `true`         | 0          | 0           | 1     | `true`  |
-| 19      | 1     | C         | A         | 500      | `true`         | 0          | 0           | 1     | `true`  |
-| 20      | 2     | A         | A         | 150      | `true`         | 0          | 0           | 1     | `true`  |
-| 21      | 1     | C         | D         | 50       | `false`        | 0          | 0           | 1     | `false` |
+| test ID | slots | cargo_src | cargo_dst | capacity | cargo_overload | cargo_when | cargo_delay | count |  heavy  |
+| ------: | :---: | :-------: | :-------: | :------: | :------------: | :--------: | :---------: | :---: | :-----: |
+|       1 |   1   |     A     |     B     |   150    |     `true`     |     0      |      0      |   1   | `true`  |
+|       2 |   1   |     B     |     A     |   500    |    `false`     |    > 0     |     > 0     |  > 1  | `false` |
+|       3 |   1   |     C     |     D     |   150    |    `false`     |     0      |     > 0     |  > 1  | `true`  |
+|       4 |   1   |     D     |     C     |   150    |     `true`     |    > 0     |      0      |  > 1  | `true`  |
+|       5 |   2   |     A     |     C     |    50    |    `false`     |     0      |     > 0     |  > 1  | `false` |
+|       6 |   2   |     B     |     D     |    50    |     `true`     |    > 0     |      0      |   1   | `true`  |
+|       7 |   2   |     C     |     A     |    50    |     `true`     |     0      |      0      |   1   | `true`  |
+|       8 |   2   |     D     |     B     |   500    |    `false`     |     0      |      0      |   1   | `false` |
+|       9 |   3   |     A     |     D     |    50    |     `true`     |    > 0     |     > 0     |  > 1  | `true`  |
+|      10 |   3   |     B     |     C     |   150    |    `false`     |     0      |      0      |   1   | `false` |
+|      11 |   3   |     C     |     B     |    50    |     `true`     |    > 0     |     > 0     |  > 1  | `true`  |
+|      12 |   3   |     D     |     A     |    50    |     `true`     |     0      |     > 0     |  > 1  | `true`  |
+|      13 |   4   |     A     |     B     |    50    |     `true`     |     0      |      0      |   1   | `true`  |
+|      14 |   4   |     B     |     A     |   150    |    `false`     |    > 0     |     > 0     |  > 1  | `false` |
+|      15 |   4   |     C     |     D     |    50    |     `true`     |     0      |      0      |   1   | `true`  |
+|      16 |   4   |     D     |     C     |    50    |     `true`     |     0      |      0      |   1   | `true`  |
+|      17 |   1   |     A     |     C     |   500    |     `true`     |     0      |      0      |   1   | `true`  |
+|      18 |   1   |     A     |     D     |   500    |     `true`     |     0      |      0      |   1   | `true`  |
+|      19 |   1   |     C     |     A     |   500    |     `true`     |     0      |      0      |   1   | `true`  |
+|      20 |   2   |     A     |     A     |   150    |     `true`     |     0      |      0      |   1   | `true`  |
+|      21 |   1   |     C     |     D     |    50    |    `false`     |     0      |      0      |   1   | `false` |
 
