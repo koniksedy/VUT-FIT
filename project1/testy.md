@@ -13,6 +13,10 @@
   - [Popis charakteristiky parametrů](#popis-charakteristiky-parametrů)
   - [Omezení](#omezení)
 - [Tabulka kombinačních testů](#tabulka-kombinačních-testů)
+- [Pokrytí testů](#pokrytí-testů)
+  - [Testoví podle rozhodovací tabulky](#testoví-podle-rozhodovací-tabulky)
+  - [Kombinační testy](#kombinační-testy)
+- [Závěr](#závěr)
 
 ## CEG graf a výsledná rozhodovací tabulka.
 
@@ -170,3 +174,28 @@ Následující tabulka kombinačních testů využívajících všechny dvojic b
 | 21      |   1   |     A     |     A     |    50    |     `true`     |  `true`  |   `false`   | `false` | `true`  |
 
 
+## Pokrytí testů
+
+Testy podle rozhodovací tabulky a tabulky kombinačních testů jsou implementovány v `cartctl_test.py`.
+
+### Testoví podle rozhodovací tabulky
+
+Následující tabulky popisuje implementované testy podle [rozhodovací tabulky](#rozhodovací-tabulka).
+
+| test                       | id kombinace | popis                                                                                                                                                                                                                 |
+| -------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `test_ceg_no_task`         | 1            | Žádný požadavek na vyzvednutí materiálu                                                                                                                                                                               |
+| `test_ceg_pick_up_normal`  | 2            | Jeden neprioritní požadavek na vyzvednutí materiálu                                                                                                                                                                   |
+| `test_ceg_pickup_priority` | 3            | Jeden neprioritní a jeden prioritní požadavek na vyzvednutí materiálu                                                                                                                                                 |
+| `test_ceg_ne_enough_slots` | 4            | Vozík nedisponuje dostatečným množstvím slotů pro všechen náklad. Jeden z dvojice nákladu nebude vyzvednut v časovém limitu 1 minuty od vzniku prioritního požadavku na přesun. (Očekává se vyvolání nějaké vyjimky.) |
+| `test_ceg_cargo_overload`  | 5            | Materiál je na vozík příliš těžký. Materiál nebude vyzvednut. (Očekává se vyvolání nějaké vyjimky.)                                                                                                                   |
+| `test_ceg_not_picked`      | 6            | Materiál s prioritním požadavkem na přesun nebude vyzvednut do 1 minuty od zadání prioritního požadavku. (Očekává se vyvolání nějaké vyjimky.)
+
+### Kombinační testy
+
+Veškeré testy kombinací vstupních parametrů popsaných [kombinační tabulkou](#tabulka-kombinačních-testů) jsou implementovány metodou `test_combine`. Testovací kombinace jsou načítány ze souboru `combine.xml`, který byl vygenerován nástrojem [combine.testos.org](https://combine.testos.org/).
+
+## Závěr
+1) Popis testovaného produktu nespecifikuje, co se stane s materiálem, který nebyl na vozík naložen do 1 minuty od vytvoření prioritního požadavku. Ve skutečnosti systém požadavek na přemístění takového materiálu odstraní. Bylo by vhodnější, kdyby systém o dané skutečnosti informoval například vyjimkou.
+
+2) Popis testovaného produktu dále nespecifikuje, že nemůže být více požadavků na vyzvednutí materiálu zadáno ve stejný čas. V takovém případě je vyvolána vyjimka `CartERror`. Bylo by vhodnější, kdyby systém umožňoval současné zpracování více požadavků na vyzvednutí materiálu.

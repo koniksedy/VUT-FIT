@@ -6,15 +6,15 @@ Author: Michal Šedý <xsedym02@vutbr.cz>
 """
 
 
-import sys
-import cartctl
-import cart
-from cartctl import CartCtl
-from cart import Cart, CargoReq, CartError
-from jarvisenv import Jarvis
-import unittest
 import random
+import unittest
 import xml.etree.ElementTree as ET
+import cart
+import cartctl
+from cart import Cart, CargoReq, CartError
+from cartctl import CartCtl
+from jarvisenv import Jarvis
+
 
 def load_xml_tests(input_file: str) -> list:
     bool_decode = {1: True, 2: False}
@@ -41,6 +41,7 @@ def load_xml_tests(input_file: str) -> list:
             test[param] = data
         tests_list.append(test)
     return tests_list
+
 
 def log(msg):
     """simple logging"""
@@ -389,6 +390,10 @@ class TestCartRequests(unittest.TestCase):
 
 
     def test_ceg_cargo_overload(self) -> None:
+        """CEG: 5
+        Cargo is not picked due to high weight. The unpicked cargo is
+        deleted. This deletion should raise an exception.
+        """
         def on_move(c: Cart) -> None:
             """Cart move callback"""
             self._on_move_ceg(cart_ctl, c, False)
