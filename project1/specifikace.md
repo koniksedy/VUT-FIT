@@ -45,7 +45,7 @@ Normálně vozík během své jízdy může nabírat a vykládat další materi�
 - IMPLICIT, Nemusí být jasné, které jsou "jiné zastávky".
 - DANGLING_ELE, Chybí Else. Co když je vozík v režimu pouze-vykladka?
 
-*Pokud není vozík v režimu pouze-vykladka, může vyzvedávat materiály na libovolných zastávkách a vykládat materiály na libovolných cílových stanicích vyzvednutých materiálů. Pokud je vozík v režimu pouze-vykladka, nemůže vyzvedávat materiál a může vykládat pouze materiály s prioritním požadavkem na přesun na cílových stanicích vyzvednutých materiálů.*
+*Pokud není vozík v režimu pouze-vykladka, může vyzvedávat materiály na libovolných zastávkách a vykládat materiály na libovolných cílových stanicích vyzvednutých materiálů. Pokud je vozík v režimu pouze-vykladka, nemůže vyzvedávat materiál a může vykládat materiály na libovolných cílových stanicích vyzvednutých materiálů.*
 
 Na jednom místě může vozík akceptovat nebo vyložit jeden i více materiálů.
 

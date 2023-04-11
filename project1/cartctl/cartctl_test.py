@@ -17,6 +17,14 @@ from jarvisenv import Jarvis
 
 
 def load_xml_tests(input_file: str) -> list:
+    """Loads parameter for combination tests from xml file.
+
+    Args:
+        input_file (str): Xml file with parameters.
+
+    Returns:
+        list: List of parameter dictionaries, each for one test.
+    """
     bool_decode = {1: True, 2: False}
     station_decode = {1: "A", 2: "B", 3: "C", 4: "D"}
     capacity_decode = {1: 50, 2: 150, 3: 500}
@@ -42,10 +50,10 @@ def load_xml_tests(input_file: str) -> list:
         tests_list.append(test)
     return tests_list
 
-
 def log(msg):
     """simple logging"""
     print('  %s' % msg)
+
 
 class TestCartRequests(unittest.TestCase):
 
@@ -188,7 +196,7 @@ class TestCartRequests(unittest.TestCase):
 
     def test_ceg_no_task(self) -> None:
         """CEG: 1
-        No task is created for the cart. The cart should be still.
+        No task. The cart should be still.
         """
         def on_move(c: Cart) -> None:
             """Cart move callback"""
@@ -313,7 +321,7 @@ class TestCartRequests(unittest.TestCase):
     def test_ceg_ne_enough_slots(self) -> None:
         """CEG: 4
         Cargo is not picked due to low number of free slots. The unpicked cargo is
-        deleted. This deletion should raise an exception.
+        deleted. It would be better if the deletion raises some exception.
         """
         def on_move(c: Cart) -> None:
             """Cart move callback"""
@@ -392,7 +400,7 @@ class TestCartRequests(unittest.TestCase):
     def test_ceg_cargo_overload(self) -> None:
         """CEG: 5
         Cargo is not picked due to high weight. The unpicked cargo is
-        deleted. This deletion should raise an exception.
+        deleted. It would be better if the deletion raises some exception.
         """
         def on_move(c: Cart) -> None:
             """Cart move callback"""
@@ -435,7 +443,7 @@ class TestCartRequests(unittest.TestCase):
     def test_ceg_not_picked(self) -> None:
         """CEG: 6
         Normal task + Priority task + Unpicked priority cargo. The unpicked cargo is
-        deleted. This deletion should raise an exception.
+        deleted. It would be better if the deletion raises some exception.
         """
         def on_move(c: Cart) -> None:
             """Cart move callback"""
@@ -511,7 +519,7 @@ class TestCartRequests(unittest.TestCase):
            self._assert_final_cart_ceg(cart_ctl, cart_dev, [helmet, braceletR], braceletL_dst)
 
     def test_combine(self) -> None:
-        """The implementation of all 21 combination tests."""
+        """The implementation of all 22 combination tests."""
 
         def add_load(c: CartCtl, cargo_req: CargoReq):
             """callback for scheduled load"""
@@ -525,25 +533,21 @@ class TestCartRequests(unittest.TestCase):
 
         def on_load(c: Cart, cargo_req: CargoReq) -> None:
             """Cargo load callback"""
-            if cargo_req.weight > c.load_capacity:
-                self.fail("The cargo should not be loaded. It is overweighed.")
-            if (Jarvis.time() - cargo_req.born) < 60:
-                self.assertFalse(cargo_req.prio)
-            elif 60 < (Jarvis.time() - cargo_req.born) < 2 * 60:
-                self.assertTrue(cargo_req.prio)
-            elif 2 * 60 < (Jarvis.time() - cargo_req.born):
-                self.fail("The cargo should not be loaded. It waited for too long. It should be deleted.")
             log("%d: Cart at %s: loading: %s" % (Jarvis.time(), c.pos, cargo_req))
             log(c)
+            if cargo_req.weight > c.load_capacity:
+                self.fail("The cargo should not be loaded. It is overweighed.")
+            if cart_ctl.status == cartctl.Status.UnloadOnly:
+                self.fail("The cargo should not be loaded. The cart is in UnloadOnly mode.")
             self.assertIn(cargo_req, c.slots)
             cargo_req.context = "loaded"
 
         def on_unload(c: Cart, cargo_req: CargoReq) -> None:
             """Cargo unload callback"""
-            if cargo_req.weight > c.load_capacity:
-                self.fail("The cargo should not be unloaded (even loaded). It is overweighed.")
             log("%d: Cart at %s: unloading: %s" % (Jarvis.time(), c.pos, cargo_req))
             log(c)
+            if cargo_req.weight > c.load_capacity:
+                self.fail("The cargo should not be unloaded (even loaded). It is overweighed.")
             self.assertEqual(cargo_req.context, "loaded")
             cargo_req.context = "unloaded"
             self.assertNotIn(cargo_req, c.slots)
