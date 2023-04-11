@@ -27,7 +27,7 @@ using namespace std;
  * @param file_name Input file with the numbers.
  * @return vector The vector of loaded numbers.
  */
-vector<char> load_numbers(const char *file_name)
+vector<unsigned char> load_numbers(const char *file_name)
 {
     ifstream input(file_name, ios::binary);
 
@@ -36,7 +36,7 @@ vector<char> load_numbers(const char *file_name)
         cerr << "Input file not found." << endl;
     }
 
-    vector<char> numbers((istreambuf_iterator<char>(input)),
+    vector<unsigned char> numbers((istreambuf_iterator<char>(input)),
                          (istreambuf_iterator<char>()));
 
     return numbers;
@@ -49,7 +49,7 @@ vector<char> load_numbers(const char *file_name)
  * @param means An array of all cluster means.
  * @return unsigned char The index of the closer cluster
  */
-unsigned char get_best_cluster(const char point, const float means[])
+unsigned char get_best_cluster(const unsigned char point, const float means[])
 {
     unsigned char idx = CLUSTERS_CNT;
     float min_distance = 255;
@@ -73,7 +73,7 @@ unsigned char get_best_cluster(const char point, const float means[])
  * @param clusters An array of vectors of clusters and its points.
  * @param flags An array of vectors of flags. If one, then the point belongs to that cluster.
  */
-void print_results(float means[], vector<char> clusters[], vector<unsigned char> flags[])
+void print_results(float means[], vector<unsigned char> clusters[], vector<unsigned char> flags[])
 {
     for (int i = 0; i < CLUSTERS_CNT; ++i)
     {
@@ -106,12 +106,12 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     // Input variable
-    vector<char> numbers;
+    vector<unsigned char> numbers;
 
     // Working variables
     bool changed_glob = true;
     bool changed_loc = true;
-    char number_loc;
+    unsigned char number_loc;
     float means[4];                                 // The array of cluster means.
     unsigned char cluster_idx = CLUSTERS_CNT;       // The index of the cluster, the point is part of.
     int clusters_loc[4] = {0,};                     // The point is assigned to its cluster segment.
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     unsigned char clusters_size[4] = {0,};
 
     // Output variables
-    vector<char> clusters[4];
+    vector<unsigned char> clusters[4];
     vector<unsigned char> clusters_flags[4];
 
 
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
     }
     // Broadcast means and distribute number to each processor.
     MPI_Bcast(means, CLUSTERS_CNT, MPI_FLOAT, ROOT, MPI_COMM_WORLD);
-    MPI_Scatter(numbers.data(), 1, MPI_CHAR, &number_loc, 1, MPI_CHAR, ROOT, MPI_COMM_WORLD);
+    MPI_Scatter(numbers.data(), 1, MPI_UNSIGNED_CHAR, &number_loc, 1, MPI_UNSIGNED_CHAR, ROOT, MPI_COMM_WORLD);
 
     // Clustering process
     unsigned char new_cluster;
@@ -194,6 +194,7 @@ int main(int argc, char *argv[])
         {
             for (int i = 0; i < CLUSTERS_CNT; ++i)
             {
+                // Zero division is done on a purpose. It marks a cluster as empty.
                 means[i] = ((float) clusters_sum[i]) / clusters_size[i];
             }
         }
@@ -206,7 +207,7 @@ int main(int argc, char *argv[])
     // Collecting results.
     for (int i = 0; i < CLUSTERS_CNT; ++i)
     {
-        MPI_Gather(&clusters_loc[i], 1, MPI_CHAR, clusters[i].data(), 1, MPI_CHAR, ROOT, MPI_COMM_WORLD);
+        MPI_Gather(&clusters_loc[i], 1, MPI_UNSIGNED_CHAR, clusters[i].data(), 1, MPI_UNSIGNED_CHAR, ROOT, MPI_COMM_WORLD);
         MPI_Gather(&cluster_affiliation[i], 1, MPI_UNSIGNED_CHAR, clusters_flags[i].data(), 1, MPI_UNSIGNED_CHAR, ROOT, MPI_COMM_WORLD);
     }
 

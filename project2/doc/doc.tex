@@ -11,15 +11,20 @@
 \usepackage[shortlabels]{enumitem}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{newtxtext, newtxmath}
 \usepackage{graphicx}
+\usepackage{tikz-uml}
+
+\usepackage[ruled,linesnumbered]{algorithm2e}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Makra %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newcommand{\KURZ}{Kurz}
-\newcommand{\AUTOR}{Autor1}
-\newcommand{\NAZEV}{Nazev}
+\newcommand{\KURZ}{Paralelní a distribuované algoritmy}
+\newcommand{\AUTOR}{Bc. Michal Šedý (xsedym02)}
+\newcommand{\NAZEV}{Implementace paralelního algoritmu K-means}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Hlavička %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -39,11 +44,200 @@
 % Text %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-  
+
   \begin{center}
     {\Large \NAZEV}
   \end{center}
 
-  \section*{Příklad 1} 
-    bla bla bla
+  Cílem druhého projektu do předmětu paralelní a distribuované algoritmy (PRL) bylo implementovat paralelní algoritmus K-means s využitím knihovny OpenMPI. Tato dokumentace popisuje využitý shlukovací algoritmu spolu s jeho složitosti, komunikaci mezi jednotlivými procesy a příklad použití vytvořeného programu.
+
+  \section{K-means}
+    V této sekci ukážeme sekvenční a paralelní algoritmus K-means a jejich složitosti. Shlukování bylo prováděno na posloupnosti jednorozměrných hodnot. Za účelem projektu jsou vytvářeny 4 shluky (v důkazech složitosti bude počítáno s $k = 4$). Jako první hodnoty středů shluků jsou zvoleny první 4 hodnoty shlukované posloupnosti.
+
+    \subsection{Sekvenční K-means}
+
+      Na vstupu sekvenčního algoritmu je posloupnost (množina) jednorozměrných bodů $points$ a počet tvořených shluků. Jako středy ($means$) shluků je vybráno $k$ prvních bodů z posloupnosti $points$. Každý shluk ($cluster$) obsahuje množinu přiřazených bodů. Pro $i \in \mathbb{N} > 1$ platí $\forall n, m \in \mathbb{N} \leq k: cluster_i(n) \cap cluster_i(m) \neq \emptyset \iff n = m$ a také $\bigcup_{\forall n \in \mathbb{N} \leq k} cluster_i(n) = points$. V každé iteraci algoritmu jsou body přiřazeny do shluku, který má nejbližší střed. Pokud během iterace nedošlo ke změně žádného shluku, je algoritmus ukončen.
+
+      \begin{algorithm}[!h]
+        \label{algo:slow}
+        \SetAlgoLined
+        \DontPrintSemicolon
+        \caption{Sekvenční K-means}
+        \KwIn{$points$, $k \in \mathbb{N}$}
+        \KwOut{$cluster: k \rightarrow 2^{points}$}
+
+        \vspace*{2mm}
+
+        \ForAll{$p_n \in \{p_1, \dots, p_k\} \subseteq points$}
+        {
+          $mean(n) \leftarrow p_n$\;
+          $cluster_0(n) \leftarrow \emptyset$\;
+        }
+
+        \vspace*{2mm}
+
+        $i \leftarrow 1$\;
+        \Repeat{$\forall n \in \mathbb{N} \leq k : cluster(n)_i = cluster_{i-1}(n)$}
+        {
+          \ForAll{$p \in points$}
+          {
+            $c \leftarrow arg min_{n \in \mathbb{N} : n \leq k}(|mean(n) - p|)$\;
+            $cluster_i(c) \leftarrow cluster_i(c) \cup \{p\}$\;
+          }
+
+          \vspace*{2mm}
+
+          \ForAll{$n \in \mathbb{N} : n \leq k$}
+            {
+              $means(n) \leftarrow \frac{1}{|cluster_i(n)|} \sum_{p \in cluster_i(n)}p$
+            }
+          $i \leftarrow i + 1$\;
+        }
+
+        \vspace*{2mm}
+
+        \Return{$cluster_i$}
+      \end{algorithm}
+
+      \subsubsection{Časová složitost}
+        Časová složitost sekvenčního algoritmu K-means, pro $K = 4$, je $\mathcal{O}(n^2)$, kde $n$ je počet shlukovaných bodů.
+
+        \begin{proof}
+          Časová složitost inicializace shluků (1--4) je $\mathcal{O}(k)$, kde $k$ je počet shluků. Složitost smyčky aktualizující shluky (6--15) je $\mathcal{O}(n + nk) = \mathcal{O}(n)$, kde $n$ je počet bodů. V \cite{slow} bylo ukázáno, že konvergence algoritmu nastává po $\mathcal{O}(n^{kd})$, kde $d$ je počet dimenzí. Tato hranice byla v \cite{fast} upřesněna pro speciální případy, kdy $k < 5$ na $\mathcal{O}(n)$ iterací. Z předchozího vyplývá, že celková časová složitost algoritmu \ref{algo:slow} je $\mathcal{O}(n^2)$.
+        \end{proof}
+
+      % \subsubsection{Prostorová složitost}
+      %   Prostorová složitost sekvenčního algoritmu K-means, pro $K = 4$, je $\mathcal{O}(n)$, kde $n$ je počet shlukovaných bodů.
+
+      %   \begin{proof}
+      %     Algoritmus využívá proměnnou $means$ s prostorovou složitostí $\mathcal{O}(k) = \mathcal{O}(1)$. Proměnné $cluster_i$ se dají znovu využívat, je potřeba uchovávat pouze $cluster_i$ a $cluster_{i-1}$. Jejich prostorová složitost je $\mathcal{O}(n)$. Celková prostorová složitost algoritmu je $\mathcal{O}(n)$.
+      %   \end{proof}
+
+    \subsection{Paralelní K-means}
+
+      Paralelní algoritmu K-means využívá $n$ procesů, kde $n$ je shodné s počtem shlukovaných bodů. Na vstupu algoritmu je posloupnost (množina) jednorozměrných bodů $points$ a počet tvořených shluků $k$. Jako středy ($means$) shluků je vybráno $k$ prvních bodů z posloupnosti $points$. Tyto středy jsou následně pomocí operace \textit{Broadcast} rozeslány ostatním procesům. Každý procesor obsluhuje jeden vstupní bod. Procesor $i$ obsluhuje bod $p_i$. Každý proces obsahuje lokální proměnné $C^{(i)}$ a $changed^{(i)}$. $C^{(i)}$ určuje příslušnost bodu $p_i$ do shluku. $changed^{(i)}$ určuje, zda v současné iteraci algoritmu změnil bod $p_i$ shluk. Po ukončení rozmístění bodů do shluků jsou pomocí operace \textit{Reduce} získány velikosti (počet bodů ve shluku) a sumy bodů v každém shluku. Pomocí těchto hodnot proces \textit{root} přepočítá hodnoty středů shluků a operací \textit{Broadcast} je rozešle všem procesům pro další iteraci výpočtu. Všechny lokální hodnoty $changed^{(i)}$ jsou operací \textit{ORReduce} zredukovány do proměnné $changed$. Pokud je $changed$ rovno \textit{True} (nějaký bod změnil shluk) je započata nová iterace. Výpočet  je ukončen pokud už žádným bod nemění shluk.
+
+      \begin{algorithm}
+        \label{algo:fast}
+        \SetAlgoLined
+        \DontPrintSemicolon
+        \caption{Paralelní K-means}
+        \KwIn{$points$, $k \in \mathbb{N}$}
+        \KwOut{$cluster: k \rightarrow 2^{points}$}
+
+        \vspace*{2mm}
+
+        \ForAll{$p_n \in \{p_1, \dots, p_k\} \subseteq points$}
+        {
+          $mean(n) \leftarrow p_n$\;
+          $Broadcast(means(n))$\;
+        }
+
+        \vspace*{2mm}
+
+        \ForAll(\textbf{in parallel}){$p_i \in \{p_1, \dots, p_n\} = points$}
+        {
+          $C^{(i)} \leftarrow 0$ \tcp*{Přiřaď $0$ do proměnné shluku $C$ procesu $i$.}
+          $changed^{(i)} \leftarrow \textbf{True}$ \tcp*{Přiřaď \textbf{$True$} do proměnné $changed$ procesu $i$.}
+        }
+
+        \vspace*{2mm}
+
+        $changed \leftarrow \textbf{True}$\;
+        \While{$changed$}
+        {
+          \ForAll(\textbf{in parallel}){$p_i \in \{p_1, \dots, p_n\} = points$}
+          {
+            $c \leftarrow arg min_{n \in \mathbb{N} : n \leq k}(|mean(n) - p_i|)$\;
+            $changed^{(i)} \leftarrow c \neq C^{(i)}$ \tcp*{Logický výraz}
+          }
+
+          $cluster\_size \leftarrow GetSizesOfClusters()$ \tcp*{Redukcí získej velikosti všech shluků.}
+          $cluster\_sum \leftarrow GetSumInClusters()$ \tcp*{Redukcí získej sumu v každém shluku.}
+          \ForAll{$n \in \mathbb{N} : n \leq k$}
+          {
+            $means(n) \leftarrow cluster\_sum(n) / cluster\_size(n)$\;
+            $Broadcast(means(n))$\;
+          }
+
+          $changed \leftarrow ORReuce(changed^{(1)}, \dots, changed^{(n)})$ \tcp*{Redukce procesových $changed$.}
+
+        }
+
+        \vspace*{2mm}
+
+        \ForAll{$n \in \mathbb{N} : n \leq k$}
+        {
+          $cluster(n) = \{p_i \in points\,|\, C^{(i)} = n\}$\;
+        }
+
+        \vspace*{2mm}
+
+        \Return{$cluster$}
+
+      \end{algorithm}
+
+      \newpage
+
+      \subsubsection{Časová složitost}
+        Časová složitost paralelního algoritmu K-means, pro $K = 4$, je $\mathcal{O}(n\cdot log\, n)$, kde $n$ je počet shlukovaných bodů.
+
+        \begin{proof}
+          Časová složitost výběru středů a jejich rozeslání procesorům (1--4) je $\mathcal{O}(log\, n)$. Složitost inicializace procesových proměnných (5--8) je $\mathcal{O}(1)$. Smyčka pro výpočet nových středů má časovou složitost $\mathcal{O}(k) = \mathcal{O}(1)$. Časová složitost Reduce pro získání $cluster\_size$ (15), $cluster\_size$ (16) a $changed$ (21) je $\mathcal{O}(log\, n)$. Přepočítání středů shluků a jejich rozeslání procesům (17--20) má časovou složitost $\mathcal{O}(log\, n)$. Protože z \cite{fast} víme, že ke konvergenci pro $k < 5$ dochází po $\mathcal{O}(n)$ iteracích hlavního cyklu (10--22), tedy celková časová složitost paralelního algoritmu je $\mathcal{O}(n\cdot log\, n)$.
+        \end{proof}
+
+
+      \subsubsection{Cena}
+        Cena paralelního algoritmu K-means, pro $K = 4$, je $\mathcal{O}(n^2\cdot log\, n)$, kde $n$ je počet shlukovaných bodů. Algoritmus není optimální.
+
+        \begin{proof}
+          Dříve jsme ukázali, že časová složitost paralelního algoritmu K-means je $\mathcal{O}(n\cdot log\, n)$, kde $n$ je počet shlukovaných bodů. Při použití $p$ procesů, kde $p = n$ je cena paralelního algoritmu $\mathcal{O}(pn\cdot log\, n) = \mathcal{O}(n^2\cdot log\, n)$. Lze viděl, že paralelní algoritmus není efektivní, protože cena sekvenčního algoritmu je $\mathcal{O}(n^2)$.
+        \end{proof}
+
+      \subsubsection{Prostorová složitost}
+        Prostorová složitost paralelního algoritmu K-means, pro $K = 4$, je $\mathcal{O}(n)$, kde $n$ je počet shlukovaných bodů.
+
+        \begin{proof}
+          Prostorová složitost proměnné $means$ je $\mathcal{O}(k) = \mathcal{O}(1)$. Proměnná $cluster$, a všechny lokální proměnné $c$ a $changed$ mají dohromady prostorovou složitost $\mathcal{O}(3n) = \mathcal{O}(n)$. Proměnné $cluster\_size$ a $cluster\_sum$ mají dohromady prostorovou složitost $\mathcal{O}(1)$. Celková prostorová složitost paralelního algoritmu je tedy $\mathcal{O}(n)$.
+        \end{proof}
+
+  \section{Komunikace}
+    Tato sekce pomocí sekvenčního diagramu popisuje komunikaci mezi aplikací a jednotlivými procesy v průběhu paralelního algoritmu K-means pro $n$ shlukovaných bodů.
+
+    \begin{figure}[!ht]
+      \centering
+      \begin{tikzpicture}
+        \begin{umlseqdiag}
+          \umlobject[class=App]{app}
+          \umlobject[class=Proc]{p0}
+          \umlmulti[class=Proc]{p1}
+          \begin{umlcall}[op={parkmeans(points)}, return=cluster]{app}{p0}
+            \begin{umlfragment}[type=loop, label=changed<>False, name=loop, inner xsep=12]
+              \begin{umlcall}[op={Broadcast(mean)}]{p0}{p1}
+              \end{umlcall}
+              \begin{umlcall}[op={Scatter(point)}]{p0}{p1}
+              \end{umlcall}
+              \begin{umlcall}[op={CNTReduce(cluster)}]{p1}{p0}
+              \end{umlcall}
+              \begin{umlcall}[op={SUMReduce(cluster)}]{p1}{p0}
+              \end{umlcall}
+              \begin{umlcall}[op={ORReduce(changed)}]{p1}{p0}
+              \end{umlcall}
+            \end{umlfragment}
+            \begin{umlcall}[op={Gather(cluster)}]{p1}{p0}
+            \end{umlcall}
+          \end{umlcall}
+        \end{umlseqdiag}
+      \end{tikzpicture}
+    \end{figure}
+
+  \section{Závěr}
+    bla bla
+
+
+  \bibliographystyle{plain} % We choose the "plain" reference style
+  \bibliography{doc} % Entries are in the refs.bib file
+
 \end{document}
+
+

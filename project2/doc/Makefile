@@ -39,7 +39,7 @@ normostrany:
 
 
 edit:
-	subl $(CO).tex
+	code $(CO).tex
 
 open:
 	xdg-open $(CO).pdf

@@ -6,7 +6,6 @@ Last change: 04.04.2023
 
 
 import sys
-from struct import unpack
 
 
 class Kmeans:
@@ -24,7 +23,7 @@ class Kmeans:
         out = ""
         for midx, vs in self.get_clusters().items():
             m = self.means[midx]
-            out += f"[{round(m, 3)}] "
+            out += f"[{round(m, 1)}] "
             for v in vs:
                 out += f"{v[1]} "
             out += "\n"
@@ -41,16 +40,16 @@ class Kmeans:
         cnt = 0
         with open(file_name, "rb") as fh:
             while True:
-                data = fh.read(1)
+                data = fh.readline()
                 if not data:
                     return
-                if cnt > max_num:
-                    return
-                d = unpack("b", data)[0]
-                if cnt < k:
-                    self.means.append(d)
-                self.points[(cnt, d)] = None
-                cnt += 1
+                for d in data:
+                    if cnt > max_num:
+                        return
+                    if cnt < k:
+                        self.means.append(d)
+                    self.points[(cnt, d)] = None
+                    cnt += 1
 
     def clean_means(self) -> None:
         """Removes duplicit means.
@@ -117,6 +116,15 @@ class Kmeans:
 def main() -> None:
     kmeans = Kmeans()
     kmeans.load_numbers(sys.argv[1])
+    # kmeans.points = {(1, 1): None,
+    #                  (2, 2): None,
+    #                  (3, 5): None,
+    #                  (4, 6): None,
+    #                  (5, 8): None,
+    #                  (6, 10): None,
+    #                  (7, 12): None,
+    #                  (8, 15): None}
+    # kmeans.means = [1, 5, 10, 15]
     kmeans.clean_means()
     kmeans.compute()
     print(kmeans)
