@@ -527,6 +527,12 @@ class TestCartRequests(unittest.TestCase):
             """Cargo load callback"""
             if cargo_req.weight > c.load_capacity:
                 self.fail("The cargo should not be loaded. It is overweighed.")
+            if (Jarvis.time() - cargo_req.born) < 60:
+                self.assertFalse(cargo_req.prio)
+            elif 60 < (Jarvis.time() - cargo_req.born) < 2 * 60:
+                self.assertTrue(cargo_req.prio)
+            elif 2 * 60 < (Jarvis.time() - cargo_req.born):
+                self.fail("The cargo should not be loaded. It waited for too long. It should be deleted.")
             log("%d: Cart at %s: loading: %s" % (Jarvis.time(), c.pos, cargo_req))
             log(c)
             self.assertIn(cargo_req, c.slots)
@@ -566,7 +572,7 @@ class TestCartRequests(unittest.TestCase):
         # TESTING
         tests = load_xml_tests("../combine.xml")
         for i, test_params in zip(range(len(tests)), tests):
-            print(f"\nCOMBINATION TEST {i}")
+            print(f"\nCOMBINATION TEST {i+1}")
             print(f"parameters: " + ",".join([f"{k}={v}" for k, v in test_params.items()]))
 
             # Setup Cart

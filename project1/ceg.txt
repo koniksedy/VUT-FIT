@@ -6,26 +6,26 @@ priority_set:       Nastavení priority přesunu materiálu (1 min od zadání p
 pick_up_priority:   Vyzvednutí prioritního materiálu (< 1 min od nastavení priority)
 not_picked_up:      Nevyzvednutí prioritního materiálu (>= 1 min od nastavení priority)
 priority_cargo:     Vozík má naložený prioritní materiál
-enought_slots:      Vozík má dostatečný počet volných slotů
-enought_weight:     Vozík nebude po vyzvednutí materiálu přetížen
+enough_slots:      Vozík má dostatečný počet volných slotů
+enough_weight:     Vozík nebude po vyzvednutí materiálu přetížen
 
 Effects:
 picking_up_normal:          Vozík vyzvedá neprioritní materiál
-seting_priority:            Materiál se stává prioritním
+setting_priority:            Materiál se stává prioritním
 picking_up_priority:        Vozík vyzvedá prioritní materiál
 exception:                  Vyvolání výjimky (prioritní materiál nebyl naložen do 1 min)
-seting_pouze_vykladka:      Nastavení režimu pouze_vykladka
+setting_pouze_vykladka:      Nastavení režimu pouze_vykladka
 keep_pouze_vykladka:        Pokračuje v režimu pouze_vykladka
 only_unloading_priority:    Nevyzvedá žádný materiál, pouze vykládá prioritní materiál
 
 Rules:
 not_pouze_vykladka = !pouze_vykladka
 
-picking_up_normal = pick_up_normal && enought_slots && enought_weight && not_pouze_vykladka
-seting_priority = priority_set
-picking_up_priority = pick_up_priority && enought_slots && enought_weight && not_pouze_vykladka
+picking_up_normal = pick_up_normal && enough_slots && enough_weight && not_pouze_vykladka
+setting_priority = priority_set
+picking_up_priority = pick_up_priority && enough_slots && enough_weight && not_pouze_vykladka
 exception = not_picked_up
-seting_pouze_vykladka = pick_up_priority
+setting_pouze_vykladka = pick_up_priority
 keep_pouze_vykladka = pouze_vykladka && priority_cargo
 only_unloading_priority = pouze_vykladka
 
@@ -37,8 +37,8 @@ E: pouze_vykladka, pick_up_priority
 E: priority_cargo, pick_up_normal
 E: priority_cargo, pick_up_priority
 
-I: task_normal, enought_weight
-I: task_normal, enought_slots
+I: task_normal, enough_weight
+I: task_normal, enough_slots
 
 pick_up_normal->task_normal
 pick_up_priority->task_normal
@@ -48,10 +48,10 @@ not_picked_up->task_normal
 pick_up_priority->priority_set
 not_picked_up->priority_set
 
-pick_up_normal->enought_slots
-pick_up_normal->enought_weight
-pick_up_priority->enought_slots
-pick_up_priority->enought_weight
+pick_up_normal->enough_slots
+pick_up_normal->enough_weight
+pick_up_priority->enough_slots
+pick_up_priority->enough_weight
 
 priority_cargo->pouze_vykladka
 pouze_vykladka->priority_cargo

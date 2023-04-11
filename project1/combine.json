@@ -94,6 +94,6 @@
     "cargo_src.4 -> !cargo_dst.4",
     "one.1 -> cargo_delay.2",
     "cargo_overload.1 -> heavy.1",
-    "cargo_overload.2 -> heavy.2"
+    "heavy.2 -> cargo_overload.2"
   ]
 }

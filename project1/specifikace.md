@@ -1,8 +1,8 @@
 Pokud je požadováno přemístění nákladu z jednoho místa do druhého, vozík si materiál vyzvedne do 1 minuty.
 
 - AMB_STATEMENT, je požadováno přemístění -> je zadán požadavek na přesun, "je požadováno přemístění" nespecifikuje přesně akci zadání požadavku.
-- AMB_STATEMENT, náklad -> materiál, Sjednocení pojmů náklad a materiál.
-- AMB_STATEMENT, místo -> zastávka, Sjednocení pojmů místo a zastávky.
+- AMB_STATEMENT, náklad -> materiál, Sjednocení pojmů.
+- AMB_STATEMENT, místo -> zastávka, Sjednocení pojmů.
 - AMB_TEMPORAL, Není přesně určeno: Do minuty od čeho bude materiál vyzvednut?
 
 *Pokud je zadán požadavek na přesun materiálu z jedné zastávky do druhé, vozík si materiál do 1 minuty od zadání požadavku na přesun vyzvedne.*
@@ -16,9 +16,9 @@ Pokud se to nestihne, materiálu se nastavuje prioritní vlastnost.
 
 Každý prioritní materiál musí být vyzvednutý vozíkem do 1 minuty od nastavení prioritního požadavku.
 
-- AMB_STATEMENT, Každý prioritní materiál -> materiál s prioritním požadavkem na přesun. Nemusí být jasné, co to je "prioritní materiál".
+- AMB_STATEMENT, Každý prioritní materiál -> materiál s prioritním požadavkem na přesun. Sjednocení pojmů.
 - AMB_STATEMENT, nastavení -> zadání, Sjednocení pojmů.
-- DANGLING_ELSE, Chybí Else. Co se stane, když nebude materiál s prioritním požadavkem na přesun vyzvednut vozíkem do 1 minuty od zadání prioritního požadavku.
+- DANGLING_ELSE, Chybí Else. Co se stane, když nebude materiál s prioritním požadavkem na přesun vyzvednut vozíkem do 1 minuty od zadání prioritního požadavku. Nechť je vyvolána VÝJIMKA.
 - OMISSION, Chybí důsledek.
 
 *Pokud je materiál se zadaným prioritním požadavkem na přesun vyzvednut vozíkem do 1 minuty, pak bude materiál s prioritním požadavkem na přesun naložen na vozík. Pokud není materiál se zadaným prioritním požadavkem na přesun vyzvednut vozíkem do 1 minuty, bud vyvolána VÝJIMKA.*
@@ -33,8 +33,8 @@ Pokud vozík nakládá prioritní materiál, přepíná se do režimu pouze-vykl
 
 V tomto režimu zůstává, dokud nevyloží všechen takový materiál.
 
-- AMB_REFERENCE, tomto, Vzniká pochyba o jaký režim se jedná.
-- AMB_REFERENCE, takový, Vzniká pochyba o jaký materiál se jedná.
+- AMB_REFERENCE, "tomto", Vzniká pochyba o jaký režim se jedná.
+- AMB_REFERENCE, "takový", Vzniká pochyba o jaký materiál se jedná.
 
 *V režimu pouze-vykladka zůstává vozík, dokud nevyloží všechen materiál s prioritním požadavkem na přesun.*
 
@@ -42,14 +42,14 @@ Normálně vozík během své jízdy může nabírat a vykládat další materi�
 
 - IMPLICIT, Není určeno, co "normálně" (nejspíš normální režim) znamená.
 - AMB_STATEMENT, nabírat -> vyzvedávat, Sjednocení pojmů.
-- AMB_STATEMENT, Nemusí být jasné, které jsou "jiné zastávky".
+- IMPLICIT, Nemusí být jasné, které jsou "jiné zastávky".
 - DANGLING_ELE, Chybí Else. Co když je vozík v režimu pouze-vykladka?
 
 *Pokud není vozík v režimu pouze-vykladka, může vyzvedávat materiály na libovolných zastávkách a vykládat materiály na libovolných cílových stanicích vyzvednutých materiálů. Pokud je vozík v režimu pouze-vykladka, nemůže vyzvedávat materiál a může vykládat pouze materiály s prioritním požadavkem na přesun na cílových stanicích vyzvednutých materiálů.*
 
 Na jednom místě může vozík akceptovat nebo vyložit jeden i více materiálů.
 
-- AMB_STATEMENT, místo -> zastávka
+- AMB_STATEMENT, místo -> zastávka, Sjednocení pojmů.
 - AMB_STATEMENT, akceptovat -> vyzvednout, Sjednocení pojmů.
 - AMB_LOGIC, Spojka "nebo" může zpusobit chybnou interpretaci. (A to i přesto, že je užita gramaticky správně.)
 
@@ -65,7 +65,7 @@ Pořadí vyzvednutí materiálů nesouvisí s pořadím vytváření požadavků
 Vozík neakceptuje materiál, pokud jsou všechny jeho sloty obsazené nebo by jeho převzetím byla překročena maximální nosnost.
 
 - AMB_STATEMENT, neakceptuje -> nevyzvedne, Sjednocení pojmů.
-- AMB_REFERENCE, jeho vs. jeho, Nemusí být jasné, zda se jedná o vozík, nebo materiál.
+- AMB_REFERENCE, "jeho" vs. "jeho", Nemusí být jasné, zda se jedná o vozík, nebo materiál.
 - UNSPECIFIED_SUBJECT, maximální nosnost, Nemusí být jasné, že se jedná o maximální nosnost vozíku.
 - OTHER, Zbytečná negace.
 

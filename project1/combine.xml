@@ -41,7 +41,7 @@
 		<tcvalue param_id="cargo_0s">1</tcvalue>
 		<tcvalue param_id="cargo_delay">2</tcvalue>
 		<tcvalue param_id="one">1</tcvalue>
-		<tcvalue param_id="heavy">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
 	</testcase>
 	<testcase id="4">
 		<tcvalue param_id="slots">1</tcvalue>
@@ -240,5 +240,16 @@
 		<tcvalue param_id="cargo_delay">2</tcvalue>
 		<tcvalue param_id="one">2</tcvalue>
 		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="22">
+		<tcvalue param_id="slots">1</tcvalue>
+		<tcvalue param_id="cargo_src">3</tcvalue>
+		<tcvalue param_id="cargo_dst">4</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">2</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">1</tcvalue>
+		<tcvalue param_id="heavy">2</tcvalue>
 	</testcase>
 </testset>
