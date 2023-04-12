@@ -1,15 +1,15 @@
 import sys
+from collections import defaultdict
 from seqkmeans import Kmeans
 
 
 def get_clusters_from_stdin() -> dict:
-    data = dict()
+    data = defaultdict(set)
     while True:
         line = sys.stdin.readline()
         if not line:
             break
         mean = round(float(line.split("[")[1].split("]")[0]), 1)
-        data[mean] = set()
         for v in line.split()[1:]:
             v = v.strip()
             if v:

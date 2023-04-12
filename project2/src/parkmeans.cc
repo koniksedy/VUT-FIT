@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <set>
 #include <mpi.h>
 
 #define ROOT 0
@@ -77,19 +78,15 @@ void print_results(float means[], vector<unsigned char> clusters[], vector<unsig
 {
     for (int i = 0; i < CLUSTERS_CNT; ++i)
     {
-        // Sometimes the count of uniq numbers can be less than number of clusters.
-        if (!isnan(means[i]))
+        printf("[%.1f] ", means[i]);
+        for (int j = 0; j < clusters[i].size(); ++j)
         {
-            printf("[%.1f] ", means[i]);
-            for (int j = 0; j < clusters[i].size(); ++j)
+            if (flags[i][j] == 1)
             {
-                if (flags[i][j] == 1)
-                {
-                    printf("%d ", clusters[i][j]);
-                }
+                printf("%d ", clusters[i][j]);
             }
-            printf("\n");
         }
+        printf("\n");
     }
 }
 
@@ -161,7 +158,23 @@ int main(int argc, char *argv[])
             clusters_flags[i].resize(numbers.size());
         }
 
+        // Find unique means
+        set<unsigned char> used_means;
+        int i = 0;
+        for (unsigned char n: numbers)
+        {
+            if (i == CLUSTERS_CNT)
+            {
+                break;
+            }
 
+            if (used_means.find(n) == used_means.end())
+            {
+                used_means.insert(n);
+                means[i] = n;
+                i++;
+            }
+        }
     }
     // Broadcast means and distribute number to each processor.
     MPI_Bcast(means, CLUSTERS_CNT, MPI_FLOAT, ROOT, MPI_COMM_WORLD);
@@ -194,8 +207,10 @@ int main(int argc, char *argv[])
         {
             for (int i = 0; i < CLUSTERS_CNT; ++i)
             {
-                // Zero division is done on a purpose. It marks a cluster as empty.
-                means[i] = ((float) clusters_sum[i]) / clusters_size[i];
+                if (clusters_size[i])
+                {
+                    means[i] = ((float) clusters_sum[i]) / clusters_size[i];
+                }
             }
         }
         MPI_Bcast(means, CLUSTERS_CNT, MPI_FLOAT, ROOT, MPI_COMM_WORLD);
