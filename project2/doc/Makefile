@@ -1,4 +1,4 @@
-CO=doc
+CO=automaty
 
 all: $(CO).pdf
 

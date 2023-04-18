@@ -15,6 +15,7 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{shapes,shapes.geometric,arrows,fit,calc,automata,positioning}
+\usepackage{changepage}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Makra %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,12 +217,17 @@
       \end{tikzpicture}
     \end{figure}
 
+  \vspace*{-1em}
+
   \section*{Vlastnost 8 (volitelná)}
     \begin{itemize}[noitemsep]
       \item Každý naložený náklad se musí vyložit.
       \item Implementováno v třídě \texttt{MustLoadAndUnloadAtm}.
       \item Automat je vytvořen pro každý materiál na základě \textit{loading}.
+      \item \textit{finish} značí, že vozík ukončil činnost a žádná další událost již nenastane.
     \end{itemize}
+
+    \vspace*{-1em}
 
     \begin{figure}[!h]
       \centering
@@ -232,7 +238,7 @@
 
         \path[->]
             (loaded) edge[above] node{unloading} (unloaded)
-            (loaded) edge[below] node{stop} (fail);
+            (loaded) edge[below] node{finish} (fail);
       \end{tikzpicture}
     \end{figure}
 
@@ -269,6 +275,9 @@
       \end{tikzpicture}
     \end{figure}
 
+  \newpage
 
+  \section*{Porušené vlastností}
+    Kontroler ovládající pohyb vozíku v továrně porušuje vlastnost 4. Některé materiály nejsou nikdy vyzvednuty. Tato chyba se projevuje při použití rozšířeného vstupu \texttt{requests.csv}.
 
 \end{document}

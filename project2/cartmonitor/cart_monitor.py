@@ -17,9 +17,9 @@ class Singleton(type):
 class Monitor(metaclass=Singleton):
     """Dynamic analyser (singleton)
 
-    Atributes:
+    Attributes:
         CART_STATIONS (set): A set of station names.
-        CART_MAX_SLOTS (int): A number of cart's slots.
+        CART_MAX_SLOTS (int): A number of cart slots.
         CART_MAX_WEIGHT (int): A maximum cart weight (load).
     """
     __metaclass__ = Singleton
@@ -31,7 +31,7 @@ class Monitor(metaclass=Singleton):
     class No2LoadsOrUnloadsAtm:
         """Class of the automaton for the monitoring of properties 1 and 2.
         Property 1: The loading must not be applied on an occupied slot.
-        Property 2: The unloading must not be applid on an empty slot.
+        Property 2: The unloading must not be applied on an empty slot.
         """
         def __init__(self, slot_id: int) -> None:
             self.slot_id = slot_id
@@ -51,11 +51,11 @@ class Monitor(metaclass=Singleton):
                 return
 
             if self.state == "underflow":
-                # Property 2 violation
+                # Property 2 violation.
                 print(f"{event_time}:error: property 2 violation; unloading from an empty slot #{self.slot_id}")
                 self.state = "empty"
             elif self.state == "overflow":
-                # Property 1 violation
+                # Property 1 violation.
                 print(f"{event_time}:error: property 1 violation; loading into an occupied slot #{self.slot_id}")
                 self.state = "full"
 
@@ -78,15 +78,15 @@ class Monitor(metaclass=Singleton):
                 self.state = self.trans[self.state][event_type]
             except KeyError:
                 # No suitable transition.
-                print(f"{event_time}:error: other; {event_type} on cargo {self.cargo_name} in the state {self.state} is not possible")
+                print(f"{event_time}:error: other; {event_type} a cargo {self.cargo_name} in the state {self.state} is not possible")
                 return
 
             if self.state == "not_unloaded":
                 # Property 8 violation.
-                print(f"{event_time}:error: property 8 violation; a cargo {self.cargo_name} was not unloaded before the cart stop")
+                print(f"{event_time}:error: property 8 violation; a cargo {self.cargo_name} was not unloaded before the cart finished")
             elif self.state == "not_loaded":
-                # Property 4 violoation.
-                print(f"{event_time}:error: property 4 violation; a cargo {self.cargo_name} was not loaded before the cart stop")
+                # Property 4 violation.
+                print(f"{event_time}:error: property 4 violation; a cargo {self.cargo_name} was not loaded before the cart finished")
 
     class CartLimitAtm:
         """Class of the automaton for the monitoring of properties 6 and 7.
@@ -138,7 +138,7 @@ class Monitor(metaclass=Singleton):
                 self.state = self.trans[self.state][event_type]
             except KeyError:
                 # No suitable transition.
-                print(f"{event_time}:error: other; {event_type} on cargo {self.cargo_name} in the state {self.state} is not possible")
+                print(f"{event_time}:error: other; {event_type} a cargo {self.cargo_name} in the state {self.state} is not possible")
                 return
 
             if self.state == "late":
@@ -146,7 +146,7 @@ class Monitor(metaclass=Singleton):
                 print(f"{event_time}:error: property 3 violation; {self.cargo_name} was not unloaded at the destination station")
             if self.state == "bad_unloading":
                 # Property 3 violation - unloaded out of a destination.
-                print(f"{event_time}:error: property 3 violation; {self.cargo_name} was not supposed to be unloade on {event_type[1]}")
+                print(f"{event_time}:error: property 3 violation; {self.cargo_name} was not supposed to be unloaded on {event_type[1]}")
 
     class RequestBeforeLoadAtm:
         """Class of the automaton for the monitoring of the property 5.
@@ -165,16 +165,16 @@ class Monitor(metaclass=Singleton):
                 self.state = self.trans[self.state][event_type]
             except KeyError:
                 # No suitable transition.
-                print(f"{event_time}:error: other; {event_type} on cargo {self.cargo_name} in the state {self.state} is not possible")
+                print(f"{event_time}:error: other; {event_type} a cargo {self.cargo_name} in the state {self.state} is not possible")
                 return
 
             if self.state == "bad_loading":
                 # Property 5 violation.
-                print(f"{event_time}:error: property 5 violation; no priorir request for the loading of {self.cargo_name} at {self.cargo_src}")
+                print(f"{event_time}:error: property 5 violation; no prior request for the loading of {self.cargo_name} at {event_type[1]}")
 
     class NoIdleWhenRequestAtm:
         """Class of the automaton for the monitoring of the property 9.
-        Property 9: The cart mast not be in the mode idle when some reqest exists.
+        Property 9: The cart mast not be in the mode idle when some request exists.
         """
         def __init__(self) -> None:
             self.request_cnt = 0
@@ -188,7 +188,7 @@ class Monitor(metaclass=Singleton):
                 else:
                     # Property 9 violation.
                     print(f"{event_time}:error: property 9 violation; the cart is in the idle mode with pending transportation request(s)")
-
+                    self.idle_time = None
             if event_type == "requesting":
                 self.request_cnt += 1
             elif event_type == "unloading":
@@ -203,24 +203,24 @@ class Monitor(metaclass=Singleton):
         # The set containing unique pairs of loading source station and slot of a cart.
         self.uniq_loads = set()
 
-        # List of slots automata controling loading and unloading.
-        # Loading must not be appliad on a full slot. (property 1)
+        # List of slots automata controlling loading and unloading.
+        # Loading must not be applied on a full slot. (property 1)
         # Unloading must not be applied on an empty slot. (property 2)
         self.no_2_loads_or_unloads_list = [Monitor.No2LoadsOrUnloadsAtm(i) for i in range(4)]
 
-        # A dictionary of cargo automata controling unloading in the destination.
+        # A dictionary of cargo automata controlling unloading in the destination.
         # Indexed by cargo name.
         # A cargo must be unloaded, when the cart is in the destination. (property 3)
         self.direct_unload_dict: dict[str, Monitor.DirectUnloadAtm] = dict()
 
-        # A dictionary of cargo automata controling loading in the source station.
+        # A dictionary of cargo automata controlling loading in the source station.
         # Indexed by cargo name.
         # A cart must not load in the station if there is no request. (property 5)
         self.request_before_load_dict: dict[str, Monitor.RequestBeforeLoadAtm] = dict()
 
-        # Automaton controling maximum cart load and weight.
+        # Automaton controlling maximum cart load and weight.
         # A cargo can contain maximum of 4 cargos. (property 6)
-        # The sum of weights of loaded cargo must be less or equat 150kg. (property 7)
+        # The sum of weights of loaded cargo must be less or equal to 150kg. (property 7)
         self.cart_limit_atm = Monitor.CartLimitAtm()
 
         # A dictionary of automata for each cargo, controlling cargo loading and unloading.
@@ -229,7 +229,7 @@ class Monitor(metaclass=Singleton):
         # Every loading must cause unloading at some time. (property 8)
         self.must_load_and_unload_dict: dict[str, Monitor.MustLoadAndUnloadAtm] = dict()
 
-        # The cart mast not be in the mode idle when some reqest exists. (property 9)
+        # The cart mast not be in the mode idle when some request exists. (property 9)
         self.no_idle_when_request_atm = Monitor.NoIdleWhenRequestAtm()
 
     def onevent(self, event) -> None:
@@ -262,8 +262,8 @@ class Monitor(metaclass=Singleton):
         New automata ned to be instantiated.
         """
         if cargo in self.request_before_load_dict or cargo in self.must_load_and_unload_dict or cargo in self.direct_unload_dict:
-            # This cargo allready exists.
-            print(f"{time}:error: other; the request for {cargo} has been allready made")
+            # This cargo already exists.
+            print(f"{time}:error: other; the request for {cargo} has been already made")
 
         self.request_before_load_dict[cargo] = Monitor.RequestBeforeLoadAtm(cargo, src)
         self.must_load_and_unload_dict[cargo] = Monitor.MustLoadAndUnloadAtm(cargo)
@@ -284,9 +284,9 @@ class Monitor(metaclass=Singleton):
 
         if cargo not in self.request_before_load_dict or cargo not in self.must_load_and_unload_dict or cargo not in self.direct_unload_dict:
             # The loaded cargo does not exist.
-            print(f"{time}:error: other; The cargo {cargo} can not be loaded. It does not exist.")
+            print(f"{time}:error: other; A cargo {cargo} can not be loaded. It does not exist.")
 
-        # Testing propery 3.
+        # Testing property 3.
         if cargo in self.direct_unload_dict:
             self.direct_unload_dict[cargo].step(time, "loading")
 
@@ -309,9 +309,9 @@ class Monitor(metaclass=Singleton):
 
         if cargo not in self.must_load_and_unload_dict or cargo not in self.direct_unload_dict:
             # The unloaded cargo des not exist.
-            print(f"{time}:error: other; The cargo {cargo} can not be unloaded. It does not exist.")
+            print(f"{time}:error: other; A cargo {cargo} can not be unloaded. It does not exist.")
 
-        # Testing propery 3.
+        # Testing property 3.
         if cargo in self.direct_unload_dict:
             self.direct_unload_dict[cargo].step(time, ("unloading", pos))
             # Removing automaton.
