@@ -1,0 +1,273 @@
+\documentclass[a4paper, 11pt, fleqn]{scrartcl}
+
+\usepackage[czech]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage[left=2cm, top=3cm, text={17cm, 24cm}]{geometry}
+\usepackage[unicode, colorlinks, hypertexnames=false, citecolor=red]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[shortlabels]{enumitem}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{newtxtext, newtxmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes,shapes.geometric,arrows,fit,calc,automata,positioning}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Makra %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\KURZ}{Automatizované testování a dynamická analýza}
+\newcommand{\AUTOR}{Bc. Michal Šedý}
+\newcommand{\NAZEV}{Dynamická analýza kontroleru vozíku}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hlavička %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\pagestyle{fancy}
+\fancyhead[L]{\AUTOR}
+\fancyhead[C]{\KURZ}
+\fancyhead[R]{\today}
+
+\fancyfoot[C]{}
+\fancyfoot[R]{\thepage\,/\,\pageref*{LastPage}}
+
+\setlength{\parindent}{0pt}
+\setlength{\mathindent}{0pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Text %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+  \begin{center}
+    {\Large \NAZEV}
+  \end{center}
+
+  \section*{Vlastnost 1}
+    \begin{itemize}[noitemsep]
+      \item Vozík nesmí nakládat na obsazený slot.
+      \item Implementováno v třídě \texttt{No2LoadsOrUnloadsAtm}.
+      \item Automat je vytvořen pro každý slot vozíku.
+    \end{itemize}
+
+    \begin{figure}[!h]
+      \centering
+      \begin{tikzpicture}[shorten >=1pt, >=latex, node distance=3.5cm]
+          \node[state, initial] (free) {R};
+          \node[state, right of=free] (full) {R};
+          \node[state, right of=full] (fail) {F};
+
+          \path[->]
+              (free) edge[above] node{loading} (full)
+              (full) edge[above] node{loading} (fail)
+              (full) edge[below, bend left] node{unloading} (free);
+      \end{tikzpicture}
+    \end{figure}
+
+
+  \section*{Vlastnost 2}
+    \begin{itemize}[noitemsep]
+      \item Vozík nesmí vykládat z volného slotu.
+      \item Implementováno v třídě \texttt{No2LoadsOrUnloadsAtm}.
+      \item Automat je vytvořen pro každý slot vozíku.
+    \end{itemize}
+
+    \begin{figure}[!h]
+      \centering
+      \begin{tikzpicture}[shorten >=1pt, >=latex, node distance=3.5cm]
+          \node[state, initial] (free) {R};
+          \node[state, right of=free] (full) {R};
+          \node[state, below=1cm of free] (fail) {F};
+
+          \path[->]
+              (free) edge[above] node{loading} (full)
+              (full) edge[below, bend left] node{unloading} (free)
+              (free) edge[left] node{unloading} (fail);
+      \end{tikzpicture}
+    \end{figure}
+
+  \section*{Vlastnost 3}
+    \begin{itemize}[noitemsep]
+      \item Náklad se musí vyložit, pokud je vozík v cílové stanici daného nákladu.
+      \item Implementováno v třídě \texttt{DirectUnloadAtm}.
+      \item Automat je vytvořen pro každý materiál na základě žádosti o přesun (\textit{requesting}).
+      \item \textit{cargo dst} označuje cílovou stanici pro vyložení nákladu.
+      \item \textit{pos} je aktuální pozice vozíku.
+      \item Automat monitoruje pohyb vozíku, i když není materiál ještě naložen.
+    \end{itemize}
+
+    \begin{figure}[!h]
+      \centering
+      \begin{tikzpicture}[shorten >=1pt, >=latex, node distance=3cm]
+        \node[state, initial] (created) {R};
+        \node[state, right of=created] (loaded) {R};
+        \node[state, right=5cm of loaded] (fail) {F};
+        \node[state, below=0.5cm of fail] (unloaded) {T};
+
+        \path[->]
+            (created) edge[loop below] node{moving} (created)
+            (created) edge[above] node{loading} (loaded)
+            (loaded) edge[loop above] node{moving from $pos \neq \textit{cargo dst}$} (loaded)
+            (loaded) edge[above] node{moving from $pos = \textit{cargo dst}$} (fail)
+            (loaded) edge[below] node{unloading $\land\, pos \neq \textit{cargo dst}$} (fail)
+            (loaded) edge[below, bend right] node{unloading $\land\, pos = \textit{cargo dst}$} (unloaded);
+      \end{tikzpicture}
+    \end{figure}
+
+  \newpage
+
+  \section*{Vlastnost 4 (volitelná)}
+    \begin{itemize}[noitemsep]
+      \item Každý požadavek o přesun musí někdy způsobit nakládku.
+      \item Implementováno v třídě \texttt{MustLoadAndUnloadAtm}.
+      \item Automat je vytvořen pro každý materiál na základě žádosti o přesun (\textit{requesting}).
+    \end{itemize}
+
+    \begin{figure}[!h]
+      \centering
+      \begin{tikzpicture}[shorten >=1pt, >=latex]
+        \node[state, initial] (created) {R};
+        \node[state, above right=0cm and 2cm of created] (loaded) {T};
+        \node[state, below right=0cm and 2cm of created] (fail) {F};
+
+        \path[->]
+            (created) edge[above] node{loading} (loaded)
+            (created) edge[below] node{stop} (fail);
+      \end{tikzpicture}
+    \end{figure}
+
+  \section*{Vlastnost 5}
+    \begin{itemize}[noitemsep]
+      \item Vozík nesmí nakládat ve stanici, pokud na to neexistovala žádost.
+      \item Implementováno v třídě \texttt{RequestBeforeLoadAtm}.
+      \item Automat je vytvořen pro každý materiál na základě žádosti o přesun (\textit{requesting}).
+      \item \textit{cargo src} označuje stanici pro vyzvednutí materiálu.
+      \item \textit{pos} je aktuální pozice vozíku.
+    \end{itemize}
+
+    \begin{figure}[!h]
+      \centering
+      \begin{tikzpicture}[shorten >=1pt, >=latex]
+        \node[state, initial] (created) {R};
+        \node[state, above right=1cm and 2cm of created] (loaded) {T};
+        \node[state, below right=1cm and 2cm of created] (fail) {F};
+
+        \path[->]
+            (created) edge[below left] node{loading $\land\,pos \neq \textit{cargo src}$} (fail)
+            (created) edge[above left] node{loading $\land\,pos = \textit{cargo src}$} (loaded);
+
+      \end{tikzpicture}
+
+    \end{figure}
+
+  \section*{Vlastnost 6}
+    \begin{itemize}[noitemsep]
+      \item Nesmí být naloženo více než 4 materiály.
+      \item Implementováno v třídě \texttt{CartLimitAtm}.
+      \item Je vytvořen jeden automat pro celý vozík.
+    \end{itemize}
+
+    \begin{figure}[!h]
+      \centering
+      \begin{tikzpicture}[shorten >=1pt, >=latex, node distance=2.5cm]
+        \node[state, initial] (0) {R};
+        \node[state, right of=0] (1) {R};
+        \node[state, right of=1] (2) {R};
+        \node[state, right of=2] (3) {R};
+        \node[state, right of=3] (4) {R};
+        \node[state, right of=4] (fail) {F};
+
+        \path[->]
+            (0) edge[above] node{loading} (1)
+            (1) edge[above] node{loading} (2)
+            (2) edge[above] node{loading} (3)
+            (3) edge[above] node{loading} (4)
+            (4) edge[above] node{loading} (fail)
+            (4) edge[below, bend left] node{unloading} (3)
+            (3) edge[below, bend left] node{unloading} (2)
+            (2) edge[below, bend left] node{unloading} (1)
+            (1) edge[below, bend left] node{unloading} (0);
+      \end{tikzpicture}
+    \end{figure}
+
+  \newpage
+
+  \section*{Vlastnost 7}
+    \begin{itemize}[noitemsep]
+      \item Vozík nesmí být přetížen.
+      \item Implementováno v třídě \texttt{CartLimitAtm}.
+      \item Je vytvořen jeden automat pro celý vozík.
+      \item \textit{cart weight} je celková váha materiálu na vozíku po naložení.
+    \end{itemize}
+
+    \begin{figure}[!h]
+      \centering
+      \begin{tikzpicture}[shorten >=1pt, >=latex, node distance=7cm]
+        \node[state, initial] (light) {R};
+        \node[state, right of=light] (fail) {F};
+
+        \path[->]
+            (light) edge[loop above] node{loading $\land\,\textit{cart weight} \leq 150kg$} (light)
+            (light) edge[above] node{loading $\land\,\textit{cart weight} > 150kg$} (fail);
+      \end{tikzpicture}
+    \end{figure}
+
+  \section*{Vlastnost 8 (volitelná)}
+    \begin{itemize}[noitemsep]
+      \item Každý naložený náklad se musí vyložit.
+      \item Implementováno v třídě \texttt{MustLoadAndUnloadAtm}.
+      \item Automat je vytvořen pro každý materiál na základě \textit{loading}.
+    \end{itemize}
+
+    \begin{figure}[!h]
+      \centering
+      \begin{tikzpicture}[shorten >=1pt, >=latex, node distance=2cm]
+        \node[state, initial] (loaded) {R};
+        \node[state, above right=0.0cm and 2.5cm of loaded] (unloaded) {T};
+        \node[state, below right=0.0cm and 2.5cm of loaded] (fail) {F};
+
+        \path[->]
+            (loaded) edge[above] node{unloading} (unloaded)
+            (loaded) edge[below] node{stop} (fail);
+      \end{tikzpicture}
+    \end{figure}
+
+    \vspace*{-2em}
+
+  \section*{Vlastnost 9 (volitelná)}
+    \begin{itemize}[noitemsep]
+      \item Vozík nesmí být nečinný, pokud existuje žádost o přesun.
+      \item Implementováno v třídě \texttt{NoIdleWhenRequestAtm}.
+      \item Automat je vytvořen pro každý materiál na základě žádosti o přesun (\textit{requesting}).
+      \item \textit{event} je libovolná událost.
+      \item $\triangle time$ je doba, která uplynula od minulé události.
+    \end{itemize}
+
+    \begin{figure}[!h]
+      \centering
+      \begin{tikzpicture}[shorten >=1pt, >=latex, node distance=4cm]
+        \node[state, initial] (created) {R};
+        \node[state, below=2cm of created] (loaded) {R};
+        \node[state, below=1cm of loaded] (unloaded) {T};
+        \node[state, right of=created] (waiting1) {R};
+        \node[state, right of=loaded] (waiting2) {R};
+        \node[state, above right=0.85cm and 2cm of waiting2] (fail) {F};
+
+        \path[->]
+            (created) edge[left] node{loading} (loaded)
+            (loaded) edge[left] node{unloading} (unloaded)
+            (created) edge[below, bend right] node{idle} (waiting1)
+            (loaded) edge[below, bend right] node{idle} (waiting2)
+            (waiting1) edge[above, bend right] node{event $\land\, \triangle time = 0$} (created)
+            (waiting2) edge[above, bend right] node{event $\land\, \triangle time = 0$} (loaded)
+            (waiting1) edge[above right, bend left] node{event $\land\, \triangle time > 0$} (fail)
+            (waiting2) edge[below right, bend right] node{event $\land\, \triangle time > 0$} (fail);
+      \end{tikzpicture}
+    \end{figure}
+
+
+
+\end{document}
