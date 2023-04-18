@@ -5,25 +5,15 @@ Project 2 (ATA)
 Author: Michal Šedý <xsedym02@vutbr.cz>
 """
 
-class Singleton(type):
-    """Implementation of a singleton metaclass."""
-    _instances = {}
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
 
-
-class Monitor(metaclass=Singleton):
-    """Dynamic analyser (singleton)
+class Monitor:
+    """Dynamic analyser
 
     Attributes:
         CART_STATIONS (set): A set of station names.
         CART_MAX_SLOTS (int): A number of cart slots.
         CART_MAX_WEIGHT (int): A maximum cart weight (load).
     """
-    __metaclass__ = Singleton
-
     CART_STATIONS = {"A", "B", "C", "D"}
     CART_MAX_SLOTS = 4
     CART_MAX_WEIGHT = 150
@@ -323,7 +313,7 @@ class Monitor(metaclass=Singleton):
             # Removing automaton.
             del self.must_load_and_unload_dict[cargo]
 
-    def onfinish(self) -> None:
+    def finish(self) -> None:
         """finish handler"""
 
         # Testing properties 4 and 8.
@@ -335,25 +325,19 @@ class Monitor(metaclass=Singleton):
         return len(self.uniq_loads)/(len(Monitor.CART_STATIONS)*Monitor.CART_MAX_SLOTS)
 
 
-def report_coverage():
-    """Coverage reporter"""
-    print("CartCoverage %d%%" % ((Monitor().get_coverage())*100))
+    def report_coverage(self):
+        """Coverage reporter"""
+        print("CartCoverage %d%%" % ((self.get_coverage())*100))
 
-def onevent(event):
-    """Event handler. event = [TIME, EVENT_ID, ...]"""
-    # print(event)
-    Monitor().onevent(event)
-
-###########################################################
-# Nize netreba menit.
 
 def monitor(reader):
     """Main function"""
+    mtr = Monitor()
     for line in reader:
         line = line.strip()
-        onevent(line.split())
-    Monitor().onfinish()
-    report_coverage()
+        mtr.onevent(line.split())
+    mtr.finish()
+    mtr.report_coverage()
 
 if __name__ == "__main__":
     import sys
