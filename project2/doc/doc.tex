@@ -124,6 +124,7 @@
       \item Každý požadavek o přesun musí někdy způsobit nakládku.
       \item Implementováno v třídě \texttt{MustLoadAndUnloadAtm}.
       \item Automat je vytvořen pro každý materiál na základě žádosti o přesun (\textit{requesting}).
+      \item \textit{finish} značí, že vozík ukončil činnost a žádná další událost již nenastane.
     \end{itemize}
 
     \begin{figure}[!h]
@@ -135,7 +136,7 @@
 
         \path[->]
             (created) edge[above] node{loading} (loaded)
-            (created) edge[below] node{stop} (fail);
+            (created) edge[below] node{finish} (fail);
       \end{tikzpicture}
     \end{figure}
 
