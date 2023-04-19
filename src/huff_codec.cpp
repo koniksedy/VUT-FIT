@@ -1,0 +1,41 @@
+#include "huff_codec.hpp"
+
+
+int main(int argc, char **argv) {
+    // Parse program arguments
+    OptParser parser;
+    try {
+        parser.parse(argc, argv);
+    }
+    catch (const std::invalid_argument &ex) {
+        std::cerr << ex.what() << std::endl;
+        return 1;
+    }
+    catch (OptParser::Help &ex) {
+        return 0;
+    }
+
+
+    if (parser.mode == OptParser::Mode::code) {
+        // Coding
+        Coder coder;
+        coder.set_adaptive(parser.adaptive);
+        coder.set_model(parser.with_model);
+        if (!coder.load(parser.input, parser.width)) {
+            std::cerr << "Reading of the input file " << parser.input << " was not successful." << std::endl;
+            return 1;
+        }
+        coder.run(parser.output);
+
+    } else {
+        // Decoding
+        Decoder decoder;
+        if (!decoder.load(parser.input)) {
+            std::cerr << "Reading of the input file " << parser.input << " was not successful." << std::endl;
+            return 1;
+        }
+        decoder.run(parser.output);
+    }
+
+    return 0;
+}
