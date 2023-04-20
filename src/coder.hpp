@@ -4,16 +4,16 @@
 #include <iterator>
 #include <vector>
 #include <algorithm>
+#include "matrix.hpp"
 
 
 class Coder {
-    using matrix_uint8_t = std::vector<std::vector<uint8_t>>;
-
     bool model = false;
     bool adaptive = false;
     uint16_t width = 0;
     uint16_t height = 0;
-    matrix_uint8_t data_in;
+    matrix<uint8_t> data_in;
+    std::vector<bool> data_out;
 
     public:
         void set_model(bool is_model) {
@@ -25,5 +25,6 @@ class Coder {
         }
 
         bool load(char *input, uint16_t width);
-        void run(char *output);
+        void run();
+        bool save(char *output);
 };

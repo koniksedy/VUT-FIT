@@ -1,7 +1,7 @@
 #include "model.hpp"
 
 
-Model::Model(matrix_int16_t data, PassThru pass) {
+Model::Model(matrix<int16_t> data, PassThru pass) {
     this->pass = pass;
 
     this->data.reserve(data.size());
@@ -34,7 +34,7 @@ Model::Model(matrix_int16_t data, PassThru pass) {
     }
 }
 
-void Model::make_left_master_point(matrix_int16_t data) {
+void Model::make_left_master_point(matrix<int16_t> data) {
     this->master_point = data[0][0];
     this->data[0][0] = 0;
     this->uniq_num.insert(0);
@@ -51,7 +51,7 @@ void Model::make_left_master_point(matrix_int16_t data) {
     }
 }
 
-void Model::make_right_master_point(matrix_int16_t data) {
+void Model::make_right_master_point(matrix<int16_t> data) {
     std::size_t max_j = data[0].size() - 1;
     this->master_point = data[0][max_j];
     this->data[0][max_j] = 0;
@@ -69,7 +69,7 @@ void Model::make_right_master_point(matrix_int16_t data) {
     }
 }
 
-void Model::make_left_right(matrix_int16_t data)
+void Model::make_left_right(matrix<int16_t> data)
 {
     int16_t val;
     for (std::size_t i = 0; i < data.size(); ++i) {
@@ -81,7 +81,7 @@ void Model::make_left_right(matrix_int16_t data)
     }
 }
 
-void Model::make_top_down(Model::matrix_int16_t data)
+void Model::make_top_down(matrix<int16_t> data)
 {
     int16_t val;
     for (std::size_t j = 0; j < data[0].size(); ++j) {
@@ -93,7 +93,7 @@ void Model::make_top_down(Model::matrix_int16_t data)
     }
 }
 
-void Model::make_main_diagonal(Model::matrix_int16_t data)
+void Model::make_main_diagonal(matrix<int16_t> data)
 {
     int16_t val;
     for (std::size_t i = 1; i < data.size(); ++i) {
@@ -105,7 +105,7 @@ void Model::make_main_diagonal(Model::matrix_int16_t data)
     }
 }
 
-void Model::make_side_diagonal(Model::matrix_int16_t data)
+void Model::make_side_diagonal(matrix<int16_t> data)
 {
     int16_t val;
     for (std::size_t i = 1; i < data.size(); ++i) {

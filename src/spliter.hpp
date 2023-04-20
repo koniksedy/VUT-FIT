@@ -1,13 +1,14 @@
 #include <vector>
 #include <cstdint>
 #include <stdexcept>
+#include "matrix.hpp"
 
 
 struct Splitter {
-    using matrix_int16_t = std::vector<std::vector<int16_t>>;
 
-    public:
-        std::vector<matrix_int16_t> split(matrix_int16_t data, uint8_t block_width);
+        template<typename T>
+        std::vector<matrix<T>> split(matrix<T> data, uint8_t block_width);
 
-        matrix_int16_t merge(std::vector<matrix_int16_t> data, uint16_t output_width);
+        template<typename T>
+        matrix<T> merge(std::vector<matrix<T>> data, uint16_t output_width);
 };

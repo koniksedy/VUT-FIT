@@ -25,7 +25,8 @@ int main(int argc, char **argv) {
             std::cerr << "Reading of the input file " << parser.input << " was not successful." << std::endl;
             return 1;
         }
-        coder.run(parser.output);
+        coder.run();
+        coder.save(parser.output);
 
     } else {
         // Decoding
@@ -34,7 +35,8 @@ int main(int argc, char **argv) {
             std::cerr << "Reading of the input file " << parser.input << " was not successful." << std::endl;
             return 1;
         }
-        decoder.run(parser.output);
+        decoder.run();
+        decoder.save(parser.output);
     }
 
     return 0;
