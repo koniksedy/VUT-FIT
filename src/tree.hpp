@@ -4,13 +4,13 @@
 
 
 struct Tree {
-    enum class Node_Type {inner, leave};
-    Node_Type node_type;
-    uint8_t data;
-    unsigned cnt;
-    unsigned depth;
-    Tree *left;
-    Tree *right;
+    enum class Node_Type {inner, leaf};
+    Node_Type node_type = Node_Type::inner;
+    uint8_t data = 0;
+    unsigned cnt = 0;
+    unsigned depth = 0;
+    Tree *left = nullptr;
+    Tree *right = nullptr;
 
     bool operator<(const Tree &t) const {
         if (this->depth < t.depth) {
@@ -28,7 +28,7 @@ struct Tree {
         }
     }
 
-    void calculate_codes();
+    void calculate_depth();
 };
 
 struct Tree_Val_Differencer {
