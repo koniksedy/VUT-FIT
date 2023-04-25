@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <limits.h>
 
+#pragma once
+
 
 struct OptParser {
     class Help {};

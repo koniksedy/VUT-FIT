@@ -6,12 +6,13 @@
 #include <algorithm>
 #include "matrix.hpp"
 
+#pragma once
 
 class Coder {
     bool model = false;
     bool adaptive = false;
     uint16_t width = 0;
-    uint16_t height = 0;
+    uint16_t height = 0;    // ????
     matrix<uint8_t> data_in;
     std::vector<bool> data_out;
 

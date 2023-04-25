@@ -3,12 +3,14 @@
 #include <stdexcept>
 #include "matrix.hpp"
 
+#pragma once
+
 
 struct Splitter {
 
         template<typename T>
-        std::vector<matrix<T>> split(matrix<T> data, uint8_t block_width);
+        static std::vector<matrix<T>> split(matrix<T> data, uint8_t block_width);
 
         template<typename T>
-        matrix<T> merge(std::vector<matrix<T>> data, uint16_t output_width);
+        static matrix<T> merge(std::vector<std::vector<T>> data, uint16_t output_width);
 };

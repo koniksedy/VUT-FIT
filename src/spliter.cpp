@@ -2,7 +2,7 @@
 
 
 template<typename T>
-std::vector<Splitter::matrix<T>> Splitter::split(matrix<T> data, uint8_t block_width) {
+std::vector<matrix<T>> Splitter::split(matrix<T> data, uint8_t block_width) {
 
     std::vector<matrix<T>> out_data;
 
@@ -43,7 +43,7 @@ std::vector<Splitter::matrix<T>> Splitter::split(matrix<T> data, uint8_t block_w
 }
 
 template<typename T>
-Splitter::matrix<T> Splitter::merge(std::vector<matrix<T>> data, uint16_t output_width) {
+matrix<T> Splitter::merge(std::vector<std::vector<T>> data, uint16_t output_width) {
 
     matrix<T> out_data;
 

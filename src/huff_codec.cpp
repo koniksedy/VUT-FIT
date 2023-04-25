@@ -1,4 +1,8 @@
-#include "huff_codec.hpp"
+#include <iostream>
+#include <stdexcept>
+#include "optparser.hpp"
+#include "coder.hpp"
+#include "decoder.hpp"
 
 
 int main(int argc, char **argv) {
