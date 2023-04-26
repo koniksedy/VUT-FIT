@@ -1,68 +1,70 @@
 #include "spliter.hpp"
+#include <iostream>
 
 
-template<typename T>
-std::vector<matrix<T>> Splitter::split(matrix<T> data, uint8_t block_width) {
+std::vector<matrix<uint8_t>> splitter::split(matrix<uint8_t> data, uint8_t block_width) {
 
-    std::vector<matrix<T>> out_data;
+    std::vector<matrix<uint8_t>> out_data;
 
-    std::size_t width = 0;
-    std::size_t height = 0;
-    if (!data.empty()) {
-        width = data[0].size();
-        if (!data[0].empty()) {
-            height = data[0][0].size();
+
+
+    for (std::size_t master_i = 0; master_i < data.size(); master_i += block_width) {
+        for (std::size_t master_j = 0; master_j < data[master_i].size(); master_j += block_width) {
+            matrix<uint8_t> block;
+            block.reserve(block_width);
+            for (std::size_t i = 0; i < block_width && (master_i + i) < data.size(); ++i) {
+                std::vector<uint8_t> row;
+                row.reserve(block_width);
+                for (std::size_t j = 0; j < block_width && (master_j + j) < data[master_i].size(); ++j) {
+                    row.push_back(data[master_i + i][master_j + j]);
+                }
+                block.push_back(row);
+            }
+            out_data.push_back(block);
         }
     }
 
-    std::size_t h = 0;
-    std::size_t block_height = block_width;
-    while (h != height) {
-        if (h + block_height > height) {
-            block_height = height % block_height;
-            h = height;
-        } else {
-            h += block_height;
-        }
-        for (std::size_t l = 0; l < width / block_width; ++l) {
-           matrix<T> block(block_height);
-            for (std::size_t i = 0; i < block_width; ++i) {
-                block[i].reserve(block_width);
-                out_data.push_back(block);
-            }
-        }
-        std::size_t rest_w = width % block_width;
-        if (rest_w != 0) {
-            matrix<T> block(block_height);
-            for (std::size_t i = 0; i < rest_w; ++i) {
-                block[i].reserve(rest_w);
-                out_data.push_back(block);
-            }
-        }
-    }
+    return out_data;
 }
 
-template<typename T>
-matrix<T> Splitter::merge(std::vector<std::vector<T>> data, uint16_t output_width) {
+matrix<int16_t> splitter::merge(std::vector<matrix<int16_t>> data, uint16_t output_width) {
 
-    matrix<T> out_data;
-
-    std::size_t i_base = 0;
-    std::size_t j_base = 0;
-    out_data.push_back(std::vector<T>(output_height));
-    for (std::size_t k = 0; k < data.size(); ++k) {
-        if (j_base == output_width) {
-            out_data.push_back(std::vector<T>(output_width));
-            i_base++;
-            j_base = 0;
-        }
-        for (std::size_t i = 0; i < data[k].size(); ++i) {
-            for (std::size_t j = 0; j < data[k][j].size(); ++j) {
-                out_data[i_base + i][j_base + j] = data[k][j][i];
-            }
-        }
-        if (!data[k].empty()) {
-            j_base += data[k].size();
-        }
+    // Calculate data size
+    std::size_t data_size = 0;
+    for (std::size_t i = 0; i < data.size(); ++i) {
+        data_size += data[i].size() * data[i][0].size();
     }
+    std::size_t data_height = data_size / output_width;
+
+    // Create out matrix
+    matrix<int16_t> out_data(data_height);
+    for (std::size_t i = 0; i < data_height; ++i) {
+        out_data[i].resize(output_width);
+    }
+
+    // Get blocks parameters
+    std::size_t normal_block_height = data[0].size();
+    std::size_t normal_block_width = data[0][0].size();
+    std::size_t blocks_on_row = output_width / normal_block_width;
+    if (output_width % normal_block_width != 0) {
+        blocks_on_row++;
+    }
+
+    // Merge data
+    std::size_t main_i = 0;
+    std::size_t main_j = 0;
+    for (std::size_t k = 0; k < data.size(); k += blocks_on_row) {
+        for (std::size_t kk = 0; kk < blocks_on_row; ++kk) {
+            for (std::size_t i = 0; i < data[k+kk].size(); ++i) {
+                for (std::size_t j = 0; j < data[k+kk][i].size(); ++j) {
+                    out_data[main_i + i][main_j + j] = data[k+kk][i][j];
+                }
+            }
+            main_j += normal_block_width;
+        }
+        main_j = 0;
+        main_i += normal_block_height;
+    }
+
+    return out_data;
 }

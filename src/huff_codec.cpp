@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
             return 1;
         }
         coder.run();
-        coder.save(parser.output);
+        // coder.save(parser.output);
 
     } else {
         // Decoding
@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
             return 1;
         }
         decoder.run();
-        decoder.save(parser.output);
+        // decoder.save(parser.output);
     }
 
     return 0;

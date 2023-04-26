@@ -45,10 +45,12 @@ class Model {
         void make_main_diagonal(matrix<uint8_t> data);
         void make_side_diagonal(matrix<uint8_t> data);
 
-        matrix<uint8_t> reconstruct_left_right();
-        matrix<uint8_t> reconstruct_top_down();
-        matrix<uint8_t> reconstruct_main_diagonal();
-        matrix<uint8_t> reconstruct_side_diagonal();
+        void reconstruct_right_master_point(matrix<uint8_t> &out);
+        void reconstruct_left_master_point(matrix<uint8_t> &out);
+        void reconstruct_left_right(matrix<uint8_t> &out);
+        void reconstruct_top_down(matrix<uint8_t> &out);
+        void reconstruct_main_diagonal(matrix<uint8_t> &out);
+        void reconstruct_side_diagonal(matrix<uint8_t> &out);
 
 
 

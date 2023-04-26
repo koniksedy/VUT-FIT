@@ -1,20 +1,9 @@
 #include "bitdata.hpp"
 
 
-template<typename T>
-bitdata::bits bitdata::to_bits(T value, std::size_t size) {
-    bitdata::bits out(size);
-
-    for (std::size_t i = 0; i < size; ++i) {
-        out[data_len - i - 1] = static_cast<bool>((value >> i) & 1);
-    }
-
-    return out;
-}
-
 uint8_t bitdata::bits_to_uint8(bitdata::bits::iterator data, std::size_t n) {
     uint8_t out = 0;
-    for (int i = 0; i < n; ++i) {
+    for (std::size_t i = 0; i < n; ++i) {
         out = out << 1;
         out = out | static_cast<uint8_t>(*data);
         data++;
@@ -23,10 +12,10 @@ uint8_t bitdata::bits_to_uint8(bitdata::bits::iterator data, std::size_t n) {
 }
 
 uint16_t bitdata::bits_to_uint16(bitdata::bits::iterator data, std::size_t n) {
-    uint8_t out = 0;
-    for (int i = 0; i < n; ++i) {
+    uint16_t out = 0;
+    for (std::size_t i = 0; i < n; ++i) {
         out = out << 1;
-        out = out | static_cast<uint8_t>(*data);
+        out = out | static_cast<uint16_t>(*data);
         data++;
     }
     return out;
@@ -34,7 +23,7 @@ uint16_t bitdata::bits_to_uint16(bitdata::bits::iterator data, std::size_t n) {
 
 int16_t bitdata::bits_to_int16(bitdata::bits::iterator data, std::size_t n) {
     int16_t out = 0;
-    for (int i = 0; i < n; ++i) {
+    for (std::size_t i = 0; i < n; ++i) {
         out = out << 1;
         out = out | static_cast<int16_t>(*data);
         data++;

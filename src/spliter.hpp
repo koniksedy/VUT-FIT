@@ -6,11 +6,9 @@
 #pragma once
 
 
-struct Splitter {
+namespace splitter {
 
-        template<typename T>
-        static std::vector<matrix<T>> split(matrix<T> data, uint8_t block_width);
+        std::vector<matrix<uint8_t>> split(matrix<uint8_t> data, uint8_t block_width);
 
-        template<typename T>
-        static matrix<T> merge(std::vector<std::vector<T>> data, uint16_t output_width);
+        matrix<int16_t> merge(std::vector<matrix<int16_t>> data, uint16_t output_width);
 };

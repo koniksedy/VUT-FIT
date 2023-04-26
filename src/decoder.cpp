@@ -15,10 +15,10 @@ bool Decoder::load(char *input) {
     this->data_in.reserve(8 * data.size());
     for (size_t i = 0; i < data.size(); ++i) {
         uint8_t ch = data[i];
-        uint8_t mask = 1;
+        uint8_t mask = 0x80;
         for (size_t j = 0; j < 8; ++j) {
             this->data_in.push_back(ch & mask);
-            mask = mask << 1;
+            mask = mask >> 1;
         }
     }
 
@@ -27,6 +27,22 @@ bool Decoder::load(char *input) {
 
 
 void Decoder::run() {
+
+    // Test - load
+    std::cout << "Loaded" << std::endl;
+    assert(this->data_in.size() % 8 == 0);
+    unsigned j = 0;
+    bitdata::bits::iterator reading_head = this->data_in.begin();
+    while (reading_head != this->data_in.end()) {
+        printf("%x ", bitdata::bits_to_uint8(reading_head, 8));
+        reading_head += 8;
+        j += 1;
+        if (j == 8) {
+            std::cout << std::endl;
+            j = 0;
+        }
+    }
+
 
 }
 

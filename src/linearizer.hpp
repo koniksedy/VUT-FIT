@@ -7,12 +7,10 @@
 #pragma once
 
 
-struct Linearizer {
+namespace linearizer {
 
-    template<typename T>
-    static std::vector<std::vector<T>> linearize(std::vector<matrix<T>> data);
+    std::vector<std::vector<int16_t>> linearize(std::vector<matrix<int16_t>> data);
 
-    template<typename T>
-    static std::vector<matrix<T>> delinearize(std::vector<std::vector<T>> data,  uint16_t width);
+    std::vector<matrix<int16_t>> delinearize(std::vector<std::vector<int16_t>> data,  uint16_t width);
 
 };

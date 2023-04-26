@@ -1,20 +1,16 @@
 #include "linearizer.hpp"
 
 
-template<typename T>
-std::vector<std::vector<T>> Linearizer::linearize(std::vector<matrix<T>> data) {
+std::vector<std::vector<int16_t>> linearizer::linearize(std::vector<matrix<int16_t>> data) {
 
-    std::vector<std::vector<T>> out(data.size());
-    std::size_t matrix_size;
+    std::vector<std::vector<int16_t>> out(data.size());
 
     for (std::size_t k = 0; k < data.size(); ++k) {
-        if (!data[k].empty() && !data[k][0].empty()) {
-            matrix_size = data[k].size() * data[k][0].size();
-            out.push_back(std::vector<T>(matrix_size));
-        }
+        out[k].reserve(data[k].size() * data[k][0].size());
+
         for (std::size_t i = 0; i < data[k].size(); ++i) {
             for (std::size_t j = 0; j < data[k][i].size(); ++j) {
-                out[k][i*data[k].size() + j] = data[k][i][j];
+                out[k].push_back(data[k][i][j]);
             }
         }
     }
@@ -22,10 +18,9 @@ std::vector<std::vector<T>> Linearizer::linearize(std::vector<matrix<T>> data) {
     return out;
 }
 
-template<typename T>
-std::vector<matrix<T>> Linearizer::delinearize(std::vector<std::vector<T>> data, uint16_t width) {
+std::vector<matrix<int16_t>> linearizer::delinearize(std::vector<std::vector<int16_t>> data, uint16_t width) {
 
-    std::vector<matrix<T>> out;
+    std::vector<matrix<int16_t>> out;
 
     std::size_t normal_block_width = std::sqrt(data[0].size());
     std::size_t small_block_width = width % normal_block_width;
@@ -40,15 +35,16 @@ std::vector<matrix<T>> Linearizer::delinearize(std::vector<std::vector<T>> data,
 
     for (std::size_t k = 0; k < data.size(); ++k) {
         main_i = 0;
-        if (blocks_in_row % (k+1) == 0) {
+        if ((k + 1) % blocks_in_row == 0 && small_block_width != 0) {
             block_width = small_block_width;
         } else {
-            block_height = normal_block_width;
+            block_width = normal_block_width;
         }
         block_height = data[k].size() / block_width;
-        out.push_back(matrix<T>(block_height));
+        matrix<int16_t> block(block_height);
+        out.push_back(block);
         for (std::size_t i = 0; i < block_height; ++i) {
-            out[k].push_back(std::vector<T>(block_width));
+            out[k][i].resize(block_width);
             for (std::size_t j = 0; j < block_width; ++j) {
                 out[k][i][j] = data[k][main_i++];
             }
