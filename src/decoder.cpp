@@ -28,22 +28,6 @@ bool Decoder::load(char *input) {
 
 void Decoder::run() {
 
-    // Test - load
-    std::cout << "Loaded" << std::endl;
-    assert(this->data_in.size() % 8 == 0);
-    unsigned j = 0;
-    bitdata::bits::iterator reading_head = this->data_in.begin();
-    while (reading_head != this->data_in.end()) {
-        printf("%x ", bitdata::bits_to_uint8(reading_head, 8));
-        reading_head += 8;
-        j += 1;
-        if (j == 8) {
-            std::cout << std::endl;
-            j = 0;
-        }
-    }
-
-
 }
 
 bool Decoder::save(char *output) {

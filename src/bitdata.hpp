@@ -3,6 +3,7 @@
 
 #pragma once
 
+
 namespace bitdata
 {
     using bits = std::vector<bool>;

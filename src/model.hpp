@@ -52,6 +52,4 @@ class Model {
         void reconstruct_main_diagonal(matrix<uint8_t> &out);
         void reconstruct_side_diagonal(matrix<uint8_t> &out);
 
-
-
 };

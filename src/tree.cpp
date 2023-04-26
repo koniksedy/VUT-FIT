@@ -1,5 +1,6 @@
 #include "tree.hpp"
 
+
 void Tree::calculate_depth() {
     if (this->node_type == Tree::Node_Type::leaf) {
         return;

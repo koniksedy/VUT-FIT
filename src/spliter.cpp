@@ -1,5 +1,4 @@
 #include "spliter.hpp"
-#include <iostream>
 
 
 std::vector<matrix<uint8_t>> splitter::split(matrix<uint8_t> data, uint8_t block_width) {
