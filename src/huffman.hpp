@@ -1,5 +1,6 @@
 #include <map>
 #include <queue>
+#include <memory>
 #include <vector>
 #include <cstdint>
 #include <algorithm>
@@ -11,12 +12,11 @@
 
 
 class Huffman {
-    Tree canon_tree;
     std::map<int16_t, std::vector<bool>> code_book;
     std::vector<uint16_t> code_lengths;
     std::vector<int16_t> code_letters;
     uint16_t max_code_len;
-    static const int16_t HUFF_EOF = -256;
+    static const int16_t HUFF_EOF;
 
     static std::map<int16_t, unsigned> get_alphabet_counts(std::vector<int16_t> data);
     void generate_code_book(std::vector<int16_t> data);

@@ -33,6 +33,8 @@ bool Coder::load(char *input, uint16_t width) {
 
 
 void Coder::run() {
+    const uint8_t block_split_width = 8;
+
     // CODE width
     this->move_back_to_output(bitdata::to_bits(this->width, 16));
 
@@ -40,7 +42,7 @@ void Coder::run() {
     std::vector<matrix<uint8_t>> blocks;
     if (this->adaptive) {
         this->move_back_to_output(bitdata::to_bits(static_cast<uint8_t>(1), 1));
-        blocks = splitter::split(this->data_in, 8);
+        blocks = splitter::split(this->data_in, block_split_width);
     } else {
         this->move_back_to_output(bitdata::to_bits(static_cast<uint8_t>(0), 1));
         blocks.push_back(this->data_in);
