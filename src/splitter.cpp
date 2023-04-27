@@ -1,4 +1,4 @@
-#include "spliter.hpp"
+#include "splitter.hpp"
 
 
 std::vector<matrix<uint8_t>> splitter::split(matrix<uint8_t> data, uint8_t block_width) {
@@ -26,7 +26,7 @@ std::vector<matrix<uint8_t>> splitter::split(matrix<uint8_t> data, uint8_t block
     return out_data;
 }
 
-matrix<int16_t> splitter::merge(std::vector<matrix<int16_t>> data, uint16_t output_width) {
+matrix<uint8_t> splitter::merge(std::vector<matrix<uint8_t>> data, uint16_t output_width) {
 
     // Calculate data size
     std::size_t data_size = 0;
@@ -36,7 +36,7 @@ matrix<int16_t> splitter::merge(std::vector<matrix<int16_t>> data, uint16_t outp
     std::size_t data_height = data_size / output_width;
 
     // Create out matrix
-    matrix<int16_t> out_data(data_height);
+    matrix<uint8_t> out_data(data_height);
     for (std::size_t i = 0; i < data_height; ++i) {
         out_data[i].resize(output_width);
     }

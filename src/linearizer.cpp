@@ -1,20 +1,16 @@
 #include "linearizer.hpp"
 
 
-std::vector<std::vector<int16_t>> linearizer::linearize(std::vector<matrix<int16_t>> data) {
+std::vector<int16_t> linearizer::linearize(matrix<int16_t> data) {
 
-    std::vector<std::vector<int16_t>> out(data.size());
+    std::vector<int16_t> out;
+    out.reserve(data.size() * data[0].size());
 
-    for (std::size_t k = 0; k < data.size(); ++k) {
-        out[k].reserve(data[k].size() * data[k][0].size());
-
-        for (std::size_t i = 0; i < data[k].size(); ++i) {
-            for (std::size_t j = 0; j < data[k][i].size(); ++j) {
-                out[k].push_back(data[k][i][j]);
-            }
+    for (std::size_t i = 0; i < data.size(); ++i) {
+        for (std::size_t j = 0; j < data[i].size(); ++j) {
+            out.push_back(data[i][j]);
         }
     }
-
     return out;
 }
 

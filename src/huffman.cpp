@@ -15,7 +15,6 @@ void Huffman::generate_code_book(std::vector<int16_t> data) {
     std::priority_queue<Tree*, std::vector<Tree*>, Tree_Val_Differencer> min_pqueue;
     std::vector<Tree*> huffman_tree_leaves;
 
-    std::size_t i = 0;
     for (auto const &v: alpha_cnts) {
         Tree *tree = new Tree();
         tree->data = v.first;
@@ -26,7 +25,7 @@ void Huffman::generate_code_book(std::vector<int16_t> data) {
     }
 
     Tree *eof = new Tree();
-    eof->data = this->EOF;
+    eof->data = this->HUFF_EOF;
     eof->cnt = 1;
     eof->node_type = Tree::Node_Type::leaf;
     min_pqueue.push(eof);
@@ -84,7 +83,7 @@ void Huffman::generate_code_book(std::vector<int16_t> data) {
 void Huffman::construct_tree() {
     // unused
 
-    Tree *tree;
+    Tree *tree = new Tree();
     tree->node_type = Tree::Node_Type::inner;
     tree->depth = 0;
     tree->left = nullptr;
@@ -117,83 +116,103 @@ void Huffman::construct_tree() {
     }
 }
 
-std::vector<bool> Huffman::code(std::vector<int16_t> data) {
+bitdata::bits Huffman::code(std::vector<int16_t> data) {
 
-    std::vector<bool> coded_data;
-
-    this->generate_code_book(data);
-
-    bitdata::bits max_code_len_b = bitdata::to_bits(this->max_code_len, 16);
-    coded_data.insert(coded_data.end(), std::make_move_iterator(max_code_len_b.begin()), std::make_move_iterator(max_code_len_b.end()));
-
-    for (std::size_t i = 0; i < this->code_lengths.size(); ++i) {
-        bitdata::bits length_b = bitdata::to_bits(this->code_lengths[i], 9);
-        coded_data.insert(coded_data.end(), std::make_move_iterator(length_b.begin()), std::make_move_iterator(length_b.end()));
-    }
-
-    for (std::size_t i = 0; i < this->code_letters.size(); ++i) {
-        bitdata::bits letter_b = bitdata::to_bits(this->code_letters[i], 9);
-        coded_data.insert(coded_data.end(), std::make_move_iterator(letter_b.begin()), std::make_move_iterator(letter_b.end()));
-    }
-
+    bitdata::bits coded_data;
+    bitdata::bits data_raw;
     for (std::size_t i = 0; i < data.size(); ++i) {
-        std::vector<bool> &code_ref = this->code_book[data[i]];
-        coded_data.insert(coded_data.end(), std::make_move_iterator(code_ref.begin()), std::make_move_iterator(code_ref.end()));
+        data_raw = bitdata::to_bits(data[i], 16);
+        coded_data.insert(coded_data.end(), data_raw.begin(), data_raw.end());
     }
-
-    std::vector<bool> &code_ref = this->code_book[this->EOF];
-    coded_data.insert(coded_data.end(), std::make_move_iterator(code_ref.begin()), std::make_move_iterator(code_ref.end()));
-
+    data_raw = bitdata::to_bits(static_cast<int16_t>(-32768), 16);
+    coded_data.insert(coded_data.end(), data_raw.begin(), data_raw.end());
     return coded_data;
+
+    // std::vector<bool> coded_data;
+
+    // this->generate_code_book(data);
+
+    // bitdata::bits max_code_len_b = bitdata::to_bits(this->max_code_len, 16);
+    // coded_data.insert(coded_data.end(), std::make_move_iterator(max_code_len_b.begin()), std::make_move_iterator(max_code_len_b.end()));
+
+    // for (std::size_t i = 0; i < this->code_lengths.size(); ++i) {
+    //     bitdata::bits length_b = bitdata::to_bits(this->code_lengths[i], 9);
+    //     coded_data.insert(coded_data.end(), std::make_move_iterator(length_b.begin()), std::make_move_iterator(length_b.end()));
+    // }
+
+    // for (std::size_t i = 0; i < this->code_letters.size(); ++i) {
+    //     bitdata::bits letter_b = bitdata::to_bits(this->code_letters[i], 9);
+    //     coded_data.insert(coded_data.end(), std::make_move_iterator(letter_b.begin()), std::make_move_iterator(letter_b.end()));
+    // }
+
+    // for (std::size_t i = 0; i < data.size(); ++i) {
+    //     std::vector<bool> &code_ref = this->code_book[data[i]];
+    //     coded_data.insert(coded_data.end(), std::make_move_iterator(code_ref.begin()), std::make_move_iterator(code_ref.end()));
+    // }
+
+    // std::vector<bool> &code_ref = this->code_book[this->HUFF_EOF];
+    // coded_data.insert(coded_data.end(), std::make_move_iterator(code_ref.begin()), std::make_move_iterator(code_ref.end()));
+
+    // return coded_data;
 }
 
-std::vector<int16_t> Huffman::decode(bitdata::bits::iterator reading_head) {
-
-    this->max_code_len = bitdata::bits_to_uint16(reading_head, 16);
-
-    this->code_lengths.reserve(this->max_code_len);
-    std::size_t letters_cnt = 1;
-    for (std::size_t i = 0; i < this->max_code_len; ++i) {
-        this->code_lengths[i] = bitdata::bits_to_uint16(reading_head, 9);
-        letters_cnt += this->code_lengths[i];
-    }
-
-    this->code_letters.reserve(letters_cnt);
-    for (std::size_t i = 0; i < letters_cnt; ++i) {
-        this->code_letters[i] = bitdata::bits_to_int16(reading_head, 9);
-    }
-
-
-    std::vector<uint64_t> first_code(this->max_code_len);
-    std::vector<size_t> first_symbol(this->max_code_len);
-    std::size_t c = 0;
-    std::size_t s = 0;
-    for (int i = 0; i < this->max_code_len; ++i) {
-        first_code[i] = c;
-        first_symbol[i] = s;
-        s += this->code_lengths[i];
-        c = (c + this->code_lengths[i]) << 1;
-    }
-
+std::vector<int16_t> Huffman::decode(bitdata::bits::iterator &reading_head) {
     std::vector<int16_t> out;
-
-    uint64_t c = 0;
-    std::size_t l = 0;
-    int16_t letter = 0;
-    while (letter != this->EOF) {
-        c = (c << 1) + static_cast<uint64_t>(*reading_head);
-        reading_head++;
-        if ((c <<1) < first_code[l+1]) {
-            letter = this->code_letters[first_symbol[l] + c - first_code[l]];
-            if (letter != this->EOF) {
-                out.push_back(letter);
-            }
-            l = 0;
-            c = 0;
-        } else {
-            l++;
+    int16_t data = 0;
+    while (data != -32768) {
+        data = bitdata::bits_to_int16(reading_head, 16);
+        if (data != -32768) {
+            out.push_back(data);
         }
+        reading_head += 16;
     }
-
     return out;
+
+    // this->max_code_len = bitdata::bits_to_uint16(reading_head, 16);
+
+    // this->code_lengths.reserve(this->max_code_len);
+    // std::size_t letters_cnt = 1;
+    // for (std::size_t i = 0; i < this->max_code_len; ++i) {
+    //     this->code_lengths[i] = bitdata::bits_to_uint16(reading_head, 9);
+    //     letters_cnt += this->code_lengths[i];
+    // }
+
+    // this->code_letters.reserve(letters_cnt);
+    // for (std::size_t i = 0; i < letters_cnt; ++i) {
+    //     this->code_letters[i] = bitdata::bits_to_int16(reading_head, 9);
+    // }
+
+
+    // std::vector<uint64_t> first_code(this->max_code_len);
+    // std::vector<size_t> first_symbol(this->max_code_len);
+    // std::size_t c = 0;
+    // std::size_t s = 0;
+    // for (int i = 0; i < this->max_code_len; ++i) {
+    //     first_code[i] = c;
+    //     first_symbol[i] = s;
+    //     s += this->code_lengths[i];
+    //     c = (c + this->code_lengths[i]) << 1;
+    // }
+
+    // std::vector<int16_t> out;
+
+    // uint64_t c = 0;
+    // std::size_t l = 0;
+    // int16_t letter = 0;
+    // while (letter != this->HUFF_EOF) {
+    //     c = (c << 1) + static_cast<uint64_t>(*reading_head);
+    //     reading_head++;
+    //     if ((c <<1) < first_code[l+1]) {
+    //         letter = this->code_letters[first_symbol[l] + c - first_code[l]];
+    //         if (letter != this->HUFF_EOF) {
+    //             out.push_back(letter);
+    //         }
+    //         l = 0;
+    //         c = 0;
+    //     } else {
+    //         l++;
+    //     }
+    // }
+
+    // return out;
 }

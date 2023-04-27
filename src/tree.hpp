@@ -6,7 +6,7 @@
 struct Tree {
     enum class Node_Type {inner, leaf};
     Node_Type node_type = Node_Type::inner;
-    uint8_t data = 0;
+    int16_t data = 0;
     unsigned cnt = 0;
     unsigned depth = 0;
     Tree *left = nullptr;

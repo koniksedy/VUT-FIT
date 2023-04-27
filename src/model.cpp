@@ -1,6 +1,18 @@
 #include "model.hpp"
 
 
+Model::Model(matrix<uint8_t> data) {
+    this->master_point = 0;
+    this->pass = Model::PassThru::left_right;
+    this->data.resize(data.size());
+    for (std::size_t i = 0; i < data.size(); ++i) {
+        this->data[i].resize(data[i].size());
+        for (std::size_t j = 0; j < data[i].size(); ++j) {
+            this->data[i][j] = data[i][j];
+        }
+    }
+}
+
 Model::Model(matrix<uint8_t> data, PassThru pass) {
     this->pass = pass;
 

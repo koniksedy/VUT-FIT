@@ -10,6 +10,8 @@ class Model {
     public:
         enum class PassThru {left_right, top_down, main_diagonal, side_diagonal};
 
+        Model(matrix<uint8_t>);
+
         Model(matrix<uint8_t> data, PassThru pass);
 
         Model(matrix<int16_t> d, uint8_t mp, PassThru p) : data(d), master_point(mp), pass(p) {}
@@ -18,6 +20,10 @@ class Model {
 
         matrix<int16_t> get_data() {
             return this->data;
+        }
+
+        PassThru get_pass() {
+            return this->pass;
         }
 
         uint8_t get_master_point() {
