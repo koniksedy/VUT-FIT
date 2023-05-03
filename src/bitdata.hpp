@@ -1,5 +1,6 @@
 #include <vector>
 #include <cstdint>
+#include <iostream>
 
 #pragma once
 
@@ -7,6 +8,7 @@
 namespace bitdata
 {
     using bits = std::vector<bool>;
+
 
     template<typename T>
     bits to_bits(T value, std::size_t size) {

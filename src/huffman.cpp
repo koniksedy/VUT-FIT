@@ -1,4 +1,5 @@
 #include "huffman.hpp"
+#include <iostream>
 
 
 const int16_t Huffman::HUFF_EOF = -256;
@@ -55,8 +56,12 @@ void Huffman::generate_code_book(std::vector<int16_t> data) {
 
     std::sort(huffman_tree_leaves.begin(), huffman_tree_leaves.end());
 
+    for (std::size_t i = 0; i < huffman_tree_leaves.size(); ++i) {
+        printf("%d -> cnt:%u depth:%u\n", huffman_tree_leaves[i]->data, huffman_tree_leaves[i]->cnt, huffman_tree_leaves[i]->depth);
+    }
+
     int16_t leaf_data = huffman_tree_leaves[0]->data;
-    uint16_t leaf_length = huffman_tree_leaves[0]->depth + 1;
+    uint16_t leaf_length = huffman_tree_leaves[0]->depth;
     this->max_code_len = 1;
     uint16_t prev_leaf_length = leaf_length;
     uint64_t leaf_code = 0;
@@ -65,7 +70,7 @@ void Huffman::generate_code_book(std::vector<int16_t> data) {
 
     for (std::size_t i = 1; i < huffman_tree_leaves.size(); ++i) {
         leaf_data = huffman_tree_leaves[i]->data;
-        leaf_length = huffman_tree_leaves[i]->depth + 1;
+        leaf_length = huffman_tree_leaves[i]->depth;
         leaf_code = (prev_leaf_code + 1) << (leaf_length - prev_leaf_length);
 
         this->code_book[leaf_data] = bitdata::to_bits(leaf_code, leaf_length);
@@ -84,6 +89,14 @@ void Huffman::generate_code_book(std::vector<int16_t> data) {
     for (std::size_t i = 0; i < huffman_tree_leaves.size(); ++i) {
         this->code_letters[i] = huffman_tree_leaves[i]->data;
     }
+
+    // for (auto &v: this->code_book) {
+    //     printf("%d = ", v.first);
+    //     for (std::size_t b = 0; b < v.second.size(); ++b) {
+    //         std::cout << (v.second[b] ? "1" : "0");
+    //     }
+    //     std::cout << std::endl;
+    // }
 }
 
 /*
@@ -166,45 +179,60 @@ bitdata::bits Huffman::code(std::vector<int16_t> data) {
 }
 
 std::vector<int16_t> Huffman::decode(bitdata::bits::iterator &reading_head) {
-    // std::vector<int16_t> out;
-    // int16_t data = 0;
-    // while (data != -32768) {
-    //     data = bitdata::bits_to_int16(reading_head, 16);
-    //     if (data != -32768) {
-    //         out.push_back(data);
-    //     }
-    //     reading_head += 16;
-    // }
-    // return out;
-
     this->max_code_len = bitdata::bits_to_uint16(reading_head, 16);
     reading_head += 16;
 
+    printf("Max code len = %u\n", this->max_code_len);
+
+    std::cout << "CODE LENGTHS" << std::endl;
     this->code_lengths.resize(this->max_code_len);
     std::size_t letters_cnt = 0;
     for (std::size_t i = 0; i < this->max_code_len; ++i) {
         this->code_lengths[i] = bitdata::bits_to_uint16(reading_head, 9);
         reading_head += 9;
         letters_cnt += this->code_lengths[i];
+        std::cout << this->code_lengths[i];
+        std::cout << " ";
     }
+    std::cout << std::endl;
 
+    std::cout << "CODE LETTERS" << std::endl;
     this->code_letters.resize(letters_cnt);
     for (std::size_t i = 0; i < letters_cnt; ++i) {
         this->code_letters[i] = bitdata::bits_to_int16(reading_head, 9);
         reading_head += 9;
+        std::cout << this->code_letters[i];
+        std::cout << " ";
     }
+    std::cout << std::endl;
 
-
-    std::vector<uint64_t> first_code(this->max_code_len);
-    std::vector<size_t> first_symbol(this->max_code_len);
+    std::vector<uint64_t> first_code(this->max_code_len + 1);
+    std::vector<size_t> first_symbol(this->max_code_len + 1);
     uint64_t c = 0;
-    std::size_t s = 0;
+    std::size_t s = 1;
     for (uint16_t i = 0; i < this->max_code_len; ++i) {
         first_code[i] = c;
         first_symbol[i] = s;
         s += this->code_lengths[i];
         c = (c + this->code_lengths[i]) << 1;
     }
+    first_code[this->max_code_len] = c;
+    first_symbol[this->max_code_len] = s;
+
+    std::cout << "FIRST SYMBOL" << std::endl;
+    for (std::size_t i = 0; i < first_symbol.size(); ++i) {
+        std::cout << first_symbol[i];
+        std::cout << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "FIRST CODE" << std::endl;
+    for (std::size_t i = 0; i < first_code.size(); ++i) {
+        std::cout << first_code[i];
+        std::cout << " ";
+    }
+    std::cout << std::endl;
+
 
     std::vector<int16_t> out;
 
@@ -212,10 +240,11 @@ std::vector<int16_t> Huffman::decode(bitdata::bits::iterator &reading_head) {
     std::size_t l = 0;
     int16_t letter = 0;
     while (letter != this->HUFF_EOF) {
+
         c = (c << 1) + bitdata::bits_to_uint8(reading_head, 1);
         reading_head++;
-        if ((c << 1) < first_code[l+1]) {
-            letter = this->code_letters[first_symbol[l] + c - first_code[l]];
+        if ((c << 1) < first_code[l + 1]) {
+            letter = this->code_letters[first_symbol[l] + c - first_code[l] - 1];
             if (letter != this->HUFF_EOF) {
                 out.push_back(letter);
             }

@@ -53,7 +53,7 @@ void Decoder::run() {
     std::vector<Model::PassThru> models_pass;
     std::vector<uint8_t> models_master_point;
     std::vector<std::vector<int16_t>> models_linear_data;
-    while (!this->is_near_end(reading_head, 10))
+    while (!this->is_near_end(reading_head, 16))
     {
         // DECODE model pass
         models_pass.push_back(static_cast<Model::PassThru>(bitdata::bits_to_uint8(reading_head, 2)));
