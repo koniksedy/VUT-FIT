@@ -1,6 +1,6 @@
 CC=g++
-CFLAGS=-Wall -Wextra -g
-PROJ=huff_code
+CFLAGS=-Wall -Wextra -g -O2
+PROJ=huff_codec
 OBJECTS=bitdata.o coder.o decoder.o huff_codec.o huffman.o linearizer.o model.o optparser.o splitter.o tree.o
 
 all: $(PROJ)

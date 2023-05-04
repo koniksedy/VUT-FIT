@@ -28,6 +28,11 @@ std::vector<matrix<uint8_t>> splitter::split(matrix<uint8_t> data, uint8_t block
 
 matrix<uint8_t> splitter::merge(std::vector<matrix<uint8_t>> data, uint16_t output_width) {
 
+    // printf("OUTPUT WIDTH = %u\n", output_width);
+    // for (std::size_t i = 0; i < data.size(); ++i) {
+    //     printf("%lu x %lu\n", data[i].size(), data[i][0].size());
+    // }
+
     // Calculate data size
     std::size_t data_size = 0;
     for (std::size_t i = 0; i < data.size(); ++i) {

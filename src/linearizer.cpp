@@ -1,5 +1,7 @@
 #include "linearizer.hpp"
 
+#define BLOCK_WIDTH 64
+
 
 std::vector<int16_t> linearizer::linearize(matrix<int16_t> data) {
 
@@ -16,9 +18,14 @@ std::vector<int16_t> linearizer::linearize(matrix<int16_t> data) {
 
 std::vector<matrix<int16_t>> linearizer::delinearize(std::vector<std::vector<int16_t>> data, uint16_t width) {
 
+    // printf("WIDTH = %u\n", width);
+    // for (std::size_t i = 0; i < data.size(); ++i) {
+    //     std::cout << data[i].size() << std::endl;
+    // }
+
     std::vector<matrix<int16_t>> out;
 
-    std::size_t normal_block_width = std::sqrt(data[0].size());
+    std::size_t normal_block_width = (data.size() == 1 ? width : BLOCK_WIDTH);
     std::size_t small_block_width = width % normal_block_width;
     std::size_t blocks_in_row = width / normal_block_width;
     if (small_block_width != 0) {
@@ -46,6 +53,11 @@ std::vector<matrix<int16_t>> linearizer::delinearize(std::vector<std::vector<int
             }
         }
     }
+
+    // std::cout << "OUTPUT" << std::endl;
+    // for (std::size_t i = 0; i < out.size(); ++i) {
+    //     printf("%lu x %lu\n", out[i].size(), out[i][0].size());
+    // }
 
     return out;
 }

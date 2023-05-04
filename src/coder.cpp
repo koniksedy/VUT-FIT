@@ -1,6 +1,8 @@
 #include "coder.hpp"
 
 
+#define BLOCK_WIDTH 64
+
 inline void Coder::move_back_to_output(bitdata::bits bit_data_raw) {
     this->data_out.insert(this->data_out.end(), std::make_move_iterator(bit_data_raw.begin()), std::make_move_iterator(bit_data_raw.end()));
 }
@@ -33,8 +35,6 @@ bool Coder::load(char *input, uint16_t width) {
 
 
 void Coder::run() {
-    const uint8_t block_split_width = 8;
-
     // CODE width
     this->move_back_to_output(bitdata::to_bits(this->width, 16));
 
@@ -42,7 +42,7 @@ void Coder::run() {
     std::vector<matrix<uint8_t>> blocks;
     if (this->adaptive) {
         this->move_back_to_output(bitdata::to_bits(static_cast<uint8_t>(1), 1));
-        blocks = splitter::split(this->data_in, block_split_width);
+        blocks = splitter::split(this->data_in, BLOCK_WIDTH);
     } else {
         this->move_back_to_output(bitdata::to_bits(static_cast<uint8_t>(0), 1));
         blocks.push_back(this->data_in);

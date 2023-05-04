@@ -13,7 +13,7 @@
 
 
 PROGRAM=$1
-BLOCK_SIZE=8
+BLOCK_SIZE=64
 PASS=0
 FAIL=0
 TOTAL=$((6*4*4 + 2*4*4 + 4*`ls data/*.raw | wc -l`))
@@ -39,9 +39,9 @@ function test() {
     height=$3
     raw_size=$(du -b ${name}.raw | sed -e 's/\s.*//')
     for flag in " " "-a" "-m" "-a -m"; do
-        start_time=`date +%s`
+        start_time=$(($(date +%s%N)/1000000))
         log_file=${name}$(echo $flag | sed 's/ //g').log
-        python3 $PROGRAM -c -i ${name}.raw -w $width $flag -o ${name}.coded &>$log_file
+        ./$PROGRAM -c -i ${name}.raw -w $width $flag -o ${name}.coded &>$log_file
         if [ $? -ne 0 ]; then
             err_log "${name}.raw" "$width" "$height" "$flag" "ERROR: CODER FAILED"
             mkdir -p ERRORS
@@ -51,18 +51,13 @@ function test() {
             continue
         fi
 
-        # TODO REMOVE
-        cp ${name}.raw ${name}.coded
-        #############
-
-        end_time=`date +%s`
-        coding_time=$(($end_time - $start_time -3600))
-        coding_time=$(date --date @$coding_time +%H:%M:%S)
+        end_time=$(($(date +%s%N)/1000000))
+        coding_time=$(($end_time - $start_time))
+        coding_time=$(echo "scale=3; ${coding_time}/1000" | bc)
         coded_size=$(du -b ${name}.coded | sed -e 's/\s.*//')
-        reduction=$(echo "scale=2; $coded_size/$raw_size" | bc)
-        # reduction=1
+        efficiency=$(echo "scale=2; ($coded_size*8)/$raw_size" | bc)
 
-        python3 $PROGRAM -d -i ${name}.coded -o ${name}.decoded &>$log_file
+        ./$PROGRAM -d -i ${name}.coded -o ${name}.decoded &>$log_file
         if [ $? -ne 0 ]; then
             err_log "${name}.coded" "$width" "$height" "$flag" "ERROR: DECODER FAILED"
             mkdir -p ERRORS
@@ -71,10 +66,6 @@ function test() {
             FAIL=$(($FAIL+1))
             continue
         fi
-
-        # TODO REMOVE
-        cp ${name}.raw ${name}.decoded
-        #############
 
         diff ${name}.raw ${name}.decoded &>/dev/null
         if [ $? -ne 0 ]; then
@@ -86,7 +77,7 @@ function test() {
             continue
         fi
         PASS=$(($PASS+1))
-        log $name $width $height "$flag" $reduction "$coding_time"
+        log $name $width $height "$flag" $efficiency "$coding_time"
     done
 }
 
@@ -98,7 +89,7 @@ aligned=$(($BLOCK_SIZE*3))
 unaligned=$(($BLOCK_SIZE*3-5))
 
 echo "################################################################################"
-echo "NAME                         WIDTH   HEIGHT   FLAGS      CODED SIZE     TIME"
+echo "NAME                         WIDTH   HEIGHT   FLAGS      EFFICIENCY     TIME"
 echo "--------------------------------------------------------------------------------"
 
 ##################

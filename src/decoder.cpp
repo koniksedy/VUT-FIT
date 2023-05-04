@@ -63,6 +63,11 @@ void Decoder::run() {
         models_master_point.push_back(bitdata::bits_to_uint8(reading_head, 8));
         reading_head += 8;
 
+        // for (bitdata::bits::iterator kokot = reading_head; reading_head != this->data_in.end(); ++kokot) {
+        //     std::cout << (*kokot ? "1" : "0");
+        // }
+        // std::cout << std::endl;
+
         // DECODE mode linear data
         Huffman huffman = Huffman();
         models_linear_data.push_back(huffman.decode(reading_head));
