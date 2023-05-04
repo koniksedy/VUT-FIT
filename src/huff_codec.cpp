@@ -1,4 +1,11 @@
-// #include <stdexcept>
+/**
+ * @file huff_codec.cpp
+ * @author Michal Šedý (xsedym02@vutbr.cz)
+ * @brief A main file of a program for coding/decoding using canonical Huffman
+ * code with an adaptive scanning.
+ * @date 04.05.2023
+ */
+
 #include <iostream>
 #include "optparser.hpp"
 #include "coder.hpp"

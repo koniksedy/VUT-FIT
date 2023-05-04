@@ -1,7 +1,21 @@
+/**
+ * @file decoder.cpp
+ * @author Michal Šedý (xsedym02@vutbr.cz)
+ * @brief An implementation of a general decoder.
+ * @date 04.05.2023
+ */
+
 #include "decoder.hpp"
 
 
-
+/**
+ * @brief Tests if the iterator near (within maximal distance) the end.
+ *
+ * @param iter Iterator.
+ * @param distance Maximum distance from the end.
+ * @return true: The end is closer than distance.
+ * @return false: The end is further than distance.
+ */
 bool Decoder::is_near_end(bitdata::bits::iterator iter, std::size_t distance) {
     for (std::size_t i = 0; i < distance; ++i, ++iter) {
         if (iter == this->data_in.end()) {
@@ -11,6 +25,13 @@ bool Decoder::is_near_end(bitdata::bits::iterator iter, std::size_t distance) {
     return false;
 }
 
+/**
+ * @brief Loads data from file.
+ *
+ * @param input File name.
+ * @return true: Successful load.
+ * @return false: Unsuccessful load.
+ */
 bool Decoder::load(char *input) {
     std::ifstream stream(input, std::ios::in | std::ios::binary);
 
@@ -33,42 +54,40 @@ bool Decoder::load(char *input) {
 }
 
 
+/**
+ * @brief Decodes of loaded data.
+ */
 void Decoder::run() {
 
     bitdata::bits::iterator reading_head = this->data_in.begin();
 
-    // DECODE width
+    // DECODE width (header)
     this->width = bitdata::bits_to_uint16(reading_head, 16);
     reading_head += 16;
 
-    // DECODE adaptive mode
+    // DECODE adaptive mode (header)
     this->adaptive = static_cast<bool>(bitdata::bits_to_uint8(reading_head, 1));
     reading_head++;
 
-    // DECODE model mode
+    // DECODE model mode (header)
     this->model = static_cast<bool>(bitdata::bits_to_uint8(reading_head, 1));
     reading_head++;
 
-    // DECODE model data
+    // DECODE model data (data)
     std::vector<Model::PassThru> models_pass;
     std::vector<uint8_t> models_master_point;
     std::vector<std::vector<int16_t>> models_linear_data;
     while (!this->is_near_end(reading_head, 16))
     {
-        // DECODE model pass
+        // DECODE model pass (header)
         models_pass.push_back(static_cast<Model::PassThru>(bitdata::bits_to_uint8(reading_head, 2)));
         reading_head += 2;
 
-        // DECODE model master point
+        // DECODE model master point (header)
         models_master_point.push_back(bitdata::bits_to_uint8(reading_head, 8));
         reading_head += 8;
 
-        // for (bitdata::bits::iterator kokot = reading_head; reading_head != this->data_in.end(); ++kokot) {
-        //     std::cout << (*kokot ? "1" : "0");
-        // }
-        // std::cout << std::endl;
-
-        // DECODE mode linear data
+        // DECODE mode linear data (data)
         Huffman huffman = Huffman();
         models_linear_data.push_back(huffman.decode(reading_head));
     }
@@ -97,6 +116,13 @@ void Decoder::run() {
     this->data_out = splitter::merge(blocks_data, this->width);
 }
 
+/**
+ * @brief Saves decoded data to the file.
+ *
+ * @param output File name.
+ * @return true: Successful save.
+ * @return false: Unsuccessful save.
+ */
 bool Decoder::save(char *output) {
     std::ofstream stream(output, std::ios::out | std::ios::binary);
 

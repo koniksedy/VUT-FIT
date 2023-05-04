@@ -1,3 +1,10 @@
+"""randomgen.py
+Generates random data for Huffman coding/decoding using "random" different values.
+Author: Michal Šedý <xsedym02@vutbr.cz>
+Last change: 04.05.2023
+"""
+
+
 import random
 from argparse import ArgumentParser
 
@@ -19,7 +26,6 @@ def parse_args():
         raise AttributeError("A random must be within interval [1, 256]")
 
     return parser.parse_args()
-
 
 def save(data, file_name):
     with open(file_name, "wb") as fh:

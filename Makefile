@@ -1,5 +1,14 @@
-.PHONY: test clean
+# Makefile
+# A Makefil for a KKO project (Huffman coder/decoder)
+# Author: Micha Šedý <xsedym02@vutbr.cz>
+# Last change: 04.05.2023
 
+# USAGE:
+# make  - make executable file "huff_codec"
+# test  - test "huff_codec" using automatic tests from test folder
+# clean - clean tests and build files
+
+.PHONY: test clean
 
 all: huff_codec
 
@@ -20,4 +29,4 @@ clean:
 	make clean;\
 	cd ..
 	rm -rf test/ERRORS
-	rm -r test/*.log test/*.raw test/*.coded test/*.decoded
+	rm -f test/*.log test/*.raw test/*.coded test/*.decoded

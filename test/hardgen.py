@@ -1,5 +1,13 @@
+"""hardgen.py
+Generated hard data for Huffman coder/decoder testing.
+Hard means that the difference between two neighbor pixels is 255.
+Author: Michal Šedý <xsedym02@vutbr.cz>
+Last change: 04.05.2023
+"""
+
 import random
 from argparse import ArgumentParser
+
 
 def parse_args():
     parser = ArgumentParser()
@@ -17,7 +25,6 @@ def parse_args():
 
     return parser.parse_args()
 
-
 def get_next_val(val, rand):
     if rand:
         if random.random() < 0.5:
@@ -29,7 +36,6 @@ def get_next_val(val, rand):
             return 255
         else:
             return 0
-
 
 def save(data, file_name):
     with open(file_name, "wb") as fh:

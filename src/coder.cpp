@@ -1,12 +1,32 @@
+/**
+ * @file coder.cpp
+ * @author Michal Šedý (xsedym02@vutbr.cz)
+ * @brief An implementation of a general coder.
+ * @date 04.05.2023
+ */
+
 #include "coder.hpp"
 
 
-#define BLOCK_WIDTH 64
+#define BLOCK_WIDTH 64      // Width of data block during adaptive coding
 
+/**
+ * @brief Appends data from bit vector at the end of output data using move operation.
+ *
+ * @param bit_data_raw Bit vector to be moved.
+ */
 inline void Coder::move_back_to_output(bitdata::bits bit_data_raw) {
     this->data_out.insert(this->data_out.end(), std::make_move_iterator(bit_data_raw.begin()), std::make_move_iterator(bit_data_raw.end()));
 }
 
+/**
+ * @brief Loads raw data from file.
+ *
+ * @param input File name.
+ * @param width Width of coded image.
+ * @return true: Successful load from file.
+ * @return false: Unsuccessful load from file.
+ */
 bool Coder::load(char *input, uint16_t width) {
     std::ifstream stream(input, std::ios::in | std::ios::binary);
 
@@ -33,12 +53,14 @@ bool Coder::load(char *input, uint16_t width) {
     return true;
 }
 
-
+/**
+ * @brief Codes loaded data.
+ */
 void Coder::run() {
-    // CODE width
+    // CODE width (header)
     this->move_back_to_output(bitdata::to_bits(this->width, 16));
 
-    // CODE adaptive coding
+    // CODE adaptive coding (header)
     std::vector<matrix<uint8_t>> blocks;
     if (this->adaptive) {
         this->move_back_to_output(bitdata::to_bits(static_cast<uint8_t>(1), 1));
@@ -48,7 +70,7 @@ void Coder::run() {
         blocks.push_back(this->data_in);
     }
 
-    // CODE model mode
+    // CODE model mode (header)
     if (this->model) {
         this->move_back_to_output(bitdata::to_bits(static_cast<uint8_t>(1), 1));
     } else {
@@ -70,18 +92,25 @@ void Coder::run() {
         }
     }
 
-    // CODE models + huffman
+    // CODE models (header) + huffman (data)
     for (std::size_t i = 0; i < models.size(); ++i) {
-        // CODE pass + master point
+        // CODE pass (header) + master point (header)
         this->move_back_to_output(bitdata::to_bits(static_cast<uint8_t>(models[i].get_pass()), 2));
         this->move_back_to_output(bitdata::to_bits(models[i].get_master_point(), 8));
 
-        // CODE huffman
+        // CODE huffman (data)
         Huffman huffman = Huffman();
         this->move_back_to_output(huffman.code(linearizer::linearize(models[i].get_data())));
     }
 }
 
+/**
+ * @brief Saves coded data into the output file.
+ *
+ * @param output File name.
+ * @return true: Successful save.
+ * @return false: Unsuccessful save.
+ */
 bool Coder::save(char *output) {
 
     std::ofstream stream(output, std::ios::out | std::ios::binary);
@@ -96,6 +125,7 @@ bool Coder::save(char *output) {
     uint8_t d;
     while (i < this->data_out.size()) {
         ch = 0;
+        // Create padding if necessary.
         for (std::size_t j = 0; j < 8; ++j) {
             ch = ch << 1;
             if (i < this->data_out.size()) {

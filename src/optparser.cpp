@@ -1,11 +1,27 @@
+/**
+ * @file optparser.cpp
+ * @author Michal Šedý (xsedym02@vutbr.cz)
+ * @brief An implementation program parameters parser.
+ * @date 04.05.2023
+ */
+
 #include "optparser.hpp"
 
 
+/**
+ * @brief Prints help.
+ */
 void OptParser::print_help()
 {
     std::cerr << "Help. TODO." << std::endl;
 }
 
+/**
+ * @brief Parses program parameters.
+ *
+ * @param argc A number of program parameters.
+ * @param argv A list of program parameters.
+ */
 void OptParser::parse(int argc, char **argv)
 {
     int opt;

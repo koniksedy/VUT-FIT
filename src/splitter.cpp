@@ -1,11 +1,23 @@
+/**
+ * @file splitter.cpp
+ * @author Michal Šedý (xsedym02@vutbr.cz)
+ * @brief An implementation of matrix splitter.
+ * It splits matrix into smaller blocks or merges them back.
+ * @date 04.05.2023
+ */
+
 #include "splitter.hpp"
 
 
+/**
+ * @brief Splits matrix into a vector of blocks of a specified width.
+ *
+ * @param data A matrix to be splitted.
+ * @param block_width A block width.
+ * @return std::vector<matrix<uint8_t>> Output vector of blocks.
+ */
 std::vector<matrix<uint8_t>> splitter::split(matrix<uint8_t> data, uint8_t block_width) {
-
     std::vector<matrix<uint8_t>> out_data;
-
-
 
     for (std::size_t master_i = 0; master_i < data.size(); master_i += block_width) {
         for (std::size_t master_j = 0; master_j < data[master_i].size(); master_j += block_width) {
@@ -26,12 +38,14 @@ std::vector<matrix<uint8_t>> splitter::split(matrix<uint8_t> data, uint8_t block
     return out_data;
 }
 
+/**
+ * @brief Merges a vector of blocks into one original matrix.
+ *
+ * @param data Input vector of blocks.
+ * @param output_width Output matrix width.
+ * @return matrix<uint8_t> Output matrix.
+ */
 matrix<uint8_t> splitter::merge(std::vector<matrix<uint8_t>> data, uint16_t output_width) {
-
-    // printf("OUTPUT WIDTH = %u\n", output_width);
-    // for (std::size_t i = 0; i < data.size(); ++i) {
-    //     printf("%lu x %lu\n", data[i].size(), data[i][0].size());
-    // }
 
     // Calculate data size
     std::size_t data_size = 0;

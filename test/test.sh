@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# A script with automaton tests for Huffman coder/decoder.
+# Author: Michal Šedý <xsedym02@vutbr.cz>
+# Last change: 04.05.2023
+
 #######################################################
 #                     TEST CASES                      #
 #=====================================================#
@@ -96,9 +100,9 @@ echo "--------------------------------------------------------------------------
 # TESTING RANDOM #
 ##################
 for r in 1 2 4 8 32 256; do
-    for aligned in "$aligned $aligned" "$unaligned $aligned" "$aligned $unaligned" "$unaligned $unaligned"; do
-        width=$(echo $aligned | cut -d " " -f1)
-        height=$(echo $aligned | cut -d " " -f2)
+    for a in "$aligned $aligned" "$unaligned $aligned" "$aligned $unaligned" "$unaligned $unaligned"; do
+        width=$(echo $a | cut -d " " -f1)
+        height=$(echo $a | cut -d " " -f2)
         name="random_w${width}_h${height}_r${r}"
         python3 randomgen.py --width $width --height $height -r $r -o ${name}.raw
         test $name $width $height
@@ -110,9 +114,9 @@ done
 # TESTING HARD #
 ################
 for random_flag in "" "-r"; do
-    for aligned in "$aligned $aligned" "$unaligned $aligned" "$aligned $unaligned" "$unaligned $unaligned"; do
-        width=$(echo $aligned | cut -d " " -f1)
-        height=$(echo $aligned | cut -d " " -f2)
+    for a in "$aligned $aligned" "$unaligned $aligned" "$aligned $unaligned" "$unaligned $unaligned"; do
+        width=$(echo $a | cut -d " " -f1)
+        height=$(echo $a | cut -d " " -f2)
         name="hard_w${width}_h${height}${random_flag}"
         python3 hardgen.py --width $width --height $height $random_flag -o ${name}.raw
         test $name $width $height
@@ -131,7 +135,6 @@ for file in data/*.raw; do
     test $name $width $height
     rm -f ${name}.raw ${name}.coded ${name}.decoded *.log
 done
-
 
 
 ##################
