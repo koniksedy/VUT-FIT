@@ -13,7 +13,17 @@
  */
 void OptParser::print_help()
 {
-    std::cerr << "Help. TODO." << std::endl;
+    std::cerr << "usage: huff_codec [-h] (-c ([-m] [-a] -w width)| -d) -i input -o output  " << std::endl;
+    std::cerr << "" << std::endl;
+    std::cerr << "options:" << std::endl;
+    std::cerr << "-h, --help  show this help message and exit" << std::endl;
+    std::cerr << "-i          Input file." << std::endl;
+    std::cerr << "-o          Output file." << std::endl;
+    std::cerr << "-c          Huffman Coding" << std::endl;
+    std::cerr << "-d          Huffman Decoding" << std::endl;
+    std::cerr << "-m          Linear model will be used." << std::endl;
+    std::cerr << "-a          Adaptive scanning will be used." << std::endl;
+    std::cerr << "-w          Input image width." << std::endl;
 }
 
 /**

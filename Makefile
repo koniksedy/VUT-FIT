@@ -8,7 +8,7 @@
 # test  - test "huff_codec" using automatic tests from test folder
 # clean - clean tests and build files
 
-.PHONY: test clean
+.PHONY: huff_codec test clean
 
 all: huff_codec
 
