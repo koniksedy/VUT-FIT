@@ -14,12 +14,14 @@
 \usepackage{newtxtext, newtxmath}
 \usepackage{graphicx}
 
+
+\usepackage[ruled,linesnumbered]{algorithm2e}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Makra %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\KURZ}{Kódování a Komprese Dat}
 \newcommand{\AUTOR}{Michal Šedý (xsedym02)}
-\newcommand{\NAZEV}{Komprese obrazových dat s využitím Huffmanova kódování}
+\newcommand{\NAZEV}{\textbf{Komprese obrazových dat s využitím Huffmanova kódování}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Hlavička %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -44,6 +46,126 @@
     {\Large \NAZEV}
   \end{center}
 
-  \section*{Příklad 1}
-    bla bla bla
+  \vspace*{2em}
+
+    Tato dokumentace popisuje principy využívány kompresním programem \texttt{huff\_codec} implementovaném v~jazyce C++ do předmětu kódování a komprese dat. Program slouží pro kódování a dekódování obrázků v odstínech šedi s využitím Huffmanova kanonického kódu. Pro zvýšení kompresního výkonu je uplatněno adaptivní skenování po blocích o velikosti 64x64 bitů a dále jsou využity čtyři modely pracující s rozdílem sousedících pixelů. Tento projekt byl vypracován výhradně na základě informací uvedených na přednáškách z předmětu kódování a komprese dat.
+
+  \section{Model}
+    V programu jsou využity čtyři modely pracující s rozdílem hodnot sousedních pixelů. Byly implementovány modely procházející obraz po řádcích z leva do prave, po sloupcích shora dolů, paralelně s hlavní diagonálou shora dolů a paralelně s vedlejší diagonálou shora dolů. Kompresní výkon modelu je aproximován velikosti abecedy modelu (počtem rozdílných hodnot). Pro kódování je využit pouze model s nejmenší abecedou. Pro použití modelu během kódování programem je nutné zadat přepínač \texttt{-m}.
+
+    \subsection{Po řádcích}
+      Při průchodu matice bodů $X$ po řádcích zleva do prava je za vztažný bod zvolen levý horní bod $x_{0,0}$. Rozdíly sousedících bodů jsou vypočítány pomocí následujícího předpisu.
+      $$
+      y_{i,j} = \begin{cases}
+                  x_{i,j} - x_{i,j-1}   & j > 0\\
+                  x_{i,j} - x_{i-1,j}   & j = 0 \land i > 0\\
+                  0                     & jinak
+                \end{cases}
+      $$
+
+    \subsection{Po sloupcích}
+      Při průchodu matice bodů $X$ po sloupcích shora dolů je ze vztažný bod zvolen levý horní bod $x_{0,0}$. Rozdíly sousedících bodů jsou vypočítány pomocí následujícího předpisu.
+      $$
+      y_{i,j} = \begin{cases}
+                  x_{i,j} - x_{i-1,j}   & i > 0\\
+                  x_{i,j} - x_{i,j-1}   & i = 0 \land j > 0\\
+                  0                     & jinak
+                \end{cases}
+      $$
+
+    \subsection{Paralelně s hlavní diagonálou}
+      Při průchodu matice bodů $X$ paralelně s hlavní diagonálou z levého horního bodu ke spodnímu pravému je za vztažný bod zvolen levý horní bod $x_{0,0}$. Rozdíly sousedících bodů jsou vypočítány pomocí následujícího předpisu.
+      $$
+      y_{i,j} = \begin{cases}
+                  x_{i,j} - x_{i-1,j-1}   & i > 0 \land j > 0\\
+                  x_{i,j} - x_{i-1,j}     & i > 0 \land j = 0\\
+                  x_{i,j} - x_{i,j-1}     & i = 0 \land j > 0\\
+                  0                       & jinak
+                \end{cases}
+      $$
+
+    \subsection{Paralelně s vedlejší diagonálou}
+      Při průchodu matice bodů $X$ paralelně s vedlejší diagonálou z pravého horního bodu ke spodnímu levému je za vztažný bod zvolen pravý horní bod $x_{n,n}$. Rozdíly sousedících bodů jsou vypočítány pomocí následujícího předpisu.
+      $$
+      y_{i,j} = \begin{cases}
+                  x_{i,j} - x_{i-1;j+1}   & i > 0 \land j < n\\
+                  x_{i,j} - x_{i-1;j}     & i > 0 \land j = n\\
+                  x_{i,j} - x_{i;j+1}     & i = 0 \land j < n\\
+                  0                       & jinak
+                \end{cases}
+      $$
+
+    \section{Adaptivní skenování}
+      Velikost vstupní abecedy lze snížit s využitím adaptivního skenování, které rozdělí matici dat na menší bloky o velikosti 64x64 bitů. Během testů se ukázalo, že menší velikost bloku nezvyšuje kompresní výkon, naopak zvyšuje velikost hlaviček v komprimovaných datech. Pro využití adaptivního skenování v programu je nutné zadat přepínač \texttt{-a}.
+
+    \section{Kanonický Huffmanův kód}
+      Táto sekce popisuje využití kanonického Huffmanova kódu pro kódování a dekódování obrazových dat.
+
+      \subsection{Kódování}
+        Pro kódování dat v matici $X$ s abecedou $\Sigma_{EOF} = \Sigma \cup \{\textit{EOF}\}$, kde $\Sigma$ je abeceda matice $X$ a $\textit{EOF}$ je speciální znak, který se v $\Sigma$ nevyskytuje, byl využit kanonický Huffmanův kód, který byl získán transformací stromu $T$ reprezentujícího Huffmanův kód pro $\Sigma_{EOF}$. Listový uzel $n \in leaves(T)$ stromu $T$ obsahuje znak $a \in \Sigma_{EOF}$, informaci o jeho četnosti výskytu v matici $X$ ($cnt(a) \in \mathbb{N}$), kde $cnt(\textit{EOF}) = 1$, a o hloubce uzlu ve stromu ($\textit{depth}(n) \in \mathbb{N}$).
+
+        \begin{algorithm}[!h]
+          \SetAlgoLined
+          \DontPrintSemicolon
+          \caption{Konstrukce stromu Huffmanova kódu}
+          \KwIn{matice dat $X$, abeceda matice $\Sigma_{EOF}$}
+          \KwOut{strom $T$ Huffmanova kódu}
+
+          \vspace*{2mm}
+
+          $pQueue \leftarrow \textit{reversePriorityQueue()}$ \tcp*{uzly s nejmenším $cnt$ jsou na čele}
+          \ForEach{$a \in \Sigma_{EOF}$}
+          {
+            $node \leftarrow Node()$\tcp*{vytvoř nový uzel}
+            $node.symbol \leftarrow a$\;
+            $node.cnt \leftarrow cnt(a)$\;
+            $pQueue.put(node)$\;
+          }
+
+          \vspace*{1mm}
+
+          \While{$|pQueue| > 1$}
+          {
+            $n \leftarrow pQueue.pop()$\;
+            $m \leftarrow pQueue.pop()$\;
+            $node \leftarrow Node()$\tcp*{vytvoř nový uzel}
+            $node.cnt \leftarrow n.cnt + m.cnt$\;
+            $pQueue.put(node)$\;
+          }
+
+          \Return{$pQueue.pop()$}
+
+        \end{algorithm}
+
+        \newpage
+
+        \begin{algorithm}[!h]
+          \SetAlgoLined
+          \DontPrintSemicolon
+          \caption{Konstrukce kanonického Huffmanova kódu}
+          \KwIn{matice dat $X$, abeceda matice $\Sigma$}
+          \KwOut{kódovací funkce $\textit{huff}: \Sigma_{EOF} \rightarrow \mathbb{N}_0$}
+          \vspace*{2mm}
+
+          $\Sigma_{EOF} \leftarrow \Sigma \cup \{\textit{EOF}\}$\;
+          $\textit{tree} \leftarrow \textit{getHuffmanTree}(X, \Sigma_{EOF})$\;
+          $\textit{sortedLeaves} \leftarrow \textit{ascendSort}(\textit{leaves}(\textit{tree}))$\tcp*{podle $depth(node)$ a $(node.symbol)$}
+
+          $n_0 \leftarrow \textit{sortedLeaves}[0]$\;
+          $\textit{huff}(n_0.symbol) \leftarrow 0$\;
+          $i \leftarrow 1$\;
+          \For{$0 < i < |\textit{sortedLeaves}|$}
+          {
+            $n_{i-1} \leftarrow \textit{sortedLeaves}[i-1]$\;
+            $n_i \leftarrow \textit{sortedLeaves}[i]$\;
+
+            $\textit{huff}(n_i.symbol) \leftarrow \textit{huff}(n_{i-1}.symbol + 1) << n_i.\textit{depth} - n_{i-1}.\textit{depth}$\;
+          }
+
+        \end{algorithm}
+
+      \subsection*{Dekódování}
+        ahoj
+
+
 \end{document}
