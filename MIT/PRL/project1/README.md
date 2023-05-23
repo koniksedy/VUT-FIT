@@ -11,7 +11,7 @@
 
 ## Hodnocení
 
-TBD
+10/10
 
 ## Zadání
 

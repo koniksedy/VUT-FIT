@@ -7,6 +7,8 @@ Autoři:
 * Bc. Martin Novotný Mlinárcsik <xnovot1r@stud.fit.vutbr.cz>
 * Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>
 
+## Hodnocení
+7/8
 
 ## Implementační technologie
 

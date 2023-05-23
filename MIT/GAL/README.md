@@ -2,6 +2,9 @@
 
 Tato práce byla vytvořena v rámci projektu č. 13 do předmětu Grafové Algoritmy (GAL) na Fakultě Informačních Technologií VUT. Cílem projektu je porovnat čtyři algoritmy pro výčet všech cyklů v orientovaném grafu. Je porovnáván [algoritmus implementovaný knihovnou Networkx](https://epubs.siam.org/doi/10.1137/0204007), [brute-force algoritmus](https://www.edutechlearners.com/download/Graphtheory.pdf#page=302), [algoritmus Hongbo Liu a Jiaxin Wang](https://ieeexplore.ieee.org/document/1602189) a [Herbert Weinblattův algoritmus](https://doi.org/10.1145/321679.321684).
 
+### Hodnocení
+19/25 (pozn. Pokud jsou v dokumentaci nějaké tabulky, je nutné vytvořit také pěkný graf.)
+
 ### Autoři
 - Bc. Jan Bíl <xbilja00@stud.fit.vutbr.cz>
 - Bc. Michal Šedý <xsedym02@stud.fit.vutbr.cz>

@@ -40,7 +40,7 @@ There are three different scripts prepared, which allow for testing different sc
 However, they all expose a common set of parameters for controlling the pseudo-randomness in the game:
 
     -b  geometry of the board
-    -o  clustering of areas into possesion of individual players  
+    -o  clustering of areas into possesion of individual players
     -s  assignment of dice to areas
 
 When not set, the source of pseudo-random numbers is seeded from current time, becoming effectively random.
@@ -99,7 +99,7 @@ This is achieved through ``--ai-under-test``, e.g.:
 ### Observing convergence of winrates
 If you have saved games from a tournament (through its ``--save`` option), you can display the evolution of the winrates:
 
-    python3 ./scripts/winrate-progress.py --xmin 10 ../tournaments/tournament-g2-n50.pickle 
+    python3 ./scripts/winrate-progress.py --xmin 10 ../tournaments/tournament-g2-n50.pickle
 
 Note that the evolution of winrates does not have any other interpretation than the rate of convergence!
 
@@ -127,7 +127,7 @@ The constructor is expected to take following parameters:
 
 The turn making method is expected to take following parameters:
 
-    board                   an instance of dicewars.client.game.Board   
+    board                   an instance of dicewars.client.game.Board
     nb_moves_this_turn      number of attacks made in this turn
     nb_transfers_this_turn  number of transfers made in this turn
     nb_turns_this_game      number of turns ended so far
@@ -161,6 +161,6 @@ It is expected that the developers of new AI will adjust the debugger's `Detaile
 * Slow AI -- AIs have a fixed 10s time for constructing themselves.
 Additionally, a [Fischer clock](https://en.wikipedia.org/wiki/Time_control#Increment_and_delay_methods) of 10s and 0.25s increment limits time for decision making.
 AI failing to make a decision will be stopped in deciding and a ``EndTurnCommand`` will be sent instead (but the increment is made anyway, so the AI will be able to continue playing).
-AIs are informed about the time they have left through ``time_left``. 
+AIs are informed about the time they have left through ``time_left``.
 * Stupid AI -- AI attempting to make an illegal move will be switched off, idling it for the rest of the game.
 * Passive AI -- AI sending only ``EndTurnCommand`` will be quickly taken care of by other players. However, if no AI makes a move for 8 consecutive rounds, the game will be contumated and every player scores a defeat.
