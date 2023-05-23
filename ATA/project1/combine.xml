@@ -1,0 +1,255 @@
+<testset id="SUT Factory (ATA-1)">
+	<parameters>
+		<parameter>slots</parameter>
+		<parameter>cargo_src</parameter>
+		<parameter>cargo_dst</parameter>
+		<parameter>capacity</parameter>
+		<parameter>cargo_overload</parameter>
+		<parameter>cargo_0s</parameter>
+		<parameter>cargo_delay</parameter>
+		<parameter>one</parameter>
+		<parameter>heavy</parameter>
+	</parameters>
+	<testcase id="1">
+		<tcvalue param_id="slots">1</tcvalue>
+		<tcvalue param_id="cargo_src">1</tcvalue>
+		<tcvalue param_id="cargo_dst">2</tcvalue>
+		<tcvalue param_id="capacity">2</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="2">
+		<tcvalue param_id="slots">1</tcvalue>
+		<tcvalue param_id="cargo_src">2</tcvalue>
+		<tcvalue param_id="cargo_dst">1</tcvalue>
+		<tcvalue param_id="capacity">3</tcvalue>
+		<tcvalue param_id="cargo_overload">2</tcvalue>
+		<tcvalue param_id="cargo_0s">2</tcvalue>
+		<tcvalue param_id="cargo_delay">2</tcvalue>
+		<tcvalue param_id="one">1</tcvalue>
+		<tcvalue param_id="heavy">2</tcvalue>
+	</testcase>
+	<testcase id="3">
+		<tcvalue param_id="slots">1</tcvalue>
+		<tcvalue param_id="cargo_src">3</tcvalue>
+		<tcvalue param_id="cargo_dst">4</tcvalue>
+		<tcvalue param_id="capacity">2</tcvalue>
+		<tcvalue param_id="cargo_overload">2</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">2</tcvalue>
+		<tcvalue param_id="one">1</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="4">
+		<tcvalue param_id="slots">1</tcvalue>
+		<tcvalue param_id="cargo_src">4</tcvalue>
+		<tcvalue param_id="cargo_dst">3</tcvalue>
+		<tcvalue param_id="capacity">2</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">2</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="5">
+		<tcvalue param_id="slots">2</tcvalue>
+		<tcvalue param_id="cargo_src">1</tcvalue>
+		<tcvalue param_id="cargo_dst">3</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">2</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">2</tcvalue>
+		<tcvalue param_id="one">1</tcvalue>
+		<tcvalue param_id="heavy">2</tcvalue>
+	</testcase>
+	<testcase id="6">
+		<tcvalue param_id="slots">2</tcvalue>
+		<tcvalue param_id="cargo_src">2</tcvalue>
+		<tcvalue param_id="cargo_dst">4</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">2</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="7">
+		<tcvalue param_id="slots">2</tcvalue>
+		<tcvalue param_id="cargo_src">3</tcvalue>
+		<tcvalue param_id="cargo_dst">1</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="8">
+		<tcvalue param_id="slots">2</tcvalue>
+		<tcvalue param_id="cargo_src">4</tcvalue>
+		<tcvalue param_id="cargo_dst">2</tcvalue>
+		<tcvalue param_id="capacity">3</tcvalue>
+		<tcvalue param_id="cargo_overload">2</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">2</tcvalue>
+	</testcase>
+	<testcase id="9">
+		<tcvalue param_id="slots">3</tcvalue>
+		<tcvalue param_id="cargo_src">1</tcvalue>
+		<tcvalue param_id="cargo_dst">4</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">2</tcvalue>
+		<tcvalue param_id="cargo_delay">2</tcvalue>
+		<tcvalue param_id="one">1</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="10">
+		<tcvalue param_id="slots">3</tcvalue>
+		<tcvalue param_id="cargo_src">2</tcvalue>
+		<tcvalue param_id="cargo_dst">3</tcvalue>
+		<tcvalue param_id="capacity">2</tcvalue>
+		<tcvalue param_id="cargo_overload">2</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">2</tcvalue>
+	</testcase>
+	<testcase id="11">
+		<tcvalue param_id="slots">3</tcvalue>
+		<tcvalue param_id="cargo_src">3</tcvalue>
+		<tcvalue param_id="cargo_dst">2</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">2</tcvalue>
+		<tcvalue param_id="cargo_delay">2</tcvalue>
+		<tcvalue param_id="one">1</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="12">
+		<tcvalue param_id="slots">3</tcvalue>
+		<tcvalue param_id="cargo_src">4</tcvalue>
+		<tcvalue param_id="cargo_dst">1</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">2</tcvalue>
+		<tcvalue param_id="one">1</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="13">
+		<tcvalue param_id="slots">4</tcvalue>
+		<tcvalue param_id="cargo_src">1</tcvalue>
+		<tcvalue param_id="cargo_dst">2</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="14">
+		<tcvalue param_id="slots">4</tcvalue>
+		<tcvalue param_id="cargo_src">2</tcvalue>
+		<tcvalue param_id="cargo_dst">1</tcvalue>
+		<tcvalue param_id="capacity">2</tcvalue>
+		<tcvalue param_id="cargo_overload">2</tcvalue>
+		<tcvalue param_id="cargo_0s">2</tcvalue>
+		<tcvalue param_id="cargo_delay">2</tcvalue>
+		<tcvalue param_id="one">1</tcvalue>
+		<tcvalue param_id="heavy">2</tcvalue>
+	</testcase>
+	<testcase id="15">
+		<tcvalue param_id="slots">4</tcvalue>
+		<tcvalue param_id="cargo_src">3</tcvalue>
+		<tcvalue param_id="cargo_dst">4</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="16">
+		<tcvalue param_id="slots">4</tcvalue>
+		<tcvalue param_id="cargo_src">4</tcvalue>
+		<tcvalue param_id="cargo_dst">3</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="17">
+		<tcvalue param_id="slots">1</tcvalue>
+		<tcvalue param_id="cargo_src">1</tcvalue>
+		<tcvalue param_id="cargo_dst">3</tcvalue>
+		<tcvalue param_id="capacity">3</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="18">
+		<tcvalue param_id="slots">1</tcvalue>
+		<tcvalue param_id="cargo_src">1</tcvalue>
+		<tcvalue param_id="cargo_dst">4</tcvalue>
+		<tcvalue param_id="capacity">3</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="19">
+		<tcvalue param_id="slots">1</tcvalue>
+		<tcvalue param_id="cargo_src">3</tcvalue>
+		<tcvalue param_id="cargo_dst">1</tcvalue>
+		<tcvalue param_id="capacity">3</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="20">
+		<tcvalue param_id="slots">2</tcvalue>
+		<tcvalue param_id="cargo_src">1</tcvalue>
+		<tcvalue param_id="cargo_dst">1</tcvalue>
+		<tcvalue param_id="capacity">2</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="21">
+		<tcvalue param_id="slots">1</tcvalue>
+		<tcvalue param_id="cargo_src">1</tcvalue>
+		<tcvalue param_id="cargo_dst">1</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">1</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">2</tcvalue>
+		<tcvalue param_id="one">2</tcvalue>
+		<tcvalue param_id="heavy">1</tcvalue>
+	</testcase>
+	<testcase id="22">
+		<tcvalue param_id="slots">1</tcvalue>
+		<tcvalue param_id="cargo_src">3</tcvalue>
+		<tcvalue param_id="cargo_dst">4</tcvalue>
+		<tcvalue param_id="capacity">1</tcvalue>
+		<tcvalue param_id="cargo_overload">2</tcvalue>
+		<tcvalue param_id="cargo_0s">1</tcvalue>
+		<tcvalue param_id="cargo_delay">1</tcvalue>
+		<tcvalue param_id="one">1</tcvalue>
+		<tcvalue param_id="heavy">2</tcvalue>
+	</testcase>
+</testset>

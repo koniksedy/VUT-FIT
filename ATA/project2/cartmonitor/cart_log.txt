@@ -1,0 +1,243 @@
+10 requesting A B helmet 20
+10 loading A helmet 20 0
+11 requesting D B cargo-11 46
+12 loaded A helmet
+12 idle A
+12 moving A B
+18 requesting B C cargo-14 42
+23 requesting B A cargo-12 26
+25 requesting D C braceletR 40
+30 requesting D C braceletL 40
+32 moved to B
+32 idle B
+32 unloading_init B
+32 unloading B helmet 20 0
+34 unloaded B helmet
+34 idle B
+34 unloading_finished B helmet
+34 loading B cargo-12 26 0
+36 loaded B cargo-12
+36 idle B
+36 loading B cargo-14 42 1
+38 loaded B cargo-14
+38 idle B
+38 moving B C
+45 requesting C A heart 40
+48 requesting C A cargo-7 50
+53 requesting D A cargo-6 14
+58 moved to C
+58 idle C
+58 unloading_init C
+58 unloading C cargo-14 42 1
+60 unloaded C cargo-14
+60 idle C
+60 unloading_finished C cargo-14
+60 loading C cargo-7 50 1
+62 requesting C B cargo-3 25
+62 loaded C cargo-7
+62 idle C
+62 loading C cargo-3 25 2
+64 loaded C cargo-3
+64 idle C
+64 loading C heart 40 3
+66 loaded C heart
+66 idle C
+66 moving C D
+86 moved to D
+86 idle D
+86 moving D A
+93 requesting C B cargo-17 40
+96 moved to A
+96 idle A
+96 unloading_init A
+96 unloading A cargo-12 26 0
+98 unloaded A cargo-12
+98 idle A
+98 unloading_finished A cargo-12
+98 unloading_init A
+98 unloading A cargo-7 50 1
+100 unloaded A cargo-7
+100 idle A
+100 unloading_finished A cargo-7
+100 unloading_init A
+100 unloading A heart 40 3
+102 requesting A B cargo-0 5
+102 unloaded A heart
+102 idle A
+102 unloading_finished A heart
+102 loading A cargo-0 5 0
+104 loaded A cargo-0
+104 idle A
+104 moving A B
+119 requesting B A cargo-2 35
+124 moved to B
+124 idle B
+124 unloading_init B
+124 unloading B cargo-0 5 0
+126 unloaded B cargo-0
+126 idle B
+126 unloading_finished B cargo-0
+126 unloading_init B
+126 unloading B cargo-3 25 2
+128 unloaded B cargo-3
+128 idle B
+128 unloading_finished B cargo-3
+128 loading B cargo-2 35 0
+130 loaded B cargo-2
+130 idle B
+130 moving B C
+150 moved to C
+150 idle C
+150 loading C cargo-17 40 1
+151 requesting B C cargo-9 22
+152 loaded C cargo-17
+152 idle C
+152 moving C D
+168 requesting A C cargo-15 42
+172 moved to D
+172 idle D
+172 loading D cargo-6 14 2
+174 loaded D cargo-6
+174 idle D
+174 moving D A
+184 moved to A
+184 idle A
+184 unloading_init A
+184 unloading A cargo-2 35 0
+186 unloaded A cargo-2
+186 idle A
+186 unloading_finished A cargo-2
+186 unloading_init A
+186 unloading A cargo-6 14 2
+187 requesting C B cargo-8 4
+188 unloaded A cargo-6
+188 idle A
+188 unloading_finished A cargo-6
+188 loading A cargo-15 42 0
+190 loaded A cargo-15
+190 idle A
+190 moving A B
+202 requesting A B cargo-13 48
+210 moved to B
+210 idle B
+210 unloading_init B
+210 unloading B cargo-17 40 1
+212 unloaded B cargo-17
+212 idle B
+212 unloading_finished B cargo-17
+212 loading B cargo-9 22 1
+214 loaded B cargo-9
+214 idle B
+214 moving B C
+225 requesting C B cargo-10 7
+234 moved to C
+234 idle C
+234 unloading_init C
+234 unloading C cargo-15 42 0
+236 unloaded C cargo-15
+236 idle C
+236 unloading_finished C cargo-15
+236 unloading_init C
+236 unloading C cargo-9 22 1
+238 unloaded C cargo-9
+238 idle C
+238 unloading_finished C cargo-9
+238 loading C cargo-10 7 0
+240 loaded C cargo-10
+240 idle C
+240 loading C cargo-8 4 1
+242 loaded C cargo-8
+242 idle C
+242 moving C D
+246 requesting D C cargo-1 2
+256 requesting A C cargo-16 23
+258 requesting D B cargo-18 14
+262 moved to D
+262 idle D
+262 loading D cargo-18 14 2
+264 loaded D cargo-18
+264 idle D
+264 loading D cargo-1 2 3
+266 loaded D cargo-1
+266 idle D
+266 moving D A
+276 moved to A
+276 idle A
+276 moving A B
+289 requesting C B cargo-4 36
+291 requesting A B cargo-5 36
+296 moved to B
+296 idle B
+296 unloading_init B
+296 unloading B cargo-10 7 0
+297 requesting B D cargo-19 23
+298 unloaded B cargo-10
+298 idle B
+298 unloading_finished B cargo-10
+298 unloading_init B
+298 unloading B cargo-8 4 1
+300 unloaded B cargo-8
+300 idle B
+300 unloading_finished B cargo-8
+300 unloading_init B
+300 unloading B cargo-18 14 2
+302 unloaded B cargo-18
+302 idle B
+302 unloading_finished B cargo-18
+302 loading B cargo-19 23 0
+304 loaded B cargo-19
+304 idle B
+304 moving B A
+334 moved to A
+334 idle A
+334 loading A cargo-5 36 1
+336 loaded A cargo-5
+336 idle A
+336 loading A cargo-16 23 2
+338 loaded A cargo-16
+338 idle A
+338 moving A B
+358 moved to B
+358 idle B
+358 unloading_init B
+358 unloading B cargo-5 36 1
+360 unloaded B cargo-5
+360 idle B
+360 unloading_finished B cargo-5
+360 moving B C
+380 moved to C
+380 idle C
+380 unloading_init C
+380 unloading C cargo-16 23 2
+382 unloaded C cargo-16
+382 idle C
+382 unloading_finished C cargo-16
+382 unloading_init C
+382 unloading C cargo-1 2 3
+384 unloaded C cargo-1
+384 idle C
+384 unloading_finished C cargo-1
+384 loading C cargo-4 36 1
+386 loaded C cargo-4
+386 idle C
+386 moving C D
+406 moved to D
+406 idle D
+406 unloading_init D
+406 unloading D cargo-19 23 0
+408 unloaded D cargo-19
+408 idle D
+408 unloading_finished D cargo-19
+408 moving D A
+418 moved to A
+418 idle A
+418 moving A B
+438 moved to B
+438 idle B
+438 unloading_init B
+438 unloading B cargo-4 36 1
+440 unloaded B cargo-4
+440 idle B
+440 unloading_finished B cargo-4
+440 stop
+440 Cart(pos=B, Status.Idle, data=None, maxload=150, slots=['None', 'None', 'None', 'None'])

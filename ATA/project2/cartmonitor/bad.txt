@@ -1,0 +1,17 @@
+0 requesting A B helmet0 50
+0 requesting A B helmet1 50
+0 requesting A B helmet2 50
+0 requesting A B helmet3 50
+10 loading A helmet0 50 0
+10 loading A helmet1 50 1
+10 loading A helmet2 50 2
+10 loading A helmet3 50 3
+12 unloading A helmet0 50 0
+14 moving A B
+34 idle B
+34 unloading B helmet1 50 1
+34 unloading B helmet2 50 2
+34 unloading B helmet3 50 3
+35 requesting B A helmet3 50
+36 loading B helmet3 50 2
+38 stop
