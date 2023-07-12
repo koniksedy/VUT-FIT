@@ -1,0 +1,139 @@
+\documentclass{PPFIT} % pro psaní v angličtině / for writing in English
+%\documentclass[czech]{PPFIT} % pro psaní v češtině / for writing in Czech
+%\documentclass[slovak]{PPFIT} % pro psaní ve slovenštině / for writing in Slovak
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	PŘIZPŮSOBENÍ PDF / PDF CUSTOMIZATION
+%--------------------------------------------------------
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{stfloats}
+\usepackage{tikz}
+\usetikzlibrary{shapes,shapes.geometric,arrows,fit,calc,automata,positioning}
+\tikzset{elliptic state/.style={draw, ellipse, inner sep=1mm}}
+\tikzset{rectangular state/.style={draw, rounded rectangle, inner sep=2mm, minimum height=0.9cm}}
+\usepackage[ruled,vlined,linesnumbered,noresetcount]{algorithm2e}
+\usepackage{lipsum}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+
+\hypersetup{
+    pdftitle={Utilization of Repeating Substructures for Efficient Representation of Automata},
+    pdfauthor={Bc. Michal Šedý},
+    pdfkeywords={Nondeterministic Finite Automata, Minimization, Nondeterministic Pushdown Automata, Regular Expressions, Language Similarity}
+}
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%  PŘEDBĚŽNÁ vs. KONEČNÁ VERZE / REVIEW vs. FINAL VERSION
+%--------------------------------------------------------
+%   NECHTE následující řádek zakomentovaný pro PŘEDBĚŽNÉ VERZE
+%   Pro KONEČNOU VERZI řádek odkomentujte.
+%   LEAVE this line commented out for the REVIEW VERSIONS
+%   UNCOMMENT this line to get the FINAL VERSION
+
+\PPFinalCopy
+
+
+\PPYear{2022/2023}
+
+\ifczechslovak%
+    %--------------------------------------------------------
+    %--------------------------------------------------------
+    %	INFORMACE O ČLÁNKU
+    %--------------------------------------------------------
+
+  \PaperTitle{Jak napsat skvělý článek}
+
+    \Authors{Adam Herout*}
+    \affiliation{*%
+      \href{mailto:herout@fit.vut.cz}{herout@fit.vut.cz},
+      \textit{Fakulta informačních technologií, Vysoké učení technické v Brně}}
+
+    \Keywords{Klíčové slovo1 --- Klíčové slovo2 --- Klíčové slovo3}
+
+    \Supplementary{\href{http://youtu.be/S3msCdn3fNM}{Demonstrační Video} --- \href{http://fit.vut.cz/}{Stáhnutelný Kód}}
+
+    %--------------------------------------------------------
+    %--------------------------------------------------------
+    %	ABSTRAKT
+    %--------------------------------------------------------
+    \Abstract{
+        \lipsum[1-2]
+    }
+\else%
+    %--------------------------------------------------------
+    %--------------------------------------------------------
+    %	INFORMATION ABOUT THE ARTICLE
+    %--------------------------------------------------------
+    \PaperTitle{Utilization of Repeating Substructures for Efficient Representation of Automata}
+
+    \Authors{Bc. Michal Šedý*}
+    \affiliation{*%
+        \href{mailto:xsedym02@stud.fit.vut.cz}{xsedym02@stud.fit.vut.cz},
+        \textit{Faculty of Information Technology, Brno University of Technology}}
+
+    \Keywords{Nondeterministic Finite Automata --- Minimization --- Nondeterministic Pushdown Automata --- Regular Expressions --- Language Similarity}
+
+    % \Supplementary{\href{http://youtu.be/S3msCdn3fNM}{Demonstation video} --- \href{http://fit.vut.cz/}{Downloadable code}}
+
+    %--------------------------------------------------------
+    %--------------------------------------------------------
+    %	ABSTRACT
+    %--------------------------------------------------------
+    \Abstract{
+        Nondeterministic finite automata (NFA) are widely used across almost all fields of computer science, such as for a representation of regular expressions, monitoring high-speed networks, in abstract regular model checking, program verification, or in decision procedures of WS1S and WS2S logics. NFAs are even used in bioinformatics for searching sequences of nucleotides in DNA. The basic technique for reducing computational resources (memory, time, or the amount of hardware components) when working with NFAs is minimization. The most well-known minimization methods are state merging and transition pruning. Although combining these two methods can reduce the size of an automaton by up to 50\%, the resulting automaton can still contain duplicate (similar) transition sequences. There are even automata that cannot be minimized by these methods. This work presents a new way of automata minimization based on a transformation of a NFA into a~nondeterministic pushdown automaton (NPDA). The transformation identifies and represents the most similar parts (procedures) of the automaton only once. This algorithm enables the reduction of previously non-minimalizable automata and also improves the results of other minimizations. The principle of transforming NFA into NPDA can be understood as a transformation of a purely sequential program into a~program with mutually communicating procedures.
+    }
+\fi
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	TEASER
+%--------------------------------------------------------
+\Teaser{
+%	\TeaserImage{placeholder.pdf}
+%	\TeaserImage{placeholder.pdf}
+%	\TeaserImage{placeholder.pdf}
+}
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+\begin{document}
+\startdocument
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	OBSAH ČLÁNKU / CONTENT OF THE ARTICLE
+%--------------------------------------------------------
+\ifczechslovak
+    % \input{2023-xsedym02-text.tex}
+\else
+    \input{2023-xsedym02-text-en.tex}
+\fi
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	LITERATURA
+%--------------------------------------------------------
+%--------------------------------------------------------
+\phantomsection
+\ifczech
+    \bibliographystyle{bib-styles/czplain}
+\fi
+\ifslovak
+    \bibliographystyle{bib-styles/skplain}
+\fi
+\ifenglish
+    \bibliographystyle{bib-styles/enplain}
+\fi
+
+\bibliography{2023-xsedym02-bib}
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+\end{document}
