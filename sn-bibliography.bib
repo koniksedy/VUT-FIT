@@ -1,0 +1,160 @@
+@misc{SAT_SMT,
+  author        = {{Vojnar Tomáš} and {Fiedor Jan} and {Konečný Filip}},
+  title         = {Lecture notes in Static Analysis and Verification},
+  month         = {December},
+  year          = {2023},
+  publisher={BUT - Faculty of Information Technology}
+}
+
+@InProceedings{WS1S,
+  author = {Nils Klarlund},
+  title = {A theory of restrictions for logics and automata},
+  booktitle = {Computer Aided Verification, CAV '99},
+  series = {LNCS},
+  volume= {1633}
+}
+
+@article{Buchi,
+  author = {Büchi, J. Richard},
+  title = {Weak Second-Order Arithmetic and Finite Automata},
+  journal = {Mathematical Logic Quarterly},
+  volume = {6},
+  number = {1-6},
+  pages = {66-92},
+  doi = {https://doi.org/10.1002/malq.19600060105},
+  year = {1960}
+}
+
+
+@inproceedings{10.1145/378795.378851,
+author = {M\o{}ller, Anders and Schwartzbach, Michael I.},
+title = {The pointer assertion logic engine},
+year = {2001},
+isbn = {1581134142},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/378795.378851},
+doi = {10.1145/378795.378851},
+abstract = {We present a new framework for verifying partial specifications of programs in order to catch type and memory errors and check data structure invariants. Our technique can verify a large class of data structures, namely all those that can be expressed as graph types. Earlier versions were restricted to simple special cases such as lists or trees. Even so, our current implementation is as fast as the previous specialized tools.Programs are annotated with partial specifications expressed in Pointer Assertion Logic, a new notation for expressing properties of the program store. We work in the logical tradition by encoding the programs and partial specifications as formulas in monadic second-order logic. Validity of these formulas is checked by the MONA tool, which also can provide explicit counterexamples to invalid formulas.To make verification decidable, the technique requires explicit loop and function call invariants. In return, the technique is highly modular: every statement of a given program is analyzed only once.The main target applications are safety-critical data-type algorithms, where the cost of annotating a program with invariants is justified by the value of being able to automatically verify complex properties of the program.},
+booktitle = {Proceedings of the ACM SIGPLAN 2001 Conference on Programming Language Design and Implementation},
+pages = {221–231},
+numpages = {11},
+location = {Snowbird, Utah, USA},
+series = {PLDI '01}
+}
+
+@inproceedings{DDS1,
+  author = {M\o{}ller, Anders and Schwartzbach, Michael I.},
+  title = {The pointer assertion logic engine},
+  year = {2001},
+  isbn = {1581134142},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  url = {https://doi.org/10.1145/378795.378851},
+  doi = {10.1145/378795.378851},
+  booktitle = {Proceedings of the ACM SIGPLAN 2001 Conference on Programming Language Design and Implementation},
+  pages = {221–231},
+  numpages = {11},
+  location = {Snowbird, Utah, USA},
+  series = {PLDI '01}
+}
+
+@article{DDS2,
+  author = {Madhusudan, P. and Parlato, Gennaro and Qiu, Xiaokang},
+  title = {Decidable logics combining heap structures and data},
+  year = {2011},
+  issue_date = {January 2011},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {46},
+  number = {1},
+  issn = {0362-1340},
+  url = {https://doi.org/10.1145/1925844.1926455},
+  doi = {10.1145/1925844.1926455},
+  journal = {SIGPLAN Not.},
+  month = {jan},
+  pages = {611–622},
+  numpages = {12},
+  keywords = {automata, combining decision procedures, decidability, heap analysis, monadic second-order logic, smt solvers}
+}
+
+@article{string_analysis,
+  author = {Tateishi, Takaaki and Pistoia, Marco and Tripp, Omer},
+  title = {Path- and index-sensitive string analysis based on monadic second-order logic},
+  year = {2013},
+  issue_date = {October 2013},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {22},
+  number = {4},
+  issn = {1049-331X},
+  url = {https://doi.org/10.1145/2522920.2522926},
+  doi = {10.1145/2522920.2522926},
+  journal = {ACM Trans. Softw. Eng. Methodol.},
+  month = {oct},
+  articleno = {33},
+  numpages = {33},
+  keywords = {static program analysis, Web security, String analysis}
+}
+
+@inproceedings{parametrized_systems,
+  author = {Baukus, Kai and Bensalem, Saddek and Lakhnech, Yassine and Stahl, Karsten and Equation, Verimag},
+  year = {2001},
+  month = {01},
+  pages = {},
+  title = {Abstracting WS1S Systems to Verify Parameterized Networks},
+  isbn = {978-3-540-67282-1},
+  doi = {10.1007/3-540-46419-0_14}
+}
+
+@InProceedings{distributed_systems,
+  author="Klarlund, Nils
+  and Nielsen, Mogens
+  and Sunesen, Kim",
+  editor="Broy, Manfred
+  and Merz, Stephan
+  and Spies, Katharina",
+  title="A case study in verification based on trace abstractions",
+  booktitle="Formal Systems Specification",
+  year="1996",
+  publisher="Springer Berlin Heidelberg",
+  address="Berlin, Heidelberg",
+  pages="341--373",
+  abstract="In [14], we proposed a framework for the automatic verification of reactive systems. Our main tool is a decision procedure, Mona, for Monadic Second-order Logic (M2L) on finite strings. Mona translates a formula in M2L into a finite-state automaton. We show in [14] how traces, i.e. finite executions, and their abstractions can be described behaviorally. These state-less descriptions can be formulated in terms of customized temporal logic operators or idioms.",
+  isbn="978-3-540-49573-4"
+}
+
+@InProceedings{automatic_synthesis,
+  author="Sandholm, Anders
+  and Schwartzbach, Michael I.",
+  editor="Astesiano, Egidio",
+  title="Distributed safety controllers for web services",
+  booktitle="Fundamental Approaches to Software Engineering",
+  year="1998",
+  publisher="Springer Berlin Heidelberg",
+  address="Berlin, Heidelberg",
+  pages="270--284",
+  abstract="We show how to use high-level synchronization constraints, written in a version of monadic second-order logic on finite strings, to synthesize safety controllers for interactive web services. We improve on the na{\"I}ve runtime model to avoid state-space explosions and to increase the flow capacities of services.",
+  isbn="978-3-540-69723-7"
+}
+
+@article{hardware_verification,
+  author = {Basin, David and Klarlund, Nils},
+  title = {Automata based symbolic reasoning in hardware verification},
+  year = {1998},
+  issue_date = {Nov. 1998},
+  publisher = {Kluwer Academic Publishers},
+  address = {USA},
+  volume = {13},
+  number = {3},
+  issn = {0925-9856},
+  url = {https://doi.org/10.1023/A:1008644009416},
+  doi = {10.1023/A:1008644009416},
+  journal = {Form. Methods Syst. Des.},
+  month = {nov},
+  pages = {255–288},
+  numpages = {34},
+  keywords = {verification, parameterized hardware, monadic second-order logic, automaton, WS1S, S1S, BDD}
+}
+
+
