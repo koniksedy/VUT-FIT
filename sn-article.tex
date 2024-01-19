@@ -127,14 +127,52 @@
 
     The most commonly used tool for deciding WS1S and WS2S is Mona\footnote{accessible at \url{https://www.brics.dk/mona/index.html}}, which employs Büchi's recursion approach for the construction of finite automata with binary decision diagrams (BDD) to represent all automaton transitions. The use of BDD makes the decision faster, but at the cost of making some automata operations, such as reversion, expensive (potentially resulting in exponential blowup). Despite this limitation, Mona is widely utilized in various fields of program verification, including the verification of programs with complex dynamic data structures \cite{DDS1, DDS2}, string analysis \cite{string_analysis}, parametrized systems \cite{parametrized_systems}, distributed systems \cite{distributed_systems}, automatic synthesis \cite{automatic_synthesis}, hardware verification \cite{hardware_verification}, and many others.
 
-    The previously mentioned problem with hard-to-compute automata operations when using BDDs motivated Bc. Pavel Bednář's master's thesis. He reimplemented Mona's decision of WS1S by using a pure automata-based approach with the Mata automata library\footnote{available at: \url{https://github.com/VeriFIT/mata}}. The special type of edge, the \textit{jumping edge} has been introduced. The jumping edge contains information about how many variables can be jumped over. The primary idea behind introducing the jumping edge was to enable jumps not only over inner states but also over automaton states, with no upper limit on the maximal jump. However, despite this innovation, the jumping edge did not yield significant improvements in terms of space or time compression. Furthermore, it appears that jumping edges led to an overcomplication of algorithms.
+    The previously mentioned problem with hard-to-compute automata operations when using BDDs motivated Bc. Pavel Bednář's master's thesis \cite{Bednar}. He reimplemented Mona's decision of WS1S by using a pure automata-based approach with the Mata automata library\footnote{available at: \url{https://github.com/VeriFIT/mata}}. The special type of edge, the \textit{jumping edge} has been introduced. The jumping edge contains information about how many variables can be jumped over. The primary idea behind introducing the jumping edge was to enable jumps not only over inner states but also over automaton states, with no upper limit on the maximal jump. However, despite this innovation, the jumping edge did not yield significant improvements in terms of space or time compression. Furthermore, it appears that jumping edges led to an overcomplication of algorithms.
 
     In our approach, we reimplemented Bednář's solution by enhancing each automaton state with an index corresponding to the variable ID, mirroring the indexing strategy used for each inner node in the ordered BDD employed by Mona. This index information allows us to determine the length of a jump based on the indices of the source and destination states in the automaton's transition. Due to the indexing sequence on states follows a pattern of $0, 1, \dots, n-1, 0, 1, \dots, n-1, 0, \dots$, the longest jump can only reach to the next state with an index of $0$. While this might appear to be a step backward from Bednář's approach, the limitation on the jump length simplifies all algorithms. Surprisingly, it results in a significantly faster decision of the input formula, up to 10 times faster, compared to the variant with jumping edges.
 
-    The first section introduces basic notation and definitions of finite automata, binary decision diagrams, and WS1S. In the second section, we delve into the background of automata construction from WS1S formulas. The third section provides a detailed description of algorithms for intersection, union, complement, determinization, and minimization of automata with indexes. Moving to the fourth section, we present a~comparison of decision times between the Mona tool, automata with jumping edges, and automata with indexes. The experiments are divided into two parts. Initially, automata operations are tested separately on the automata generated during Mona computation. Following that, the comparison is executed on the entire input formula.
+    The first section introduces basic notations, definition of finite automata, binary decision diagrams, and WS1S. In the second section, we delve into the background of automata construction from WS1S formulas. The third section provides a detailed description of algorithms for intersection, union, complement, determinization, and minimization of automata with indexes. Moving to the fourth section, we present a~comparison of decision times between the Mona tool, automata with jumping edges, and automata with indexes. The experiments are divided into two parts. Initially, automata operations are tested separately on the automata generated during Mona computation. Following that, the comparison is executed on the entire input formula.
 
+%%==================================%%
+%%          INTRODUCTION            %%
+%%==================================%%
 
+\section{Preliminaries}
+    In this section, we briefly introduce the definitions of nondeterministic and deterministic automata, binary decision diagrams, and the WS1S logic.
 
+    \subsection{Automata}
+
+    \begin{definition}
+        A deterministic finite automaton is a 5-tuple $M = (Q, \Sigma, \delta, q_0, F)$, where its components are:
+        \begin{itemize}[noindent]
+            \item $Q$ is a finite nonempty set of states,
+            \item $\Sigma$ is an alphabet,
+            \item $\delta : Q \times \Sigma \rightarrow Q$ is a transition function,
+            \item $q \in Q$ is an initial state, and
+            \item $F \subseteq Q$ is a set of final states.
+        \end{itemize}
+    \end{definition}
+
+    \begin{definition}
+        A nondeterministic finite automaton is a 5-tuple $M = (Q, \Sigma, \delta, Q_0, F)$, where $Q$, $\Sigma$, and $F$ are defined identically as for the DFA. The transition function $\delta$~is defined as $\delta : Q \times \Sigma \rightarrow 2^{Q}$ and $Q_0 \subseteq Q$ is a nonempty set of initial states.
+    \end{definition}
+
+    Nondeterminism allows the automaton to make transitions to more than one successor based on the current state and the read input symbol. In contrast, its deterministic variant can transition to at most one state. Nondeterminism keeps the automaton more compact, but certain operations such as complementation cannot be performed directly on NFA. Therefore determinization is required beforehand.
+
+    \vspace*{0.5em}
+
+    \begin{definition}
+        Let $M = (Q, \Sigma, \delta, Q_0, F)$ be an NFA. The automaton $M$ is called an automaton with indexing if there exists an index function $\iota : Q \rightarrow \mathbb{N}_0$ such that the following conditions hold:
+        \begin{enumerate}[noindent]
+            \item $\forall q \in Q_0 : iota(q) = 0$
+            \item $\forall q \in F : iota(q) = 0$
+            \item $\forall q, r \in Q : \nexists a \in \Sigma : r \in \delta(q, a) \land \iota(r) \neq 0 \land \iota(q) \geq \iota(r)$
+        \end{enumerate}
+    \end{definition}
+
+    The first and second conditions reflect the fact that only roots or leaves in the BDD can be initial and final states, respectively. The third condition demands that the part of the automaton simulating the BDD must be acyclic, with the exception of the root nodes/states with index 0.
+
+    \subsection{Binary Decision Diagrams}
 
 
 % \begin{appendices}
