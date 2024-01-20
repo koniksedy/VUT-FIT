@@ -55,6 +55,23 @@
 \usepackage{algorithmicx}%
 \usepackage{algpseudocode}%
 \usepackage{listings}%
+\usepackage{subcaption}
+\usepackage{hyperref}
+
+\usepackage{colonequals}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{automata}
+
+\tikzset{%
+  zeroarrow/.style = {-stealth,dashed},
+  onearrow/.style = {-stealth,solid},
+  c/.style = {circle,draw,solid,minimum width=2em,
+        minimum height=2em},
+  r/.style = {rectangle,draw,solid,minimum width=2em,
+        minimum height=2em}
+}
+
 %%%%
 
 %%%%%=============================================================================%%%%
@@ -142,37 +159,304 @@
 
     \subsection{Automata}
 
-    \begin{definition}
-        A deterministic finite automaton is a 5-tuple $M = (Q, \Sigma, \delta, q_0, F)$, where its components are:
-        \begin{itemize}[noindent]
-            \item $Q$ is a finite nonempty set of states,
-            \item $\Sigma$ is an alphabet,
-            \item $\delta : Q \times \Sigma \rightarrow Q$ is a transition function,
-            \item $q \in Q$ is an initial state, and
-            \item $F \subseteq Q$ is a set of final states.
-        \end{itemize}
-    \end{definition}
+        \begin{definition}
+            A deterministic finite automaton is a 5-tuple $M = (Q, \Sigma, \delta, q_0, F)$, where its components are:
+            \begin{itemize}[noindent]
+                \item $Q$ is a finite nonempty set of states,
+                \item $\Sigma$ is an alphabet,
+                \item $\delta : Q \times \Sigma \rightarrow Q$ is a transition function,
+                \item $q \in Q$ is an initial state, and
+                \item $F \subseteq Q$ is a set of final states.
+            \end{itemize}
+        \end{definition}
 
-    \begin{definition}
-        A nondeterministic finite automaton is a 5-tuple $M = (Q, \Sigma, \delta, Q_0, F)$, where $Q$, $\Sigma$, and $F$ are defined identically as for the DFA. The transition function $\delta$~is defined as $\delta : Q \times \Sigma \rightarrow 2^{Q}$ and $Q_0 \subseteq Q$ is a nonempty set of initial states.
-    \end{definition}
+        \begin{definition}
+            A nondeterministic finite automaton is a 5-tuple $M = (Q, \Sigma, \delta, Q_0, F)$, where $Q$, $\Sigma$, and $F$ are defined identically as for the DFA. The transition function $\delta$~is defined as $\delta : Q \times \Sigma \rightarrow 2^{Q}$ and $Q_0 \subseteq Q$ is a nonempty set of initial states.
+        \end{definition}
 
-    Nondeterminism allows the automaton to make transitions to more than one successor based on the current state and the read input symbol. In contrast, its deterministic variant can transition to at most one state. Nondeterminism keeps the automaton more compact, but certain operations such as complementation cannot be performed directly on NFA. Therefore determinization is required beforehand.
-
-    \vspace*{0.5em}
-
-    \begin{definition}
-        Let $M = (Q, \Sigma, \delta, Q_0, F)$ be an NFA. The automaton $M$ is called an automaton with indexing if there exists an index function $\iota : Q \rightarrow \mathbb{N}_0$ such that the following conditions hold:
-        \begin{enumerate}[noindent]
-            \item $\forall q \in Q_0 : iota(q) = 0$
-            \item $\forall q \in F : iota(q) = 0$
-            \item $\forall q, r \in Q : \nexists a \in \Sigma : r \in \delta(q, a) \land \iota(r) \neq 0 \land \iota(q) \geq \iota(r)$
-        \end{enumerate}
-    \end{definition}
-
-    The first and second conditions reflect the fact that only roots or leaves in the BDD can be initial and final states, respectively. The third condition demands that the part of the automaton simulating the BDD must be acyclic, with the exception of the root nodes/states with index 0.
+        Nondeterminism allows the automaton to make transitions to more than one successor based on the current state and the read input symbol. In contrast, its deterministic variant can transition to at most one state. Nondeterminism keeps the automaton more compact, but certain operations such as complementation cannot be performed directly on NFA. Therefore determinization is required beforehand.
 
     \subsection{Binary Decision Diagrams}
+        Representation of boolean function $\phi$ with $n$ logical variable led to $2^n$ transitions for each automaton state in order to cover each possible combination of logical values. This exponential number of transitions can be reduced using BDDs.
+        Binary decision diagrams provides a compact and most importantly canonical representation for logical functions in the form $\phi : {0, 1}^* \rightarrow {0, 1}$.
+
+        \vspace*{0.5em}
+
+        \begin{definition}
+            The binary decision diagram \cite{BDD} is rooted, directed, connected, and acyclic graph defined as a 7-tuple $G = (N, T, var, low, high, root, val)$ where:
+            \begin{itemize}[noindent]
+                \item $N$ is finite set on non-terminal (inner) nodes,
+                \item $T$ is a finite set of terminal nodes (leaves) such that $N \cap T = \emptyset$,
+                \item $var : N \rightarrow N \cup T$ defines the low and high successors of the inner nodes,
+                \item $root \in N \cup T$ is the root node, and
+                \item $val : T \rightarrow {0, 1}$ assignes logical value to the leaves.
+            \end{itemize}
+        \end{definition}
+
+        The size of the BDD is not determined only by the number of logical variable being used withing the function $\phi$ but also by ordering ot the variable in the BDD. The best variable ordering can result in BDD with linear (in the number of variables) number of nodes or exponential for worst ordering.
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.5\textwidth}
+                \includegraphics[width=1.2\textwidth]{Figures/BDD_Variable_Ordering_Bad.pdf}
+            \end{subfigure}
+            \hspace*{2cm}
+            \begin{subfigure}{0.3\textwidth}
+                \hspace*{1cm}
+                \includegraphics[width=0.5\textwidth]{Figures/BDD_Variable_Ordering_Good.pdf}
+            \end{subfigure}
+            \caption{Two bdds for the function $f(x1,\dots, x_{2n}) = x_1x_2 + x_3x_4 + \cdots, x_{2n-1}x_{2n}$ with bad variable ordering (on the left) and good variable ordering (on the right).}
+            \label{figure::ordering}
+        \end{figure}
+
+        Consider the bolean function $f(x1,\dots, x_{2n}) = x_1x_2 + x_3x_4 + \cdots, x_{2n-1}x_{2n}$. Using the variable ordering $x_1 < x_3 < \cdots x_{2n-1} < x_2 < x_4 < \cdots < x_{2n}$, the BDD needs $2^{n+1}$ nodes to represent the function. Using the oredering $x_1 < x_2 < x_3 < x_4 < \cdots < x_{2n-1} < x_{2n}$, the BDD consists of $2n + 2$ nodes. The example of such orderings is shown in the figure \ref{figure::ordering}. The problem of finding the best variable ordering is NP-hard \cite{BDD_np-hard}. However, there exist various heuristics to handle this challenge \cite{BDD_heuristics}.
+
+        \vspace*{0.5em}
+
+        \begin{definition}
+            Let $\prec$ be a given ordering on logical variables $Var$, a BDD $G$ is ordered (OBDD) with respect to $\prec$ iff for every $n \in N$ the following conditions hold:
+            \begin{enumerate}[noindent]
+                \item $low(n) \in N \implies var(n) \prec var(low(n))$
+                \item $high(n) \in N \implies var(n) \prec var(high(n))$
+            \end{enumerate}
+        \end{definition}
+
+        \begin{definition}
+            The OBDD $G = (N, T, var, low, high, root, val)$ is reduced OBDD (ROBDD) if the following conditions are met:
+            \begin{enumerate}[noindent]
+                \item $\forall t_1, t_2 \in T : val(t_1) \neq val(t_2)$
+                \item There are no isomorphic subgraphs in $G$
+                \item $\forall n_1, n_2 \in N : low(n_1) \neq low(n_2) \lor high(n_1) \neq high(n_2)$
+            \end{enumerate}
+        \end{definition}
+
+        \begin{figure}[H]
+            \centering
+            \begin{subfigure}{0.45\textwidth}
+                \centering
+                \begin{tikzpicture}[node distance=0.4cm and 0.3cm]\footnotesize
+                    \node[c] (x1) {$x_1$};
+                    \node[c] (x2a) [below left=0.2cm and 1cm of x1] {$x_2$};
+                    \node[c] (x2b) [below right=0.2cm and 1cm of x1] {$x_2$};
+                    \node[c] (x3a) [below left=of x2a] {$x_3$};
+                    \node[c] (x3b) [below right=of x2a] {$x_3$};
+                    \node[c] (x3c) [below left=of x2b] {$x_3$};
+                    \node[c] (x3d) [below right=of x2b] {$x_3$};
+                    \node[r] (one) [below=of x3b] {1};
+                    \node[r] (zero) [below=of x3c] {0};
+
+                    \draw[onearrow] (x1) -- (x2b);
+                    \draw[onearrow] (x2a) -- (x3b);
+                    \draw[onearrow] (x2b) -- (x3d);
+                    \draw[onearrow] (x3a) to[bend right=60] (zero);
+                    \draw[onearrow] (x3b) -- (one);
+                    \draw[onearrow] (x3c) -- (one);
+                    \draw[onearrow] (x3d) to[bend left=60] (one);
+
+                    \draw[zeroarrow] (x1) -- (x2a);
+                    \draw[zeroarrow] (x2a) -- (x3a);
+                    \draw[zeroarrow] (x2b) -- (x3c);
+                    \draw[zeroarrow] (x3a) to[bend right=70] (zero);
+                    \draw[zeroarrow] (x3b) -- (zero);
+                    \draw[zeroarrow] (x3c) -- (zero);
+                    \draw[zeroarrow] (x3d) -- (zero);
+                 \end{tikzpicture}
+            \end{subfigure}
+            \begin{subfigure}{0.25\textwidth}
+                \centering
+                \begin{tikzpicture}[node distance=0.4cm and 0.3cm]\footnotesize
+                    \node[c] (x1) {$x_1$};
+                    \node[c] (x2a) [below left=0.2cm and 0.3cm of x1] {$x_2$};
+                    \node[c] (x2b) [below right=0.2cm and 0.3cm of x1] {$x_2$};
+                    \node[c] (x3a) [below=of x2a] {$x_3$};
+                    \node[c] (x3b) [below=of x2b] {$x_3$};
+                    \node[r] (one) [below=of x3b] {1};
+                    \node[r] (zero) [below=of x3a] {0};
+
+                    \draw[onearrow] (x1) -- (x2b);
+                    \draw[onearrow] (x2a) -- (x3b);
+                    \draw[onearrow] (x2b) to[bend right=10] (x3b);
+                    \draw[onearrow] (x3a) to[bend right=10] (zero);
+                    \draw[onearrow] (x3b) -- (one);
+
+                    \draw[zeroarrow] (x1) -- (x2a);
+                    \draw[zeroarrow] (x2a) -- (x3a);
+                    \draw[zeroarrow] (x2b) to[bend left=10] (x3b);
+                    \draw[zeroarrow] (x3a) to[bend left=10] (zero);
+                    \draw[zeroarrow] (x3b) -- (zero);
+                 \end{tikzpicture}
+            \end{subfigure}
+            \begin{subfigure}{0.25\textwidth}
+                \centering
+                \begin{tikzpicture}[node distance=0.4cm and 0.3cm]\footnotesize
+                    \node[c] (x1) {$x_1$};
+                    \node[c] (x2) [below left=0.2cm and 0.3cm of x1] {$x_2$};
+                    \node[c] (x3) [below right=1.2cm and 0.3cm of x1] {$x_3$};
+                    \node[r] (one) [below=of x3] {1};
+                    \node[r] (zero) [below= 1.4cm of x2] {0};
+
+                    \draw[onearrow] (x1) -- (x3);
+                    \draw[onearrow] (x2) -- (x3);
+                    \draw[onearrow] (x3) -- (one);
+
+                    \draw[zeroarrow] (x1) -- (x2);
+                    \draw[zeroarrow] (x2) -- (zero);
+                    \draw[zeroarrow] (x3) -- (zero);
+                 \end{tikzpicture}
+            \end{subfigure}
+            \caption{From the left to the right, OBDD meeting the first condition, the second condition and the third condition from the definition.}
+        \end{figure}
+
+        \vspace*{-1em}
+
+        \begin{theorem}
+            \label{theorem:ROBDD}
+            For every Boolean function $\phi$ over some se of variables $Var$ and every variable ordering $\prec$ on $Var$, there is a unique (up to isomorphism) reduced OBDD (wrt $\prec$) $G_\phi$ which represents $\phi$. \cite{BDD}
+        \end{theorem}
+
+        \vspace*{0.5em}
+
+        Based on the theorem \ref{theorem:ROBDD}, the checking equivalence of two functions $\phi_1$ and $\phi_2$ represented by reduced OBDDs (RODBBs) $G_1$ and $G_2$ ie equivalent to checking isomorphism of $G_1$ and $G_2$.
+
+        Moreover, it several boolean function are represented with one \textit{shared ROBDD} with multiple roots, as Mona does, the equivalence checking is reduced from isomorphism checking to simply checking the identity of the BDD roots.
+
+
+    \subsection{WS1S}
+        Richard Büchi shown that WS1S is equivalent with regular expression and therefore can be represented by finite automata\cite{Buchi}. In this subsection first the simplification of the WS1S formula and its semantic will be presented, followed by transformation of atomic formulae to the automata. The main source for this subsection was \cite{Mona_manual}.
+
+        \subsubsection*{Formula simplification}
+            First-order terms are ancoded as second-order terms, since a first-order value can be seen as a singleton second-order value. Also booleans can be encoded using the first position in the input automaton string.
+
+            All second-order terms are "flattened" by introductin new variables that contain the values of all subterms. For example the formula $A = (B \cup C) \cap D$ will be transformed into the form $\exists V : A = V \cap D \land V = B \cup C$, where $V$ is a new variable.
+
+            Subformulae are simplified to contain fewer operators. As a result only basic operations have to be implemented by the solver. The abstract syntax for simplified WS1S fomulae can be defined by the following grammar:
+            $$
+                \phi \colonequals \neg \phi' | \phi' \land \phi'' | \exists P_i : \phi' | P_i \subseteq P_j | P_i = P_j \setminus P_k | P_i = P_j + 1
+            $$
+
+        \subsubsection*{Semantic}
+            Given the main fomula $\phi_0$, we define its sematics inductively relative to a string $w$ over the alphabet $\mathbb{B}^k$, where $\mathbb{B} = \{0, 1\}$ and $k$ is the number of veriables in $\phi_0$. Assubme every variable of $\phi_0$ is assigned a unique number in the range $1,2,\dots,k$ called the \textit{variable index}. The string $w$ now determinis an interpretation $w(P_i)$ of $P_i$ defined as the finite set $\{j\,|$ the $j$th bit is the $P_i$-track is 1$\}$. For example, the formula $\phi_0 \equiv \exists C : A = B \setminus C$ has variables $A$, $B$, and $C$, which are assigned by the indexes 1, 2, and 3, respectively. A tipical string $w$ over $\mathbb{B}^3$ looks like:
+
+            $$
+            \begin{matrix}
+                A\\
+                B\\
+                C
+            \end{matrix}
+            \hspace*{2em}
+            \begin{pmatrix}
+                1\\
+                0\\
+                1
+            \end{pmatrix}
+            \begin{pmatrix}
+                0\\
+                0\\
+                1
+            \end{pmatrix}
+            \begin{pmatrix}
+                1\\
+                1\\
+                0
+            \end{pmatrix}
+            \begin{pmatrix}
+                0\\
+                0\\
+                0\\
+            \end{pmatrix}
+            $$
+
+            \vspace*{0.5em}
+
+            \noindent Its important to note, that $w$ with the suffix $(0^*)^T$ defines the smae interpretation as $w$. Therefore, the minimum $w$ is such a string that there is no such nun-empty suffix. The semantics of a formula $\phi$ is defined inductively:
+                \begin{alignat*}{2}
+                    &w \vDash \neg \phi' \quad && \textnormal{iff}\quad  w \nvDash \phi'\\
+                    &w \vDash \phi' \land \phi'' \quad &&\textnormal{iff}\quad  w \vDash \phi' \land w \vDash \phi''\\
+                    &w \vDash \exists P_i : \phi' \quad &&\textnormal{iff}\quad  \exists finite(M) \subseteq \mathbb{N} : w[P_i \mapsto M] \vDash \phi'\\
+                    &w \vDash P_i \subseteq P_j \quad &&\textnormal{iff}\quad  w(P_i) \subseteq w(P_j)\\
+                    &w \vDash P_i = P_j \setminus P_k \quad &&\textnormal{iff}\quad  w(P_i) = w(P_j) \setminus w(P_k)\\
+                    &w \vDash P_i = P_j + 1 \quad &&\textnormal{iff}\quad  w(P_i) = \{j + 1\,|\, j \in w(P_j)\}
+                \end{alignat*}
+
+            where we use the notation $w[P_i \mapsto M]$ for the shortest string $w'$ that interprets all variables $P_j$, $j \neq i$ as $w$ does, but interprets $P_i$ as $M$. Note that if we assume that $w$ is minimum than $w'$ decomposes into $w' = w \cdot w''$, there $w''$ is a string of letter of the form $(0^*X0^*)^T$ where the $i$th component is the only one that may be different from 0.
+
+        \subsubsection*{Automaton construction}
+            The input formula $\phi$ is recursively transformed into the deterministic finite automaton that represents the set of satisfying strings $L(\phi) = \{w\,|\, w \vDash \phi\}$. The translation of atomic and composite formulae to the deterministic finite automata follows:
+
+            \vspace*{0.5em}
+
+            \begin{itemize}
+                \item $\phi = P_1 \subseteq P_2$:
+                    \begin{figure}[H]
+                        \centering
+                        \begin{tikzpicture}
+                            \centering
+                            \node[state, initial, accepting] (q0) {$q_0$};
+                            \node[state] (q1) [right=4cm of q0]{$q_1$};
+
+                            \path[->] (q0) edge node[above] {$\begin{pmatrix}1\\0\end{pmatrix}$} (q1)
+                                    (q0) edge[loop above] node {$\begin{pmatrix}X\\1\end{pmatrix},\begin{pmatrix}0\\0\end{pmatrix}$} ()
+                                    (q1) edge[loop above] node {$\begin{pmatrix}X\\X\end{pmatrix}$} ();
+                        \end{tikzpicture}
+                    \end{figure}
+                \vspace*{0.5em}
+                \item $\phi = P_1 = P_2 \setminus P_3$:
+                    \begin{figure}[H]
+                        \centering
+                        \begin{tikzpicture}
+                            \centering
+                            \node[state, initial, accepting] (q0) {$q_0$};
+                            \node[state] (q1) [right=4.5cm of q0]{$q_1$};
+
+                            \path[->] (q0) edge node[below] {$\begin{pmatrix}1\\0\\0\end{pmatrix},\begin{pmatrix}0\\1\\0\end{pmatrix},\begin{pmatrix}1\\X\\1\end{pmatrix}$} (q1)
+                                    (q0) edge[loop above] node {$\begin{pmatrix}0\\0\\0\end{pmatrix},\begin{pmatrix}1\\1\\0\end{pmatrix},\begin{pmatrix}0\\X\\1\end{pmatrix}$} ()
+                                    (q1) edge[loop above] node {$\begin{pmatrix}X\\X\\X\end{pmatrix}$} ();
+                        \end{tikzpicture}
+                    \end{figure}
+                \newpage
+                \item $\phi = P_1 = P_2 + 1$:
+                    \vspace*{-1em}
+                    \begin{figure}[H]
+                        \centering
+                        \begin{tikzpicture}
+                            \centering
+                            \node[state, initial, accepting] (q0) {$q_0$};
+                            \node[state] (q1) [right=2.5cm of q0]{$q_1$};
+                            \node[state] (q2) [below right=1.5cm and 1.1cm of q0] {$q_2$};
+                            \path[->] (q0) edge[bend left] node[above] {$\begin{pmatrix}0\\1\end{pmatrix}$} (q1)
+                                      (q0) edge[loop above] node[above] {$\begin{pmatrix}0\\0\end{pmatrix}$} ()
+                                      (q0) edge[bend right] node[below left] {$\begin{pmatrix}1\\X\end{pmatrix}$} (q2)
+                                      (q1) edge[bend left] node[below right] {$\begin{pmatrix}0\\X\end{pmatrix}$} (q2)
+                                      (q1) edge node[below] {$\begin{pmatrix}1\\0\end{pmatrix}$} (q0)
+                                      (q1) edge[loop above] node[above] {$\begin{pmatrix}1\\1\end{pmatrix}$} ()
+                                      (q2) edge[loop below] node[below] {$\begin{pmatrix}X\\X\end{pmatrix}$} ();
+                        \end{tikzpicture}
+                    \end{figure}
+                \item $\phi = \neg \phi'$: Negation of a formula corresponds to automaton complementation, so if we have already calculated $A'$ such that $L(\phi') = L(A')$, then $L(\neg \phi') = \complement L(\phi) = \complement L(A') = L(\complement A')$, where $\complement$ denotes both the language complementatino and automata complementation. If the automaton is complete and deterministic, then the complementation can be done by swapping accepting and nonaccepting states.
+                \vspace*{0.5em}
+                \item $\phi = \phi' \land \phi''$: Conjunction corresponds to language intersection, $L(\phi' \land \phi'') = L(\phi') \cap L(\phi'')$. So the resulting automaton $A$ is obtained by production fo automata $A' \times A''$, where $L(\phi') = L(A')$ and $L(\phi'') = L(A'')$.
+                \vspace*{0.5em}
+                \item $\phi = \exists P_i : \phi'$: Intuitively, the desired automaton $A$ acts as the automaton $A'$ for $\phi'$ except that it is allowed to guess the bits on $P_i$-track. The resulting automaton $A$ is nondeterministic. Its necessary to apply determinization and adjust automaton $A$ in such a way that each $w \in L(A)$ is minimal.
+            \end{itemize}
+
+
+
+\section{Automata representation}
+    \subsection{Mona}
+    \subsection{Automata with Jumping Edges}
+    \subsection{Automata with Indexed States}
+        \begin{definition}
+            Let $M = (Q, \Sigma, \delta, Q_0, F)$ be an NFA. The automaton $M$ is called an automaton with indexing if there exists an index function $\iota : Q \rightarrow \mathbb{N}_0$ such that the following conditions hold:
+            \begin{enumerate}[noindent]
+                \item $\forall q \in Q_0 : \iota(q) = 0$
+                \item $\forall q \in F : \iota(q) = 0$
+                \item $\forall q, r \in Q : \nexists a \in \Sigma : r \in \delta(q, a) \land \iota(r) \neq 0 \land \iota(q) \geq \iota(r)$
+            \end{enumerate}
+        \end{definition}
+
+        The first and second conditions reflect the fact that only roots or leaves in the BDD can be initial and final states, respectively. The third condition demands that the part of the automaton simulating the BDD must be acyclic, with the exception of the root nodes/states with index 0.
+
+
 
 
 % \begin{appendices}

@@ -1,9 +1,19 @@
 @misc{SAT_SMT,
-  author        = {{Vojnar Tomáš} and {Fiedor Jan} and {Konečný Filip}},
-  title         = {Lecture notes in Static Analysis and Verification},
+  author        = {{Vojnar Tomáš}},
+  title         = {Lecture notes in Static Analysis and Verification: SAT and SMT Solving },
   month         = {December},
   year          = {2023},
-  publisher={BUT - Faculty of Information Technology}
+  url           = {https://www.fit.vutbr.cz/study/courses/SAV/public/Lectures/sav-lecture-10.pdf},
+  publisher     = {BUT - Faculty of Information Technology}
+}
+
+@misc{BDD,
+  author        = {{Vojnar Tomáš}},
+  title         = {Lecture notes in Static Analysis and Verification: Binary Decision Diagrams},
+  month         = {December},
+  year          = {2023},
+  url           = {https://www.fit.vutbr.cz/study/courses/SAV/public/Lectures/sav-lecture-07.pdf},
+  publisher     = {BUT - Faculty of Information Technology}
 }
 
 @InProceedings{WS1S,
@@ -25,23 +35,6 @@
   year = {1960}
 }
 
-
-@inproceedings{10.1145/378795.378851,
-author = {M\o{}ller, Anders and Schwartzbach, Michael I.},
-title = {The pointer assertion logic engine},
-year = {2001},
-isbn = {1581134142},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/378795.378851},
-doi = {10.1145/378795.378851},
-booktitle = {Proceedings of the ACM SIGPLAN 2001 Conference on Programming Language Design and Implementation},
-pages = {221–231},
-numpages = {11},
-location = {Snowbird, Utah, USA},
-series = {PLDI '01}
-}
-
 @inproceedings{DDS1,
   author = {M\o{}ller, Anders and Schwartzbach, Michael I.},
   title = {The pointer assertion logic engine},
@@ -49,7 +42,6 @@ series = {PLDI '01}
   isbn = {1581134142},
   publisher = {Association for Computing Machinery},
   address = {New York, NY, USA},
-  url = {https://doi.org/10.1145/378795.378851},
   doi = {10.1145/378795.378851},
   booktitle = {Proceedings of the ACM SIGPLAN 2001 Conference on Programming Language Design and Implementation},
   pages = {221–231},
@@ -162,4 +154,41 @@ series = {PLDI '01}
 	SCHOOL = "Vysoké učení technické v BrněBrno",
 	NOTE = "SUPERVISOR: ",
 	URL = "https://theses.cz/id/kq7t5j/",
+}
+
+@misc{wiki:Binary_decision_diagram,
+   author = "Wikipedia",
+   title = "{Binary decision diagram} --- {W}ikipedia{,} The Free Encyclopedia",
+   year = "2024",
+   howpublished = {\url{http://en.wikipedia.org/w/index.php?title=Binary\%20decision\%20diagram&oldid=1194896229}},
+   note = "[Online; accessed 20-January-2024]"
+ }
+
+@misc{BDD_heuristics,
+ author = "M. Rice and S. Kulhari",
+ title = "A Survey of Static Variable Ordering Heuristics for Efficient {BDD}/MDD Construction, Technical Report",
+ year = 2008,
+ howpublished = {\url{http://www.cs.ucr.edu/~skulhari/StaticHeuristics.pdf}}
+}
+
+@ARTICLE{BDD_np-hard,
+  author={Bollig, B. and Wegener, I.},
+  journal={IEEE Transactions on Computers},
+  title={Improving the variable ordering of OBDDs is NP-complete},
+  year={1996},
+  volume={45},
+  number={9},
+  pages={993-1002},
+  doi={10.1109/12.537122}
+}
+
+@Manual{Mona_manual,
+  author =       {Nils Klarlund and Anders M{\o}ller},
+  title =        {{MONA Version 1.4 User Manual}},
+  organization = {BRICS, Department of Computer Science, Aarhus University},
+  month =        {January},
+  year =         {2001},
+  note =         {Notes Series NS-01-1.
+                  Available from \texttt{\small \url{http://www.brics.dk/mona/}}.
+                  Revision of BRICS NS-98-3}
 }
