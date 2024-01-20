@@ -177,8 +177,7 @@
         Nondeterminism allows the automaton to make transitions to more than one successor based on the current state and the read input symbol. In contrast, its deterministic variant can transition to at most one state. Nondeterminism keeps the automaton more compact, but certain operations such as complementation cannot be performed directly on NFA. Therefore determinization is required beforehand.
 
     \subsection{Binary Decision Diagrams}
-        Representation of boolean function $\phi$ with $n$ logical variable led to $2^n$ transitions for each automaton state in order to cover each possible combination of logical values. This exponential number of transitions can be reduced using BDDs.
-        Binary decision diagrams provides a compact and most importantly canonical representation for logical functions in the form $\phi : {0, 1}^* \rightarrow {0, 1}$.
+        Representation of the boolean function $\phi$ with $n$ logical variables leads to $2^n$ transitions for each automaton state in order to cover every possible combination of logical values. This exponential number of transitions can be reduced using Binary Decision Diagrams (BDDs). Binary Decision Diagrams provide a compact and, most importantly, canonical representation for logical functions in the form $\phi: \{0, 1\}^* \rightarrow \{0, 1\}$.
 
         \vspace*{0.5em}
 
@@ -189,11 +188,11 @@
                 \item $T$ is a finite set of terminal nodes (leaves) such that $N \cap T = \emptyset$,
                 \item $var : N \rightarrow N \cup T$ defines the low and high successors of the inner nodes,
                 \item $root \in N \cup T$ is the root node, and
-                \item $val : T \rightarrow {0, 1}$ assignes logical value to the leaves.
+                \item $val : T \rightarrow \{0, 1\}$ assignes logical value to the leaves.
             \end{itemize}
         \end{definition}
 
-        The size of the BDD is not determined only by the number of logical variable being used withing the function $\phi$ but also by ordering ot the variable in the BDD. The best variable ordering can result in BDD with linear (in the number of variables) number of nodes or exponential for worst ordering.
+        The size of the BDD is not determined only by the number of logical variables used within the function $\phi$ but also by the ordering of the variables in the BDD. The best variable ordering can result in a BDD with a linear (in the number of variables) number of nodes, while the worst ordering can lead to an exponential size.
 
         \begin{figure}[H]
             \centering
@@ -209,12 +208,12 @@
             \label{figure::ordering}
         \end{figure}
 
-        Consider the bolean function $f(x1,\dots, x_{2n}) = x_1x_2 + x_3x_4 + \cdots, x_{2n-1}x_{2n}$. Using the variable ordering $x_1 < x_3 < \cdots x_{2n-1} < x_2 < x_4 < \cdots < x_{2n}$, the BDD needs $2^{n+1}$ nodes to represent the function. Using the oredering $x_1 < x_2 < x_3 < x_4 < \cdots < x_{2n-1} < x_{2n}$, the BDD consists of $2n + 2$ nodes. The example of such orderings is shown in the figure \ref{figure::ordering}. The problem of finding the best variable ordering is NP-hard \cite{BDD_np-hard}. However, there exist various heuristics to handle this challenge \cite{BDD_heuristics}.
+        Consider the Boolean function $f(x_1, \dots, x_{2n}) = x_1x_2 + x_3x_4 + \cdots + x_{2n-1}x_{2n}$. Using the variable ordering $x_1 < x_3 < \cdots < x_{2n-1} < x_2 < x_4 < \cdots < x_{2n}$, the Binary Decision Diagram (BDD) requires $2^{n+1}$ nodes to represent the function. Using the ordering $x_1 < x_2 < x_3 < x_4 < \cdots < x_{2n-1} < x_{2n}$, the BDD consists of $2n + 2$ nodes. An example of such orderings is shown in Figure \ref{figure::ordering}. The problem of finding the best variable ordering is NP-hard \cite{BDD_np-hard}. However, various heuristics exist to address this challenge \cite{BDD_heuristics}.
 
         \vspace*{0.5em}
 
         \begin{definition}
-            Let $\prec$ be a given ordering on logical variables $Var$, a BDD $G$ is ordered (OBDD) with respect to $\prec$ iff for every $n \in N$ the following conditions hold:
+            Let $\prec$ be a given ordering on logical variables $Var$, a Binary Decision Diagram (BDD) $G$ is ordered (OBDD) with respect to $\prec$ if, for every $n \in \mathbb{N}$, the following conditions hold:
             \begin{enumerate}[noindent]
                 \item $low(n) \in N \implies var(n) \prec var(low(n))$
                 \item $high(n) \in N \implies var(n) \prec var(high(n))$
@@ -222,7 +221,7 @@
         \end{definition}
 
         \begin{definition}
-            The OBDD $G = (N, T, var, low, high, root, val)$ is reduced OBDD (ROBDD) if the following conditions are met:
+            The OBDD $G = (N, T, var, low, high, root, val)$ is a Reduced OBDD (ROBDD) if the following conditions are satisfied:
             \begin{enumerate}[noindent]
                 \item $\forall t_1, t_2 \in T : val(t_1) \neq val(t_2)$
                 \item There are no isomorphic subgraphs in $G$
@@ -304,38 +303,38 @@
                     \draw[zeroarrow] (x3) -- (zero);
                  \end{tikzpicture}
             \end{subfigure}
-            \caption{From the left to the right, OBDD meeting the first condition, the second condition and the third condition from the definition.}
+            \caption{From left to right, an OBDD satisfies the first, second, and third conditions as specified in the definition of ROBDD.}
         \end{figure}
 
         \vspace*{-1em}
 
         \begin{theorem}
             \label{theorem:ROBDD}
-            For every Boolean function $\phi$ over some se of variables $Var$ and every variable ordering $\prec$ on $Var$, there is a unique (up to isomorphism) reduced OBDD (wrt $\prec$) $G_\phi$ which represents $\phi$. \cite{BDD}
+            For every Boolean function $\phi$ over some set of variables $Var$ and every variable ordering $\prec$ on $Var$, there is a unique (up to isomorphism) reduced OBDD (with respect to $\prec$) $G_\phi$ which represents $\phi$. \cite{BDD}"
         \end{theorem}
 
         \vspace*{0.5em}
 
-        Based on the theorem \ref{theorem:ROBDD}, the checking equivalence of two functions $\phi_1$ and $\phi_2$ represented by reduced OBDDs (RODBBs) $G_1$ and $G_2$ ie equivalent to checking isomorphism of $G_1$ and $G_2$.
+        Based on Theorem \ref{theorem:ROBDD}, checking the equivalence of two functions, $\phi_1$ and $\phi_2$, represented by Reduced OBDDs (ROBDDs) $G_1$ and $G_2$ is equivalent to checking the isomorphism of $G_1$ and $G_2$.
 
-        Moreover, it several boolean function are represented with one \textit{shared ROBDD} with multiple roots, as Mona does, the equivalence checking is reduced from isomorphism checking to simply checking the identity of the BDD roots.
+        Moreover, if several Boolean functions are represented with one shared ROBDD with multiple roots, as Mona does, the equivalence checking is reduced from isomorphism checking to simply checking the identity of the BDD roots.
 
 
     \subsection{WS1S}
-        Richard Büchi shown that WS1S is equivalent with regular expression and therefore can be represented by finite automata\cite{Buchi}. In this subsection first the simplification of the WS1S formula and its semantic will be presented, followed by transformation of atomic formulae to the automata. The main source for this subsection was \cite{Mona_manual}.
+        Richard Büchi showed that WS1S is equivalent to regular expressions and can therefore be represented by finite automata \cite{Buchi}. In this subsection, the simplification of the WS1S formula and its semantics will be presented, followed by the transformation of atomic formulae to automata. The main source for this subsection was \cite{Mona_manual}.
 
         \subsubsection*{Formula simplification}
-            First-order terms are ancoded as second-order terms, since a first-order value can be seen as a singleton second-order value. Also booleans can be encoded using the first position in the input automaton string.
+            First-order terms are encoded as second-order terms since a first-order value can be seen as a singleton second-order value. Also, booleans can be encoded using the first position in the input automaton string.
 
-            All second-order terms are "flattened" by introductin new variables that contain the values of all subterms. For example the formula $A = (B \cup C) \cap D$ will be transformed into the form $\exists V : A = V \cap D \land V = B \cup C$, where $V$ is a new variable.
+            All second-order terms are 'flattened' by introducing new variables that contain the values of all subterms. For example, the formula $A = (B \cup C) \cap D$ will be transformed into the form $\exists V : A = V \cap D \land V = B \cup C$, where $V$ is a new variable.
 
-            Subformulae are simplified to contain fewer operators. As a result only basic operations have to be implemented by the solver. The abstract syntax for simplified WS1S fomulae can be defined by the following grammar:
+            Subformulae are simplified to contain fewer operators. As a result, only basic operations have to be implemented by the solver. The abstract syntax for simplified WS1S formulas can be defined by the following grammar:
             $$
                 \phi \colonequals \neg \phi' | \phi' \land \phi'' | \exists P_i : \phi' | P_i \subseteq P_j | P_i = P_j \setminus P_k | P_i = P_j + 1
             $$
 
         \subsubsection*{Semantic}
-            Given the main fomula $\phi_0$, we define its sematics inductively relative to a string $w$ over the alphabet $\mathbb{B}^k$, where $\mathbb{B} = \{0, 1\}$ and $k$ is the number of veriables in $\phi_0$. Assubme every variable of $\phi_0$ is assigned a unique number in the range $1,2,\dots,k$ called the \textit{variable index}. The string $w$ now determinis an interpretation $w(P_i)$ of $P_i$ defined as the finite set $\{j\,|$ the $j$th bit is the $P_i$-track is 1$\}$. For example, the formula $\phi_0 \equiv \exists C : A = B \setminus C$ has variables $A$, $B$, and $C$, which are assigned by the indexes 1, 2, and 3, respectively. A tipical string $w$ over $\mathbb{B}^3$ looks like:
+            Given the main formula $\phi_0$, we define its semantic inductively relative to a string $w$ over the alphabet $\mathbb{B}^k$, where $\mathbb{B} = {0, 1}$ and $k$ is the number of variables in $\phi_0$. Assume every variable of $\phi_0$ is assigned a unique number in the range $1, 2, \dots, k$, called the \textit{variable index}. The string $w$ now determines an interpretation $w(P_i)$ of $P_i$, defined as the finite set ${j ,|, \text{the } j\text{th bit in the } P_i\text{-track is 1}}$. For example, the formula $\phi_0 \equiv \exists C : A = B \setminus C$ has variables $A$, $B$, and $C$, which are assigned the indices 1, 2, and 3, respectively. A typical string $w$ over $\mathbb{B}^3$ looks like:
 
             $$
             \begin{matrix}
@@ -368,7 +367,7 @@
 
             \vspace*{0.5em}
 
-            \noindent Its important to note, that $w$ with the suffix $(0^*)^T$ defines the smae interpretation as $w$. Therefore, the minimum $w$ is such a string that there is no such nun-empty suffix. The semantics of a formula $\phi$ is defined inductively:
+            \noindent It's important to note that $w$ with the suffix $(0^*)^T$ defines the same interpretation as $w$. Therefore, the minimum $w$ is such a string that there is no such non-empty suffix. The semantics of a formula $\phi$ is defined inductively:
                 \begin{alignat*}{2}
                     &w \vDash \neg \phi' \quad && \textnormal{iff}\quad  w \nvDash \phi'\\
                     &w \vDash \phi' \land \phi'' \quad &&\textnormal{iff}\quad  w \vDash \phi' \land w \vDash \phi''\\
@@ -378,10 +377,11 @@
                     &w \vDash P_i = P_j + 1 \quad &&\textnormal{iff}\quad  w(P_i) = \{j + 1\,|\, j \in w(P_j)\}
                 \end{alignat*}
 
-            where we use the notation $w[P_i \mapsto M]$ for the shortest string $w'$ that interprets all variables $P_j$, $j \neq i$ as $w$ does, but interprets $P_i$ as $M$. Note that if we assume that $w$ is minimum than $w'$ decomposes into $w' = w \cdot w''$, there $w''$ is a string of letter of the form $(0^*X0^*)^T$ where the $i$th component is the only one that may be different from 0.
+                where we use the notation $w[P_i \mapsto M]$ for the shortest string $w'$ that interprets all variables $P_j$, $j \neq i$, as $w$ does but interprets $P_i$ as $M$. Note that if we assume that $w$ is minimum, then $w'$ decomposes into $w' = w \cdot w''$, where $w''$ is a string of letters of the form $(0^*X0^*)^T$, and the $i$th component is the only one that may be different from 0.
 
         \subsubsection*{Automaton construction}
-            The input formula $\phi$ is recursively transformed into the deterministic finite automaton that represents the set of satisfying strings $L(\phi) = \{w\,|\, w \vDash \phi\}$. The translation of atomic and composite formulae to the deterministic finite automata follows:
+            The input formula $\phi$ is recursively transformed into the deterministic finite automaton that represents the set of satisfying strings $L(\phi) = {w,|, w \vDash \phi}$. The translation of atomic and composite formulae to deterministic finite automata follows:
+
 
             \vspace*{0.5em}
 
@@ -432,11 +432,11 @@
                                       (q2) edge[loop below] node[below] {$\begin{pmatrix}X\\X\end{pmatrix}$} ();
                         \end{tikzpicture}
                     \end{figure}
-                \item $\phi = \neg \phi'$: Negation of a formula corresponds to automaton complementation, so if we have already calculated $A'$ such that $L(\phi') = L(A')$, then $L(\neg \phi') = \complement L(\phi) = \complement L(A') = L(\complement A')$, where $\complement$ denotes both the language complementatino and automata complementation. If the automaton is complete and deterministic, then the complementation can be done by swapping accepting and nonaccepting states.
+                \item $\phi = \neg \phi'$: Negation of a formula corresponds to automaton complementation. If we have already calculated $A'$ such that $L(\phi') = L(A')$, then $L(\neg \phi') = \complement L(\phi') = \complement L(A') = L(\complement A')$, where $\complement$ denotes both language complementation and automata complementation. If the automaton is complete and deterministic, then complementation can be done by swapping accepting and non-accepting states.
                 \vspace*{0.5em}
-                \item $\phi = \phi' \land \phi''$: Conjunction corresponds to language intersection, $L(\phi' \land \phi'') = L(\phi') \cap L(\phi'')$. So the resulting automaton $A$ is obtained by production fo automata $A' \times A''$, where $L(\phi') = L(A')$ and $L(\phi'') = L(A'')$.
+                \item $\phi = \phi' \land \phi''$: Conjunction corresponds to language intersection, $L(\phi' \land \phi'') = L(\phi') \cap L(\phi'')$. So, the resulting automaton $A$ is obtained by the production of automata $A' \times A''$, where $L(\phi') = L(A')$ and $L(\phi'') = L(A'')$.
                 \vspace*{0.5em}
-                \item $\phi = \exists P_i : \phi'$: Intuitively, the desired automaton $A$ acts as the automaton $A'$ for $\phi'$ except that it is allowed to guess the bits on $P_i$-track. The resulting automaton $A$ is nondeterministic. Its necessary to apply determinization and adjust automaton $A$ in such a way that each $w \in L(A)$ is minimal.
+                \item $\phi = \exists P_i : \phi'$:  Intuitively, the desired automaton $A$ acts as the automaton $A'$ for $\phi'$ except that it is allowed to guess the bits on the $P_i$-track. The resulting automaton $A$ is nondeterministic. It is necessary to apply determinization and adjust the automaton $A$ in such a way that each $w \in L(A)$ is minimal.
             \end{itemize}
 
 
@@ -455,6 +455,20 @@
         \end{definition}
 
         The first and second conditions reflect the fact that only roots or leaves in the BDD can be initial and final states, respectively. The third condition demands that the part of the automaton simulating the BDD must be acyclic, with the exception of the root nodes/states with index 0.
+
+\section{Automata operations}
+    \subsection{Complement}
+    \subsection{Union}
+    \subsection{Intersection}
+    \subsection{Determinization}
+    \subsection{Minimization}
+    \subsection{Projection}
+
+\section{Experimental results}
+    \subsection{Operations performance}
+    \subsection{WS1S formulae}
+
+\section{Conclusion}
 
 
 
