@@ -51,13 +51,14 @@
 \usepackage{textcomp}%
 \usepackage{manyfoot}%
 \usepackage{booktabs}%
-\usepackage{algorithm}%
-\usepackage{algorithmicx}%
-\usepackage{algpseudocode}%
+% \usepackage{algorithm}%
+% \usepackage{algorithmicx}%
+% \usepackage{algpseudocode}%
 \usepackage{listings}%
 \usepackage{subcaption}
-\usepackage{hyperref}
 
+\usepackage{hyperref}
+\usepackage[ruled,linesnumbered]{algorithm2e}
 \usepackage{colonequals}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
@@ -194,7 +195,7 @@
 
         The size of the BDD is not determined only by the number of logical variables used within the function $\phi$ but also by the ordering of the variables in the BDD. The best variable ordering can result in a BDD with a linear (in the number of variables) number of nodes, while the worst ordering can lead to an exponential size.
 
-        \begin{figure}[H]
+        \begin{figure}[h]
             \centering
             \begin{subfigure}{0.5\textwidth}
                 \includegraphics[width=1.2\textwidth]{Figures/BDD_Variable_Ordering_Bad.pdf}
@@ -229,7 +230,7 @@
             \end{enumerate}
         \end{definition}
 
-        \begin{figure}[H]
+        \begin{figure}[h]
             \centering
             \begin{subfigure}{0.45\textwidth}
                 \centering
@@ -387,7 +388,7 @@
 
             \begin{itemize}
                 \item $\phi = P_1 \subseteq P_2$:
-                    \begin{figure}[H]
+                    \begin{figure}[h]
                         \centering
                         \begin{tikzpicture}
                             \centering
@@ -401,7 +402,7 @@
                     \end{figure}
                 \vspace*{0.5em}
                 \item $\phi = P_1 = P_2 \setminus P_3$:
-                    \begin{figure}[H]
+                    \begin{figure}[h]
                         \centering
                         \begin{tikzpicture}
                             \centering
@@ -416,7 +417,7 @@
                 \newpage
                 \item $\phi = P_1 = P_2 + 1$:
                     \vspace*{-1em}
-                    \begin{figure}[H]
+                    \begin{figure}[h]
                         \centering
                         \begin{tikzpicture}
                             \centering
@@ -462,7 +463,7 @@
 
         For example, let the formula $\phi \equiv \exists p, q : p \neq q \land p \in X \cap Y \land q \ \in X \cap Y$ be represented by the automaton $M$ in Figure \ref{fig:mona}, where each state $r$, $s$, and $t$ contains information about whether it is accepting or not and points to its root node in the SMTBDD describing its transition relation. The data structure also contains a pointer to the initial state.
 
-        \begin{figure}[H]
+        \begin{figure}[h]
             \centering
             \includegraphics[width=0.5\textwidth]{Figures/mona_aut.png}
             \vspace*{0.5em}
@@ -487,7 +488,7 @@
 
         \vspace*{-1em}
 
-        \begin{figure}[H]
+        \begin{figure}[h]
             \centering
             \begin{tikzpicture}
                 \node[state, initial] (q0) {$q_0$};
@@ -515,7 +516,7 @@
 
         \vspace*{-1.25em}
 
-        \begin{figure}[H]
+        \begin{figure}[h]
             \centering
             \begin{tikzpicture}
                 \node[state, initial, accepting] (q0) {$q_0$};
@@ -547,7 +548,7 @@
 
         The index information determines the length of a jump based on the indices of the source and destination states in the automaton's transition. Due to the indexing sequence following a pattern of $0, 1, \dots, n-1, 0, 1, \dots, n-1, 0, \dots$, the longest jump can only reach to the next state with an index of $0$. Although it might seem like a~step back from Bednář's method, the restriction on jump length actually simplifies all algorithms. Interestingly, this leads to a noticeably faster evaluation of the input formula, up to 10 times faster when compared to the version incorporating skip edges.
 
-        \begin{figure}[H]
+        \begin{figure}[h]
             \centering
             \begin{tikzpicture}
                 \node[state, initial] (q0) {$r_0$};
@@ -570,13 +571,118 @@
         \end{figure}
 
 \section{Automata operations}
+    This section presents operations on automata with indexed states used in the reimplementation of Mona using Mata library. The main concept of operations is taken from Mata with a minification fot the states indexing.
+
     \subsection{Complement}
+        The complementation is the most straightforward automaton method. It takes complete deterministic automaton and swaps its accepting and nonacceptance states. The difference from classical complementation is that only the accepting property of states with index $0$ is changed.
+
+        The accepting property of the initial states has to be handled differently. This state has a special meaning, it is used to encode boolean values. Therefore, if it is marked as accepting, then it will be unmarked, otherwise it will remain unaccepted.
+
+        \vspace*{0.5em}
+
+        \begin{definition}
+            Let $M = (Q, \Sigma, \delta, q_0, F)$ be a complete DFA with an index function $\iota : Q \rightarrow \mathbb{N}_0$. The complement of $M$ is defined as $\complement M = (Q, \Sigma, \delta, q_0, F')$, where:
+            $$
+            F' = \{q \in Q\,|\, \iota(q) = 0 \land q \notin F\}\setminus\{q_0\}
+            $$
+        \end{definition}
+
     \subsection{Union}
+        The only difference between the union of two NFAs and the union of two NFAs with index functions is that we have to unite the functions as well.
+
+        \begin{definition}
+            Let $M = (Q_M, \Sigma_M, \delta_M, I_M, F_M)$ be the first NFA with an index function $\iota_M : Q_M \rightarrow \mathbb{N}_0$ and $N = (Q_N, \Sigma_N, \delta_N, I_N, F_N)$ be the second NFA with an index function $\iota_N : Q_N \rightarrow \mathbb{N}_0$, where $Q_M \cap Q_N = \emptyset$. The union of $M$ and $N$ is an NFA $U = (Q_M \cup Q_N, \Sigma_M \cup~\Sigma_N, \delta, I_M \cup~I_N, F_M \cup F_N)$ where:
+            $$
+            \delta(a, q) =
+            \begin{cases}
+                \delta_M(a, q) & q \in Q_M\\
+                \delta_N(a, q) & q \in Q_N
+            \end{cases}
+            $$
+            with an  index function $\iota : Q_M \cup Q_N \rightarrow \mathbb{N}_0$ similarly as the transition function:
+            $$
+            \iota(q) =
+            \begin{cases}
+                \iota(q) & q \in Q_M\\
+                \iota(q) & q \in Q_N
+            \end{cases}
+            $$
+        \end{definition}
+
     \subsection{Intersection}
-    \subsection{Revert}
+    The standard intersection algorithm generates the resulting automaton using product construction. It starts with the pair of initial states (one from each automaton) and moves synchronously to the pair of successors based on the transition symbol. The key idea is inspired by the \textit{Apply} method\cite{APPLY}, commonly employed in Binary Decision Diagram (BDD) operations. In this adaptation of the standard intersection algorithm, the successor pair for the analyzed product pair is generated based on the state (or states in the case of identical indices) with the lower index. Meanwhile, the state with the higher index is duplicated.
+
+    \vspace*{-1em}
+
+    \begin{algorithm}
+        \DontPrintSemicolon
+        \caption{An Intersection Algorithm}
+        \KwData{Two DFA $M = (Q_M, \Sigma_M, \delta_M, i_M, F_M)$ and $N = (Q_N, \Sigma_N, \delta_N, i_N, F_N)$ and tow index functions $\iota_M : Q_M \rightarrow \mathbb{N}_0$ and $\iota_N : Q_M \rightarrow \mathbb{N}_0$}
+        \KwOut{Resulting DFA $A = (Q \subseteq Q_M \times Q_N, \Sigma \subseteq \Sigma_M \cup \Sigma_N, \delta, i, F) = M \cap N$}
+
+        \vspace*{0.5em}
+
+        $i \leftarrow (i_M, i_N)$\;
+        $queue \leftarrow \{i\}$\;
+        \While{$queue \neq \emptyset$}{
+            $s \leftarrow queue.pop()$\;
+            $(s_M, s_N) \leftarrow s$\;
+            \uIf{$\iota_M(s_M) = \iota_N(s_N)$}{
+                \ForAll{$a \in \Sigma_M \cap \Sigma_N : \delta_M(s_M, a) \in Q_M \land \delta_N(s_N, a) \in Q_N$}{
+                    $\delta(s, a) \leftarrow (\delta_M(s_M, a), \delta_N(s_N, a))$\;
+                    $queue.push((\delta_M(s_M, a), \delta_N(s_N, a)))$\;
+                }
+            }\uElseIf{$(\iota_M(s_M) < \iota_N(s_N) \land \iota_M(s_M) \neq 0) \lor \iota_N(s_N) = 0$}{
+                \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
+                    $\delta(s, a) \leftarrow (\delta_M(s_M, a), s_N)$\;
+                    $queue.push((\delta_M(s_M, a), s_N))$\;
+                }
+            }\Else{
+                \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
+                    $\delta(s, a) \leftarrow (s_M, \delta_N(s_N, a))$\;
+                    $queue.push((s_M, \delta_N(s_N, a)))$\;
+                }
+            }
+        }
+        \Return{$A$}\;
+
+    \end{algorithm}
+
     \subsection{Determinization}
-    \subsection{Minimization}
+        Standard determinization algorithm generates resulting automaton using subset construction. Starting with the set of initial states and creating transition using one alphabet symbol to the set of successors. This method has to be modified for use with index function similarly as the intersection. The successor of the resulting state (representing the set of states) is a set created by the states from current set with the lowest index. Meanwhile, the other states are duplicated.
+
+        \begin{algorithm}
+            \DontPrintSemicolon
+            \caption{A Determinization Algorithm}
+            \KwData{A NFA $M = (Q_M, \Sigma, \delta_M, I_M, F_M)$ and an index function $\iota_M : Q_M \rightarrow \mathbb{N}_0$}
+            \KwOut{A DFA $A = (Q \subseteq 2^{Q_M}, \Sigma, \delta, i, F)$ such that $L(M) = L(A)$ and index function $\iota : Q \rightarrow \mathbb{N}_0$}
+
+            \vspace*{0.5em}
+            $i \leftarrow I_M$\;
+            $\iota(i) \leftarrow 0$\;
+            $queue \leftarrow \{i\}$;
+            \While{$queue \neq \emptyset$}{
+                $s \leftarrow queue.pop()$\;
+                $waiting \leftarrow \{q \in s\,|\, \iota_M(q) \neq \iota(s)\}$\;
+                $cont \leftarrow s \setminus waiting$\;
+                $symbols \leftarrow \{a \in \Sigma\,|\, \forall q \in cont : \delta(q, a) \neq \emptyset\}$\;
+                \ForAll{$a \in symbols$}{
+                    $s\_next \leftarrow waiting \cup \bigcup_{q \in cont}\delta(a, q)$\;
+                    \uIf{$\forall q \in s\_next : \iota_M(q) = 0$}
+                    {
+                        $\iota(s\_next) \leftarrow 0$\;
+                    }\Else{
+                        $\iota(s\_next) \leftarrow min(\{q \in s\_next\,|\, \iota_M(s) \neq 0\})$\;
+                    }
+                }
+
+            }
+
+        \end{algorithm}
+
     \subsection{Projection}
+    \subsection{Revert}
+    \subsection{Minimization}
 
 \section{Experimental results}
     \subsection{Operations performance}
