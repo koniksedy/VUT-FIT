@@ -442,15 +442,15 @@
 
 
 \section{Automata representation}
-    This section presents three different approaches on how to incorporate BDDs into the finite automaton. First the Mona's approach using shared BDDs is shown followed by approaches that utilize jumping edges or state indexing.
+    This section presents three different approaches on how to incorporate BDDs into finite automata. First, Mona's approach using shared BDDs is shown, followed by approaches that utilize jumping edges or state indexing.
 
     \subsection{Mona}
-        Mona represents transition function not only using one BDD (as for Kripke structures) but with \textit{shared multi-terminal BDD} (SMTBDD). The main difference from standard BDD is that leaves of SMTBDD does not contain boolean values 0 or 1 but states of the automaton.
+        Mona represents the transition function not only using a single BDD (as in the case of Kripke structures) but with a \textit{shared multi-terminal }BDD (SMTBDD). The main difference from standard BDDs is that the leaves of SMTBDD do not contain boolean values 0 or 1 but rather states of the automaton.
 
         \vspace*{0.5em}
 
         \begin{definition}
-            Let $M = (Q, \Sigma, \delta, q_0, F)$ be DFA. The SMTBDD is a 7-tuple $G = (N, T, var, low, high, R, val)$ where:
+            Let $M = (Q, \Sigma, \delta, q_0, F)$ be DFA. The SMTBDD is defined as a 7-tuple $G = (N, T, var, low, high, R, val)$ where:
             \begin{itemize}[noindent]
                 \item $N$ is finite set on non-terminal (inner) nodes,
                 \item $T$ is a finite set of terminal nodes (leaves) such that $N \cap T = \emptyset$,
@@ -460,7 +460,7 @@
             \end{itemize}
         \end{definition}
 
-        For example, let formula $\phi \equiv \exists p, q : p \neq q \land p \in X \cap Y \land q \ \in X \cap Y$ be represented by the automaton $M$ in the figure \ref{fig:mona}, where each state $r$, $s$, and $t$ contains an information if it si accepting or not and points to its root node in the SMTBDD describing its transition relation. The data structure also contains a pointer to the initial state.
+        For example, let the formula $\phi \equiv \exists p, q : p \neq q \land p \in X \cap Y \land q \ \in X \cap Y$ be represented by the automaton $M$ in Figure \ref{fig:mona}, where each state $r$, $s$, and $t$ contains information about whether it is accepting or not and points to its root node in the SMTBDD describing its transition relation. The data structure also contains a pointer to the initial state.
 
         \begin{figure}[H]
             \centering
@@ -473,7 +473,7 @@
         \vspace*{-2em}
 
     \subsection{Automata with Skip Edges}
-        The main idea of Bednář's skip edges \cite{Bednar} is ti integrate BDD nodes directly into the transition of the automaton. This can be easily note BDD has automata-like structure. To simulate functionality of BDD, where each node has assigned variable, it is necessary to use skip edges.
+        The main idea of Bednář's skip edges \cite{Bednar} is to integrate BDD nodes directly into the transitions of the automaton. This can be easily noted, as BDD has an automata-like structure. To simulate the functionality of a BDD, where each node has an assigned variable, it is necessary to use skip edges.
 
         \vspace*{0.5em}
 
@@ -483,7 +483,7 @@
 
         \vspace*{0.5em}
 
-        The transition function in the automaton with skip edges gives the information about target states and the number of variables that have been jump over. The skip edge with a length 1 is a special case that has the same functionality as edges in NFA. $(n, r) \in \delta'(q, a)$ denotes that the automaton can move from state $q$ to $r$ after reading a symbol $a$ and then jump over $n-1$ variables.
+        The transition function in the automaton with skip edges provides information about target states and the number of variables that have been jumped over. The skip edge with a length of 1 is a special case that has the same functionality as edges in NFA. $(n, r) \in \delta'(q, a)$ denotes that the automaton can move from state $q$ to $r$ after reading a symbol $a$ and then jump over $n-1$ variables.
 
         \vspace*{-1em}
 
@@ -506,12 +506,12 @@
                           (q3) edge node[above] {$1/1$} (q4)
                           (q4) edge[loop above] node[above] {$\begin{aligned}0/2\\[-1.5mm]1/2\end{aligned}$} ();
             \end{tikzpicture}
-            \caption{Automaton with skip edges representing the language from the figure \ref{fig:mona}. Skip edge labeled with $a/n$ can be interpreted as transition of length $n$ reading symbol $a$.}
+            \caption{An automaton with skip edges representing the language from Figure \ref{fig:mona}. A skip edge labeled with $a/n$ can be interpreted as a transition of length $n$ reading symbol $a$.}
         \end{figure}
 
         \vspace*{-1.5em}
 
-        Potential benefit of skip edges is given by the fact that the length of the jump edge is not limited. Therefore the jump edge can jump over many BDDs and automaton states. The demonstration of this benefit is shown in the figure \ref{fig:skip_edges}. But it has to be noted, that this approach overcomplicated algorithms and did not show improvement in the space nor time.
+        The potential benefit of skip edges is derived from the fact that the length of the jump edge is not limited. Therefore, the jump edge can traverse over many BDDs and automaton states. The demonstration of this benefit is shown in Figure \ref{fig:skip_edges}. However, it has to be mentioned that this approach overcomplicated algorithms and did not show improvement in space or time.
 
         \vspace*{-1.25em}
 
@@ -530,7 +530,7 @@
         \end{figure}
 
     \subsection{Automata with Indexed States}
-        The approach of automaton with indexed states have been the main focus of the reimplementation. This automaton integrate BDD directly while maintaining the indexes on it nodes (automaton states).
+        The approach of an automaton with indexed states has been the main focus of the reimplementation. This automaton integrates BDDs directly while maintaining the indexes on its nodes (automaton states).
 
         \vspace*{0.5em}
 
@@ -545,7 +545,7 @@
 
         The first and second conditions reflect the fact that only roots or leaves in the BDD can be initial and final states, respectively. The third condition demands that the part of the automaton simulating the BDD must be acyclic, with the exception of the root nodes/states with index 0.
 
-        This index information determines the length of a jump based on the indices of the source and destination states in the automaton's transition. Due to the indexing sequence follows a pattern of $0, 1, \dots, n-1, 0, 1, \dots, n-1, 0, \dots$, the longest jump can only reach to the next state with an index of $0$. Although it might seem like a~step back from Bednář's method, the restriction on jump length actually simplifies all algorithms. Interestingly, this leads to a noticeably faster evaluation of the input formula, up to 10 times faster when compared to the version incorporating skip edges.
+        The index information determines the length of a jump based on the indices of the source and destination states in the automaton's transition. Due to the indexing sequence following a pattern of $0, 1, \dots, n-1, 0, 1, \dots, n-1, 0, \dots$, the longest jump can only reach to the next state with an index of $0$. Although it might seem like a~step back from Bednář's method, the restriction on jump length actually simplifies all algorithms. Interestingly, this leads to a noticeably faster evaluation of the input formula, up to 10 times faster when compared to the version incorporating skip edges.
 
         \begin{figure}[H]
             \centering
@@ -566,7 +566,7 @@
                           (q3) edge node[above] {$1$} (q4)
                           (q4) edge[loop above] node[above] {$0,1$} ();
             \end{tikzpicture}
-            \caption{Automaton with indexed states representing the language from the figure \ref{fig:mona}.}
+            \caption{Automaton with indexed states representing the language from Figure \ref{fig:mona}.}
         \end{figure}
 
 \section{Automata operations}
