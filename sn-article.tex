@@ -58,7 +58,7 @@
 \usepackage{subcaption}
 
 \usepackage{hyperref}
-\usepackage[ruled,linesnumbered]{algorithm2e}
+\usepackage[ruled,linesnumbered,vlined]{algorithm2e}
 \usepackage{colonequals}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
@@ -530,6 +530,8 @@
             \label{fig:skip_edges}
         \end{figure}
 
+    \vspace*{2em}
+
     \subsection{Automata with Indexed States}
         The approach of an automaton with indexed states has been the main focus of the reimplementation. This automaton integrates BDDs directly while maintaining the indexes on its nodes (automaton states).
 
@@ -576,8 +578,6 @@
     \subsection{Complement}
         The complementation is the most straightforward automaton method. It takes complete deterministic automaton and swaps its accepting and nonacceptance states. The difference from classical complementation is that only the accepting property of states with index $0$ is changed.
 
-        The accepting property of the initial states has to be handled differently. This state has a special meaning, it is used to encode boolean values. Therefore, if it is marked as accepting, then it will be unmarked, otherwise it will remain unaccepted.
-
         \vspace*{0.5em}
 
         \begin{definition}
@@ -587,8 +587,113 @@
             $$
         \end{definition}
 
+    \subsection{Intersection}
+    The standard intersection algorithm generates the resulting automaton using product construction. It starts with the pair of initial states (one from each automaton) and moves synchronously to the pair of successors based on the transition symbol. The key idea is inspired by the \textit{Apply} method\cite{APPLY}, commonly employed in Binary Decision Diagram (BDD) operations. In this adaptation of the standard intersection algorithm, the successor pair for the analyzed product pair is generated based on the state (or states in the case of identical indices) with the lower index. Meanwhile, the state with the higher index is duplicated.
+
+    \begin{algorithm}
+        \caption{An Intersection Algorithm}
+        \small
+        \DontPrintSemicolon
+        \SetKwFunction{proc}{get_new_index}
+        \KwData{Two DFA $M = (Q_M, \Sigma_M, \delta_M, i_M, F_M)$ and $N = (Q_N, \Sigma_N, \delta_N, i_N, F_N)$ and tow index functions $\iota_M : Q_M \rightarrow \mathbb{N}_0$ and $\iota_N : Q_M \rightarrow \mathbb{N}_0$}
+        \KwOut{Resulting DFA $A = (Q \subseteq Q_M \times Q_N, \Sigma \subseteq \Sigma_M \cup \Sigma_N, \delta, i, F) = M \cap N$}
+
+        \vspace*{1em}
+
+        \SetKwProg{proc}{Procedure}{}{}
+            \proc{\textnormal{Index($s_M$, $s_N$)}}{
+                \If{$\iota_N(s_N) = 0$}{
+                    \Return{$\iota_M(s_M)$}\;
+                }\If{$\iota_M(s_M) = 0$}{
+                    \Return{$\iota_N(s_N)$}\;
+                }
+                \Return{$min(\iota_M(s_M), \iota_N(s_N))$}\;
+        }
+
+        \vspace*{1em}
+
+        $i \leftarrow (i_M, i_N)$\;
+        $\iota(i) \leftarrow 0$\;
+        $worklist \leftarrow \{i\}$\;
+        \While{$worklist \neq \emptyset$}{
+            $s \leftarrow worklist.pop()$\;
+            $(s_M, s_N) \leftarrow s$\;
+            \uIf{$\iota_M(s_M) = \iota_N(s_N)$}{
+                \ForAll{$a \in \Sigma_M \cap \Sigma_N : \delta_M(s_M, a) \in Q_M \land \delta_N(s_N, a) \in Q_N$}{
+                    $\delta(s, a) \leftarrow (\delta_M(s_M, a), \delta_N(s_N, a))$\;
+                    $worklist \leftarrow worklist \cup \{(\delta_M(s_M, a), \delta_N(s_N, a))\}$\;
+                    $\iota((\delta_M(s_M, a), \delta_N(s_N, a))) \leftarrow Index(\delta_M(s_M, a), \delta_N(s_N, a))$\;
+                }
+            }\uElseIf{$(\iota_M(s_M) < \iota_N(s_N) \land \iota_M(s_M) \neq 0) \lor \iota_N(s_N) = 0$}{
+                \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
+                    $\delta(s, a) \leftarrow (\delta_M(s_M, a), s_N)$\;
+                    $worklist \leftarrow worklist \cup \{(\delta_M(s_M, a), s_N)\}$\;
+                    $\iota((\delta_M(s_M, a), s_N)) \leftarrow Index(\delta_M(s_M, a), s_N)$\;
+                }
+            }\Else{
+                \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
+                    $\delta(s, a) \leftarrow (s_M, \delta_N(s_N, a))$\;
+                    $worklist \leftarrow worklist \cup \{(s_M, \delta_N(s_N, a))\}$\;
+                    $\iota((s_M, \delta_N(s_N, a))) \leftarrow Index(s_M, \delta_N(s_N, a))$\;
+                }
+            }
+        }
+        \Return{$A$}\;
+        \normalsize
+    \end{algorithm}
+
+    \subsection{Determinization}
+        Standard determinization algorithm generates resulting automaton using subset construction. Starting with the set of initial states and creating transition using one alphabet symbol to the set of successors. This method has to be modified for use with index function similarly as the intersection. The successor of the resulting state (representing the set of states) is a set created by the states from current set with the lowest index. Meanwhile, the other states are duplicated.
+
+        \begin{algorithm}
+            \caption{A Determinization Algorithm}
+            \small
+            \DontPrintSemicolon
+            \KwData{A NFA $M = (Q_M, \Sigma, \delta_M, I_M, F_M)$ and an index function $\iota_M : Q_M \rightarrow \mathbb{N}_0$}
+            \KwOut{A DFA $A = (Q \subseteq 2^{Q_M}, \Sigma, \delta, i, F)$ such that $L(M) = L(A)$ and an index function $\iota : Q \rightarrow \mathbb{N}_0$}
+
+            \vspace*{0.5em}
+            $i \leftarrow I_M$\;
+            $\iota(i) \leftarrow 0$\;
+            $worklist \leftarrow \{i\}$\;
+            \While{$worklist \neq \emptyset$}{
+                $s \leftarrow worklist.pop()$\;
+                $waiting \leftarrow \{q \in s\,|\, \iota_M(q) \neq \iota(s)\}$\;
+                $cont \leftarrow s \setminus waiting$\;
+                $symbols \leftarrow \{a \in \Sigma\,|\, \forall q \in cont : \delta(q, a) \neq \emptyset\}$\;
+                \ForAll{$a \in symbols$}{
+                    $s\_next \leftarrow waiting \cup \bigcup_{q \in cont}\delta(a, q)$\;
+                    $\delta(s, a) \leftarrow s\_next$\;
+                    $worklist \leftarrow worklist \cup \{s\_next\}$\;
+                    \uIf{$\forall q \in s\_next : \iota_M(q) = 0$}
+                    {
+                        $\iota(s\_next) \leftarrow 0$\;
+                    }\Else{
+                        $\iota(s\_next) \leftarrow min(\{q \in s\_next\,|\, \iota_M(s) \neq 0\})$\;
+                    }
+                }
+                \If{$waiting \neq \emptyset$} {
+                    \ForAll{$a \in \Sigma \setminus symbols$}{
+                        $\delta(s, a) \leftarrow waiting$\;
+                        $worklist \leftarrow worklist \cup \{waiting\}$\;
+                        \uIf{$\forall q \in waiting : \iota_M(q) = 0$}
+                        {
+                            $\iota(waiting) \leftarrow 0$\;
+                        }\Else{
+                            $\iota(waiting) \leftarrow min(\{q \in waiting\,|\, \iota_M(s) \neq 0\})$\;
+                        }
+                    }
+                }
+
+            }
+            \Return{$A$}\;
+            \normalsize
+        \end{algorithm}
+
     \subsection{Union}
         The only difference between the union of two NFAs and the union of two NFAs with index functions is that we have to unite the functions as well.
+
+        \vspace*{0.5em}
 
         \begin{definition}
             Let $M = (Q_M, \Sigma_M, \delta_M, I_M, F_M)$ be the first NFA with an index function $\iota_M : Q_M \rightarrow \mathbb{N}_0$ and $N = (Q_N, \Sigma_N, \delta_N, I_N, F_N)$ be the second NFA with an index function $\iota_N : Q_N \rightarrow \mathbb{N}_0$, where $Q_M \cap Q_N = \emptyset$. The union of $M$ and $N$ is an NFA $U = (Q_M \cup Q_N, \Sigma_M \cup~\Sigma_N, \delta, I_M \cup~I_N, F_M \cup F_N)$ where:
@@ -609,80 +714,69 @@
             $$
         \end{definition}
 
-    \subsection{Intersection}
-    The standard intersection algorithm generates the resulting automaton using product construction. It starts with the pair of initial states (one from each automaton) and moves synchronously to the pair of successors based on the transition symbol. The key idea is inspired by the \textit{Apply} method\cite{APPLY}, commonly employed in Binary Decision Diagram (BDD) operations. In this adaptation of the standard intersection algorithm, the successor pair for the analyzed product pair is generated based on the state (or states in the case of identical indices) with the lower index. Meanwhile, the state with the higher index is duplicated.
-
-    \vspace*{-1em}
-
-    \begin{algorithm}
-        \DontPrintSemicolon
-        \caption{An Intersection Algorithm}
-        \KwData{Two DFA $M = (Q_M, \Sigma_M, \delta_M, i_M, F_M)$ and $N = (Q_N, \Sigma_N, \delta_N, i_N, F_N)$ and tow index functions $\iota_M : Q_M \rightarrow \mathbb{N}_0$ and $\iota_N : Q_M \rightarrow \mathbb{N}_0$}
-        \KwOut{Resulting DFA $A = (Q \subseteq Q_M \times Q_N, \Sigma \subseteq \Sigma_M \cup \Sigma_N, \delta, i, F) = M \cap N$}
-
-        \vspace*{0.5em}
-
-        $i \leftarrow (i_M, i_N)$\;
-        $queue \leftarrow \{i\}$\;
-        \While{$queue \neq \emptyset$}{
-            $s \leftarrow queue.pop()$\;
-            $(s_M, s_N) \leftarrow s$\;
-            \uIf{$\iota_M(s_M) = \iota_N(s_N)$}{
-                \ForAll{$a \in \Sigma_M \cap \Sigma_N : \delta_M(s_M, a) \in Q_M \land \delta_N(s_N, a) \in Q_N$}{
-                    $\delta(s, a) \leftarrow (\delta_M(s_M, a), \delta_N(s_N, a))$\;
-                    $queue.push((\delta_M(s_M, a), \delta_N(s_N, a)))$\;
-                }
-            }\uElseIf{$(\iota_M(s_M) < \iota_N(s_N) \land \iota_M(s_M) \neq 0) \lor \iota_N(s_N) = 0$}{
-                \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
-                    $\delta(s, a) \leftarrow (\delta_M(s_M, a), s_N)$\;
-                    $queue.push((\delta_M(s_M, a), s_N))$\;
-                }
-            }\Else{
-                \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
-                    $\delta(s, a) \leftarrow (s_M, \delta_N(s_N, a))$\;
-                    $queue.push((s_M, \delta_N(s_N, a)))$\;
-                }
-            }
-        }
-        \Return{$A$}\;
-
-    \end{algorithm}
-
-    \subsection{Determinization}
-        Standard determinization algorithm generates resulting automaton using subset construction. Starting with the set of initial states and creating transition using one alphabet symbol to the set of successors. This method has to be modified for use with index function similarly as the intersection. The successor of the resulting state (representing the set of states) is a set created by the states from current set with the lowest index. Meanwhile, the other states are duplicated.
+    \subsection{Projection}
+        The basic idea of a projection is to remove all transitions going from the states with the index of variable being removed and redirect all incoming edges into its successors. Only exception is projection of the variable with the index 0. In that case the redirection can not be done due to the restriction that states with the index 0 cannot be jumped over. The solution to this problem is to create edge for every letter of the alphabet and avery successor of the examined state.
 
         \begin{algorithm}
+            \caption{A Projection Algorithm}
+            \small
             \DontPrintSemicolon
-            \caption{A Determinization Algorithm}
-            \KwData{A NFA $M = (Q_M, \Sigma, \delta_M, I_M, F_M)$ and an index function $\iota_M : Q_M \rightarrow \mathbb{N}_0$}
-            \KwOut{A DFA $A = (Q \subseteq 2^{Q_M}, \Sigma, \delta, i, F)$ such that $L(M) = L(A)$ and index function $\iota : Q \rightarrow \mathbb{N}_0$}
+            \KwData{A NFA $M = (Q_M, \Sigma, \delta_M, I, F)$, an index function $\iota_M : Q_M \rightarrow \mathbb{N}_0$, and $id \in \mathbb{N}_0$ of a variable being projected.}
+            \KwOut{A NFA $A = (Q \subseteq Q_M, \Sigma, \delta, I, F)$ and new index function $\iota : Q \rightarrow \mathbb{N}_0$}
 
             \vspace*{0.5em}
-            $i \leftarrow I_M$\;
-            $\iota(i) \leftarrow 0$\;
-            $queue \leftarrow \{i\}$;
-            \While{$queue \neq \emptyset$}{
-                $s \leftarrow queue.pop()$\;
-                $waiting \leftarrow \{q \in s\,|\, \iota_M(q) \neq \iota(s)\}$\;
-                $cont \leftarrow s \setminus waiting$\;
-                $symbols \leftarrow \{a \in \Sigma\,|\, \forall q \in cont : \delta(q, a) \neq \emptyset\}$\;
-                \ForAll{$a \in symbols$}{
-                    $s\_next \leftarrow waiting \cup \bigcup_{q \in cont}\delta(a, q)$\;
-                    \uIf{$\forall q \in s\_next : \iota_M(q) = 0$}
-                    {
-                        $\iota(s\_next) \leftarrow 0$\;
-                    }\Else{
-                        $\iota(s\_next) \leftarrow min(\{q \in s\_next\,|\, \iota_M(s) \neq 0\})$\;
+
+            $A \leftarrow M$\;
+            \If{$id = 0$}{
+                $\iota \leftarrow \iota_M$\;
+                \ForAll{$q \in Q_M$}{
+                    \If{$\iota_M(q) \neq id$}{
+                        \textbf{continue}\;
+                    }
+                    $succ \leftarrow \{r \in Q_M\,|\,\exists a \in \Sigma : \delta_M(q, a) \neq \emptyset\}$\;
+                    \ForAll{$a \in \Sigma$}{
+                        $\delta(q, a) \leftarrow targets$\;
                     }
                 }
-
+                \Return{$A$};
             }
+
+            \ForAll{$q \in Q_M$}{
+                \If{$\iota_M(q) \neq id$}{
+                    \textbf{continue}\;
+                }
+                $succ \leftarrow \{r \in Q_M\,|\,\exists a \in \Sigma : \delta_M(q, a) \neq \emptyset \land \iota_M(r) \neq id\}$\;
+                \ForAll{$a \in \Sigma, r \in Q_M : q \in \delta_M(r, a) \land  \iota_M(r) \neq id$}{
+                    $\delta(r, a) \leftarrow \delta(r, a) \cup succ$\;
+                }
+                $A.remove(q)$\;
+            }
+
+            \ForAll{$q \in Q$}{
+                \uIf{$\iota_M(q) > id$}{
+                    $\iota(q) = \iota_M(q) - 1$\;
+                }\Else{
+                    $\iota(q) = \iota_M(q)$\;
+                }
+            }
+
+            \Return{$A$, $\iota$}
 
         \end{algorithm}
 
-    \subsection{Projection}
+        After the projection of the variable. There exists paths over symbol 0 leading from nonacceptance states into the accepting. This changes the language represented by the automaton and therefore avery such state has to be marked as accepting with the exception to the initial state.
+
+        The automaton $M = (Q, \Sigma, \delta, I, F_M)$ is transformed into the automaton of the form $A = (Q, \Sigma, \delta, I, F)$, where $F = F_M \cup \{q \in Q\,|\, \text{exist path over 0 leading to } f \in F_M\}$.
+
     \subsection{Revert}
+
+
     \subsection{Minimization}
+        The fast minimization for incomplete deterministic automata \cite{Minimization} performing in $\mathcal{O}(m\, \text{log}\, n)$ time has been implemented. Unfortunately the benchmarks have shown that the minimization have to be done not only according the forward language equivalence, but also by the backward language equivalence. This algorithm can not be used for this task, because even it is DFA it still can have nondeterministic transitions in the backward direction.
+
+        Since this algorithm can not be chosen for the automata minimization and the minimization algorithm based on the simulation provided by the Mata library has been too slow, the naive Brzozowski \cite{Brzozowski} algorithm has been chosen. It minimized DFA by reverting and determinizing the input automaton and then reverting and determinizing it again.
+
+
 
 \section{Experimental results}
     \subsection{Operations performance}
