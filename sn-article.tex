@@ -573,10 +573,10 @@
         \end{figure}
 
 \section{Automata operations}
-    This section presents operations on automata with indexed states used in the reimplementation of Mona using Mata library. The main concept of operations is taken from Mata with a minification fot the states indexing.
+    This section presents operations on automata with indexed states, which are utilized in the reimplementation of Mona using the Mata library. The primary concept of these operations is derived from Mata and modified to adapt state indexing.
 
     \subsection{Complement}
-        The complementation is the most straightforward automaton method. It takes complete deterministic automaton and swaps its accepting and nonacceptance states. The difference from classical complementation is that only the accepting property of states with index $0$ is changed.
+        The complementation method is the most straightforward approach for automata. It involves taking a complete deterministic automaton and swapping its accepting and nonaccepting states. Unlike classical complementation, only the accepting property of states with index $0$ is altered.
 
         \vspace*{0.5em}
 
@@ -588,62 +588,75 @@
         \end{definition}
 
     \subsection{Intersection}
-    The standard intersection algorithm generates the resulting automaton using product construction. It starts with the pair of initial states (one from each automaton) and moves synchronously to the pair of successors based on the transition symbol. The key idea is inspired by the \textit{Apply} method\cite{APPLY}, commonly employed in Binary Decision Diagram (BDD) operations. In this adaptation of the standard intersection algorithm, the successor pair for the analyzed product pair is generated based on the state (or states in the case of identical indices) with the lower index. Meanwhile, the state with the higher index is duplicated.
+        The standard intersection algorithm generates the resulting automaton using product construction. It begins with the pair of initial states (one from each automaton) and moves synchronously to the pair of successors based on the transition symbol. The key idea is inspired by the \textit{Apply} method \cite{APPLY}, commonly used in Binary Decision Diagram (BDD) operations. In this adaptation of the standard intersection algorithm, the successor pair for the analyzed product pair is generated based on the state (or states in the case of identical indices) with the lower index. Meanwhile, the state with the higher index is duplicated.
 
-    \begin{algorithm}
-        \caption{An Intersection Algorithm}
-        \small
-        \DontPrintSemicolon
-        \SetKwFunction{proc}{get_new_index}
-        \KwData{Two DFA $M = (Q_M, \Sigma_M, \delta_M, i_M, F_M)$ and $N = (Q_N, \Sigma_N, \delta_N, i_N, F_N)$ and tow index functions $\iota_M : Q_M \rightarrow \mathbb{N}_0$ and $\iota_N : Q_M \rightarrow \mathbb{N}_0$}
-        \KwOut{Resulting DFA $A = (Q \subseteq Q_M \times Q_N, \Sigma \subseteq \Sigma_M \cup \Sigma_N, \delta, i, F) = M \cap N$}
+        \begin{algorithm}
+            \caption{An Intersection Algorithm}
+            \small
+            \DontPrintSemicolon
+            \SetKwFunction{procA}{get_new_index}
+            \SetKwFunction{procB}{create_state}
+            \KwData{Two DFA $M = (Q_M, \Sigma_M, \delta_M, i_M, F_M)$ and $N = (Q_N, \Sigma_N, \delta_N, i_N, F_N)$ and tow index functions $\iota_M : Q_M \rightarrow \mathbb{N}_0$ and $\iota_N : Q_M \rightarrow \mathbb{N}_0$}
+            \KwOut{Resulting DFA $A = (Q \subseteq Q_M \times Q_N, \Sigma \subseteq \Sigma_M \cup \Sigma_N, \delta, i, F) = M \cap N$ and index function $\iota Q \rightarrow \mathbb{N}_0$}
 
-        \vspace*{1em}
+            \vspace*{0.5em}
 
-        \SetKwProg{proc}{Procedure}{}{}
-            \proc{\textnormal{Index($s_M$, $s_N$)}}{
-                \If{$\iota_N(s_N) = 0$}{
-                    \Return{$\iota_M(s_M)$}\;
-                }\If{$\iota_M(s_M) = 0$}{
-                    \Return{$\iota_N(s_N)$}\;
-                }
-                \Return{$min(\iota_M(s_M), \iota_N(s_N))$}\;
-        }
+            \SetKwProg{procA}{Procedure}{}{}
+                \procA{\textnormal{Index($s_M$, $s_N$)}}{
+                    \If{$\iota_N(s_N) = 0$}{
+                        \Return{$\iota_M(s_M)$}\;
+                    }\If{$\iota_M(s_M) = 0$}{
+                        \Return{$\iota_N(s_N)$}\;
+                    }
+                    \Return{$min(\iota_M(s_M), \iota_N(s_N))$}\;
+            }
 
-        \vspace*{1em}
+            \vspace*{0.5em}
 
-        $i \leftarrow (i_M, i_N)$\;
-        $\iota(i) \leftarrow 0$\;
-        $worklist \leftarrow \{i\}$\;
-        \While{$worklist \neq \emptyset$}{
-            $s \leftarrow worklist.pop()$\;
-            $(s_M, s_N) \leftarrow s$\;
-            \uIf{$\iota_M(s_M) = \iota_N(s_N)$}{
-                \ForAll{$a \in \Sigma_M \cap \Sigma_N : \delta_M(s_M, a) \in Q_M \land \delta_N(s_N, a) \in Q_N$}{
-                    $\delta(s, a) \leftarrow (\delta_M(s_M, a), \delta_N(s_N, a))$\;
-                    $worklist \leftarrow worklist \cup \{(\delta_M(s_M, a), \delta_N(s_N, a))\}$\;
-                    $\iota((\delta_M(s_M, a), \delta_N(s_N, a))) \leftarrow Index(\delta_M(s_M, a), \delta_N(s_N, a))$\;
-                }
-            }\uElseIf{$(\iota_M(s_M) < \iota_N(s_N) \land \iota_M(s_M) \neq 0) \lor \iota_N(s_N) = 0$}{
-                \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
-                    $\delta(s, a) \leftarrow (\delta_M(s_M, a), s_N)$\;
-                    $worklist \leftarrow worklist \cup \{(\delta_M(s_M, a), s_N)\}$\;
-                    $\iota((\delta_M(s_M, a), s_N)) \leftarrow Index(\delta_M(s_M, a), s_N)$\;
-                }
-            }\Else{
-                \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
-                    $\delta(s, a) \leftarrow (s_M, \delta_N(s_N, a))$\;
-                    $worklist \leftarrow worklist \cup \{(s_M, \delta_N(s_N, a))\}$\;
-                    $\iota((s_M, \delta_N(s_N, a))) \leftarrow Index(s_M, \delta_N(s_N, a))$\;
+            \SetKwProg{procB}{Procedure}{}{}
+                \procB{\textnormal{Createq\_State($x$, $y$)}}{
+                    $worklist \leftarrow worklist \cup \{(x, y)\}$\;
+                    $Q \leftarrow Q \cup \{(x, y)\}$\;
+                    $\iota((x, y)) \leftarrow Index(x, y)$\;
+                    \If{$x \in F_M \land y \in F_N$}{
+                        $F \leftarrow F \cup (x, y)$\;
+                    }
+            }
+
+            \vspace*{0.5em}
+
+            $i \leftarrow (i_M, i_N)$\;
+            $\iota(i) \leftarrow 0$\;
+            $worklist \leftarrow \{i\}$\;
+            $Q \leftarrow Q \cup \{i\}$\;
+            \While{$worklist \neq \emptyset$}{
+                $s \leftarrow worklist.pop()$\;
+                $(s_M, s_N) \leftarrow s$\;
+                \uIf{$\iota_M(s_M) = \iota_N(s_N)$}{
+                    \ForAll{$a \in \Sigma_M \cap \Sigma_N : \delta_M(s_M, a) \in Q_M \land \delta_N(s_N, a) \in Q_N$}{
+                        $\delta(s, a) \leftarrow (\delta_M(s_M, a), \delta_N(s_N, a))$\;
+                        $Create\_State(\delta_M(s_M, a), \delta_N(s_N, a))$\;
+                    }
+                }\uElseIf{$(\iota_M(s_M) < \iota_N(s_N) \land \iota_M(s_M) \neq 0) \lor \iota_N(s_N) = 0$}{
+                    \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
+                        $\delta(s, a) \leftarrow (\delta_M(s_M, a), s_N)$\;
+                        $Create\_State(\delta_M(s_M, a), s_N)$\;
+                    }
+                }\Else{
+                    \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
+                        $\delta(s, a) \leftarrow (s_M, \delta_N(s_N, a))$\;
+                        $Create\_State(s_M, \delta_N(s_N, a))$\;
+                    }
                 }
             }
-        }
-        \Return{$A$}\;
-        \normalsize
-    \end{algorithm}
+            \Return{$A, \iota$}\;
+            \normalsize
+        \end{algorithm}
+
+        \vspace*{-1em}
 
     \subsection{Determinization}
-        Standard determinization algorithm generates resulting automaton using subset construction. Starting with the set of initial states and creating transition using one alphabet symbol to the set of successors. This method has to be modified for use with index function similarly as the intersection. The successor of the resulting state (representing the set of states) is a set created by the states from current set with the lowest index. Meanwhile, the other states are duplicated.
+        The standard determinization algorithm constructs the resulting automaton through subset construction. It initiates the process with a set of initial states and creates transitions to the set of targets, which consists of successors of states from the examined set. This method requires modification for compatibility with the index function, similarly as in the intersection algorithm. Specifically, the set of successors of the examined state (representing the set of states) is formed by the states with the lowest index, while the remaining states are duplicated.
 
         \begin{algorithm}
             \caption{A Determinization Algorithm}
@@ -668,8 +681,12 @@
                     \uIf{$\forall q \in s\_next : \iota_M(q) = 0$}
                     {
                         $\iota(s\_next) \leftarrow 0$\;
+
                     }\Else{
                         $\iota(s\_next) \leftarrow min(\{q \in s\_next\,|\, \iota_M(s) \neq 0\})$\;
+                    }
+                    \If{$iota(s\_next) = 0 \land F_M \cap s\_next \neq \emptyset$}{
+                        $F \leftarrow F \cup \{s\_next\}$\;
                     }
                 }
                 \If{$waiting \neq \emptyset$} {
@@ -682,6 +699,9 @@
                         }\Else{
                             $\iota(waiting) \leftarrow min(\{q \in waiting\,|\, \iota_M(s) \neq 0\})$\;
                         }
+                        \If{$iota(waiting) = 0 \land F_M \cap waiting \neq \emptyset$}{
+                        $F \leftarrow F \cup \{waiting\}$\;
+                    }
                     }
                 }
 
@@ -691,7 +711,7 @@
         \end{algorithm}
 
     \subsection{Union}
-        The only difference between the union of two NFAs and the union of two NFAs with index functions is that we have to unite the functions as well.
+        The only distinction between the union of two NFAs and the union of two NFAs with index functions is the necessity to unify the functions as well.
 
         \vspace*{0.5em}
 
@@ -715,7 +735,7 @@
         \end{definition}
 
     \subsection{Projection}
-        The basic idea of a projection is to remove all transitions going from the states with the index of variable being removed and redirect all incoming edges into its successors. Only exception is projection of the variable with the index 0. In that case the redirection can not be done due to the restriction that states with the index 0 cannot be jumped over. The solution to this problem is to create edge for every letter of the alphabet and avery successor of the examined state.
+        The basic idea of a projection is to remove all transitions going from the states with the index of the variable being removed and redirect all incoming edges into its successors. The only exception is the projection of the variable with the index 0. In that case, the redirection cannot be done due to the restriction that states with the index 0 cannot be jumped over. The solution to this problem is to create an edge for every letter of the alphabet and every successor of the examined state.
 
         \begin{algorithm}
             \caption{A Projection Algorithm}
@@ -769,17 +789,138 @@
         The automaton $M = (Q, \Sigma, \delta, I, F_M)$ is transformed into the automaton of the form $A = (Q, \Sigma, \delta, I, F)$, where $F = F_M \cup \{q \in Q\,|\, \text{exist path over 0 leading to } f \in F_M\}$.
 
     \subsection{Revert}
+        Standart reversion algorithm switches initial and final states of the automaton and flips the direction of all transitions. This practice (of course with the inversion of the indexes) can be used on the automata with indexed states only when there in single variable, otherwise each transition of the length $1 < n$ over a symbol $a \in \Sigma$ has to be reverted and divided into two sections. The first section containing transitions of the length $n - 1$ over all symbols from $\Sigma$ and the second section consisting of the transition of the length $1$ containing the symbol $a$.
 
+        \vspace*{0.5em}
+
+        \begin{definition}
+            Let $n \in \mathbb{N}$ be the number of variables and $\iota : Q \rightarrow \mathbb{N}_0$ be the index function The length of a transition between states $q, r \in Q$ over a letter $a \in \Sigma$ is determined as:
+            $$
+            len(q \xrightarrow[]{a} r) =
+            \begin{cases}
+                \iota(r) - \iota(q) & \iota(r) \neq 0\\
+                n - \iota(q) & otherwise
+            \end{cases}
+            $$
+        \end{definition}
+
+        \vspace*{0.5em}
+
+        \begin{definition}
+            Let $M = (Q_M, \Sigma, \delta_M, I, F)$ be NFA, $n \in \mathbb{N}$ be the number of variables being used in the automaton, and $\iota : Q \rightarrow \mathbb{N}_0$ be the index function. The reverted automaton is defined as $A = (Q \colonequals Q_N \cup Q_M, \Sigma, \delta, I, F)$ with the index function $\iota : Q \cup \mathbb{N}_0$ where:
+            \begin{itemize}
+                \item $Q_N = \{(q, a, r) \in Q_M \times \Sigma \times Q_M\,|\,r \in \delta(q, a) \land len(q \xrightarrow[]{a}r) \neq 1\}$ is a set of new states.
+                \vspace*{0.5em}
+                \item $\delta(q, a) =
+                \begin{cases}
+                    \begin{aligned}
+                        \{r \in Q_M\,|\,q \in \delta_M(r, a) \land len(r \xrightarrow[]{a} q) = 1\}& \cup\\
+                        \{(r, b, q) \in Q_N\,|\,\exists b \in \Sigma : q \in \delta_M(r, b)\}&
+                    \end{aligned} \hspace{1cm} &q \in Q_M\\[1em]
+                    \{(r, a, q) \in Q_N\,|\, r \in \delta(a, q)\}  & otherwise
+                \end{cases}
+                $
+                \vspace*{0.5em}
+                \item $\iota(q) =
+                \begin{cases}
+                    n - 1 - \iota_M(q) & q \in Q_M\\
+                    \iota_M(q') + 1 & q \colonequals (q', a, r') \in Q_N
+
+                \end{cases}
+                $
+            \end{itemize}
+        \end{definition}
 
     \subsection{Minimization}
-        The fast minimization for incomplete deterministic automata \cite{Minimization} performing in $\mathcal{O}(m\, \text{log}\, n)$ time has been implemented. Unfortunately the benchmarks have shown that the minimization have to be done not only according the forward language equivalence, but also by the backward language equivalence. This algorithm can not be used for this task, because even it is DFA it still can have nondeterministic transitions in the backward direction.
+        The fast minimization for incomplete deterministic automata \cite{Minimization} performing in $\mathcal{O}(m\, \text{log}\, n)$ time has been implemented. Unfortunately, benchmarks have revealed that minimization needs to be performed not only according to the forward language equivalence but also by considering the backward language equivalence. This algorithm cannot be used for this task, as even though the input automaton is deterministic, it can still have nondeterministic transitions in the backward direction.
 
-        Since this algorithm can not be chosen for the automata minimization and the minimization algorithm based on the simulation provided by the Mata library has been too slow, the naive Brzozowski \cite{Brzozowski} algorithm has been chosen. It minimized DFA by reverting and determinizing the input automaton and then reverting and determinizing it again.
+        Since this algorithm is unsuitable for automata minimization and the minimization algorithm based on the simulation provided by the Mata library is too slow, the naive Brzozowski algorithm \cite{Brzozowski} has been chosen. This algorithm minimizes DFA by reverting and determinizing the input automaton, and then reverting and determinizing it again.
 
+        Automata minimization performed by the Brzozowski algorithm corresponds to the elimination of isomorphic subgraphs in BDD reduction. The elimination of nodes with equivalent \textit{high} and \textit{low} successors can also be performed on the automata. The elimination of a state is simply done by redirecting all incoming transitions to all its successors. The only exception is the elimination of a state with index $0$. Those states will have to remain in the automaton even if their \textit{high} and \textit{low} successors are the same state.
 
+        \vspace*{0.5em}
+
+        \begin{definition}
+            Let $M = (Q, \Sigma, \delta, i, F)$ be DFA with the index function $\iota ~:~Q \rightarrow \mathbb{N}_0$. The automaton $M$ is called reduced DFA if it is in the minimal form and $\forall q \in Q : \iota(q) =~0~\lor (\nexists r \in Q : \forall a \in \Sigma : r = \delta(q, a))$.
+        \end{definition}
 
 \section{Experimental results}
+    This section is dedicated to comparing the performance of Mona, its reimplementation using skip edges, and its reimplementation using state indexing. The experiments were performed on a machine equipped with an AMD Ryzen 7 3800XT 8-Core processor and 32 GB of memory. The comparison begins with an analysis of intersection and projection operations, with the focus on the execution times. Subsequently, the focus shifts to a comprehensive evaluation of the implementations on WS1S formulae decision. The benchmark formulae employed in these experiments have been sourced from the Gaston project\footnote{available at: \url{https://www.fit.vutbr.cz/research/groups/verifit/tools/gaston/.cs}}, and Bednář's Master thesis \cite{Bednar}.
     \subsection{Operations performance}
+        Individual operations, such as intersection and projection, have been tested on automata generated during the decision of WS1S procedures from \cite{Bednar}. Complementation was omitted from testing due to its simplicity, and minimization was excluded since the Brzozowski algorithm is widely known for its slow performance. Determinization was not tested because the tool Mona does not produce nondeterministic automata. Nevertheless, the impact of determinization can be indirectly observed during the examination of the projection of the first variable. Each projection must be followed by a determinization, and by projecting the first variable and subsequently the rest, the automaton attains the highest level of nondeterminism.
+
+        \subsubsection*{Intersection}
+            Figures \ref{fig:intersection_log} and \ref{fig:intersection_speedup} reveal that the State Indexing reimplementation was, on average, approximately ten times faster than Skip Edges. When comparing State Indexing to the tool Mona, it becomes evident that Mona is still faster on average than State Indexing. However, there are instances where State Indexing surpasses Mona by more than 50 times in speed. Additionally, State Indexing performs intersection at its worst case, with outliers, only up to ten times slower than Mona.
+            \vspace*{-1em}
+            \begin{figure}[h!]
+                \centering
+                \captionsetup[subfigure]{justification=centering}
+                \begin{subfigure}{0.49\textwidth}
+                    \includegraphics[width=\textwidth]{Figures/intersection-mona.pdf}
+                    \caption*{Comparing State Indexing and Mona:\\ Logarithmic Time Performance [$\mu s$].}
+                \end{subfigure}
+                \begin{subfigure}{0.49\textwidth}
+                    \includegraphics[width=\textwidth]{Figures/intersection-mata.pdf}
+                    \subcaption*{Comparing State Indexing and Skip Edges:\\ Logarithmic Time Performance [$\mu s$].}
+                \end{subfigure}
+                \caption{Comparison of intersection time for the tool Mona, reimplementation using Skip Edges, and reimplementation using State Indexing.}
+                \label{fig:intersection_log}
+            \end{figure}
+            \vspace*{-3em}
+            \begin{figure}[h!]
+                \centering
+                \includegraphics[width=0.49\textwidth]{Figures/intersection-speedup.pdf}
+                \caption{State Indexing speedup compared to Mona intersection time. The vertical axis represents the number of occurrences (Logarithmic scale), while the horizontal axis indicates the speedup (positive) or slowdown (negative).}
+                \label{fig:intersection_speedup}
+            \end{figure}
+
+        \subsubsection*{Projection of the last variable}
+            It is interesting to observe, as depicted in Figures \ref{figure:projection_last} and \ref{figure:projection_last_speedup}, that the reimplementation with State Indexing was, on average, faster not only than the Skip Edges version but also than Mona. For certain inputs, State Indexing proved to be more than a thousand times faster than the tool Mona. Despite this, the maximal slowdown for State Indexing was only a factor of 5.
+            \begin{figure}[h!]
+                \centering
+                \captionsetup[subfigure]{justification=centering}
+                \begin{subfigure}{0.49\textwidth}
+                    \includegraphics[width=\textwidth]{Figures/projection-last-mata.pdf}
+                    \subcaption*{Comparing State Indexing and Mona:\\ Logarithmic Time Performance [$\mu s$].}
+                \end{subfigure}
+                \begin{subfigure}{0.49\textwidth}
+                    \includegraphics[width=\textwidth]{Figures/projection-last-mona.pdf}
+                    \subcaption*{Comparing State Indexing and Skip Edges:\\ Logarithmic Time Performance [$\mu s$].}
+                \end{subfigure}
+                \caption{Comparison of projection and determinization time for the tool Mona, reimplementation using Skip Edges, and reimplementation using State Indexing.}
+                \label{figure:projection_last}
+            \end{figure}
+            \begin{figure}[h!]
+                \centering
+                \includegraphics[width=0.49\textwidth]{Figures/projection-last-speedup.pdf}
+                \caption{State Indexing speedup compared to Mona projection time. The vertical axis represents the number of occurrences (Logarithmic scale), while the horizontal axis indicates the speedup (positive) or slowdown (negative).}
+                \label{figure:projection_last_speedup}
+            \end{figure}
+        \subsubsection*{Projection of the first variable}
+            The projection of the first variable (the variable with the lowest id) was included in the experiments because projecting such a variable yields an automaton with the highest level of nondeterminism, and determinization is performed after every projection. Consequently, it can effectively substitute experiments focused on determinization.
+
+            Unsurprisingly, the State Indexing reimplementation is about ten times faster than Skip Edges. However, it is noteworthy that Mona and State Indexing performed almost identically. This similarity might be due to a less optimized projection algorithm in the Mona tool for the first variable or a potentially suboptimal determinization algorithm.
+
+            \begin{figure}[h!]
+                \centering
+                \captionsetup[subfigure]{justification=centering}
+                \begin{subfigure}{0.49\textwidth}
+                    \includegraphics[width=\textwidth]{Figures/projection-first-mata.pdf}
+                    \subcaption*{Comparing State Indexing and Mona:\\ Logarithmic Time Performance [$\mu s$].}
+                \end{subfigure}
+                \begin{subfigure}{0.49\textwidth}
+                    \includegraphics[width=\textwidth]{Figures/projection-first-mona.pdf}
+                    \subcaption*{Comparing State Indexing and Skip Edges:\\ Logarithmic Time Performance [$\mu s$].}
+                \end{subfigure}
+                \label{figure:projection_first}
+                \caption{Comparison of projection and determinization time for the tool Mona, reimplementation using Skip Edges, and reimplementation using State Indexing.}
+            \end{figure}
+            \begin{figure}[h!]
+                \centering
+                \includegraphics[width=0.49\textwidth]{Figures/projection-first-speedup.pdf}
+                \caption{State Indexing speedup compared to Mona projection time. The vertical axis represents the number of occurrences (Logarithmic scale), while the horizontal axis indicates the speedup (positive) or slowdown (negative).}
+                \label{figure:projection_last_speedup}
+            \end{figure}
     \subsection{WS1S formulae}
 
 \section{Conclusion}
