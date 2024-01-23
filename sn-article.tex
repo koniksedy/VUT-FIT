@@ -125,10 +125,10 @@
 %%     Unstructured abstract        %%
 %%==================================%%
 
-\abstract{This paper focuses on the reimplementation of the decision procedure for WS1S logic, a second-order logic that can be decided using finite automata. The well known tool for WS1S logic decision, Mona, employs automata with transitions represented through binary decision diagrams (BDDs). Due to the integration of BDDs in automata operations, tasks like reversal cannot be executed in the conventional manner of reverting individual edges. Instead, the reversal of each BDD must be computed, potentially resulting in an exponential blowup. Motivated by these limitations, Pavel Bednar reimplemented Mona using a pure automata approach with the Mata library. This work optimizes the automata methodology, resulting in a significant speedup, up to ten times faster, in WS1S decision compared to Bednar's original reimplementation.}
+\abstract{This paper focuses on the reimplementation of the decision procedure for WS1S logic, a second-order logic that can be decided using finite automata. The well known tool for WS1S logic decision, Mona, employs automata with transitions represented through binary decision diagrams (BDDs). Due to the integration of BDDs in automata, operations like reversal cannot be designed in the conventional manner of reverting individual edges. Instead, the reversal of each BDD must be computed, potentially resulting in an exponential blowup. Motivated by these limitations, Pavel Bednář reimplemented Mona using a pure automata-based approach with the Mata library. This work optimizes this approach, resulting in a significant speedup, up to ten times faster, compared to Bednář's original reimplementation.}
 
 
-\keywords{Finite Automata, Binary Decision Diagrams, WS1S, MONA, MATA}
+\keywords{Finite Automata, Binary Decision Diagrams, WS1S, Mona, Mata}
 
 
 \maketitle
@@ -139,17 +139,17 @@
 %%==================================%%
 
 \section{Introduction}
-    The most well-known decision procedures are SAT and SMT \cite{SAT_SMT}, which are widely used in various applications such as verification (e.g., predicate abstraction), test generation, hardware synthesis, minimization, artificial intelligence, etc. The SAT (satisfiability) problem is a decision problem that asks whether a given propositional formula is satisfiable. The SMT (satisfiability modulo theories) problem extends the SAT problem to the satisfiability of first-order formulas with equality and atoms from various first-order theories. There are various higher-order decision procedures such as WS1S, WS2S, WSkS, S1S, etc.
+    The most well-known decision procedures are SAT and SMT \cite{SAT_SMT}, which are widely used in various applications such as verification (e.g., predicate abstraction), test generation, hardware synthesis, minimization, artificial intelligence, etc. The SAT (satisfiability) problem is a decision problem that asks whether a given propositional formula is satisfiable. The SMT (satisfiability modulo theories) problem extends the SAT problem to the satisfiability of first-order formulas with equality and atoms from many first-order theories. There are also  higher-order decision procedures such as WS1S, WS2S, WSkS, S1S, etc.
 
-    This work focuses on WS1S, the weak monadic second-order theory of the first successor. The term "weak" refers to finite sets, "monadic" indicates unary relations, "second-order" allows the usage of quantifiers over the relations, and "first successor" means that there is only one successor (e.g., the structure is linear).  WS1S \cite{WS1S} has an extremely simple syntax and semantics: it is variation of predicate logic with first-order variable that denote natural numbers and second-order variables that denote finite sets of natural numbers, it has a single function symbol, which denotes the successor function and has usual comparison operators such as $\leq$, $=$, $\in$ and $\supseteq$. Richard Büchi presented approach how to decide WS1S using finite automata in \cite{Buchi} The main idea is to recursively transform each subformula of the main WS1S formula into deterministic finite automata (DFA) representing feasible interpretations and simulate boolean operations via the automata operations.
+    This work focuses on WS1S, the weak monadic second-order theory of the first successor. The term "weak" refers to finite sets, "monadic" indicates unary relations, "second-order" allows the usage of quantifiers over the relations, and "first successor" means that there is only one successor (e.g., the structure is linear).  WS1S \cite{WS1S} has an extremely simple syntax and semantics: it is variation of predicate logic with first-order variables that denote natural numbers and second-order variables that denote finite sets of natural numbers, it has a single function symbol, which denotes the successor function and has comparison operators such as $\leq$, $=$, $\in$ and $\supseteq$. Richard Büchi presented approach how to decide WS1S using finite automata in \cite{Buchi}. The main idea is to recursively transform each subformula of the main WS1S formula into deterministic finite automata (DFAs) representing feasible interpretations and simulate boolean operations via the automata operations.
 
-    The most commonly used tool for deciding WS1S and WS2S is Mona\footnote{accessible at \url{https://www.brics.dk/mona/index.html}}, which employs Büchi's recursion approach for the construction of finite automata with binary decision diagrams (BDD) to represent all automaton transitions. The use of BDD makes the decision faster, but at the cost of making some automata operations, such as reversion, expensive (potentially resulting in exponential blowup). Despite this limitation, Mona is widely utilized in various fields of program verification, including the verification of programs with complex dynamic data structures \cite{DDS1, DDS2}, string analysis \cite{string_analysis}, parametrized systems \cite{parametrized_systems}, distributed systems \cite{distributed_systems}, automatic synthesis \cite{automatic_synthesis}, hardware verification \cite{hardware_verification}, and many others.
+    The most commonly used tool for deciding WS1S and WS2S is Mona\footnote{accessible at \url{https://www.brics.dk/mona/index.html}}, which employs Büchi's recursion approach for the construction of finite automata with binary decision diagram (BDD) to represent all automaton transitions. The use of BDD makes the decision faster, but at the cost of making some automata operations, such as reversion, expensive (potentially resulting in exponential blowup). Despite this limitation, Mona is widely utilized in various fields of program verification, including the verification of programs with complex dynamic data structures \cite{DDS1, DDS2}, string analysis \cite{string_analysis}, parametrized systems \cite{parametrized_systems}, distributed systems \cite{distributed_systems}, automatic synthesis \cite{automatic_synthesis}, hardware verification \cite{hardware_verification}, and many others.
 
-    The previously mentioned problem with hard-to-compute automata operations when using BDDs motivated Bc. Pavel Bednář's master's thesis \cite{Bednar}. He reimplemented Mona's decision of WS1S by using a pure automata-based approach with the Mata automata library\footnote{available at: \url{https://github.com/VeriFIT/mata}}. The special type of edge, the \textit{jumping edge} has been introduced. The jumping edge contains information about how many variables can be jumped over. The primary idea behind introducing the jumping edge was to enable jumps not only over inner states but also over automaton states, with no upper limit on the maximal jump. However, despite this innovation, the jumping edge did not yield significant improvements in terms of space or time compression. Furthermore, it appears that jumping edges led to an overcomplication of algorithms.
+    The previously mentioned problem with hard-to-compute automata operations when using BDDs motivated Bc. Pavel Bednář's master's thesis \cite{Bednar}. He reimplemented Mona's decision of WS1S by using a pure automata-based approach with the Mata automata library\footnote{available at: \url{https://github.com/VeriFIT/mata}}. The special type of edge, the \textit{skip edge} has been introduced. The jumping edge contains information about how many variables can be jumped over. The primary idea behind introducing the jumping edge was to enable jumps not only over inner states but also over automaton states, with no upper limit on the maximal jump. However, despite this innovation, the jumping edge did not yield significant improvements in terms of space or time compression. Furthermore, it appears that jumping edges led to an overcomplication of algorithms.
 
-    In our approach, we reimplemented Bednář's solution by enhancing each automaton state with an index corresponding to the variable ID, mirroring the indexing strategy used for each inner node in the ordered BDD employed by Mona. This index information allows us to determine the length of a jump based on the indices of the source and destination states in the automaton's transition. Due to the indexing sequence on states follows a pattern of $0, 1, \dots, n-1, 0, 1, \dots, n-1, 0, \dots$, the longest jump can only reach to the next state with an index of $0$. While this might appear to be a step backward from Bednář's approach, the limitation on the jump length simplifies all algorithms. Surprisingly, it results in a significantly faster decision of the input formula, up to 10 times faster, compared to the variant with jumping edges.
+    In our approach, we reimplemented Bednář's solution by enhancing each automaton state with an index corresponding to the variable id, mirroring the indexing strategy used for inner nodes in the ordered BDD employed by Mona. This index information allows us to determine the length of a jump based on the indices of the source and destination states in the automaton's transition. Due to the indexing sequence following a pattern of $0, 1, \dots, n-1, 0, 1, \dots, n-1, 0, \dots$, the longest jump can only reach to the next state with an index of $0$. While this might appear to be a step backward from Bednář's solution, the limitation on the jump length simplifies all algorithms. Surprisingly, it results in a significantly faster decision of the input formula, up to ten times faster compared to the variant with jumping edges.
 
-    The first section introduces basic notations, definition of finite automata, binary decision diagrams, and WS1S. In the second section, we delve into the background of automata construction from WS1S formulas. The third section provides a detailed description of algorithms for intersection, union, complement, determinization, and minimization of automata with indexes. Moving to the fourth section, we present a~comparison of decision times between the Mona tool, automata with jumping edges, and automata with indexes. The experiments are divided into two parts. Initially, automata operations are tested separately on the automata generated during Mona computation. Following that, the comparison is executed on the entire input formula.
+    The first section introduces definition of finite automata, binary decision diagrams, and WS1S. In the second section, we delve into the background of automata construction. The third section provides a detailed description of intersection, union, complement, determinization, and minimization of automata with state indexing. Moving to the fourth section, we present a~comparison of decision times between the Mona tool, automata with jumping edges, and automata with indexes. The experiments are divided into two parts. Initially, automata operations are tested separately on the automata generated during Mona computation. Following that, the comparison is executed on the entire input formula.
 
 %%==================================%%
 %%          INTRODUCTION            %%
@@ -175,7 +175,7 @@
             A nondeterministic finite automaton is a 5-tuple $M = (Q, \Sigma, \delta, Q_0, F)$, where $Q$, $\Sigma$, and $F$ are defined identically as for the DFA. The transition function $\delta$~is defined as $\delta : Q \times \Sigma \rightarrow 2^{Q}$ and $Q_0 \subseteq Q$ is a nonempty set of initial states.
         \end{definition}
 
-        Nondeterminism allows the automaton to make transitions to more than one successor based on the current state and the read input symbol. In contrast, its deterministic variant can transition to at most one state. Nondeterminism keeps the automaton more compact, but certain operations such as complementation cannot be performed directly on NFA. Therefore determinization is required beforehand.
+        Nondeterminism allows the automaton to make transitions to more than one successor based on the combination of current state and input symbol. In contrast, its deterministic variant can transition to at most one state. Nondeterminism keeps the automaton more compact, but certain operations such as complementation cannot be performed directly. Therefore determinization is required beforehand.
 
     \subsection{Binary Decision Diagrams}
         Representation of the boolean function $\phi$ with $n$ logical variables leads to $2^n$ transitions for each automaton state in order to cover every possible combination of logical values. This exponential number of transitions can be reduced using Binary Decision Diagrams (BDDs). Binary Decision Diagrams provide a compact and, most importantly, canonical representation for logical functions in the form $\phi: \{0, 1\}^* \rightarrow \{0, 1\}$.
@@ -189,7 +189,7 @@
                 \item $T$ is a finite set of terminal nodes (leaves) such that $N \cap T = \emptyset$,
                 \item $var : N \rightarrow N \cup T$ defines the low and high successors of the inner nodes,
                 \item $root \in N \cup T$ is the root node, and
-                \item $val : T \rightarrow \{0, 1\}$ assignes logical value to the leaves.
+                \item $val : T \rightarrow \{0, 1\}$ assignes logical values to the leaves.
             \end{itemize}
         \end{definition}
 
@@ -214,7 +214,7 @@
         \vspace*{0.5em}
 
         \begin{definition}
-            Let $\prec$ be a given ordering on logical variables $Var$, a Binary Decision Diagram (BDD) $G$ is ordered (OBDD) with respect to $\prec$ if, for every $n \in \mathbb{N}$, the following conditions hold:
+            Let $\prec$ be a given ordering on logical variables $V\!ar$, a Binary Decision Diagram (BDD) $G$ is ordered (OBDD) with respect to $\prec$ if, for every $n \in \mathbb{N}$, the following conditions hold:
             \begin{enumerate}[noindent]
                 \item $low(n) \in N \implies var(n) \prec var(low(n))$
                 \item $high(n) \in N \implies var(n) \prec var(high(n))$
@@ -304,14 +304,14 @@
                     \draw[zeroarrow] (x3) -- (zero);
                  \end{tikzpicture}
             \end{subfigure}
-            \caption{From left to right, an OBDD satisfies the first, second, and third conditions as specified in the definition of ROBDD.}
+            \caption{From left to right, an OBDD satisfying the first, second, and third conditions as specified by the definition of ROBDD.}
         \end{figure}
 
         \vspace*{-1em}
 
         \begin{theorem}
             \label{theorem:ROBDD}
-            For every Boolean function $\phi$ over some set of variables $Var$ and every variable ordering $\prec$ on $Var$, there is a unique (up to isomorphism) reduced OBDD (with respect to $\prec$) $G_\phi$ which represents $\phi$. \cite{BDD}"
+            For every Boolean function $\phi$ over some set of variables $V\!ar$ and every variable ordering $\prec$ on $V\!ar$, there is a unique (up to isomorphism) reduced OBDD (with respect to $\prec$) $G_\phi$ which represents $\phi$. \cite{BDD}
         \end{theorem}
 
         \vspace*{0.5em}
@@ -322,12 +322,12 @@
 
 
     \subsection{WS1S}
-        Richard Büchi showed that WS1S is equivalent to regular expressions and can therefore be represented by finite automata \cite{Buchi}. In this subsection, the simplification of the WS1S formula and its semantics will be presented, followed by the transformation of atomic formulae to automata. The main source for this subsection was \cite{Mona_manual}.
+        Richard Büchi showed, in \cite{Buchi}, that WS1S is equivalent to regular expressions and can therefore be represented by finite automat. In this subsection, the simplification of the WS1S formula and its semantics will be presented, followed by the transformation of atomic formulae to automata. The main source for this subsection was \cite{Mona_manual}.
 
         \subsubsection*{Formula simplification}
             First-order terms are encoded as second-order terms since a first-order value can be seen as a singleton second-order value. Also, booleans can be encoded using the first position in the input automaton string.
 
-            All second-order terms are 'flattened' by introducing new variables that contain the values of all subterms. For example, the formula $A = (B \cup C) \cap D$ will be transformed into the form $\exists V : A = V \cap D \land V = B \cup C$, where $V$ is a new variable.
+            All second-order terms are "flattened" by introducing new variables that contain the values of all subterms. For example, the formula $A = (B \cup C) \cap D$ will be transformed into the form $\exists V : A = V \cap D \land V = B \cup C$, where $V$ is a new variable.
 
             Subformulae are simplified to contain fewer operators. As a result, only basic operations have to be implemented by the solver. The abstract syntax for simplified WS1S formulas can be defined by the following grammar:
             $$
@@ -335,7 +335,7 @@
             $$
 
         \subsubsection*{Semantic}
-            Given the main formula $\phi_0$, we define its semantic inductively relative to a string $w$ over the alphabet $\mathbb{B}^k$, where $\mathbb{B} = {0, 1}$ and $k$ is the number of variables in $\phi_0$. Assume every variable of $\phi_0$ is assigned a unique number in the range $1, 2, \dots, k$, called the \textit{variable index}. The string $w$ now determines an interpretation $w(P_i)$ of $P_i$, defined as the finite set ${j ,|, \text{the } j\text{th bit in the } P_i\text{-track is 1}}$. For example, the formula $\phi_0 \equiv \exists C : A = B \setminus C$ has variables $A$, $B$, and $C$, which are assigned the indices 1, 2, and 3, respectively. A typical string $w$ over $\mathbb{B}^3$ looks like:
+            Given the main formula $\phi_0$, we define its semantic inductively relative to a string $w$ over the alphabet $\mathbb{B}^k$, where $\mathbb{B} = \{0, 1\}$ and $k$ is the number of variables in $\phi_0$. Assume every variable of $\phi_0$ is assigned a unique number in the range $1, 2, \dots, k$, called the \textit{variable index}. The string $w$ now determines an interpretation $w(P_i)$ of $P_i$, defined as the finite set $\{j \,|\, \text{the } j\text{-th bit in the } P_i\text{-track is 1}\}$. For example, the formula $\phi_0 \equiv \exists C : A = B \setminus C$ has variables $A$, $B$, and $C$, which are assigned the indices 1, 2, and 3, respectively. A typical string $w$ over $\mathbb{B}^3$ looks like:
 
             $$
             \begin{matrix}
@@ -378,10 +378,10 @@
                     &w \vDash P_i = P_j + 1 \quad &&\textnormal{iff}\quad  w(P_i) = \{j + 1\,|\, j \in w(P_j)\}
                 \end{alignat*}
 
-                where we use the notation $w[P_i \mapsto M]$ for the shortest string $w'$ that interprets all variables $P_j$, $j \neq i$, as $w$ does but interprets $P_i$ as $M$. Note that if we assume that $w$ is minimum, then $w'$ decomposes into $w' = w \cdot w''$, where $w''$ is a string of letters of the form $(0^*X0^*)^T$, and the $i$th component is the only one that may be different from 0.
+                where we use the notation $w[P_i \mapsto M]$ for the shortest string $w'$ that interprets all variables $P_j$, $j \neq i$, as $w$ does but interprets $P_i$ as $M$. Note that if we assume that $w$ is minimum, then $w'$ decomposes into $w' = w \cdot w''$, where $w''$ is a string of letters of the form $(0^*X0^*)^T$, and the $i$-th component is the only one that may be different from 0.
 
         \subsubsection*{Automaton construction}
-            The input formula $\phi$ is recursively transformed into the deterministic finite automaton that represents the set of satisfying strings $L(\phi) = {w,|, w \vDash \phi}$. The translation of atomic and composite formulae to deterministic finite automata follows:
+            The input formula $\phi$ is recursively transformed into the deterministic finite automaton that represents the set of satisfying strings $L(\phi) = \{w\,|\, w \vDash \phi\}$. The translation of atomic and composite formulae to deterministic finite automata follows:
 
 
             \vspace*{0.5em}
@@ -435,7 +435,7 @@
                     \end{figure}
                 \item $\phi = \neg \phi'$: Negation of a formula corresponds to automaton complementation. If we have already calculated $A'$ such that $L(\phi') = L(A')$, then $L(\neg \phi') = \complement L(\phi') = \complement L(A') = L(\complement A')$, where $\complement$ denotes both language complementation and automata complementation. If the automaton is complete and deterministic, then complementation can be done by swapping accepting and non-accepting states.
                 \vspace*{0.5em}
-                \item $\phi = \phi' \land \phi''$: Conjunction corresponds to language intersection, $L(\phi' \land \phi'') = L(\phi') \cap L(\phi'')$. So, the resulting automaton $A$ is obtained by the production of automata $A' \times A''$, where $L(\phi') = L(A')$ and $L(\phi'') = L(A'')$.
+                \item $\phi = \phi' \land \phi''$: Conjunction corresponds to language intersection, $L(\phi' \land \phi'') = L(\phi') \cap L(\phi'')$. So, the resulting automaton $A$ is obtained by the product of automata $A' \times A''$, where $L(\phi') = L(A')$ and $L(\phi'') = L(A'')$.
                 \vspace*{0.5em}
                 \item $\phi = \exists P_i : \phi'$:  Intuitively, the desired automaton $A$ acts as the automaton $A'$ for $\phi'$ except that it is allowed to guess the bits on the $P_i$-track. The resulting automaton $A$ is nondeterministic. It is necessary to apply determinization and adjust the automaton $A$ in such a way that each $w \in L(A)$ is minimal.
             \end{itemize}
@@ -443,7 +443,7 @@
 
 
 \section{Automata representation}
-    This section presents three different approaches on how to incorporate BDDs into finite automata. First, Mona's approach using shared BDDs is shown, followed by approaches that utilize jumping edges or state indexing.
+    This section presents three different approaches on how to incorporate BDDs into finite automata. First, Mona's approach that uses shared BDDs is shown, followed by approaches that utilize skip edges or state indexing.
 
     \subsection{Mona}
         Mona represents the transition function not only using a single BDD (as in the case of Kripke structures) but with a \textit{shared multi-terminal }BDD (SMTBDD). The main difference from standard BDDs is that the leaves of SMTBDD do not contain boolean values 0 or 1 but rather states of the automaton.
@@ -456,25 +456,25 @@
                 \item $N$ is finite set on non-terminal (inner) nodes,
                 \item $T$ is a finite set of terminal nodes (leaves) such that $N \cap T = \emptyset$,
                 \item $var : N \rightarrow N \cup T$ defines the low and high successors of the inner nodes,
-                \item $R \subseteq N \cup T$ is nonempty set of rules, and
+                \item $R \subseteq N \cup T$ is nonempty set of roots, and
                 \item $val : T \rightarrow Q$ assignes states to the leaves.
             \end{itemize}
         \end{definition}
 
-        For example, let the formula $\phi \equiv \exists p, q : p \neq q \land p \in X \cap Y \land q \ \in X \cap Y$ be represented by the automaton $M$ in Figure \ref{fig:mona}, where each state $r$, $s$, and $t$ contains information about whether it is accepting or not and points to its root node in the SMTBDD describing its transition relation. The data structure also contains a pointer to the initial state.
+        For example, let the formula $\phi \equiv \exists p, q : p \neq q \land p \in X \cap Y \land q \in X \cap Y$ be represented by the automaton $M$ in Figure \ref{fig:mona}, where each state $r$, $s$, and $t$ contains information about whether it is accepting or not and points to its root node in the SMTBDD describing its transition relation. The data structure also contains a pointer to the initial state.
 
         \begin{figure}[h]
             \centering
             \includegraphics[width=0.5\textwidth]{Figures/mona_aut.png}
             \vspace*{0.5em}
-            \caption{Mona automaton for the formula $\phi \equiv \exists p, q : p \neq q \land p \in X \cap Y \land q \ \in X \cap Y$.}
+            \caption{Mona's automaton for the formula $\phi \equiv \exists p, q : p \neq q \land p \in X \cap Y \land q \ \in X \cap Y$.}
             \label{fig:mona}
         \end{figure}
 
         \vspace*{-2em}
 
     \subsection{Automata with Skip Edges}
-        The main idea of Bednář's skip edges \cite{Bednar} is to integrate BDD nodes directly into the transitions of the automaton. This can be easily noted, as BDD has an automata-like structure. To simulate the functionality of a BDD, where each node has an assigned variable, it is necessary to use skip edges.
+        The main idea of Bednář's skip edges, presented in \cite{Bednar}, is to integrate BDD nodes directly into the transitions of the automaton. This can be easily done, as BDD has an automata-like structure. To simulate the functionality of a BDD, where each node has an assigned variable, it is necessary to use skip edges.
 
         \vspace*{0.5em}
 
@@ -510,35 +510,30 @@
             \caption{An automaton with skip edges representing the language from Figure \ref{fig:mona}. A skip edge labeled with $a/n$ can be interpreted as a transition of length $n$ reading symbol $a$.}
         \end{figure}
 
-        \vspace*{-1.5em}
-
-        The potential benefit of skip edges is derived from the fact that the length of the jump edge is not limited. Therefore, the jump edge can traverse over many BDDs and automaton states. The demonstration of this benefit is shown in Figure \ref{fig:skip_edges}. However, it has to be mentioned that this approach overcomplicated algorithms and did not show improvement in space or time.
-
-        \vspace*{-1.25em}
-
-        \begin{figure}[h]
+        \begin{figure}[h!]
             \centering
             \begin{tikzpicture}
                 \node[state, initial, accepting] (q0) {$q_0$};
                 \node[state] (q4) [right=of q0]{$q_4$};
                 \node[state] (q5) [right=of q4] {$q_5$};
                 \path[->] (q0) edge node[above] {$\begin{aligned}0/4\\[-1.5mm]1/4\end{aligned}$} (q4)
-                          (q4) edge node[above] {$1/1$} (q5)
-                          (q5) edge[loop above] node[above] {$\begin{aligned}1/1\\[-1mm]0/1\end{aligned}$} ();
+                (q4) edge node[above] {$1/1$} (q5)
+                (q5) edge[loop above] node[above] {$\begin{aligned}1/1\\[-1mm]0/1\end{aligned}$} ();
             \end{tikzpicture}
             \caption{Automaton with skip edges and a variable $X$ representing formula $3 \in X$.}
             \label{fig:skip_edges}
         \end{figure}
 
-    \vspace*{2em}
+        The potential benefit of skip edges is derived from the fact that its length has no upper limit. Therefore, the skip edge can traverse over many BDDs and automaton states. The demonstration of this benefit is shown in Figure \ref{fig:skip_edges}. However, it has to be mentioned that this approach overcomplicated algorithms and did not show improvement in space or time.
 
-    \subsection{Automata with Indexed States}
-        The approach of an automaton with indexed states has been the main focus of the reimplementation. This automaton integrates BDDs directly while maintaining the indexes on its nodes (automaton states).
+
+    \subsection{Automata with State Indexing}
+        The approach of an automaton with state indexing has been the main focus of this reimplementation. Such an automaton integrates BDDs directly while maintaining the indexes on its nodes (automaton states).
 
         \vspace*{0.5em}
 
         \begin{definition}
-            Let $M = (Q, \Sigma, \delta, Q_0, F)$ be an NFA. The automaton $M$ is called an automaton with indexing if there exists an index function $\iota : Q \rightarrow \mathbb{N}_0$ such that the following conditions hold:
+            Let $M = (Q, \Sigma, \delta, Q_0, F)$ be an NFA. The automaton $M$ is called an automaton with state indexing if there exist an index function $\iota : Q \rightarrow \mathbb{N}_0$ such that the following conditions hold:
             \begin{enumerate}[noindent]
                 \item $\forall q \in Q_0 : \iota(q) = 0$
                 \item $\forall q \in F : \iota(q) = 0$
@@ -569,11 +564,11 @@
                           (q3) edge node[above] {$1$} (q4)
                           (q4) edge[loop above] node[above] {$0,1$} ();
             \end{tikzpicture}
-            \caption{Automaton with indexed states representing the language from Figure \ref{fig:mona}.}
+            \caption{Automaton with state indexing representing the language from Figure \ref{fig:mona}.}
         \end{figure}
 
 \section{Automata operations}
-    This section presents operations on automata with indexed states, which are utilized in the reimplementation of Mona using the Mata library. The primary concept of these operations is derived from Mata and modified to adapt state indexing.
+    This section presents operations on automata with state indexing, which are utilized in the reimplementation of Mona using the Mata library. The primary concept of these operations is derived from Mata and modified to adapt state indexing.
 
     \subsection{Complement}
         The complementation method is the most straightforward approach for automata. It involves taking a complete deterministic automaton and swapping its accepting and nonaccepting states. Unlike classical complementation, only the accepting property of states with index $0$ is altered.
@@ -583,12 +578,12 @@
         \begin{definition}
             Let $M = (Q, \Sigma, \delta, q_0, F)$ be a complete DFA with an index function $\iota : Q \rightarrow \mathbb{N}_0$. The complement of $M$ is defined as $\complement M = (Q, \Sigma, \delta, q_0, F')$, where:
             $$
-            F' = \{q \in Q\,|\, \iota(q) = 0 \land q \notin F\}\setminus\{q_0\}
+            F' = \{q \in Q\,|\, \iota(q) = 0 \land q \notin F\}
             $$
         \end{definition}
 
     \subsection{Intersection}
-        The standard intersection algorithm generates the resulting automaton using product construction. It begins with the pair of initial states (one from each automaton) and moves synchronously to the pair of successors based on the transition symbol. The key idea is inspired by the \textit{Apply} method \cite{APPLY}, commonly used in Binary Decision Diagram (BDD) operations. In this adaptation of the standard intersection algorithm, the successor pair for the analyzed product pair is generated based on the state (or states in the case of identical indices) with the lower index. Meanwhile, the state with the higher index is duplicated.
+        The standard intersection algorithm generates the resulting automaton using product construction. It begins with the pair of initial states (one from each automaton) and moves synchronously to the pair of successors based on the transition symbol. The key idea is inspired by the \textit{Apply} method \cite{APPLY}, commonly used in BDD operations. In this adaptation of the standard intersection algorithm, the successor pair for the analyzed product pair is generated based on the state (or states in the case of identical indices) with the lowest index. Meanwhile, the state with higher index is duplicated.
 
         \begin{algorithm}
             \caption{An Intersection Algorithm}
@@ -596,8 +591,8 @@
             \DontPrintSemicolon
             \SetKwFunction{procA}{get_new_index}
             \SetKwFunction{procB}{create_state}
-            \KwData{Two DFA $M = (Q_M, \Sigma_M, \delta_M, i_M, F_M)$ and $N = (Q_N, \Sigma_N, \delta_N, i_N, F_N)$ and tow index functions $\iota_M : Q_M \rightarrow \mathbb{N}_0$ and $\iota_N : Q_M \rightarrow \mathbb{N}_0$}
-            \KwOut{Resulting DFA $A = (Q \subseteq Q_M \times Q_N, \Sigma \subseteq \Sigma_M \cup \Sigma_N, \delta, i, F) = M \cap N$ and index function $\iota Q \rightarrow \mathbb{N}_0$}
+            \KwData{Two DFA $M = (Q_M, \Sigma, \delta_M, i_M, F_M)$ and $N = (Q_N, \Sigma, \delta_N, i_N, F_N)$ and tow index functions $\iota_M : Q_M \rightarrow \mathbb{N}_0$ and $\iota_N : Q_N \rightarrow \mathbb{N}_0$}
+            \KwOut{Resulting DFA $A = (Q \subseteq Q_M \times Q_N, \Sigma, \delta, i, F) = M \cap N$ and index function $\iota : Q \rightarrow \mathbb{N}_0$}
 
             \vspace*{0.5em}
 
@@ -614,7 +609,7 @@
             \vspace*{0.5em}
 
             \SetKwProg{procB}{Procedure}{}{}
-                \procB{\textnormal{Createq\_State($x$, $y$)}}{
+                \procB{\textnormal{CreateState($x$, $y$)}}{
                     $worklist \leftarrow worklist \cup \{(x, y)\}$\;
                     $Q \leftarrow Q \cup \{(x, y)\}$\;
                     $\iota((x, y)) \leftarrow Index(x, y)$\;
@@ -628,24 +623,25 @@
             $i \leftarrow (i_M, i_N)$\;
             $\iota(i) \leftarrow 0$\;
             $worklist \leftarrow \{i\}$\;
-            $Q \leftarrow Q \cup \{i\}$\;
+            $Q \leftarrow \{i\}$\;
+            $F \leftarrow \emptyset$\;
             \While{$worklist \neq \emptyset$}{
                 $s \leftarrow worklist.pop()$\;
                 $(s_M, s_N) \leftarrow s$\;
                 \uIf{$\iota_M(s_M) = \iota_N(s_N)$}{
-                    \ForAll{$a \in \Sigma_M \cap \Sigma_N : \delta_M(s_M, a) \in Q_M \land \delta_N(s_N, a) \in Q_N$}{
+                    \ForAll{$a \in \Sigma \cap \Sigma : \delta_M(s_M, a) \in Q_M \land \delta_N(s_N, a) \in Q_N$}{
                         $\delta(s, a) \leftarrow (\delta_M(s_M, a), \delta_N(s_N, a))$\;
-                        $Create\_State(\delta_M(s_M, a), \delta_N(s_N, a))$\;
+                        $CreateState(\delta_M(s_M, a), \delta_N(s_N, a))$\;
                     }
                 }\uElseIf{$(\iota_M(s_M) < \iota_N(s_N) \land \iota_M(s_M) \neq 0) \lor \iota_N(s_N) = 0$}{
-                    \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
+                    \ForAll{$a \in \Sigma : \delta_M(s_M, a) \in Q_M$}{
                         $\delta(s, a) \leftarrow (\delta_M(s_M, a), s_N)$\;
-                        $Create\_State(\delta_M(s_M, a), s_N)$\;
+                        $CreateState(\delta_M(s_M, a), s_N)$\;
                     }
                 }\Else{
-                    \ForAll{$a \in \Sigma_M : \delta_M(s_M, a) \in Q_M$}{
+                    \ForAll{$a \in \Sigma : \delta_N(s_N, a) \in Q_N$}{
                         $\delta(s, a) \leftarrow (s_M, \delta_N(s_N, a))$\;
-                        $Create\_State(s_M, \delta_N(s_N, a))$\;
+                        $CreateState(s_M, \delta_N(s_N, a))$\;
                     }
                 }
             }
@@ -658,6 +654,8 @@
     \subsection{Determinization}
         The standard determinization algorithm constructs the resulting automaton through subset construction. It initiates the process with a set of initial states and creates transitions to the set of targets, which consists of successors of states from the examined set. This method requires modification for compatibility with the index function, similarly as in the intersection algorithm. Specifically, the set of successors of the examined state (representing the set of states) is formed by the states with the lowest index, while the remaining states are duplicated.
 
+        \vspace*{-0.5em}
+
         \begin{algorithm}
             \caption{A Determinization Algorithm}
             \small
@@ -667,6 +665,8 @@
 
             \vspace*{0.5em}
             $i \leftarrow I_M$\;
+            $Q \leftarrow \{i\}$\;
+            $F \leftarrow \emptyset$\;
             $\iota(i) \leftarrow 0$\;
             $worklist \leftarrow \{i\}$\;
             \While{$worklist \neq \emptyset$}{
@@ -677,6 +677,7 @@
                 \ForAll{$a \in symbols$}{
                     $s\_next \leftarrow waiting \cup \bigcup_{q \in cont}\delta(a, q)$\;
                     $\delta(s, a) \leftarrow s\_next$\;
+                    $Q \leftarrow Q \cup s\_next$\;
                     $worklist \leftarrow worklist \cup \{s\_next\}$\;
                     \uIf{$\forall q \in s\_next : \iota_M(q) = 0$}
                     {
@@ -692,6 +693,7 @@
                 \If{$waiting \neq \emptyset$} {
                     \ForAll{$a \in \Sigma \setminus symbols$}{
                         $\delta(s, a) \leftarrow waiting$\;
+                        $Q \leftarrow Q \cup waiting$\;
                         $worklist \leftarrow worklist \cup \{waiting\}$\;
                         \uIf{$\forall q \in waiting : \iota_M(q) = 0$}
                         {
@@ -699,7 +701,7 @@
                         }\Else{
                             $\iota(waiting) \leftarrow min(\{q \in waiting\,|\, \iota_M(s) \neq 0\})$\;
                         }
-                        \If{$iota(waiting) = 0 \land F_M \cap waiting \neq \emptyset$}{
+                        \If{$\iota(waiting) = 0 \land F_M \cap waiting \neq \emptyset$}{
                         $F \leftarrow F \cup \{waiting\}$\;
                     }
                     }
@@ -724,7 +726,7 @@
                 \delta_N(a, q) & q \in Q_N
             \end{cases}
             $$
-            with an  index function $\iota : Q_M \cup Q_N \rightarrow \mathbb{N}_0$ similarly as the transition function:
+            with an  index function $\iota : Q_M \cup Q_N \rightarrow \mathbb{N}_0$ defined as:
             $$
             \iota(q) =
             \begin{cases}
@@ -735,7 +737,7 @@
         \end{definition}
 
     \subsection{Projection}
-        The basic idea of a projection is to remove all transitions going from the states with the index of the variable being removed and redirect all incoming edges into its successors. The only exception is the projection of the variable with the index 0. In that case, the redirection cannot be done due to the restriction that states with the index 0 cannot be jumped over. The solution to this problem is to create an edge for every letter of the alphabet and every successor of the examined state.
+        The basic idea of a projection is to remove all transitions going from the states with the index of the variable being removed and for every such a state redirect all incoming edges into its successors. The only exception is the projection of the variable with the index 0. In that case, the redirection cannot be done due to the restriction that states with the index 0 cannot be jumped over. The solution to this problem is to create an edge for every letter of the alphabet and every successor of the examined state.
 
         \begin{algorithm}
             \caption{A Projection Algorithm}
@@ -755,10 +757,10 @@
                     }
                     $succ \leftarrow \{r \in Q_M\,|\,\exists a \in \Sigma : \delta_M(q, a) \neq \emptyset\}$\;
                     \ForAll{$a \in \Sigma$}{
-                        $\delta(q, a) \leftarrow targets$\;
+                        $\delta(q, a) \leftarrow succ$\;
                     }
                 }
-                \Return{$A$};
+                \Return{$A, \iota$};
             }
 
             \ForAll{$q \in Q_M$}{
@@ -784,17 +786,17 @@
 
         \end{algorithm}
 
-        After the projection of the variable. There exists paths over symbol 0 leading from nonacceptance states into the accepting. This changes the language represented by the automaton and therefore avery such state has to be marked as accepting with the exception to the initial state.
+        After the projection of the variable. There exist paths over symbol 0 leading from nonaccepting states into the accepting. This changes the language represented by the automaton. To repare the language its necessary to mark every such state as accepting with the exception to the initial state.
 
-        The automaton $M = (Q, \Sigma, \delta, I, F_M)$ is transformed into the automaton of the form $A = (Q, \Sigma, \delta, I, F)$, where $F = F_M \cup \{q \in Q\,|\, \text{exist path over 0 leading to } f \in F_M\}$.
+        The automaton $M = (Q, \Sigma, \delta, I, F_M)$ is transformed into the automaton of the form $A = (Q, \Sigma, \delta, I, F)$, where $F = F_M \cup \{q \in Q\setminus I\,|\, \text{exist path over 0 leading to } f \in F_M\}$.
 
     \subsection{Revert}
-        Standart reversion algorithm switches initial and final states of the automaton and flips the direction of all transitions. This practice (of course with the inversion of the indexes) can be used on the automata with indexed states only when there in single variable, otherwise each transition of the length $1 < n$ over a symbol $a \in \Sigma$ has to be reverted and divided into two sections. The first section containing transitions of the length $n - 1$ over all symbols from $\Sigma$ and the second section consisting of the transition of the length $1$ containing the symbol $a$.
+        Standart reversion algorithm switches initial and final states of the automaton and flips the direction of all transitions. This practice can be used on automata with indexed states only when there in single variable, otherwise each transition of the length $1 < n$ over a symbol $a \in \Sigma$ has to be reverted and divided into two sections. The first section containing transitions of the length $n - 1$ over all symbols from $\Sigma$ and the second section consisting of the transition of the length $1$ over the symbol $a$.
 
         \vspace*{0.5em}
 
         \begin{definition}
-            Let $n \in \mathbb{N}$ be the number of variables and $\iota : Q \rightarrow \mathbb{N}_0$ be the index function The length of a transition between states $q, r \in Q$ over a letter $a \in \Sigma$ is determined as:
+            Let $n \in \mathbb{N}$ be the number of variables and $\iota : Q \rightarrow \mathbb{N}_0$ be the index function. The length of a transition between states $q, r \in Q$ over a letter $a \in \Sigma$ is determined as:
             $$
             len(q \xrightarrow[]{a} r) =
             \begin{cases}
@@ -814,7 +816,7 @@
                 \item $\delta(q, a) =
                 \begin{cases}
                     \begin{aligned}
-                        \{r \in Q_M\,|\,q \in \delta_M(r, a) \land len(r \xrightarrow[]{a} q) = 1\}& \cup\\
+                        \{r \in Q_M\,|\,q \in \delta_M(r, a) \land len(r \xrightarrow[]{a} q) = 1\}&\, \cup\\
                         \{(r, b, q) \in Q_N\,|\,\exists b \in \Sigma : q \in \delta_M(r, b)\}&
                     \end{aligned} \hspace{1cm} &q \in Q_M\\[1em]
                     \{(r, a, q) \in Q_N\,|\, r \in \delta(a, q)\}  & otherwise
@@ -832,25 +834,25 @@
         \end{definition}
 
     \subsection{Minimization}
-        The fast minimization for incomplete deterministic automata \cite{Minimization} performing in $\mathcal{O}(m\, \text{log}\, n)$ time has been implemented. Unfortunately, benchmarks have revealed that minimization needs to be performed not only according to the forward language equivalence but also by considering the backward language equivalence. This algorithm cannot be used for this task, as even though the input automaton is deterministic, it can still have nondeterministic transitions in the backward direction.
+        The fast minimization algorithm for incomplete deterministic automata \cite{Minimization} performing in $\mathcal{O}(m\, \text{log}\, n)$ time has been implemented. Unfortunately, benchmarks have revealed that this algorithm somehow does not produce minimal form of the automaton when using state indexing.
 
-        Since this algorithm is unsuitable for automata minimization and the minimization algorithm based on the simulation provided by the Mata library is too slow, the naive Brzozowski algorithm \cite{Brzozowski} has been chosen. This algorithm minimizes DFA by reverting and determinizing the input automaton, and then reverting and determinizing it again.
+        Since this algorithm is unsuitable for automata minimization and the minimization algorithm based on the simulation provided by the Mata library is too slow, the naive Brzozowski 'salgorithm \cite{Brzozowski} has been chosen. This algorithm minimizes DFA by reverting and determinizing the input automaton, and then reverting and determinizing it again.
 
-        Automata minimization performed by the Brzozowski algorithm corresponds to the elimination of isomorphic subgraphs in BDD reduction. The elimination of nodes with equivalent \textit{high} and \textit{low} successors can also be performed on the automata. The elimination of a state is simply done by redirecting all incoming transitions to all its successors. The only exception is the elimination of a state with index $0$. Those states will have to remain in the automaton even if their \textit{high} and \textit{low} successors are the same state.
+        Automata minimization performed by the Brzozowski's algorithm corresponds to the elimination of isomorphic subgraphs in BDD reduction. The elimination of nodes with equivalent \textit{high} and \textit{low} successors can be also performed on automata by simply redirecting all incoming transitions of such a state to all its successors. The only exception is the elimination of states with index $0$. Those states will have to remain in the automaton even if their \textit{high} and \textit{low} successors are the same state.
 
         \vspace*{0.5em}
 
         \begin{definition}
-            Let $M = (Q, \Sigma, \delta, i, F)$ be DFA with the index function $\iota ~:~Q \rightarrow \mathbb{N}_0$. The automaton $M$ is called reduced DFA if it is in the minimal form and $\forall q \in Q : \iota(q) =~0~\lor (\nexists r \in Q : \forall a \in \Sigma : r = \delta(q, a))$.
+            Let $M = (Q, \Sigma, \delta, i, F)$ be DFA with the index function $\iota ~:~Q \rightarrow \mathbb{N}_0$. The automaton $M$ is called reduced DFA if it is in the minimal form and $\forall q \in Q : \iota(q) =~0~\lor (\nexists r \in Q\setminus\{q\} : \forall a \in \Sigma : r = \delta(q, a))$.
         \end{definition}
 
 \section{Experimental results}
-    This section is dedicated to comparing the performance of Mona, its reimplementation using skip edges, and its reimplementation using state indexing. The experiments were performed on a machine equipped with an AMD Ryzen 7 3800XT 8-Core processor and 32 GB of memory. The comparison begins with an analysis of intersection and projection operations, with the focus on the execution times. Subsequently, the focus shifts to a comprehensive evaluation of the implementations on WS1S formulae decision. The benchmark formulae employed in these experiments have been sourced from the Gaston project\footnote{available at: \url{https://www.fit.vutbr.cz/research/groups/verifit/tools/gaston/.cs}}, and Bednář's Master thesis \cite{Bednar}.
+    This section is dedicated to comparing the performance of Mona, its reimplementation using skip edges, and its reimplementation using state indexing. The experiments were performed on a machine equipped with AMD Ryzen 7 3800XT 8-Core processor and 32 GB of memory. The comparison begins with an analysis of intersection and projection operations, with the focus on the execution times. Subsequently, the focus shifts to complex evaluation of whole WS1S formulae. The benchmark formulae have been sourced from the Gaston project\footnote{available at: \url{https://www.fit.vutbr.cz/research/groups/verifit/tools/gaston/.cs}}, and Bednář's Master thesis \cite{Bednar}.
     \subsection{Operations performance}
-        Individual operations, such as intersection and projection, have been tested on automata generated during the decision of WS1S procedures from \cite{Bednar}. Complementation was omitted from testing due to its simplicity, and minimization was excluded since the Brzozowski algorithm is widely known for its slow performance. Determinization was not tested because the tool Mona does not produce nondeterministic automata. Nevertheless, the impact of determinization can be indirectly observed during the examination of the projection of the first variable. Each projection must be followed by a determinization, and by projecting the first variable and subsequently the rest, the automaton attains the highest level of nondeterminism.
+        Individual operations, such as intersection and projection, have been tested on automata generated during the decision of WS1S procedures from \cite{Bednar}. Complementation was omitted from testing due to its simplicity, and minimization was excluded since the Brzozowski's algorithm is widely known for its slow performance. Determinization was not tested because the tool Mona does not produce nondeterministic automata. Nevertheless, the impact of determinization can be indirectly observed during the examination of the projection of the first variable. Each projection must be followed by a determinization, and by projecting the first variable, the automaton attains the highest level of nondeterminism.
 
         \subsubsection*{Intersection}
-            Figures \ref{fig:intersection_log} and \ref{fig:intersection_speedup} reveal that the State Indexing reimplementation was, on average, approximately ten times faster than Skip Edges. When comparing State Indexing to the tool Mona, it becomes evident that Mona is still faster on average than State Indexing. However, there are instances where State Indexing surpasses Mona by more than 50 times in speed. Additionally, State Indexing performs intersection at its worst case, with outliers, only up to ten times slower than Mona.
+            Figures \ref{fig:intersection_log} and \ref{fig:intersection_speedup} reveal that the State Indexing reimplementation was, on average, approximately ten times faster than Skip Edges. When comparing State Indexing to the tool Mona, it becomes evident that Mona is still faster on average than State Indexing. However, there are instances where State Indexing surpassed Mona by more than 50 times in speed. Additionally, State Indexing performs intersection at its worst case (without outliers) only up to ten times slower than Mona.
             \vspace*{-1em}
             \begin{figure}[h!]
                 \centering
@@ -870,12 +872,12 @@
             \begin{figure}[h!]
                 \centering
                 \includegraphics[width=0.49\textwidth]{Figures/intersection-speedup.pdf}
-                \caption{State Indexing speedup compared to Mona intersection time. The vertical axis represents the number of occurrences (Logarithmic scale), while the horizontal axis indicates the speedup (positive) or slowdown (negative).}
+                \caption{State Indexing speedup compared to Mona intersection time. The vertical axis represents the number of occurrences (logarithmic scale), while the horizontal axis indicates the speedup (positive) or slowdown (negative).}
                 \label{fig:intersection_speedup}
             \end{figure}
 
         \subsubsection*{Projection of the last variable}
-            It is interesting to observe, as depicted in Figures \ref{figure:projection_last} and \ref{figure:projection_last_speedup}, that the reimplementation with State Indexing was, on average, faster not only than the Skip Edges version but also than Mona. For certain inputs, State Indexing proved to be more than a thousand times faster than the tool Mona. Despite this, the maximal slowdown for State Indexing was only a factor of 5.
+            It is interesting to observe, as depicted in Figures \ref{figure:projection_last} and \ref{figure:projection_last_speedup}, that the reimplementation with State Indexing was, on average, faster not only than the Skip Edges version but also than Mona. For certain inputs, State Indexing proved to be more than a~thousand times faster than the tool Mona. Despite this, the maximal slowdown for State Indexing was only a factor of 5.
             \begin{figure}[h!]
                 \centering
                 \captionsetup[subfigure]{justification=centering}
@@ -893,11 +895,11 @@
             \begin{figure}[h!]
                 \centering
                 \includegraphics[width=0.49\textwidth]{Figures/projection-last-speedup.pdf}
-                \caption{State Indexing speedup compared to Mona projection time. The vertical axis represents the number of occurrences (Logarithmic scale), while the horizontal axis indicates the speedup (positive) or slowdown (negative).}
+                \caption{State Indexing speedup compared to Mona projection time. The vertical axis represents the number of occurrences (logarithmic scale), while the horizontal axis indicates the speedup (positive) or slowdown (negative).}
                 \label{figure:projection_last_speedup}
             \end{figure}
         \subsubsection*{Projection of the first variable}
-            The projection of the first variable (the variable with the lowest id) was included in the experiments because projecting such a variable yields an automaton with the highest level of nondeterminism, and determinization is performed after every projection. Consequently, it can effectively substitute experiments focused on determinization.
+            The projection of the first variable (the variable with the lowest id) was included in the experiments because projecting such a variable yields an automaton with the highest level of nondeterminism. And followed by the determinization, it can effectively substitute experiments focused on determinization.
 
             Unsurprisingly, the State Indexing reimplementation is about ten times faster than Skip Edges. However, it is noteworthy that Mona and State Indexing performed almost identically. This similarity might be due to a less optimized projection algorithm in the Mona tool for the first variable or a potentially suboptimal determinization algorithm.
 
@@ -923,7 +925,7 @@
             \begin{figure}[h!]
                 \centering
                 \includegraphics[width=0.49\textwidth]{Figures/projection-first-speedup.pdf}
-                \caption{State Indexing speedup compared to Mona projection time. The vertical axis represents the number of occurrences (Logarithmic scale), while the horizontal axis indicates the speedup (positive) or slowdown (negative).}
+                \caption{State Indexing speedup compared to Mona projection time. The vertical axis represents the number of occurrences (logarithmic scale), while the horizontal axis indicates the speedup (positive) or slowdown (negative).}
                 \label{figure:projection_first_speedup}
             \end{figure}
 
@@ -952,26 +954,26 @@
             \end{tabular}
             \normalsize
             \vspace*{0.5em}
-            \caption{Results for parametrized benchmarks are presented up to $k = 20$. SE--Mona represents a Mona reimplementation using Skip Edges, while SI--Mona stands for the reimplementation utilizing State Indexing. $\infty(n)$ indicates that the cumulative time for the computation of formulae $\leq n$ exceeded the 10-second limit.}
+            \caption{Results for parametrized benchmarks are presented up to $k = 20$. SE--Mona represents a Mona reimplementation using Skip Edges, while SI--Mona stands for the reimplementation utilizing State Indexing. $\infty(n)$ indicates that the cumulative time for the computation of formulae $\leq n$ exceeded 10-second limit.}
             \label{table}
         \end{table}
 
-        The experiments were focused on the cumulative time of computing parametrized formulae from the easiest to the most difficult. Once the cumulative time exceeded the limit during the computation of the $n$-th formula, the tool was stopped with the result $\infty(n)$. Otherwise, the result was the value of the cumulative time.
+        Experiments were focused on the cumulative time of computing parametrized formulae from the easiest to the most difficult. Once the cumulative time exceeded 10-second limit during the computation of the $n$-th formula, the tool was stopped with the result $\infty(n)$. Otherwise, the result was the value of the cumulative time.
 
-        Surprisingly, Mona completely failed on the \texttt{horn-leq} benchmarks. Mona consumed more than ten seconds, while both of its reimplementations, which use DFAs instead of BDDs, finished within 200 milliseconds.
+        Surprisingly, Mona completely failed on \texttt{horn-leq} benchmarks. Mona consumed more than 10 seconds, while both of its reimplementations, which use DFAs instead of BDDs, finished within 200 milliseconds.
 
-        On the other hand, Mona outperformed both re-implementations on \texttt{horn-in} benchmarks. This could be caused by using an inefficient minimization algorithm (Brzozowski), as on these benchmarks, minimization takes up 98\% of the computation time.
+        On the other hand, Mona outperformed both reimplementations on \texttt{horn-in} benchmarks. This could be caused by using an Brzozowski's minimization algorithm, as on these benchmarks, minimization takes up 98\% of the computation time.
 
-        As expected, the State Indexing reimplementation was faster than Skip Edges and Mona in the majority of benchmarks. However, the speedup was not as significant as one might expect based on the performance of reimplemented automata operations. This behavior is caused by the high number of performed minimizations, which utilizes Brzozowski algorithm.
+        As expected, the State Indexing reimplementation was faster than Skip Edges and Mona in the majority of benchmarks. However, the speedup was not as significant as one might expect based on the performance of reimplemented automata operations. This behavior is caused by the high number of performed minimizations, which utilizes Brzozowski's algorithm.
 
 \section{Conclusion}
     This paper introduces a new reimplementation of the Mona tool for decision procedures in WS1S. The primary motivation was to introduce a pure automata-based approach instead of the combination of BDDs and automata. The reimplementation is based on the master's thesis of Bc. Pavel Bednář, where jumping edges were used to mimic the behavior of BDDs employed by Mona. Our reimplementation utilizes state indexing with the Mata automata library to simulate indexes of inner nodes in BDDs.
 
-    Using the pure automata-based approach, the state indexing method resulted in a~tenfold faster computation of determinization, intersection, and projection. On benchmark formulae designed to stress-test Mona, both reimplementations performed better, with only one exception that can be attributed to using an inefficient Brzozowski minimization algorithm. Our reimplementation outperformed Bednář's approach on the majority of benchmarks, achieving a speedup ranging from two to ten.
+    Using the pure automata-based approach, the state indexing method resulted in a~tenfold faster computation of determinization, intersection, and projection. On benchmark formulae designed to stress-test Mona, both reimplementations performed better, with only one exception that can be attributed to using an inefficient Brzozowski's minimization algorithm. Our reimplementation outperformed Bednář's approach on the majority of benchmarks, achieving a speedup ranging from two to ten.
 
     The work can be further improved by implementing a better simulation-based minimization, utilizing abstraction, or by performing operations on nondeterministic finite automata instead of deterministic ones.
 
-    \vspace*{5em}
+    \vspace*{6em}
 
 % \begin{appendices}
 
