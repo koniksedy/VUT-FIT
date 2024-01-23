@@ -47,7 +47,7 @@
 \usepackage{amsthm}%
 \usepackage{mathrsfs}%
 \usepackage[title]{appendix}%
-\usepackage{xcolor}%
+\usepackage[table]{xcolor}%
 \usepackage{textcomp}%
 \usepackage{manyfoot}%
 \usepackage{booktabs}%
@@ -901,6 +901,8 @@
 
             Unsurprisingly, the State Indexing reimplementation is about ten times faster than Skip Edges. However, it is noteworthy that Mona and State Indexing performed almost identically. This similarity might be due to a less optimized projection algorithm in the Mona tool for the first variable or a potentially suboptimal determinization algorithm.
 
+            \newpage
+
             \begin{figure}[h!]
                 \centering
                 \captionsetup[subfigure]{justification=centering}
@@ -915,18 +917,59 @@
                 \label{figure:projection_first}
                 \caption{Comparison of projection and determinization time for the tool Mona, reimplementation using Skip Edges, and reimplementation using State Indexing.}
             \end{figure}
+
+            \vspace*{-3em}
+
             \begin{figure}[h!]
                 \centering
                 \includegraphics[width=0.49\textwidth]{Figures/projection-first-speedup.pdf}
                 \caption{State Indexing speedup compared to Mona projection time. The vertical axis represents the number of occurrences (Logarithmic scale), while the horizontal axis indicates the speedup (positive) or slowdown (negative).}
-                \label{figure:projection_last_speedup}
+                \label{figure:projection_first_speedup}
             \end{figure}
+
+    \vspace*{-2em}
+
     \subsection{WS1S formulae}
+        This subsection presents results of the experiments performed on set of parametric families of  WS1S formulae. The first benchmark \texttt{horn-in} consists of furmulae used to evalueate the Toss toll as presented in \cite{TOSS}, the secon set of families (\texttt{horn-leq}) comes from the work of D'Antoni et al. \cite{DAntoni}, artificially endanced by added quantifier alternations, and the last se of benchmarks (\texttt{horn-trans}, \texttt{set-closed}, and \texttt{set-singletons}) from the dWiNA tool \cite{dWiNA}.
+
+        \begin{table}[!h]
+            \centering
+            \captionsetup{width=\textwidth, justification=justified}
+            \small
+            \begin{tabular}{|l||r|r|r|}
+                \hline
+                Benchmark        	& SE--Mona [ms] & SI--Mona [ms] & Mona [ms]\\[0.5ex]
+                \hline\hline
+                \texttt{horn-in}   & $\infty(7)$  & $\infty(6)$ & \cellcolor{gray!25}$\mathbf{\infty(16)}$ \\[0.5ex]
+                \texttt{horn-leq}   & 209  & \cellcolor{gray!25}\textbf{101} & $\infty(18)$ \\[0.5ex]
+                \texttt{horn-leq $(+3)$}   & 198  & \cellcolor{gray!25}\textbf{88} & $\infty(18)$ \\[0.5ex]
+                \texttt{horn-leq $(+4)$}   & 193  & \cellcolor{gray!25}\textbf{88} & $\infty(18)$ \\[0.5ex]
+                \texttt{horn-trans}   & $\infty(15)$  & \cellcolor{gray!25}$\mathbf{\infty(20)}$ & $\infty(16)$ \\[0.5ex]
+                \texttt{set-closed}   & \cellcolor{gray!25}$\mathbf{\infty(5)}$  & $\infty(4)$ & \cellcolor{gray!25}$\mathbf{\infty(5)}$ \\[0.5ex]
+                \texttt{set-singletons}   & $\infty(4)$  & $\infty(4)$ & \cellcolor{gray!25}$\mathbf{\infty(5)}$ \\[0.5ex]
+
+                \hline
+            \end{tabular}
+            \normalsize
+            \vspace*{0.5em}
+            \caption{Results of parametrized benchmarks up to $k = 20$. SE--Mona represents Mona reimplementation using Skip Edges and SI--Mona stands for the reimplementation utilizing State Indexing. $\infty(n)$ represents that the cumulative time of the computation of formulae $\leq n$ exceeded 10 second limit.}
+            \label{table}
+        \end{table}
+
+        Experiments were focused on the cumulation time of computing parametrized formulae from easiest formulae to the most difficult. Once the cumulative time exceeded on the computation of the $n$-th formula, the tool was stopped with the result $\infty(n)$ otherwise the result was the value of the cumulative time.
+
+        Surprisingly, Mona completely failed on the \texttt{horn-leq} benchmarks. Mona consumed more time than ten seconds while both its reimplementation, that use DFAs instep of BDDs, finished within 200 milliseconds.
+
+        On the other hand Mona outperformed both reimplementations on \texttt{horn-in} benchmarks. This could be caused by using unefficient minimization algorithm (Brzozowski), because on this benchmarks the minimization takes 98\% of the computation time.
+
+        As expected, the State Indexing reimplementation has been faster than Skip Edges and Mona in majority of benchmarks. Altho, the speedup was not as big as one can expect based on the performance of reimplemented automata operations. This behavior is cause by high number of performed minimization, that have not been optimized.
 
 \section{Conclusion}
+    This paper presented new reimplementation of the tool Mona for decision procedures in WS1S. The main motivation was to used pure automata-base approach instep of the combination of BDDs and automata. The reimplementation is based on the  Bc. Pavel Bednář's master's thesis, where jumping edges have been used to mimic behavior of BDDs used by Mona. Our reimplementation uses state indexing with Mata automata library to simulate indexes of inner nodes in BDDs.
 
+    Using the pure automata-base approach, the state indexing method resulted in ten times faster computation of determinization, intersection, and projection. On benchmark formulae, that have been designed to stress-test Mona, both reimplementations performed better, only with one exception, that can be caused by using inefficient Brzozowski minimization algorithm. Our reimplementation outperformed on Bednář's reimplementation on majority of benchmarks with two to ten speedup.
 
-
+    The reimplementation have can be further improved by implementing better simulation based minimization, utilizing abstraction, or by performing operations on nondeterministic finite automata instead of deterministic.
 
 % \begin{appendices}
 
