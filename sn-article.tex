@@ -930,7 +930,7 @@
     \vspace*{-2em}
 
     \subsection{WS1S formulae}
-        This subsection presents results of the experiments performed on set of parametric families of  WS1S formulae. The first benchmark \texttt{horn-in} consists of furmulae used to evalueate the Toss toll as presented in \cite{TOSS}, the secon set of families (\texttt{horn-leq}) comes from the work of D'Antoni et al. \cite{DAntoni}, artificially endanced by added quantifier alternations, and the last se of benchmarks (\texttt{horn-trans}, \texttt{set-closed}, and \texttt{set-singletons}) from the dWiNA tool \cite{dWiNA}.
+        This subsection presents the results of experiments performed on a set of parametric families of WS1S formulae. The first benchmark, \texttt{horn-in}, consists of formulae used to evaluate the Toss tool, as presented in \cite{TOSS}. The second set of families (\texttt{horn-leq}) comes from the work of D'Antoni et al. \cite{DAntoni}, artificially enhanced by added quantifier alternations. The last set of benchmarks (\texttt{horn-trans}, \texttt{set-closed}, and \texttt{set-singletons}) is from the dWiNA tool \cite{dWiNA}.
 
         \begin{table}[!h]
             \centering
@@ -952,24 +952,26 @@
             \end{tabular}
             \normalsize
             \vspace*{0.5em}
-            \caption{Results of parametrized benchmarks up to $k = 20$. SE--Mona represents Mona reimplementation using Skip Edges and SI--Mona stands for the reimplementation utilizing State Indexing. $\infty(n)$ represents that the cumulative time of the computation of formulae $\leq n$ exceeded 10 second limit.}
+            \caption{Results for parametrized benchmarks are presented up to $k = 20$. SE--Mona represents a Mona reimplementation using Skip Edges, while SI--Mona stands for the reimplementation utilizing State Indexing. $\infty(n)$ indicates that the cumulative time for the computation of formulae $\leq n$ exceeded the 10-second limit.}
             \label{table}
         \end{table}
 
-        Experiments were focused on the cumulation time of computing parametrized formulae from easiest formulae to the most difficult. Once the cumulative time exceeded on the computation of the $n$-th formula, the tool was stopped with the result $\infty(n)$ otherwise the result was the value of the cumulative time.
+        The experiments were focused on the cumulative time of computing parametrized formulae from the easiest to the most difficult. Once the cumulative time exceeded the limit during the computation of the $n$-th formula, the tool was stopped with the result $\infty(n)$. Otherwise, the result was the value of the cumulative time.
 
-        Surprisingly, Mona completely failed on the \texttt{horn-leq} benchmarks. Mona consumed more time than ten seconds while both its reimplementation, that use DFAs instep of BDDs, finished within 200 milliseconds.
+        Surprisingly, Mona completely failed on the \texttt{horn-leq} benchmarks. Mona consumed more than ten seconds, while both of its reimplementations, which use DFAs instead of BDDs, finished within 200 milliseconds.
 
-        On the other hand Mona outperformed both reimplementations on \texttt{horn-in} benchmarks. This could be caused by using unefficient minimization algorithm (Brzozowski), because on this benchmarks the minimization takes 98\% of the computation time.
+        On the other hand, Mona outperformed both re-implementations on \texttt{horn-in} benchmarks. This could be caused by using an inefficient minimization algorithm (Brzozowski), as on these benchmarks, minimization takes up 98\% of the computation time.
 
-        As expected, the State Indexing reimplementation has been faster than Skip Edges and Mona in majority of benchmarks. Altho, the speedup was not as big as one can expect based on the performance of reimplemented automata operations. This behavior is cause by high number of performed minimization, that have not been optimized.
+        As expected, the State Indexing reimplementation was faster than Skip Edges and Mona in the majority of benchmarks. However, the speedup was not as significant as one might expect based on the performance of reimplemented automata operations. This behavior is caused by the high number of performed minimizations, which utilizes Brzozowski algorithm.
 
 \section{Conclusion}
-    This paper presented new reimplementation of the tool Mona for decision procedures in WS1S. The main motivation was to used pure automata-base approach instep of the combination of BDDs and automata. The reimplementation is based on the  Bc. Pavel Bednář's master's thesis, where jumping edges have been used to mimic behavior of BDDs used by Mona. Our reimplementation uses state indexing with Mata automata library to simulate indexes of inner nodes in BDDs.
+    This paper introduces a new reimplementation of the Mona tool for decision procedures in WS1S. The primary motivation was to introduce a pure automata-based approach instead of the combination of BDDs and automata. The reimplementation is based on the master's thesis of Bc. Pavel Bednář, where jumping edges were used to mimic the behavior of BDDs employed by Mona. Our reimplementation utilizes state indexing with the Mata automata library to simulate indexes of inner nodes in BDDs.
 
-    Using the pure automata-base approach, the state indexing method resulted in ten times faster computation of determinization, intersection, and projection. On benchmark formulae, that have been designed to stress-test Mona, both reimplementations performed better, only with one exception, that can be caused by using inefficient Brzozowski minimization algorithm. Our reimplementation outperformed on Bednář's reimplementation on majority of benchmarks with two to ten speedup.
+    Using the pure automata-based approach, the state indexing method resulted in a~tenfold faster computation of determinization, intersection, and projection. On benchmark formulae designed to stress-test Mona, both reimplementations performed better, with only one exception that can be attributed to using an inefficient Brzozowski minimization algorithm. Our reimplementation outperformed Bednář's approach on the majority of benchmarks, achieving a speedup ranging from two to ten.
 
-    The reimplementation have can be further improved by implementing better simulation based minimization, utilizing abstraction, or by performing operations on nondeterministic finite automata instead of deterministic.
+    The work can be further improved by implementing a better simulation-based minimization, utilizing abstraction, or by performing operations on nondeterministic finite automata instead of deterministic ones.
+
+    \vspace*{5em}
 
 % \begin{appendices}
 
