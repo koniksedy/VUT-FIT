@@ -368,7 +368,7 @@
 
             \vspace*{0.5em}
 
-            \noindent It's important to note that $w$ with the suffix $(0^*)^T$ defines the same interpretation as $w$. Therefore, the minimal $w$ is a string where there is no such nonempty suffix. The semantic of a formula $\phi$ is defined inductively:
+            \noindent It's important to note that $w$ with the suffix $(0^*)^T$ defines the same interpretation as~$w$. Therefore, the minimal $w$ is a string where there is no such nonempty suffix. The semantic of a formula $\phi$ is defined inductively:
                 \begin{alignat*}{2}
                     &w \vDash \neg \phi' \quad && \textnormal{iff}\quad  w \nvDash \phi'\\
                     &w \vDash \phi' \land \phi'' \quad &&\textnormal{iff}\quad  w \vDash \phi' \land w \vDash \phi''\\
@@ -380,7 +380,7 @@
 
                 \noindent where we use the notation $w[P_i \mapsto M]$ for the shortest string $w'$ that interprets all variables $P_j$, $j \neq i$, as $w$ does, but interprets $P_i$ as $M$. Note that if we assume that $w$ is minimal, then $w'$ decomposes into $w' = w \cdot w''$, where $w''$ is a string of letters of the form $(0^*X0^*)^T$, and the $i$-th component is the only one that may be different from 0.
 
-        \subsubsection*{Automaton construction}
+        \subsubsection*{Automata construction}
             The input formula $\phi$ is recursively transformed into the deterministic finite automaton that represents the set of satisfying strings $L(\phi) = \{w\,|\, w \vDash \phi\}$. The translation of atomic and composite formulae to deterministic finite automata follows:
 
 
@@ -527,7 +527,7 @@
         The potential benefit of skip edges is derived from the fact that its length has no upper limit. Therefore, the skip edge can traverse over many BDDs and automaton states. The demonstration of this benefit is shown in Figure \ref{fig:skip_edges}. However, it should be mentioned that this approach overcomplicated algorithms and did not show improvement in space or time.
 
 
-    \subsection{Automata with State Indexing}
+    \subsection{Automaton with State Indexing}
         The approach of an automaton with state indexing has been the main focus of this reimplementation. Such an automaton integrates BDDs directly while maintaining the indexes on its nodes (automaton states).
 
         \vspace*{0.5em}
@@ -571,7 +571,7 @@
     This section presents operations on automata with state indexing, which are utilized in the reimplementation of Mona using the Mata library. The primary concept of these operations is derived from Mata and modified to adapt state indexing.
 
     \subsection{Complement}
-        The complementation method is the most straightforward operation on automata. It involves taking a complete deterministic automaton and swapping its accepting and nonaccepting states. Unlike classical complementation, only the accepting property of states with index $0$ is altered.
+        The complementation method is the most straightforward operation on automata. It~involves taking a complete deterministic automaton and swapping its accepting and nonaccepting states. Unlike classical complementation, only the accepting property of states with index $0$ is altered.
 
         \vspace*{0.5em}
 
@@ -757,7 +757,7 @@
                     \If{$\iota_M(q) \neq id$}{
                         \textbf{continue}\;
                     }
-                    $succ \leftarrow \{r \in Q_M\,|\,\exists a \in \Sigma : 
+                    $succ \leftarrow \{r \in Q_M\,|\,\exists a \in \Sigma :
  r \in \delta_M(q, a)\}$\;
                     \ForAll{$a \in \Sigma$}{
                         $\delta(q, a) \leftarrow succ$\;
