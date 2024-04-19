@@ -1,0 +1,201 @@
+\documentclass{ExcelAtFIT}
+%\documentclass[czech]{ExcelAtFIT} % when writing in CZECH
+%\documentclass[slovak]{ExcelAtFIT} % when writing in SLOVAK
+
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	REVIEW vs. FINAL VERSION
+%--------------------------------------------------------
+
+%   LEAVE this line commented out for the REVIEW VERSIONS
+%   UNCOMMENT this line to get the FINAL VERSION
+%\ExcelFinalCopy
+
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	PDF CUSTOMIZATION
+%--------------------------------------------------------
+
+\hypersetup{
+	pdftitle={Paper Title},
+	pdfauthor={Author},
+	pdfkeywords={Keyword1, Keyword2, Keyword3}
+}
+
+\lstset{
+	backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+	basicstyle=\footnotesize\tt,        % the size of the fonts that are used for the code
+}
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	ARTICLE INFORMATION
+%--------------------------------------------------------
+
+\ExcelYear{2023}
+
+\PaperTitle{How to Write This Excel@FIT Poster Commentary}
+
+\Authors{Adam Herout*}
+\affiliation{*%
+  \href{mailto:herout@vut.cz}{herout@vut.cz},
+  \textit{Faculty of Information Technology, Brno University of Technology}}
+%%%%--------------------------------------------------------
+%%%% in case there are multiple authors, use the following fragment instead
+%%%%--------------------------------------------------------
+%\Authors{Jindřich Novák*, Janča Dvořáková**}
+%\affiliation{*%
+%  \href{mailto:xnovak00@stud.fit.vutbr.cz}{xnovak00@stud.fit.vutbr.cz},
+%  \textit{Faculty of Information Technology, Brno University of Technology}}
+%\affiliation{**%
+%  \href{mailto:xdvora00@stud.fit.vutbr.cz}{xdvora00@stud.fit.vutbr.cz},
+%  \textit{Faculty of Information Technology, Brno University of Technology}}
+
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	ABSTRACT and TEASER
+%--------------------------------------------------------
+
+\Abstract{
+What is the problem? What is the topic?, the aim of this paper?
+\phony{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ullamcorper suscipit euismod. Mauris sed lectus non massa molestie congue.}
+%
+How is the problem solved, the aim achieved (methodology)?
+\phony{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ullamcorper suscipit euismod. Mauris sed lectus non massa molestie congue. In hac habitasse platea dictumst.}
+%
+What are the specific results? How well is the problem solved?
+\phony{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ullamcorper suscipit euismod. Mauris sed lectus non massa molestie congue.}
+%
+So what? How useful is this to Science and to the reader?
+\phony{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ullamcorper suscipit euismod.}
+}
+
+
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+\begin{document}
+
+\startdocument
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	ARTICLE CONTENTS
+%--------------------------------------------------------
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+\textbf{[Motivation]} What is the raison d'\^{e}tre of your project? Why should anyone care? No general meaningless claims. Make bulletproof arguments for the importance of your work. Replace this text (including words in [\dots]) with your own brief, meaningful content.
+
+\textbf{[Problem definition]} What exactly are you solving? What is the core and what is a bonus? What parameters should a proper solution of the problem have? Define the problem precisely and state how its solution should be evaluated.
+
+\textbf{[Existing solutions]} Discuss existing solutions, be fair in identifying their strengths and weaknesses. Cite the most important works from the field of your topic. Try to define well what is the \textit{state of the art}.
+\phony{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sit amet neque vel mi sodales interdum nec a mi.}
+
+\textbf{[Our solution]} Make a quick outline of your approach -- pitch your solution.  The solution will be described later in detail, but give the reader a very quick overview now.
+\phony{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi laoreet risus a egestas imperdiet.}
+
+\textbf{[Contributions]} Sell your solution. Pinpoint your achievements. Be fair and objective.
+\phony{Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer sit amet neque vel mi sodales interdum nec a mi.}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{How to Write This Poster Commentary}
+\label{sec:Introduction}
+
+In previous years, Excel@FIT was composed of student \textbf{papers} and they were \textbf{accompanied} with posters.
+In order to focus on the interactive part of Excel@FIT, we would like to shift the \textbf{center of attention to the posters}.
+Please, focus on making an excellent poster!
+
+This accompanying document should serve as a \textbf{commentary} to the poster -- this idea is explained in Section~\ref{sec:Commentary}.
+For some topics, writing a direct commentary to a poster might not be the right thing and the author (perhaps based on a consultation with the supervisor) might choose to write a conventional \textbf{extended abstract}.  The second option is also perfectly fine; the structure and form should adhere to what is customary for extended abstracts in the given field of computer science.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Commentary Text to Your Poster}
+\label{sec:Commentary}
+
+The right size of this text is \textbf{two pages} -- both for the commentaries and the conventional extended abstracts.  The references can spill to the third page, but not the text itself.
+
+The \textbf{abstract} is meant to be \textbf{super-short} -- maybe of the size of a tweet.  The recommended structure of the abstract \cite{Herout-Abstract,Lebrun2011} is in the placeholder text.  Each of the four parts of the abstract should be just one or two sentences.
+
+It is a good idea to start with an `Introduction' section.  The placeholder text in Section~\ref{sec:Introduction} reflects the normal structure of a paper introduction.  The actual text in this document may depart from this recommended form -- it should correspond to the contents of the poster.
+
+A good poster would often be \textbf{structured to sections} just like a paper (examples: \href{https://excel.fit.vutbr.cz/submissions/2022/001/1_poster.pdf}{first}, \href{https://excel.fit.vutbr.cz/submissions/2022/002/2_poster.pdf}{second}, \href{https://excel.fit.vutbr.cz/submissions/2022/003/3_poster.pdf}{third}).  It might be a good idea to use the \verb|\section{}| commands here in the commentary that would correspond to the sections in the poster.
+
+The idea behind a poster for a conference like Excel@FIT is that the author would stand next to the poster and talk to the people wandering by.
+The poster does not have to contain everything in itself.  It is good to provide \textbf{words, sentences} by the author's mouth and save the space on the poster for visual content: figures, charts, drawing, tables, equations, \dots (examples: \href{https://excel.fit.vutbr.cz/submissions/2022/002/2_poster.pdf}{one}, \href{https://excel.fit.vutbr.cz/submissions/2022/010/10_poster.pdf}{two}).  The words that the author \textbf{would normally say} are to be contained right in \textbf{this commentary} that will accompany the poster and will provide the verbal explanations.  Then, it is not desirable to place the verbal/textual explanations on the poster itself, or just extremely brief.
+
+When the author stands next to their poster and speaks, they would point with their finger at figures, tables, and equations on the poster and naturally refer to them.  To allow for something similar in this commentary, it is best to place labels next to all the objects on the poster.  The poster can contain some visually recognizable labels, defined by a common graphic and color, perhaps something like \fbox{Figure 1}, \fbox{Table 3}, \fbox{(2)}, \fbox{Listing 2}, \fbox{Chart 5}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{General Advice}
+
+\begin{itemize}
+    \item Do not write things that everybody knows.  (e.g. `Smartphones are used by many people today.' `It is important to work on computer security.')
+    \item Every figure and table on the poster and every paragraph, sentence in this commentary must be judged by asking: \textbf{`Is this helpful?'}  Never place anything on the poster or in the commentary just because of feeling like `it is expected'.  If it helps understanding your work, it is right; if not, put it away.
+    \item Use your voice.  Use the same sentences you would use standing in front of the poster.  Make them correct, right, meaningful, but still \textbf{your voice}.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{How To Use This Template}
+\label{sec:HowToUse}
+
+Here is a list of actions to do first when you want to write an Excel@FIT poster commentary:
+\begin{enumerate}
+	\item Decide the language -- most likely shared between the poster and the commentary.  English is recommended, as it is the language of science and technology.  However, if you need to write in Czech or Slovak, you may.  Use the correct option to the \texttt{$\backslash$documentclass} command -- the very first line of the template.  The option may be either \texttt{[czech]} or \texttt{[slovak]}.
+	\item Insert meta information: \textbf{your name}, \textbf{e-mail}, \textbf{work title}, \textbf{Excel@FIT logo}.  Make sure the year in the top right corner of the document is correct.  Do not hesitate to use ěščřžýáíé in your name -- the \LaTeX{} template is configured to eat UTF8 Unicode.
+	\item Keep calm and start writing.
+\end{enumerate}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions}
+\label{sec:Conclusions}
+
+It is common that there is no `Conclusions' section on a poster.  It still might be a good idea to summarize here what was the point of the work and what are the adequate take-home messages.
+
+The author standing in front of the poster might be saying something like: ``I am really proud of this and that and if I had more time, I would try this and fix that.''  Similar summary sentences, discussion, and future work might deserve a `Conclusions' section here. Or not -- the author decides how to use the space most wisely.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section*{Acknowledgements}
+I would like to thank my supervisor X. Y. for their help.  (This section might be on the poster itself, and perhaps only there -- let it be removed from here if it makes sense.)
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	REFERENCE LIST
+%--------------------------------------------------------
+%--------------------------------------------------------
+\phantomsection
+\bibliographystyle{unsrt}
+\bibliography{bibliography}
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+\end{document}
