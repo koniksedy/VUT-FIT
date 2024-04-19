@@ -20,7 +20,7 @@ $(CO).pdf: $(CO).tex $(CHANGED_FILES_OTHER)
 #	bibtex $(CO)
 #	pdflatex $(CO)
 #	pdflatex $(CO)
-	rubber --unsafe --synctex --short --pdf $<
+	rubber  --unsafe --synctex --short --pdf $<
 #	rubber-info --errors $<
 #	rubber-info --check $<
 
