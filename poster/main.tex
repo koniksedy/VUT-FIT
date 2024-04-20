@@ -33,7 +33,7 @@
 % Command for color circle around text.
 \newcommand{\circledtext}[2][red]{%
     \tikz[baseline=(char.base)]{
-        \node[shape=circle,draw=#1,fill=#1,inner sep=2pt] (char) {\hspace*{0.15mm}\textbf{#2}};}\hspace*{-2mm}
+        \node[shape=circle,draw,fill=#1,inner sep=0pt] (char) {\hspace*{0.15mm}\textbf{\textcolor{#1}{#2}}};}\hspace*{-2mm}
 }
 
 % Counter and environment for tables
@@ -152,9 +152,9 @@
 
 
                 \node[rectangle callout, draw, align=left, callout absolute pointer={($(0_1)-(0)$)}, above left=3cm and 2cm of 0] {\footnotesize\texttt{push(}\circledtext[orange]{1}\texttt{)}};
-                \node[rectangle callout, draw, align=left, callout absolute pointer={($(4_9)-(0)$)}, below right=3cm and 2cm of 9] {\footnotesize\texttt{pop(}\circledtext[white!20!red]{5}\texttt{)}};
+                \node[rectangle callout, draw, align=left, callout absolute pointer={($(4_9)-(0)$)}, below right=3cm and 3cm of 9] {\footnotesize\texttt{if top == }\circledtext[white!20!red]{5}\texttt{:}\\[-1mm]\footnotesize\texttt{\hspace*{1em}pop(}\circledtext[white!20!red]{5}\texttt{)}};
                 \node[rectangle callout, draw, align=left, callout absolute pointer={($(0_2)-(0)$)}, below left=3cm and 2cm of 0] {\footnotesize\texttt{push(}\circledtext[white!50!blue]{2}\texttt{)}};
-                \node[rectangle callout, draw, align=left, callout absolute pointer={($(3_9)-(0)$)}, above right=3cm and 2cm of 9] {\footnotesize\texttt{pop(}\circledtext[black!20!green]{6}\texttt{)}};
+                \node[rectangle callout, draw, align=left, callout absolute pointer={($(3_9)-(0)$)}, above right=3cm and 3cm of 9] {\footnotesize\texttt{if top == }\circledtext[black!20!green]{6}\texttt{:}\\[-1mm]\footnotesize\texttt{\hspace*{1em}pop(}\circledtext[black!20!green]{6}\texttt{)}};
 
                 \node[rectangle callout, draw, align=left, callout absolute pointer={($(5_6)-(0)$)}, below left=2.8cm and 3cm of 55] {\footnotesize\texttt{if top == }\circledtext[orange]{1}\texttt{:}\\[-1mm]\footnotesize\texttt{\hspace*{1em}pop(}\circledtext[orange]{1}\texttt{)}\\[-1mm]\footnotesize\texttt{\hspace*{1em}push(}\circledtext[white!20!red]{5}\texttt{)}};
                 \node[rectangle callout, draw, align=left, callout absolute pointer={($(8_7)-(0)$)}, above right=2.8cm and 3cm of 88] {\footnotesize\texttt{if top == }\circledtext[white!50!blue]{2}\texttt{:}\\[-1mm]\footnotesize\texttt{\hspace*{1em}pop(}\circledtext[white!50!blue]{2}\texttt{)}\\[-1mm]\footnotesize\texttt{\hspace*{1em}push(}\circledtext[black!20!green]{6}\texttt{)}};
