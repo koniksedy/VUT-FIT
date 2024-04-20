@@ -119,13 +119,13 @@
         rotate=12,
         targetoffsetx=6cm,
         targetoffsety=-11cm,
-        width=0.125\linewidth
+        width=0.122\linewidth
         ]
-        {\small\textit{Usage of a pushdown automaton and procedures is an analogons to the call stack and functions from programming languages.}}
+        {\small\textit{Usage of a pushdown automaton and procedures is analogous to the call stack and functions from programming languages.}}
 
     \column{0.6}
-    \block{One Procedure No Duplicate} {
-        To represent automata efficiently without duplicate substructures, we introduce a new concept called procedures. Each redundant substructure is represented only once as a procedure. The automaton uses a stack to determine from which state the procedure is entered and to which state it should return. The symbol on the stack can also be used to guard transitions that are specific to only some substructures that the procedure represents.
+    \block{One Procedure No Duplicates} {
+        To represent automata efficiently, without duplicate substructures, we introduce a new concept called procedures. Each set of similar substructures is represented by just one procedure. The automaton uses a stack to determine the original substructure from which the procedure is entered and where to return. The symbol on the stack can also guard transitions specific to some substructures that the procedure represents.
 
         \begin{tikzfigure}[\textsc{Reduced network filtering automaton with two procedures.}]
             \centering
@@ -181,7 +181,7 @@
     \column{0.5}
     \block{Parametric Regular Expressions}
     {
-        We evaluated the reduction potential of procedures on 3,656 automata, with an average of 207 states and 2,584 transitions, generated from parametric regular expressions from \cite{Regex}.
+        We evaluated the reduction potential of procedures on 3'656 automata, with an average of 207 states and 2'584 transitions, generated from parametric regular expressions from \cite{Regex}.
 
         \begin{tikzfigure}[\textsc{The reduction ratios achieved by applying procedures to RABIT/Reduce results. On average, procedures improved reductions by 50.3\% in states and 47.9\% in transitions.}\par]
             \centering
@@ -196,7 +196,7 @@
             \label{fig:regex}
         \end{tikzfigure}
 
-        The standalone usage of RABIT/Reduce resulted on average in a reduction of 52. 5\% states and a reduction of 48. 4\%. The further reduction performed by our algorithm can be seen in Figure \ref{fig:regex}. The application of procedures reduced the automata to half the size given by RABIT/Reduce.
+        The standalone usage of RABIT/Reduce resulted on average in a reduction of 52.5\% states and a reduction of 48.4\%. The further reduction performed by our algorithm can be seen in Figure \ref{fig:regex}. The application of procedures reduced the automata to half the size given by RABIT/Reduce.
     }
 
     \column{0.5}
@@ -225,7 +225,7 @@
             \label{table:snort}
         \end{tikztable}
 
-        The two most significant reductions are highlighted in Table~\ref{table:snort}. The best reduction was achieved on the automaton created from the \texttt{specific-threats} rule set. RABIT/Reduce reduced the automaton by 48.6\% of states and by 44.3\% of transitions. By further applying procedures, another 43.5\% reduction in states and 60.3\% reduction in transitions were achieved. This experiment demonstrates that procedures achieve significant reductions even in real-world examples.
+        The two most significant reductions are highlighted in Table~\ref{table:snort}. The best reduction was achieved on the automaton created from the \texttt{specific-threats} rule set. RABIT/Reduce reduced the automaton by 48.6\% of states and by 44.3\% of transitions. By further applying procedures, another 43.5\% reduction in states and 60.3\% reduction in transitions were achieved. This experiment demonstrates that procedures can achieve significant reductions even in real-world examples.
     }
     \block{References} {
         \vspace*{-2em}
