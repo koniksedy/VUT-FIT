@@ -80,7 +80,7 @@
 \begin{columns}
     \column{0.4}
     \block{Motivation} {
-        In many automata, especially those representing regular expressions, there exist repetitive substructures that cannot be eliminated by the state-of-the-art tool RABIT/Reduce \cite{RABIT}. Such an automaton is depicted below in Figure~\ref{fig:http}.
+        In many automata, especially those representing regular expressions, there exist repetitive substructures that cannot be eliminated by the state-of-the-art tool RABIT/Reduce \cite{RABIT}. This automaton is depicted below in Figure~\ref{fig:http}.
 
         \begin{tikzfigure}[\textsc{Network filtering automaton.}]
             \centering
@@ -112,7 +112,7 @@
             \label{fig:http}
         \end{tikzfigure}
 
-        We propose a new method based on pushdown automata and so-called procedures that represent the repetitive substructures only once.
+        We propose a new method based on pushdown automata and the so-called procedures that represent repetitive substructures only once.
     }
 
     \note[
@@ -196,7 +196,7 @@
             \label{fig:regex}
         \end{tikzfigure}
 
-        The standalone usage of RABIT/Reduce resulted on average in 52.5\% reduction of states and 48.4\% reduction of transitions. The further reduction performed by our algorithm can be seen in Figure \ref{fig:regex}. The application of procedures reduced the automata to half of the size given by RABIT/Reduce.
+        The standalone usage of RABIT/Reduce resulted on average in a reduction of 52. 5\% states and a reduction of 48. 4\%. The further reduction performed by our algorithm can be seen in Figure \ref{fig:regex}. The application of procedures reduced the automata to half the size given by RABIT/Reduce.
     }
 
     \column{0.5}
@@ -225,14 +225,13 @@
             \label{table:snort}
         \end{tikztable}
 
-        The two most significant reductions are highlighted in Table~\ref{table:snort}. The best reduction was achieved on the automaton created from the \texttt{specific-threats} rule set. RABIT/Reduce reduced the automaton by 48.6\% of states and by 44.3\% of transitions. By further applying procedures, another 43.5\% reduction in states and 60.3\% reduction in transitions was achieved. This experiment demonstrates that procedures perform significant reductions even on real-world examples.
+        The two most significant reductions are highlighted in Table~\ref{table:snort}. The best reduction was achieved on the automaton created from the \texttt{specific-threats} rule set. RABIT/Reduce reduced the automaton by 48.6\% of states and by 44.3\% of transitions. By further applying procedures, another 43.5\% reduction in states and 60.3\% reduction in transitions were achieved. This experiment demonstrates that procedures achieve significant reductions even in real-world examples.
     }
     \block{References} {
         \vspace*{-2em}
         \small
 
         \bibliographystyle{enplain.bst}
-        % \bibliographystyle{IEEEtran}
         \bibliography{bibliography}
         \normalsize
     }
