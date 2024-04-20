@@ -215,6 +215,9 @@
 {\raggedright\color{color-sections}\sffamily\bfseries\fontsize{20}{25}\selectfont \@PaperTitle\par}%
 \vskip10pt%
 {\raggedright\color{color-sections}\sffamily\fontsize{12}{16}\selectfont  \@Authors\par}%
+\vspace*{-0.4em}
+{\raggedright\color{color-sections}\sffamily\fontsize{9}{16}\selectfont  supervised by doc. Mgr. Lukáš Holík, Ph.D.\par}%
+
 \vskip18pt%
 \ifHaveTeaser\parbox{\linewidth}{\centering\@Teaser}\vskip10pt\fi%
 \fcolorbox{color-orange}{white}{%

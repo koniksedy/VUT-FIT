@@ -1,0 +1,142 @@
+\documentclass{ExcelAtFIT}
+%\documentclass[czech]{ExcelAtFIT} % when writing in CZECH
+%\documentclass[slovak]{ExcelAtFIT} % when writing in SLOVAK
+
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	REVIEW vs. FINAL VERSION
+%--------------------------------------------------------
+
+%   LEAVE this line commented out for the REVIEW VERSIONS
+%   UNCOMMENT this line to get the FINAL VERSION
+\ExcelFinalCopy
+
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	PDF CUSTOMIZATION
+%--------------------------------------------------------
+
+\hypersetup{
+	pdftitle={Repetitive Substructures for Efficient Representation of Automata},
+	pdfauthor={Michal Šedý},
+	pdfkeywords={Nondeterministic Finite Automata, Nondeterministic Pushdown Automata, Regular Expressions, Network Intrusion Detection Systems}
+}
+
+\lstset{
+	backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+	basicstyle=\footnotesize\tt,        % the size of the fonts that are used for the code
+}
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	ARTICLE INFORMATION
+%--------------------------------------------------------
+
+\ExcelYear{2024}
+
+\PaperTitle{Repetitive Substructures for \\Efficient Representation of Automata}
+
+\Authors{Michal Šedý}
+\affiliation{*%
+  \href{mailto:xsedym02@stud.fit.vutbr.cz}{xsedym02@stud.fit.vutbr.cz},
+  \textit{Faculty of Information Technology, Brno University of Technology}}
+%%%%--------------------------------------------------------
+%%%% in case there are multiple authors, use the following fragment instead
+%%%%--------------------------------------------------------
+%\Authors{Jindřich Novák*, Janča Dvořáková**}
+%\affiliation{*%
+%  \href{mailto:xnovak00@stud.fit.vutbr.cz}{xnovak00@stud.fit.vutbr.cz},
+%  \textit{Faculty of Information Technology, Brno University of Technology}}
+%\affiliation{**%
+%  \href{mailto:xdvora00@stud.fit.vutbr.cz}{xdvora00@stud.fit.vutbr.cz},
+%  \textit{Faculty of Information Technology, Brno University of Technology}}
+
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	ABSTRACT and TEASER
+%--------------------------------------------------------
+
+\Abstract{
+	Nondeterministic finite automata are widely used across almost every field of computer science, such as for a representation of regular expressions, in network intruction detection systems for monitoring high-speed networks, in abstract regular model checking, program verification, or even in bioinformatics for searching sequences of nucleotides in DNA. To obtain smaller automata and thus reduce computational resources, the state-of-the-art minimization techniques, such as state merging and transition prunning, are used. However, these methods can still leave duplicate substructures in the resulting automata. This work presents a novelty approach to automata minimization based on the transformation of a NFA into a nondeterministic pushdown automaton. The transformation identifies and represents similar substructures only once by so called procedures. By this, we can further reduce automata by up to another 50\%.
+}
+
+
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+\begin{document}
+
+\startdocument
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	ARTICLE CONTENTS
+%--------------------------------------------------------
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+	Nondeterministic finite automat (NFA), as its name suggests, can nondeterministically traverse from one state into multiple states based on the same input. This allows NFAs to represent the language more compactly than its deterministic counterpart that can be only at one state at the time. Despite the complicated minimization caused by nondeterminism, NFAs are applied in many fields of computer science, such as representing regular expressions, network intrusion detection systems for monitoring high-speed networks \cite{FPGA_based_network_scaning, Approximated_reduction}, in abstract regular model checking \cite{ARMC}, in verifying programs that manipulate strings \cite{String_constraints_for_ver} or in decision procedures in the WS1S and WS2S logic \cite{On_equivalence_checking, Nested_antichains_for_WS1S}.
+
+	\subsection*{Minimization techniques}
+		To reduce computational resources when working with NFAs, it is crucial to reduce their size. For this purpose, the state merging \cite{Oldest_Merge,Simulation_based_minimization,On_nfa_reduction} and transition pruning \cite{Simulation_based_minimization, Lorenzo_prunning_saturation} techniques are being used. The state merging technique can merge two states if one of them fully covers the logic of the other. On the other hand the transition pruning removes a transition if there already exists a duplicit transition with the same logic. This minimization approaches are implemented in state-of-the-art tool RABIT/Reduce \cite{RABIT}.
+
+	\subsection*{There are Repetitive Substructures}
+		Despite the good minimization potential that standard minimization techniques carry, the resulting automata can still contain redundant substructures. This automata ofter represents a regular expressions. For example an automaton for network traffic scanning containing the union of regular expression from network intrusion detection systems (NIDS). There are also types of automata that cannot be minimized by this methods at all.
+
+	\subsection*{Our Novelty Approach}
+		In our work we present a novelty reduction approach, that incorporates a transformation of NFA to a nondeterministic pushdown automaton (NPDA) that uses a stack. The method identifies automaton's substructures, with the similar logic, and represents them only once by so-called procedure. The stack is then used to denote from which state the procedure have been entered and where to return af the end. This transformation can be understood as the conversion of a purely sequential program to program that uses functions and call stack. By applying our approach on results of the standard minimization techniques we were able to achieve an additional reduction of automaton by up to 50\% states and transitions.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Motivation}
+	The automaton representing a regular expression \texttt{(.*new XMLHttpRequest.*file://)|(.*file://\\.*new XMLHttpRequest)} from network intrusion detection system Snort \cite{Snort} is shown in Figure 1. Besides the epsilon transitions and \texttt{.*}, this is the most minimal form that can be achieved by standard minimization techniques. This is caused by the lack of language inclusions as  \texttt{Request} and \texttt{file} substructures are compactly different. As a result the automaton contains two substructures where each has one redundant copy, making the NFA representation unefficient.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{One Procedure No Duplicate}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Experiments}
+\subsection{Parametric Regular Expressions}
+\subsection{Network Intrusion Detection Systems}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+
+
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+%	REFERENCE LIST
+%--------------------------------------------------------
+%--------------------------------------------------------
+\phantomsection
+\bibliographystyle{unsrt}
+\bibliography{bibliography}
+
+%--------------------------------------------------------
+%--------------------------------------------------------
+%--------------------------------------------------------
+\end{document}
