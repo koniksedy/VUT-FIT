@@ -80,7 +80,7 @@
 \begin{columns}
     \column{0.4}
     \block{Motivation} {
-        In many automata, especially in those representing regular expressions, there exist repetitive substructures, that can no be eliminated by state of the art reduction tool RABIT/Reduce tool \cite{RABIT} as shown in Figure \ref{fig:http}.
+        In many automata, especially those representing regular expressions, there exist repetitive substructures that cannot be eliminated by the state-of-the-art tool RABIT/Reduce \cite{RABIT}. Such an automaton is depicted below in Figure~\ref{fig:http}.
 
         \begin{tikzfigure}[\textsc{Network filtering automaton.}]
             \centering
@@ -112,20 +112,20 @@
             \label{fig:http}
         \end{tikzfigure}
 
-        We propose a new method based on pushdown automata and so called procedures, that represents the repetitive substructures only once.
+        We propose a new method based on pushdown automata and so-called procedures that represent the repetitive substructures only once.
     }
 
     \note[
         rotate=12,
         targetoffsetx=6cm,
         targetoffsety=-11cm,
-        width=0.12\linewidth
+        width=0.125\linewidth
         ]
-        {\small\textit{Usage of a pushdown automaton and procedures is an analogy to call stack and functions from programming languages. }}
+        {\small\textit{Usage of a pushdown automaton and procedures is an analogons to the call stack and functions from programming languages.}}
 
     \column{0.6}
-    \block{Procedures} {
-        To represent automata efficiently without duplicate substructures, we introduce a new concept called procedures. Each redundant substructure is represented only once as a procedure. The automaton uses a stack to determine from which state the procedure is entered and to which state it should return. The symbol on the stack can be also used to guard transitions that are specific to only some substructures, that the procedure represents.
+    \block{One Procedure No Duplicate} {
+        To represent automata efficiently without duplicate substructures, we introduce a new concept called procedures. Each redundant substructure is represented only once as a procedure. The automaton uses a stack to determine from which state the procedure is entered and to which state it should return. The symbol on the stack can also be used to guard transitions that are specific to only some substructures that the procedure represents.
 
         \begin{tikzfigure}[\textsc{Reduced network filtering automaton with two procedures.}]
             \centering
@@ -181,9 +181,9 @@
     \column{0.5}
     \block{Parametric Regular Expressions}
     {
-        We evaluated the reduction potential of procedures on 3'656 automata, with 207 states and 2'584 transitions on average, generated from parametric regular expressions from \cite{Regex}.
+        We evaluated the reduction potential of procedures on 3,656 automata, with an average of 207 states and 2,584 transitions, generated from parametric regular expressions from \cite{Regex}.
 
-        \begin{tikzfigure}[\textsc{Reduction ratios achived after utilizing procedures in results of the RABIT/Reduce tool. On average, the procedures improved reduction by 50.3\% in states and by 47.9\% in transitions.}\par]
+        \begin{tikzfigure}[\textsc{The reduction ratios achieved by applying procedures to RABIT/Reduce results. On average, procedures improved reductions by 50.3\% in states and 47.9\% in transitions.}\par]
             \centering
             \begin{minipage}{0.21\textwidth}
                 \centering
@@ -199,17 +199,15 @@
         The standalone usage of RABIT/Reduce resulted on average in 52.5\% reduction of states and 48.4\% reduction of transitions. The further reduction performed by our algorithm can be seen in Figure \ref{fig:regex}. The application of procedures reduced the automata to half of the size given by RABIT/Reduce.
     }
 
-    % \calloutblock[20]{20}{coordinate}{Block Width}{Block Content}
-
     \column{0.5}
     \block[
         bodyoffsety=9cm,
         titleoffsety=9cm
       ]{Network Intrusion Detection System} {
 
-        To test the reduction capability of procedures in a real-world scenario, rules from Snort (well-known NIDS) were used. We generated seven automata, each representing a union of regular expressions from a single category of Snort rules.
+        To test the reduction capability of procedures in a real-world scenario, we used rules from Snort (a well-known NIDS). We generated seven automata, each representing a union of regular expressions from a single category of Snort rules.
 
-        \begin{tikztable}[\textsc{Reduction results of RABIT/Reduce (RAB) and procedures (Proc) on seven sets of Snort rules. $Q$ denotes the number of states $\delta$ the number of transitions, and $\Gamma$ the number of stack symbols. The percentages refer to RABIT/Reduce results.}\par]
+        \begin{tikztable}[\textsc{Reduction results of RABIT/Reduce (RAB) and procedures (Proc) on seven sets of Snort rules. $Q$ denotes the number of states $\delta$ the number of transitions, and $\Gamma$ the number of stack symbols. The percentages refer to the results of RABIT/Reduce.}\par]
             \centering
             \small
             \begin{tabular}{c|rr|rr|crrrr}
@@ -227,7 +225,7 @@
             \label{table:snort}
         \end{tikztable}
 
-        The two most significant reductions are highlighted in Table~\ref{table:snort}. The best reduction was attained on the automaton created from the \texttt{specific-threats} rule set. The RABIT/Reduce reduced the automaton by 48.6\% of states and by 44.3\% of transitions. By further application of procedures, another 43.5\% reduction in states and 60.3\% reduction in transitions was achieved. This experiment shows, that the procedures performs significant reduction even on real-world examples.
+        The two most significant reductions are highlighted in Table~\ref{table:snort}. The best reduction was achieved on the automaton created from the \texttt{specific-threats} rule set. RABIT/Reduce reduced the automaton by 48.6\% of states and by 44.3\% of transitions. By further applying procedures, another 43.5\% reduction in states and 60.3\% reduction in transitions was achieved. This experiment demonstrates that procedures perform significant reductions even on real-world examples.
     }
     \block{References} {
         \vspace*{-2em}
