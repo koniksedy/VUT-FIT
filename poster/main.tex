@@ -5,6 +5,8 @@
 \date{\today}
 \institute{\normalsize supervised by doc. Mgr. Lukáš Holík, Ph.D.}
 
+% Packages
+\usepackage{url}
 \usepackage{subfigure}
 \usepackage{blindtext}
 \usepackage{comment}
@@ -22,23 +24,64 @@
 \usetikzlibrary{shapes.callouts}
 \tikzposterlatexaffectionproofoff
 
+
+\usepackage{etoolbox}
+\renewcommand\refname{}
+\patchcmd{\thebibliography}{\section*{\refname}}{}{}{}
+
+
+% Command for color circle around text.
 \newcommand{\circledtext}[2][red]{%
     \tikz[baseline=(char.base)]{
         \node[shape=circle,draw=#1,fill=#1,inner sep=2pt] (char) {\hspace*{0.15mm}\textbf{#2}};}\hspace*{-2mm}
 }
 
+% Counter and environment for tables
+\newcounter{tablecounter}
+\newenvironment{tikztable}[1][]{%
+  \def \rememberparameter{#1}%
+  \refstepcounter{tablecounter}%
+  \vspace{0.75em}}
+  {
+    \begin{center}
+        \ifx\rememberparameter\@empty
+        \else %nothing
+        {\small Tab.~\thetablecounter: \rememberparameter \par\medskip}
+        \fi
+    \end{center}
+}
+
+% Set poster template
 \usetheme{Envelope}
 \useblockstyle[titleleft]{TornOut}
 \colorlet{blocktitlefgcolor}{black!20!colorOne}
+\usenotestyle{Sticky}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
 \maketitle[width=2\textwidth]
+
+% Add logos
 \node[below right=1cm and 11cm] at (TP@title) {\includegraphics[width=0.28\textwidth]{images/excel-fit-2024-logo.pdf}};
 \node[below left=1cm and 11cm] at (TP@title) {\includegraphics[width=0.28\textwidth]{images/FIT_color_CMYK_EN.pdf}};
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MOTIVATION + PROCEDURES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{columns}
     \column{0.4}
     \block{Motivation} {
+        In many automata, especially in those representing regular expressions, there exist repetitive substructures, that can no be eliminated by state of the art reduction tool RABIT/Reduce tool \cite{RABIT} as shown in Figure \ref{fig:http}.
+
         \begin{tikzfigure}[\textsc{Network filtering automaton.}]
             \centering
             \begin{tikzpicture}[every initial by arrow/.style={, line width=1.5pt}, shorten >=1pt, node distance=3cm, auto, on grid, initial text=,font=\small,>=stealth',
@@ -66,11 +109,24 @@
                           (77) edge[out=south, in=west] node[below] {$\varepsilon$} (9)
                           (88) edge[out=south, in=east] node[below] {$\varepsilon$} (9);
             \end{tikzpicture}
+            \label{fig:http}
         \end{tikzfigure}
+
+        We propose a new method based on pushdown automata and so called procedures, that represents the repetitive substructures only once.
     }
+
+    \note[
+        rotate=12,
+        targetoffsetx=6cm,
+        targetoffsety=-11cm,
+        width=0.12\linewidth
+        ]
+        {\small\textit{Usage of a pushdown automaton and procedures is an analogy to call stack and functions from programming languages. }}
 
     \column{0.6}
     \block{Procedures} {
+        To represent automata efficiently without duplicate substructures, we introduce a new concept called procedures. Each redundant substructure is represented only once as a procedure. The automaton uses a stack to determine from which state the procedure is entered and to which state it should return. The symbol on the stack can be also used to guard transitions that are specific to only some substructures, that the procedure represents.
+
         \begin{tikzfigure}[\textsc{Reduced network filtering automaton with two procedures.}]
             \centering
             \begin{tikzpicture}[every initial by arrow/.style={line width=1.5pt}, shorten >=1pt, node distance=3cm, auto, on grid, initial text=,font=\small,>=stealth',
@@ -116,11 +172,16 @@
     }
 \end{columns}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% EXPERIMENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{columns}
     \column{0.5}
     \block{Parametric Regular Expressions}
     {
-        We evaluated the reduction potential of procedures on 3'656 automata, with 207 states and 2'584 transitions on average, generated from parametric regular expressions from [\textbf{??}].
+        We evaluated the reduction potential of procedures on 3'656 automata, with 207 states and 2'584 transitions on average, generated from parametric regular expressions from \cite{Regex}.
 
         \begin{tikzfigure}[\textsc{Reduction ratios achived after utilizing procedures in results of the RABIT/Reduce tool. On average, the procedures improved reduction by 50.3\% in states and by 47.9\% in transitions.}\par]
             \centering
@@ -137,11 +198,18 @@
 
         The standalone usage of RABIT/Reduce resulted on average in 52.5\% reduction of states and 48.4\% reduction of transitions. The further reduction performed by our algorithm can be seen in Figure \ref{fig:regex}. The application of procedures reduced the automata to half of the size given by RABIT/Reduce.
     }
-    \column{0.5}
-    \block{Snort} {
-        To test the reduction capability of procedures in a real-world scenario, the Snort [\textbf{??}] (well-known NIDS) rules were used. We generated seven automata, each representing a union of regular expressions from a single category of Snort rules.
 
-        \begin{tikzfigure}[\textsc{Reduction results of RABIT/Reduce (RAB) and procedures (Proc) on seven sets of Snort rules. $Q$ denotes the number of states $\delta$ the number of transitions, and $\Gamma$ the number of stack symbols. The percentages refer to RABIT/Reduce results.}\par]
+    % \calloutblock[20]{20}{coordinate}{Block Width}{Block Content}
+
+    \column{0.5}
+    \block[
+        bodyoffsety=9cm,
+        titleoffsety=9cm
+      ]{Network Intrusion Detection System} {
+
+        To test the reduction capability of procedures in a real-world scenario, rules from Snort (well-known NIDS) were used. We generated seven automata, each representing a union of regular expressions from a single category of Snort rules.
+
+        \begin{tikztable}[\textsc{Reduction results of RABIT/Reduce (RAB) and procedures (Proc) on seven sets of Snort rules. $Q$ denotes the number of states $\delta$ the number of transitions, and $\Gamma$ the number of stack symbols. The percentages refer to RABIT/Reduce results.}\par]
             \centering
             \small
             \begin{tabular}{c|rr|rr|crrrr}
@@ -157,9 +225,26 @@
             \end{tabular}
             \normalsize
             \label{table:snort}
-        \end{tikzfigure}
+        \end{tikztable}
 
+        The two most significant reductions are highlighted in Table~\ref{table:snort}. The best reduction was attained on the automaton created from the \texttt{specific-threats} rule set. The RABIT/Reduce reduced the automaton by 48.6\% of states and by 44.3\% of transitions. By further application of procedures, another 43.5\% reduction in states and 60.3\% reduction in transitions was achieved. This experiment shows, that the procedures performs significant reduction even on real-world examples.
+    }
+    \block{References} {
+        \vspace*{-2em}
+        \small
+
+        \bibliographystyle{enplain.bst}
+        % \bibliographystyle{IEEEtran}
+        \bibliography{bibliography}
+        \normalsize
     }
 \end{columns}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOCUMENT END
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
