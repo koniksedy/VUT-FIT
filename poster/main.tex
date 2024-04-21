@@ -69,8 +69,8 @@
 \maketitle[width=2\textwidth]
 
 % Add logos
-\node[below right=1cm and 11cm] at (TP@title) {\includegraphics[width=0.28\textwidth]{images/excel-fit-2024-logo.pdf}};
-\node[below left=1cm and 11cm] at (TP@title) {\includegraphics[width=0.28\textwidth]{images/FIT_color_CMYK_EN.pdf}};
+\node[below right=1.5cm and 11cm] at (TP@title) {\includegraphics[width=0.28\textwidth]{images/excel-fit-2024-logo.pdf}};
+\node[below left=1.5cm and 11cm] at (TP@title) {\includegraphics[width=0.28\textwidth]{images/FIT_color_CMYK_EN.pdf}};
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -82,7 +82,7 @@
     \block{Motivation} {
         In many automata, especially those representing regular expressions, there exist repetitive substructures that cannot be eliminated using the state-of-the-art tool RABIT/Reduce \cite{RABIT}. This automaton is depicted in Figure~\ref{fig:http} below.
 
-        \begin{tikzfigure}[\textsc{Network filtering automaton.}]
+        \begin{tikzfigure}[\textsc{Automaton with duplicate substructures.}]
             \centering
             \begin{tikzpicture}[every initial by arrow/.style={, line width=1.5pt}, shorten >=1pt, node distance=3cm, auto, on grid, initial text=,font=\small,>=stealth',
                 every state/.style={minimum size=7mm, line width=1.5pt}]
@@ -112,7 +112,7 @@
             \label{fig:http}
         \end{tikzfigure}
 
-        We propose a new method based on pushdown automata and the so-called procedures that represent repetitive substructures only once.
+        We propose a novel approach based on pushdown automata and so-called procedures, which represent repetitive substructures only once.
     }
 
     \note[
@@ -125,9 +125,9 @@
 
     \column{0.6}
     \block{One Procedure No Duplicates} {
-        To represent automata efficiently, without duplicate substructures, we introduce a new concept called procedures. Each set of similar substructures is represented by just one procedure. The automaton uses a stack to determine the original substructure from which the procedure is entered and where to return. The symbol on the stack can also guard transitions specific to some substructures that the procedure represents.
+        To represent automata efficiently, without duplicate substructures, we introduce a new concept called procedures. Each set of similar substructures is represented by one procedure. The automaton uses a stack to determine the state from which the procedure is entered and the state to which it should return. The symbol on the stack can also serve to guard transitions that are specific to certain substructures represented by the procedure.
 
-        \begin{tikzfigure}[\textsc{Reduced network filtering automaton with two procedures.}]
+        \begin{tikzfigure}[\textsc{Automaton with two procedures and no duplicate substructures.}]
             \centering
             \begin{tikzpicture}[every initial by arrow/.style={line width=1.5pt}, shorten >=1pt, node distance=3cm, auto, on grid, initial text=,font=\small,>=stealth',
                 every state/.style={minimum size=7mm, line width=1.5pt}]
@@ -196,7 +196,7 @@
             \label{fig:regex}
         \end{tikzfigure}
 
-        The standalone usage of RABIT/Reduce resulted on average in a reduction of 52.5\% states and a reduction of 48.4\%. The further reduction performed by our algorithm can be seen in Figure \ref{fig:regex}. The application of procedures reduced the automata to half the size given by RABIT/Reduce.
+        The standalone usage of RABIT/Reduce resulted on average in a reduction of 52.5\% in states and 48.4\% in transitions. The further reduction performed by our algorithm can be seen in Figure \ref{fig:regex}. The application of procedures reduced the automata to half the size given by RABIT/Reduce.
     }
 
     \column{0.5}
@@ -225,7 +225,7 @@
             \label{table:snort}
         \end{tikztable}
 
-        The two most significant reductions are highlighted in Table~\ref{table:snort}. The best reduction was achieved on the automaton created from the \texttt{specific-threats} rule set. RABIT/Reduce reduced the automaton by 48.6\% of states and by 44.3\% of transitions. By further applying procedures, another 43.5\% reduction in states and 60.3\% reduction in transitions were achieved. This experiment demonstrates that procedures can achieve significant reductions even in real-world examples.
+        Among the reduction results in Table~\ref{table:snort}, we highlighted the two most significant reductions. The best size reduction was achieved on the \texttt{specific-threats} rule. RABIT/Reduce tool reduced the automaton by 48.6\% of states and by 44.3\% of transitions. Further application of procedures resulted in an additional reduction of 43.5\% in states and 60.3\% in transitions. This experiment showed that procedures can achieve significant reductions even in real-world examples.
     }
     \block{References} {
         \vspace*{-2em}
