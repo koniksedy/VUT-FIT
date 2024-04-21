@@ -105,7 +105,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Motivation}
-	The automaton representing a regular expression \texttt{(.*new XMLHttpRequest.*file://)|(.*file://\\.*new XMLHttpRequest)} from network intrusion detection system Snort \cite{Snort} is shown in \fbox{Figure 1}. Besides the epsilon transitions and \texttt{.*}, this is the most minimal form that can be achieved by standard minimization techniques. This is caused by the lack of language inclusions as  \textit{Request} and \textit{File} substructures are compactly different. As a result, the automaton contains two substructures, each of which has redundant copy, making the NFA representation unefficient.
+	The automaton representing a regular expression \texttt{(.*new XMLHttpRequest.*file://)|(.*file://\\.*new XMLHttpRequest)} from network intrusion detection system Snort \cite{Snort} is shown in \fbox{Figure 1}. Besides the epsilon transitions and \texttt{.*}, this is the most minimal form that can be achieved by standard minimization techniques. This is caused by the lack of language inclusions as  \textit{Request} and \textit{File} substructures are completely different. As a result, the automaton contains two substructures, each of which has redundant copy, making the NFA representation unefficient.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -134,7 +134,7 @@
 	\subsection{Parametric Regular Expressions}
 		The set of 3'656 automata, with an average of 207 states and 2'584 transitions, was obtained from four families of parametric regular expressions \cite{Regex_param}. The reduction ratio of states and transitions can be seen in \fbox{Figure 3}. It can be observed that, on average, our tool achieved a reduction of 52.5\% in the number of states. The x-axis of the graph represents the size of RABIT/Reduce results (the input of our tool), while the y-axis represents achieved reduction ratio. The graph is enhanced with temperature coloring and a~distribution function for each axis.
 
-	\subsection{Network Intrusion Detection Systems}
+	\subsection{Network Intrusion Detection System}
 		To test our reduction algorithm on real-world examples, seven automata were created as unions of sets of regular expressions from seven different families of Snort rules. The results of reduction performed by standalone usage of the RABIT/Reduce tool ($RAB$) and with the additional application of our method based on procedures ($\mathit{Proc}$) are shown in \fbox{Table 1}. The two most significant results are highlighted. The best obtained result achieved a reduction of 43.5\% in states and 60.3\% in transitions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
