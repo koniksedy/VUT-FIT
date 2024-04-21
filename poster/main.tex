@@ -205,7 +205,7 @@
         titleoffsety=9cm
       ]{Network Intrusion Detection System} {
 
-        To test the reduction capability of procedures in a real-world scenario, we used rules from Snort (a well-known NIDS). We generated seven automata, each representing a union of regular expressions from a single category of Snort rules.
+        To test the reduction capability of procedures in a real-world scenario, we used rules from Snort (a well-known NIDS). We generated seven automata, each representing a union of regular expressions, from seven different categories of Snort rules.
 
         \begin{tikztable}[\textsc{Reduction results of RABIT/Reduce (RAB) and procedures (Proc) on seven sets of Snort rules. $Q$ denotes the number of states $\delta$ the number of transitions, and $\Gamma$ the number of stack symbols. The percentages refer to the results of RABIT/Reduce.}\par]
             \centering
@@ -217,15 +217,15 @@
                 worm             & \hspace*{0.5em}50\hspace*{0.5em} &  3'880\hspace*{0.5em}   &\hspace*{0.5em} 34\hspace*{0.5em}     & 290\hspace*{0.5em}    & 24+8                  & (94.1\%)& \hspace*{0.5em}284    & (97.9\%)\\
                 shellcode        & \hspace*{0.5em}162\hspace*{0.5em} & 3'328\hspace*{0.5em}   &\hspace*{0.5em} 56\hspace*{0.5em}     & 579\hspace*{0.5em}    & 48+2                 & (89.3\%) & \hspace*{0.5em}486    & (83.9\%)\\
                 \rowcolor{yellow}mysql            & \hspace*{0.5em}235\hspace*{0.5em} & 30'052\hspace*{0.5em} & \hspace*{0.5em} 91\hspace*{0.5em}  & 14'430\hspace*{0.5em} & 45+18\hspace*{-0.5em}   & (69.2\%) & \hspace*{0.5em}7'142  & (49.5\%)\\
-                chat             & \hspace*{0.5em}408\hspace*{0.5em} & 23'937\hspace*{0.5em} & \hspace*{0.5em}113\hspace*{0.5em}   & 1'367\hspace*{0.5em}  & 71+25\hspace*{-0.5em}  & (76.7\%) & \hspace*{0.5em}1'058  & (77.4\%)\\
+                chat             & \hspace*{0.5em}408\hspace*{0.5em} & 23'937\hspace*{0.5em} & \hspace*{0.5em}113\hspace*{0.5em}   & 1'367\hspace*{0.5em}  & 71+25\hspace*{-0.5em}  & (85.0\%) & \hspace*{0.5em}1'058  & (77.4\%)\\
                 \rowcolor{yellow}specific-threats & \hspace*{0.5em}459\hspace*{0.5em} & 57'292\hspace*{0.5em} & \hspace*{0.5em}236\hspace*{0.5em}  & 31'935\hspace*{0.5em} & 99+32\hspace*{-0.5em}   & (55.5\%) & \hspace*{0.5em}12'680 & (39.7\%)\\
-                telnet           & \hspace*{0.5em}829\hspace*{0.5em} & 7'070\hspace*{0.5em}  & \hspace*{0.5em}309\hspace*{0.5em}   & 2'898\hspace*{0.5em}  & 155+82                 & (50.0\%) & \hspace*{0.5em}2'164  & (74.7\%)\\
+                telnet           & \hspace*{0.5em}829\hspace*{0.5em} & 7'070\hspace*{0.5em}  & \hspace*{0.5em}309\hspace*{0.5em}   & 2'898\hspace*{0.5em}  & 155+82                 & (76.7\%) & \hspace*{0.5em}2'164  & (74.7\%)\\
             \end{tabular}
             \normalsize
             \label{table:snort}
         \end{tikztable}
 
-        Among the reduction results in Table~\ref{table:snort}, we highlighted the two most significant reductions. The best size reduction was achieved on the \texttt{specific-threats} rule. RABIT/Reduce tool reduced the automaton by 48.6\% of states and by 44.3\% of transitions. Further application of procedures resulted in an additional reduction of 43.5\% in states and 60.3\% in transitions. This experiment showed that procedures can achieve significant reductions even in real-world examples.
+        Among the reduction results in Table~\ref{table:snort}, we highlighted the two most significant reductions. The best size reduction was achieved on the \texttt{specific-threats} rule. RABIT/Reduce tool reduced the automaton by 48.6\% of states and by 44.3\% of transitions. Further application of procedures resulted in an additional reduction of 44.5\% in states and 60.3\% in transitions. This experiment showed that procedures can achieve significant reductions even in real-world examples.
     }
     \block{References} {
         \vspace*{-2em}
