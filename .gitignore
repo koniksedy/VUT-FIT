@@ -299,3 +299,8 @@ TSWLatexianTemp*
 # option is specified. Footnotes are the stored in a file with suffix Notes.bib.
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
+<<<<<<< HEAD
+=======
+
+*.rubbercache
+>>>>>>> 5900f1ec0e41ada6825bc8a40b5a4268b10d22e9
