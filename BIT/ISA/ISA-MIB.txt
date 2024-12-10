@@ -1,0 +1,165 @@
+ISA-MIB DEFINITIONS ::= BEGIN
+
+-- MIB struktura definující instance pro snmp agenta.
+-- --------------------------
+-- Soubor: ISA-MIB.txt
+-- Projekt: ISA - rozšíření SNMP agenta.
+-- Autor: Michal Šedý <xsedym02>
+-- Datum úpravy: 30.10.2020
+
+IMPORTS
+	experimental
+	OBJECT-TYPE, Integer32,
+	MODULE-IDENTITY                       FROM SNMPv2-SMI
+	MODULE-COMPLIANCE, OBJECT-GROUP       FROM SNMPv2-CONF;
+
+--
+-- Základní informace o modulu.
+--
+isaAgentMib MODULE-IDENTITY
+    LAST-UPDATED "202010290000Z"
+    ORGANIZATION "fit-vutbr"
+    CONTACT-INFO "xsedym02"
+    DESCRIPTION  "MIB pro projekt (rozšíření snmp agenta) do předmětu ISA.
+                 "
+    ::= { experimental 22 }
+
+
+isaLogin OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..255))
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "READ-ONLY string obsahující login = xsedym02.
+    "
+    ::= { isaAgentMib 1 }
+
+
+isaTime OBJECT-TYPE
+    SYNTAX OCTET STRING (SIZE(0..255))
+    MAX-ACCESS read-only
+    STATUS current
+    DESCRIPTION
+    "READ-ONLY string obsahující čas ve formátu RFC 3339.
+    "
+    ::= { isaAgentMib 2 }
+
+
+isaInteger OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-write
+    STATUS      current
+    DESCRIPTION
+	"READ-WRITE Int32.
+    "
+    ::= { isaAgentMib 3 }
+
+--
+-- Oběkt obsahující základní informace o systému.
+--
+isaSystemInfo OBJECT IDENTIFIER ::= { isaAgentMib 4 }
+
+isaSystemName OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..255))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY string obsahující jméno systému.
+    "
+    ::= { isaSystemInfo 1 }
+
+isaSystemRelease OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..255))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY string obsahující vydání systému.
+    "
+    ::= { isaSystemInfo 2 }
+
+isaSystemVersion OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..255))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY string obsahující verzi systému.
+    "
+    ::= { isaSystemInfo 3 }
+
+isaMachineArch OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..255))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY string obsahující architekturu systému.
+    "
+    ::= { isaSystemInfo 4 }
+   
+isaMemTotal OBJECT-TYPE
+    SYNTAX      Integer32
+    UNITS "kB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY Integer32 obsahující informaci o maximální velikosti paměti.
+    "
+    ::= { isaSystemInfo 5 }
+
+isaMemFree OBJECT-TYPE
+    SYNTAX      Integer32
+    UNITS "kB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY Integer32 obsahující informaci o velikosti volné paměti.
+    "
+    ::= { isaSystemInfo 6 }
+
+isaSwapTotal OBJECT-TYPE
+    SYNTAX      Integer32
+    UNITS "kB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY Integer32 obsahující informaci o maximální velikosti swapu.
+    "
+    ::= { isaSystemInfo 7 }
+
+isaSwapFree OBJECT-TYPE
+    SYNTAX      Integer32
+    UNITS "kB"
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY Integer32 obsahující informaci o volném místě ve swapu.
+    "
+    ::= { isaSystemInfo 8 }
+
+isaCpuModelName OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..255))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY string obsahující informaci o jméně procesoru.
+    "
+    ::= { isaSystemInfo 9 }
+
+isaCpuCores OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY Integer32 obsahující informaci o počtu jader procesoru.
+    "
+    ::= { isaSystemInfo 10 }
+
+isaAddressSize OBJECT-TYPE
+    SYNTAX      OCTET STRING (SIZE(0..255))
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+    "READ-ONLY string obsahující informaci o adresování.
+    "
+    ::= { isaSystemInfo 11 }
+
+END
